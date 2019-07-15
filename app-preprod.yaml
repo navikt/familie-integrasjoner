@@ -22,8 +22,6 @@ spec:
     min: 2
     max: 4
     cpuThresholdPercentage: 50
-  vault:
-    enabled: true
   resources:
     limits:
       memory: 2Gi
