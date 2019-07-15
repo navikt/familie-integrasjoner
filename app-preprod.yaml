@@ -1,0 +1,35 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: familie-ks-oppslag
+  namespace: default
+  labels:
+    team: teamfamilie
+
+  spec:
+    image: repo.adeo.no:5443/familie-ks-oppslag:RELEASE_VERSION
+    port: 8080
+    liveness:
+      path: /internal/status/isAlive
+      initialDelay: 30
+    readiness:
+      path: /internal/status/isAlive
+      initialDelay: 30
+    prometheus:
+      enabled: true
+      path: /internal/prometheus
+    replicas:
+      min: 2
+      max: 4
+      cpuThresholdPercentage: 50
+    vault:
+      enabled: true
+    resources:
+      limits:
+        memory: 2Gi
+        cpu: 1500m
+      requests:
+        memory: 1Gi
+        cpu: 1000m
+    ingresses: # Optional. List of ingress URLs that will route HTTP traffic to the application.
+      - https://familie-ks-oppslag.nais.preprod.local

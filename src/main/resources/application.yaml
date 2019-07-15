@@ -1,0 +1,16 @@
+server:
+  servlet:
+    context-path: /
+
+  spring:
+    autoconfigure.exclude: org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
+    main.banner-mode: "off"
+
+  management:
+    endpoint.health.show-details: always
+    endpoints.web:
+      exposure.include: info, health, metrics, prometheus
+      base-path: "/internal"
+      path-mapping:
+        info: "status/isAlive"
+    metrics.export.prometheus.enabled: true
