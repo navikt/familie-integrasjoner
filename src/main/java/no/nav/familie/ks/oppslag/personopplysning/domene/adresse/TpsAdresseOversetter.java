@@ -10,14 +10,12 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRespons
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.ApplicationScope;
 
 import java.util.*;
 
 import static java.util.Objects.requireNonNull;
 
 @Component
-@ApplicationScope
 public class TpsAdresseOversetter {
 
     private static final String NORGE = "NOR";
@@ -25,10 +23,6 @@ public class TpsAdresseOversetter {
     private static final String HARDKODET_POSTNR = "XXXX";
     private static final String HARDKODET_POSTSTED = "UDEFINERT";
     private static final String POSTNUMMER_POSTSTED = "^\\d{4} \\D*";  // Mønster for postnummer og poststed, f.eks. "0034 OSLO"
-
-    TpsAdresseOversetter() {
-        // for CDI proxy
-    }
 
     public List<Adresseinfo> lagListeMedAdresseInfo(Bruker person) {
         Optional<AdresseType> gjeldende = finnGjeldendePostadressetype(person);
