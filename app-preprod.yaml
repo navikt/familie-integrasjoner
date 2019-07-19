@@ -8,13 +8,17 @@ metadata:
 
 spec:
   image: repo.adeo.no:5443/familie-ks-oppslag:RELEASE_VERSION
-  port: 8080
+  port: 8084
   liveness:
     path: /internal/status/isAlive
     initialDelay: 30
   readiness:
     path: /internal/status/isAlive
     initialDelay: 30
+  vault:
+    enabled: true
+  secureLogs:
+    enabled: true
   prometheus:
     enabled: true
     path: /internal/prometheus
@@ -31,3 +35,6 @@ spec:
       cpu: 1000m
   ingresses: # Optional. List of ingress URLs that will route HTTP traffic to the application.
     - https://familie-ks-oppslag.nais.preprod.local
+  env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: preprod

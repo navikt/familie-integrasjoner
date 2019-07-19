@@ -1,0 +1,12 @@
+no.nav.security.oidc:
+  issuers: intern
+  issuer.intern:
+    discoveryurl: http://metadata
+    accepted_audience: aud-localhost
+    cookie_name: localhost-idtoken
+
+SECURITYTOKENSERVICE_URL: https://localhost:8063/soap/SecurityTokenServiceProvider/
+PERSON_V3_URL: https://localhost:8063/soap/tpsws/ws/Person/v3
+
+CREDENTIAL_USERNAME: not-a-real-srvuser
+CREDENTIAL_PASSWORD: not-a-real-pw

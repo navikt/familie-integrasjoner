@@ -1,0 +1,9 @@
+no.nav.security.oidc:
+  issuers: intern
+  intern:
+    discoveryurl: https://security-token-service.nais.adeo.no/rest/v1/sts/.well-known/openid-configuration
+    accepted_audience: ${GYLDIGE_SRVBRUKERE}
+    cookie_name: ID_token
+
+SECURITYTOKENSERVICE_URL: https://sts.adeo.no/SecurityTokenServiceProvider/
+PERSON_V3_URL: https://wasapp.adeo.no/tpsws/ws/Person/v3
