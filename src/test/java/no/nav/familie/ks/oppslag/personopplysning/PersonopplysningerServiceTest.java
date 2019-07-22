@@ -12,6 +12,7 @@ import no.nav.familie.ks.oppslag.personopplysning.internal.PersonConsumer;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.feil.PersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v3.feil.Sikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkResponse;
@@ -44,8 +45,8 @@ public class PersonopplysningerServiceTest {
     }
 
     @Test
-    public void skalReturnereTomtSettVedUgyldigAktørId() throws Exception {
-        when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class))).thenThrow(new HentPersonhistorikkPersonIkkeFunnet("Feil", new PersonIkkeFunnet()));
+    public void skalReturnereTomPersonhistorikkInfoVedUgyldigAktørId() throws Exception {
+        when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class))).thenThrow(new HentPersonhistorikkPersonIkkeFunnet("Feil", any(PersonIkkeFunnet.class)));
 
         PersonhistorikkInfo response = personopplysningerService.hentHistorikkFor(new AktørId(AKTØR_ID), FOM, TOM);
 
@@ -56,14 +57,14 @@ public class PersonopplysningerServiceTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void skalKasteFeilVedSikkerhetsbegrensning() throws Exception {
-        when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class))).thenThrow(new HentPersonhistorikkSikkerhetsbegrensning("Feil", any()));
+    public void skalGiFeilVedSikkerhetsbegrensning() throws Exception {
+        when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class))).thenThrow(new HentPersonhistorikkSikkerhetsbegrensning("Feil", any(Sikkerhetsbegrensning.class)));
 
         personopplysningerService.hentHistorikkFor(new AktørId(AKTØR_ID), FOM, TOM);
     }
 
     @Test
-    public void skalFylleUtPersonhistorikkInfoVedRespons() throws Exception {
+    public void skalKonvertereResponsTilPersonhistorikkInfo() throws Exception {
         when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class))).thenReturn(hentResponse());
 
         PersonhistorikkInfo response = personopplysningerService.hentHistorikkFor(new AktørId(AKTØR_ID), FOM, TOM);
