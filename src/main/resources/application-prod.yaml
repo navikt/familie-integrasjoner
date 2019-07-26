@@ -1,6 +1,6 @@
 no.nav.security.oidc:
   issuers: intern
-  intern:
+  issuer.intern:
     discoveryurl: https://security-token-service.nais.adeo.no/rest/v1/sts/.well-known/openid-configuration
     accepted_audience: ${GYLDIGE_SRVBRUKERE}
     cookie_name: ID_token
