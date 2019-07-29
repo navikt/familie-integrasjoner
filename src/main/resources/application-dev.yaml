@@ -6,6 +6,8 @@ no.nav.security.oidc:
     cookie_name: localhost-idtoken
 
 SECURITYTOKENSERVICE_URL: https://localhost:8063/soap/SecurityTokenServiceProvider/
+STS_REST_URL: http://security-token-service.default.svc.nais.local
+AKTOERID_URL: #Denne er ikke i bruk da Aktøregisterklienten mockes ut lokalt
 PERSON_V3_URL: https://localhost:8063/soap/tpsws/ws/Person/v3
 
 CREDENTIAL_USERNAME: not-a-real-srvuser
