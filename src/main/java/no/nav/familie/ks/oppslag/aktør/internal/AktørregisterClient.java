@@ -1,6 +1,9 @@
 package no.nav.familie.ks.oppslag.aktør.internal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.Timer;
 import no.nav.familie.ks.oppslag.felles.MDCOperations;
 import no.nav.familie.ks.oppslag.felles.rest.StsRestClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
@@ -28,6 +32,9 @@ public class AktørregisterClient {
     private ObjectMapper objectMapper;
     private String aktørRegisterUrl;
     private String consumer;
+    private final Timer aktoerResponstid = Metrics.timer("aktoer.respons.tid");
+    private final Counter aktoerSuccess = Metrics.counter("aktoer.response", "status", "success");
+    private final Counter aktoerFailure = Metrics.counter("aktoer.response", "status", "failure");
 
     public AktørregisterClient(@Value("${AKTOERID_URL}") String aktørRegisterUrl,
                                @Value("${CREDENTIAL_USERNAME}") String consumer,
@@ -53,9 +60,13 @@ public class AktørregisterClient {
                 .timeout(Duration.ofSeconds(5))
                 .build();
         try {
+            long startTime = System.nanoTime();
             HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            aktoerResponstid.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
+            aktoerSuccess.increment();
             return objectMapper.readValue(httpResponse.body(), AktørResponse.class);
         } catch (IOException | InterruptedException e) {
+            aktoerFailure.increment();
             throw new RuntimeException("Feil ved kall mot Aktørregisteret", e);
         }
     }
