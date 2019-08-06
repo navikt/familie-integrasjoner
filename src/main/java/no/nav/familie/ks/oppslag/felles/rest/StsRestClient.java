@@ -42,8 +42,8 @@ public class StsRestClient {
         return Instant.ofEpochMilli(cachedToken.getExpires_in())
                 .atZone(ZoneId.systemDefault())
                 .toLocalTime()
-                .minusMinutes(10)
-                .isBefore(now());
+                .minusMinutes(15)
+                .isAfter(now(ZoneId.systemDefault()));
     }
 
     public String getSystemOIDCToken() {
