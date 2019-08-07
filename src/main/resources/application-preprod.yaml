@@ -7,5 +7,5 @@ no.nav.security.oidc:
 
 SECURITYTOKENSERVICE_URL: https://sts-q1.preprod.local/SecurityTokenServiceProvider/
 STS_REST_URL: https://security-token-service.nais.preprod.local
-AKTOERID_URL: https://app-q1.adeo.no/aktoerregister/api/v1
+AKTOERID_URL: https://app-q0.adeo.no/aktoerregister/api/v1
 PERSON_V3_URL: https://wasapp-q1.adeo.no/tpsws/ws/Person/v3
