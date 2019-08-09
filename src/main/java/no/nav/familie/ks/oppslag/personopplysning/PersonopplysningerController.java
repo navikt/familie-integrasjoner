@@ -28,8 +28,8 @@ public class PersonopplysningerController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "historikk")
     public PersonhistorikkInfo historikk(
             @NotNull @RequestParam(name = "id") String aktørId,
-            @NotNull @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fomDato,
-            @NotNull @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate tomDato
+            @NotNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fomDato,
+            @NotNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate tomDato
     ) {
         MDCOperations.putCallId(); // FIXME: Midlertidig, bør settes generelt i et filter elns
         return personopplysningerService.hentHistorikkFor(new AktørId(aktørId), fomDato, tomDato);
