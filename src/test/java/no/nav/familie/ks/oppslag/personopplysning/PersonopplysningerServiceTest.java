@@ -1,52 +1,54 @@
 package no.nav.familie.ks.oppslag.personopplysning;
 
-import no.nav.familie.ks.oppslag.felles.ws.DateUtil;
 import no.nav.familie.ks.oppslag.personopplysning.domene.AktørId;
 import no.nav.familie.ks.oppslag.personopplysning.domene.PersonhistorikkInfo;
+import no.nav.familie.ks.oppslag.personopplysning.domene.Personinfo;
 import no.nav.familie.ks.oppslag.personopplysning.domene.TpsOversetter;
 import no.nav.familie.ks.oppslag.personopplysning.domene.adresse.AdresseType;
 import no.nav.familie.ks.oppslag.personopplysning.domene.adresse.TpsAdresseOversetter;
+import no.nav.familie.ks.oppslag.personopplysning.domene.relasjon.Familierelasjon;
+import no.nav.familie.ks.oppslag.personopplysning.domene.relasjon.RelasjonsRolleType;
+import no.nav.familie.ks.oppslag.personopplysning.domene.relasjon.SivilstandType;
 import no.nav.familie.ks.oppslag.personopplysning.domene.status.PersonstatusType;
 import no.nav.familie.ks.oppslag.personopplysning.domene.tilhørighet.Landkode;
 import no.nav.familie.ks.oppslag.personopplysning.internal.PersonConsumer;
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.feil.PersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.feil.Sikkerhetsbegrensning;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest;
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkResponse;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class PersonopplysningerServiceTest {
 
     private static final String AKTØR_ID = "1000011111111";
     private static final LocalDate TOM = LocalDate.now();
     private static final LocalDate FOM = TOM.minusYears(5);
-    private static final Landkoder NORGE = new Landkoder().withValue("NOR");
 
-
+    private PersonConsumer personConsumer;
     private PersonopplysningerService personopplysningerService;
-    private PersonConsumer personConsumer = mock(PersonConsumer.class);
 
     @Before
-    public void setUp() {
-        personopplysningerService = new PersonopplysningerService(personConsumer, new TpsOversetter(new TpsAdresseOversetter()));
+    public void setUp() throws Exception {
+        personConsumer = new PersonopplysningerTestConfig().personConsumerMock();
+        personopplysningerService = new PersonopplysningerService(this.personConsumer, new TpsOversetter(new TpsAdresseOversetter()));
     }
 
     @Test
     public void skalReturnereTomPersonhistorikkInfoVedUgyldigAktørId() throws Exception {
-        when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class))).thenThrow(new HentPersonhistorikkPersonIkkeFunnet("Feil", any(PersonIkkeFunnet.class)));
+        when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class)))
+                .thenThrow(new HentPersonhistorikkPersonIkkeFunnet("Feil", any(PersonIkkeFunnet.class)));
 
         PersonhistorikkInfo response = personopplysningerService.hentHistorikkFor(new AktørId(AKTØR_ID), FOM, TOM);
 
@@ -57,16 +59,63 @@ public class PersonopplysningerServiceTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void skalGiFeilVedSikkerhetsbegrensning() throws Exception {
-        when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class))).thenThrow(new HentPersonhistorikkSikkerhetsbegrensning("Feil", any(Sikkerhetsbegrensning.class)));
+    public void personHistorikkSkalGiFeilVedSikkerhetsbegrensning() throws Exception {
+        when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class)))
+                .thenThrow(new HentPersonhistorikkSikkerhetsbegrensning("Feil", any(Sikkerhetsbegrensning.class)));
 
         personopplysningerService.hentHistorikkFor(new AktørId(AKTØR_ID), FOM, TOM);
     }
 
-    @Test
-    public void skalKonvertereResponsTilPersonhistorikkInfo() throws Exception {
-        when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class))).thenReturn(hentResponse());
+    @Test(expected = IllegalArgumentException.class)
+    public void personinfoSkalGiFeilVedUgyldigAktørId() throws Exception {
+        when(personConsumer.hentPersonResponse(any(HentPersonRequest.class)))
+                .thenThrow(new HentPersonPersonIkkeFunnet("Feil", any(PersonIkkeFunnet.class)));
 
+        personopplysningerService.hentPersoninfoFor(new AktørId(AKTØR_ID));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void personinfoSkalGiFeilVedSikkerhetsbegrensning() throws Exception {
+        when(personConsumer.hentPersonResponse(any(HentPersonRequest.class)))
+                .thenThrow(new HentPersonSikkerhetsbegrensning("Feil", any(Sikkerhetsbegrensning.class)));
+
+        personopplysningerService.hentPersoninfoFor(new AktørId(AKTØR_ID));
+    }
+
+    @Test
+    public void skalKonvertereResponsTilPersonInfo() {
+        Personinfo response = personopplysningerService.hentPersoninfoFor(new AktørId(AKTØR_ID));
+
+        LocalDate forventetFødselsdato = LocalDate.parse("1990-01-01");
+
+        Familierelasjon barn = response.getFamilierelasjoner().stream()
+                .filter(p -> p.getRelasjonsrolle().equals(RelasjonsRolleType.BARN))
+                .findFirst().orElse(null);
+        Familierelasjon ektefelle = response.getFamilierelasjoner().stream()
+                .filter(p -> p.getRelasjonsrolle().equals(RelasjonsRolleType.EKTE))
+                .findFirst().orElse(null);
+
+        assertThat(response.getAktørId().getId()).isEqualTo(AKTØR_ID);
+        assertThat(response.getStatsborgerskap().erNorge()).isTrue();
+        assertThat(response.getSivilstand()).isEqualTo(SivilstandType.GIFT);
+        assertThat(response.getAlder()).isEqualTo(29);
+        assertThat(response.getAdresseInfoList()).hasSize(1);
+        assertThat(response.getPersonstatus()).isEqualTo(PersonstatusType.BOSA);
+        assertThat(response.getGeografiskTilknytning()).isEqualTo("0315");
+        assertThat(response.getFødselsdato()).isEqualTo(forventetFødselsdato);
+        assertThat(response.getDødsdato()).isNull();
+        assertThat(response.getDiskresjonskode()).isNull();
+        assertThat(response.getAdresseLandkode()).isEqualTo("NOR");
+
+        assertThat(response.getFamilierelasjoner()).hasSize(2);
+        assertThat(barn).isNotNull();
+        assertThat(barn.getHarSammeBosted()).isTrue();
+        assertThat(ektefelle).isNotNull();
+        assertThat(ektefelle.getHarSammeBosted()).isTrue();
+    }
+
+    @Test
+    public void skalKonvertereResponsTilPersonhistorikkInfo() {
         PersonhistorikkInfo response = personopplysningerService.hentHistorikkFor(new AktørId(AKTØR_ID), FOM, TOM);
 
         assertThat(response.getAktørId()).isEqualTo(AKTØR_ID);
@@ -91,69 +140,4 @@ public class PersonopplysningerServiceTest {
         assertThat(response.getAdressehistorikk().get(1).getAdresse().getAdresselinje1()).isEqualTo("TEST 1");
     }
 
-    private HentPersonhistorikkResponse hentResponse() {
-        HentPersonhistorikkResponse response = new HentPersonhistorikkResponse();
-        response.setAktoer(new AktoerId().withAktoerId(AKTØR_ID));
-        response
-                .withStatsborgerskapListe(hentStatsborgerskap())
-                .withPersonstatusListe(hentPersonstatus())
-                .withBostedsadressePeriodeListe(hentBostedsadresse())
-                .withMidlertidigAdressePeriodeListe(hentMidlertidigAdresse());
-
-        return response;
-    }
-
-    private Collection<StatsborgerskapPeriode> hentStatsborgerskap() {
-        StatsborgerskapPeriode statsborgerskapPeriode = new StatsborgerskapPeriode();
-        statsborgerskapPeriode
-                .withStatsborgerskap(new Statsborgerskap().withLand(NORGE))
-                .withPeriode(new Periode()
-                        .withFom(DateUtil.convertToXMLGregorianCalendar(FOM))
-                        .withTom(DateUtil.convertToXMLGregorianCalendar(TOM)));
-
-        return Collections.singletonList(statsborgerskapPeriode);
-    }
-
-    private Collection<PersonstatusPeriode> hentPersonstatus() {
-        PersonstatusPeriode personstatusPeriode = new PersonstatusPeriode();
-        personstatusPeriode
-                .withPersonstatus(new Personstatuser().withValue("BOSA"))
-                .withPeriode(new Periode()
-                        .withFom(DateUtil.convertToXMLGregorianCalendar(FOM))
-                        .withTom(DateUtil.convertToXMLGregorianCalendar(TOM)));
-
-        return Collections.singletonList(personstatusPeriode);
-
-    }
-
-    private Collection<BostedsadressePeriode> hentBostedsadresse() {
-        BostedsadressePeriode bostedsadressePeriode = new BostedsadressePeriode();
-        bostedsadressePeriode
-                .withBostedsadresse(new Bostedsadresse()
-                        .withStrukturertAdresse(new Gateadresse()
-                                .withGatenavn("Sannergata")
-                                .withHusnummer(2)
-                                .withPoststed(new Postnummer().withValue("0560"))
-                                .withLandkode(NORGE)))
-                .withPeriode(new Periode()
-                        .withFom(DateUtil.convertToXMLGregorianCalendar(FOM))
-                        .withTom(DateUtil.convertToXMLGregorianCalendar(TOM)));
-
-        return Collections.singletonList(bostedsadressePeriode);
-    }
-
-    private Collection<MidlertidigPostadresse> hentMidlertidigAdresse() {
-        MidlertidigPostadresseUtland midlertidigPostadresseUtland = new MidlertidigPostadresseUtland();
-        midlertidigPostadresseUtland
-                .withUstrukturertAdresse(new UstrukturertAdresse()
-                        .withAdresselinje1("TEST 1")
-                        .withAdresselinje2("TEST 2")
-                        .withAdresselinje3("TEST 3")
-                        .withLandkode(new Landkoder().withValue("SWE")))
-                .withPostleveringsPeriode(new Gyldighetsperiode()
-                        .withFom(DateUtil.convertToXMLGregorianCalendar(FOM))
-                        .withTom(DateUtil.convertToXMLGregorianCalendar(TOM)));
-
-        return Collections.singletonList(midlertidigPostadresseUtland);
-    }
 }

@@ -7,8 +7,6 @@ import no.nav.familie.ks.oppslag.personopplysning.domene.TpsUtil;
 import no.nav.familie.ks.oppslag.personopplysning.domene.status.PersonstatusType;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -19,10 +17,10 @@ import static java.util.Objects.requireNonNull;
 public class TpsAdresseOversetter {
 
     private static final String NORGE = "NOR";
-    private static final Logger log = LoggerFactory.getLogger(TpsAdresseOversetter.class);
     private static final String HARDKODET_POSTNR = "XXXX";
     private static final String HARDKODET_POSTSTED = "UDEFINERT";
     private static final String POSTNUMMER_POSTSTED = "^\\d{4} \\D*";  // Mønster for postnummer og poststed, f.eks. "0034 OSLO"
+
 
     public List<Adresseinfo> lagListeMedAdresseInfo(Bruker person) {
         Optional<AdresseType> gjeldende = finnGjeldendePostadressetype(person);
@@ -222,7 +220,6 @@ public class TpsAdresseOversetter {
 
     Adresseinfo byggUkjentAdresse(Bruker bruker) {
         return new Adresseinfo.Builder(AdresseType.UKJENT_ADRESSE,
-                TpsUtil.getPersonIdent(bruker),
                 bruker.getPersonnavn().getSammensattNavn(),
                 tilPersonstatusType(bruker.getPersonstatus())).build();
     }
@@ -246,7 +243,6 @@ public class TpsAdresseOversetter {
                                                         AdresseType gjeldende) {
         Personstatus personstatus = bruker.getPersonstatus();
         return new Adresseinfo.Builder(gjeldende,
-                TpsUtil.getPersonIdent(bruker),
                 TpsUtil.getPersonnavn(bruker),
                 personstatus == null ? null : tilPersonstatusType(personstatus));
     }
@@ -265,7 +261,7 @@ public class TpsAdresseOversetter {
     }
 
     private Adresseinfo byggAddresseinfo(Bruker bruker, AdresseType gjeldende, Adresse adresse) {
-        return adresseBuilderForPerson(bruker, gjeldende)
+        Adresseinfo adresseinfo = adresseBuilderForPerson(bruker, gjeldende)
                 .medPostNr(adresse.postnummer)
                 .medPoststed(adresse.poststed)
                 .medLand(adresse.land)
@@ -274,6 +270,7 @@ public class TpsAdresseOversetter {
                 .medAdresselinje3(adresse.adresselinje3)
                 .medAdresselinje4(adresse.adresselinje4)
                 .build();
+        return adresseinfo;
     }
 
     private AdressePeriode byggAdressePeriode(AdresseType adresseType, Adresse adresse, Periode periode) {
