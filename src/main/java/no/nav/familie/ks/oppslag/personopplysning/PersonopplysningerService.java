@@ -55,7 +55,7 @@ public class PersonopplysningerService {
         } catch (HentPersonhistorikkPersonIkkeFunnet hentPersonhistorikkPersonIkkeFunnet) {
             // Fant ikke personen returnerer tomt sett
             LOG.info("Prøver å hente historikk for person som ikke finnes i TPS");
-            return PersonhistorikkInfo.builder().medAktørId(aktørId.getId()).build();
+            throw new IllegalArgumentException(hentPersonhistorikkPersonIkkeFunnet);
         }
     }
 

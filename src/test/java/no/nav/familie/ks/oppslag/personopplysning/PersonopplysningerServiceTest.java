@@ -45,17 +45,12 @@ public class PersonopplysningerServiceTest {
         personopplysningerService = new PersonopplysningerService(this.personConsumer, new TpsOversetter(new TpsAdresseOversetter()));
     }
 
-    @Test
-    public void skalReturnereTomPersonhistorikkInfoVedUgyldigAktørId() throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void personhistorikkInfoSkalGiFeilVedUgyldigAktørId() throws Exception {
         when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class)))
                 .thenThrow(new HentPersonhistorikkPersonIkkeFunnet("Feil", any(PersonIkkeFunnet.class)));
 
         PersonhistorikkInfo response = personopplysningerService.hentHistorikkFor(new AktørId(AKTØR_ID), FOM, TOM);
-
-        assertThat(response.getAktørId()).isEqualTo(AKTØR_ID);
-        assertThat(response.getAdressehistorikk()).isNullOrEmpty();
-        assertThat(response.getPersonstatushistorikk()).isNullOrEmpty();
-        assertThat(response.getStatsborgerskaphistorikk()).isNullOrEmpty();
     }
 
     @Test(expected = IllegalArgumentException.class)
