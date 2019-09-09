@@ -1,6 +1,5 @@
 package no.nav.familie.ks.oppslag.personopplysning;
 
-import no.nav.familie.ks.oppslag.felles.MDCOperations;
 import no.nav.familie.ks.oppslag.personopplysning.domene.AktørId;
 import no.nav.familie.ks.oppslag.personopplysning.domene.PersonhistorikkInfo;
 import no.nav.familie.ks.oppslag.personopplysning.domene.Personinfo;
@@ -32,13 +31,11 @@ public class PersonopplysningerController {
             @NotNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fomDato,
             @NotNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate tomDato
     ) {
-        MDCOperations.putCallId(); // FIXME: Midlertidig, bør settes generelt i et filter elns
         return personopplysningerService.hentHistorikkFor(new AktørId(aktørId), fomDato, tomDato);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "info")
     public Personinfo personInfo(@NotNull @RequestParam(name = "id") String aktørId) {
-        MDCOperations.putCallId(); // FIXME: Midlertidig, bør settes generelt i et filter elns
         return personopplysningerService.hentPersoninfoFor(new AktørId(aktørId));
     }
 }

@@ -19,7 +19,6 @@ public class AktørController {
 
     @GetMapping
     public String getAktørIdForPersonIdent(@NotNull @RequestHeader(name = "Nav-Personident") String personIdent) {
-        MDCOperations.putCallId(); // FIXME: Midlertidig, bør erstattes med en interceptor
         return aktørService.getAktørId(personIdent);
     }
 }

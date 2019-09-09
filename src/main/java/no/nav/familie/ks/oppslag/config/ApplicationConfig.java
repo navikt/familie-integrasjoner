@@ -1,6 +1,6 @@
 package no.nav.familie.ks.oppslag.config;
 
-import no.nav.log.LogFilter;
+import no.nav.familie.log.filter.LogFilter;
 import org.ehcache.CacheManager;
 import org.ehcache.config.ResourcePools;
 import org.ehcache.config.builders.CacheManagerBuilder;
