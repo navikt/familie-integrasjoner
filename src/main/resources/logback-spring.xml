@@ -25,12 +25,6 @@
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
     </appender>
 
-    <appender name="Sentry" class="io.sentry.logback.SentryAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>WARN</level>
-        </filter>
-    </appender>
-
     <root level="${ROOT_LOG_LEVEL:-INFO}">
         <!-- nais+local -->
         <appender-ref ref="stdout_json"/>
