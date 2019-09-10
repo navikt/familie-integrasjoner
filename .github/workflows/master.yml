@@ -1,0 +1,22 @@
+name: deploy-testing
+on: [push]
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: deploy to dev
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: latest
+        run: |
+          echo $GITHUB_TOKEN
+          env
+          env |grep -i github
+          docker run -v $GITHUB_WORKSPACE:/workspace navikt/deployment-cli deployment-cli deploy create \
+            --cluster=dev-fss \
+            --repository=navikt/familie-ks-oppslag \
+            --team=teamfamilie \
+            --resource=app-preprod.yaml \
+            --token=${GITHUB_TOKEN}
