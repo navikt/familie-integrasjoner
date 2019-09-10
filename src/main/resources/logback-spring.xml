@@ -28,7 +28,6 @@
     <root level="${ROOT_LOG_LEVEL:-INFO}">
         <!-- nais+local -->
         <appender-ref ref="stdout_json"/>
-        <appender-ref ref="Sentry" />
     </root>
 
     <logger name="no.nav" level="WARN"/>
