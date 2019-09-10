@@ -26,11 +26,9 @@ public class PersonopplysningerController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "historikk")
-    public PersonhistorikkInfo historikk(
-            @NotNull @RequestParam(name = "id") String aktørId,
-            @NotNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fomDato,
-            @NotNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate tomDato
-    ) {
+    public PersonhistorikkInfo historikk(@NotNull @RequestParam(name = "id") String aktørId,
+                                         @NotNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fomDato,
+                                         @NotNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate tomDato) {
         return personopplysningerService.hentHistorikkFor(new AktørId(aktørId), fomDato, tomDato);
     }
 

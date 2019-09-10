@@ -1,5 +1,6 @@
 package no.nav.familie.ks.oppslag.personopplysning;
 
+import no.nav.familie.ks.oppslag.aktør.AktørService;
 import no.nav.familie.ks.oppslag.personopplysning.domene.AktørId;
 import no.nav.familie.ks.oppslag.personopplysning.domene.PersonhistorikkInfo;
 import no.nav.familie.ks.oppslag.personopplysning.domene.Personinfo;
@@ -9,14 +10,15 @@ import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkSikkerhetsbegrensning;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.AktoerId;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.ApplicationScope;
 
@@ -29,13 +31,14 @@ import java.util.Objects;
 @ApplicationScope
 public class PersonopplysningerService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(PersonopplysningerService.class);
     private final PersonConsumer personConsumer;
+    private AktørService aktørService;
     private TpsOversetter oversetter;
 
-    private static final Logger LOG = LoggerFactory.getLogger(PersonopplysningerService.class);
-
     @Autowired
-    public PersonopplysningerService(PersonConsumer personConsumer, TpsOversetter oversetter) {
+    public PersonopplysningerService(AktørService aktørService, PersonConsumer personConsumer, TpsOversetter oversetter) {
+        this.aktørService = aktørService;
         this.personConsumer = personConsumer;
         this.oversetter = oversetter;
     }
@@ -44,8 +47,9 @@ public class PersonopplysningerService {
         Objects.requireNonNull(aktørId, "aktørId");
         Objects.requireNonNull(fom, "fom");
         Objects.requireNonNull(tom, "tom");
+        final var personIdent = aktørService.getPersonIdent(aktørId);
         var request = new HentPersonhistorikkRequest();
-        request.setAktoer(new AktoerId().withAktoerId(aktørId.getId()));
+        request.setAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)));
         try {
             var response = personConsumer.hentPersonhistorikkResponse(request);
             return oversetter.tilPersonhistorikkInfo(aktørId.getId(), response);
@@ -60,8 +64,10 @@ public class PersonopplysningerService {
     }
 
     public Personinfo hentPersoninfoFor(AktørId aktørId) {
+        Objects.requireNonNull(aktørId, "aktørId");
+        final var personIdent = aktørService.getPersonIdent(aktørId);
         HentPersonRequest request = new HentPersonRequest()
-                .withAktoer(new AktoerId().withAktoerId(aktørId.getId()))
+                .withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)))
                 .withInformasjonsbehov(List.of(Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.ADRESSE));
         try {
             HentPersonResponse response = personConsumer.hentPersonResponse(request);

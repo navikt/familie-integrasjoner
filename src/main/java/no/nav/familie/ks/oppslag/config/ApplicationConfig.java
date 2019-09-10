@@ -1,5 +1,6 @@
 package no.nav.familie.ks.oppslag.config;
 
+import no.nav.familie.ks.oppslag.personopplysning.domene.AktørId;
 import no.nav.familie.log.filter.LogFilter;
 import org.ehcache.CacheManager;
 import org.ehcache.config.ResourcePools;
@@ -21,7 +22,7 @@ import java.time.Duration;
 import static org.ehcache.config.builders.CacheConfigurationBuilder.newCacheConfigurationBuilder;
 
 @SpringBootConfiguration
-@ComponentScan({ "no.nav.familie.ks.oppslag" })
+@ComponentScan({"no.nav.familie.ks.oppslag"})
 public class ApplicationConfig {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationConfig.class);
@@ -50,8 +51,8 @@ public class ApplicationConfig {
         ResourcePools pools = ResourcePoolsBuilder.heap(1000).build();
         ExpiryPolicy<Object, Object> expiryPolicy = ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofHours(1));
         final CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
-                .withCache("aktørIdCache",
-                        newCacheConfigurationBuilder(String.class, String.class, pools).withExpiry(expiryPolicy))
+                .withCache("aktørIdCache", newCacheConfigurationBuilder(String.class, String.class, pools).withExpiry(expiryPolicy))
+                .withCache("personIdentCache", newCacheConfigurationBuilder(AktørId.class, String.class, pools).withExpiry(expiryPolicy))
                 .build();
         cacheManager.init();
         return cacheManager;
