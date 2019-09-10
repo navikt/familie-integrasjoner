@@ -21,7 +21,7 @@
         <changelist>-SNAPSHOT</changelist>
         <java.version>11</java.version>
         <common-java-modules.version>1.2019.07.11-12.31-0b875ec24c4e</common-java-modules.version>
-        <common-log.version>2018.10.02.19.54</common-log.version>
+        <felles.version>1.0_20190819103533_69f5183</felles.version>
         <cxf.version>3.3.1</cxf.version>
         <oidc-support.version>0.2.18</oidc-support.version>
         <tjenestespesifikasjoner.version>1.2019.07.11-06.47-b55f47790a9d</tjenestespesifikasjoner.version>
@@ -110,9 +110,9 @@
             <version>${oidc-support.version}</version>
         </dependency>
         <dependency>
-            <groupId>no.nav.sbl</groupId>
+            <groupId>no.nav.familie.felles</groupId>
             <artifactId>log</artifactId>
-            <version>${common-log.version}</version>
+            <version>${felles.version}</version>
         </dependency>
         <dependency>
             <groupId>no.nav.security</groupId>
@@ -166,7 +166,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.9</version>
+            <version>2.9.9.3</version>
         </dependency>
         <dependency>
             <groupId>org.ehcache</groupId>

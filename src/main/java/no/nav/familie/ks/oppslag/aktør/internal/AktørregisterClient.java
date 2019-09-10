@@ -26,15 +26,15 @@ public class AktørregisterClient {
     private static final String NAV_CALL_ID = "Nav-Call-Id";
     private static final String NAV_PERSONIDENTER = "Nav-Personidenter";
     private static final String AKTOERID_IDENTGRUPPE = "AktoerId";
-
+    private static final String PERSONIDENT_IDENTGRUPPE = "NorskIdent";
+    private final Timer aktoerResponstid = Metrics.timer("aktoer.respons.tid");
+    private final Counter aktoerSuccess = Metrics.counter("aktoer.response", "status", "success");
+    private final Counter aktoerFailure = Metrics.counter("aktoer.response", "status", "failure");
     private HttpClient httpClient;
     private StsRestClient stsRestClient;
     private ObjectMapper objectMapper;
     private String aktørRegisterUrl;
     private String consumer;
-    private final Timer aktoerResponstid = Metrics.timer("aktoer.respons.tid");
-    private final Counter aktoerSuccess = Metrics.counter("aktoer.response", "status", "success");
-    private final Counter aktoerFailure = Metrics.counter("aktoer.response", "status", "failure");
 
     public AktørregisterClient(@Value("${AKTOERID_URL}") String aktørRegisterUrl,
                                @Value("${CREDENTIAL_USERNAME}") String consumer,
@@ -48,6 +48,10 @@ public class AktørregisterClient {
 
     public AktørResponse hentAktørId(String personIdent) {
         URI uri = URI.create(String.format("%s/identer?gjeldende=true&identgruppe=%s", aktørRegisterUrl, AKTOERID_IDENTGRUPPE));
+        return hentRespons(personIdent, uri);
+    }
+
+    private AktørResponse hentRespons(String personIdent, URI uri) {
         String systembrukerToken = stsRestClient.getSystemOIDCToken();
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -69,6 +73,11 @@ public class AktørregisterClient {
             aktoerFailure.increment();
             throw new RuntimeException("Feil ved kall mot Aktørregisteret", e);
         }
+    }
+
+    public AktørResponse hentPersonIdent(String personIdent) {
+        URI uri = URI.create(String.format("%s/identer?gjeldende=true&identgruppe=%s", aktørRegisterUrl, PERSONIDENT_IDENTGRUPPE));
+        return hentRespons(personIdent, uri);
     }
 
 }

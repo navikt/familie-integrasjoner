@@ -1,5 +1,6 @@
 package no.nav.familie.ks.oppslag.personopplysning;
 
+import no.nav.familie.ks.oppslag.aktør.AktørService;
 import no.nav.familie.ks.oppslag.personopplysning.domene.AktørId;
 import no.nav.familie.ks.oppslag.personopplysning.domene.PersonhistorikkInfo;
 import no.nav.familie.ks.oppslag.personopplysning.domene.Personinfo;
@@ -42,7 +43,7 @@ public class PersonopplysningerServiceTest {
     @Before
     public void setUp() throws Exception {
         personConsumer = new PersonopplysningerTestConfig().personConsumerMock();
-        personopplysningerService = new PersonopplysningerService(this.personConsumer, new TpsOversetter(new TpsAdresseOversetter()));
+        personopplysningerService = new PersonopplysningerService(mock(AktørService.class), this.personConsumer, new TpsOversetter(new TpsAdresseOversetter()));
     }
 
     @Test(expected = IllegalArgumentException.class)
