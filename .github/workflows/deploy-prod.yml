@@ -1,0 +1,25 @@
+name: Deploy to prod
+
+on:
+  tags:
+    - 'v*'
+jobs:
+  deploy-to-prod:
+    - name: Deploy til dev-fss
+        uses: navikt/deployment-cli/action@b60ef91
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+        with:
+          cluster: dev-fss
+          team: teamfamilie
+          resource: app-preprod.yaml
+    """
+    - name: Deploy til prod-fss
+        uses: navikt/deployment-cli/action@b60ef91
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+        with:
+          cluster: prod-fss
+          team: teamfamilie
+          resource: app-prod.yaml
+    """
