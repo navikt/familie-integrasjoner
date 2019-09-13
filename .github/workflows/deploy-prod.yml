@@ -1,13 +1,13 @@
 name: Deploy-Prod
 on:
-  push:
-    tags:
-      - 'v*'
+  push
 jobs:
   deploy-to-prod:
     name: Deploy tag til prod-fss
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
       - name: Deploy til dev-fss
         uses: navikt/deployment-cli/action@b60ef91
         env:
