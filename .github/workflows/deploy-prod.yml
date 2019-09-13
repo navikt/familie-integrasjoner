@@ -8,13 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy til dev-fss
-          uses: navikt/deployment-cli/action@b60ef91
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
-          with:
-            cluster: dev-fss
-            team: teamfamilie
-            resource: app-preprod.yaml
+        uses: navikt/deployment-cli/action@b60ef91
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+        with:
+          cluster: dev-fss
+          team: teamfamilie
+          resource: app-preprod.yaml
     """
     - name: Deploy til prod-fss
         uses: navikt/deployment-cli/action@b60ef91
