@@ -27,4 +27,12 @@ public class Ident {
         this.gjeldende = gjeldende;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "Ident{" + "ident=" + ident +
+                ", identgruppe=" + identgruppe +
+                ", gjeldende=" + gjeldende +
+                '}';
+    }
 }

@@ -7,6 +7,8 @@ import no.nav.familie.ks.oppslag.aktør.internal.AktørregisterClient;
 import no.nav.familie.ks.oppslag.personopplysning.domene.AktørId;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 @Service
 public class AktørService {
 
+    private static final Logger secureLogger = LoggerFactory.getLogger("secureLogger");
     private final CacheManager aktørCacheManager;
     private AktørregisterClient aktørregisterClient;
 
@@ -49,6 +52,8 @@ public class AktørService {
                     .stream()
                     .filter(Ident::getGjeldende)
                     .collect(Collectors.toList());
+
+            secureLogger.info("Henter aktør id'er for fnr: {}: {}", personIdent, identer);
             if(identer.size() > 1) {
                 throw new IllegalStateException("Flere gjeldende aktørIder");
             } else if(identer.isEmpty()) {
@@ -72,6 +77,8 @@ public class AktørService {
                     .stream()
                     .filter(Ident::getGjeldende)
                     .collect(Collectors.toList());
+
+            secureLogger.info("Henter fnr for aktørId: {}: {}", aktørId, identer);
             if(identer.size() > 1) {
                 throw new IllegalStateException("Flere gjeldende norske identer");
             } else if(identer.isEmpty()) {
