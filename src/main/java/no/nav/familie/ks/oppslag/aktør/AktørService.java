@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AktørService {
@@ -44,7 +45,17 @@ public class AktørService {
         AktørResponse response = aktørregisterClient.hentAktørId(personIdent);
         Aktør aktørResponse = response.get(personIdent);
         if (aktørResponse.getFeilmelding() == null) {
-            return aktørResponse.getIdenter().get(0).getIdent();
+            final var identer = aktørResponse.getIdenter()
+                    .stream()
+                    .filter(Ident::getGjeldende)
+                    .collect(Collectors.toList());
+            if(identer.size() > 1) {
+                throw new IllegalStateException("Flere gjeldende aktørIder");
+            } else if(identer.isEmpty()) {
+                throw new IllegalStateException("Ingen gjeldene aktørIder");
+            } else {
+                return identer.get(0).getIdent();
+            }
         } else {
             throw new RuntimeException(String.format("Feil ved kall mot Aktørregisteret. Feilmelding: %s",
                     aktørResponse.getFeilmelding())
@@ -57,12 +68,17 @@ public class AktørService {
         AktørResponse response = aktørregisterClient.hentPersonIdent(ident);
         Aktør aktørResponse = response.get(ident);
         if (aktørResponse.getFeilmelding() == null) {
-            return aktørResponse.getIdenter()
+            final var identer = aktørResponse.getIdenter()
                     .stream()
                     .filter(Ident::getGjeldende)
-                    .findFirst()
-                    .map(Ident::getIdent)
-                    .orElseThrow(() -> new RuntimeException("Fant ikke norskident for aktørId=" + ident));
+                    .collect(Collectors.toList());
+            if(identer.size() > 1) {
+                throw new IllegalStateException("Flere gjeldende norske identer");
+            } else if(identer.isEmpty()) {
+                throw new IllegalStateException("Ingen gjeldene norske identer");
+            } else {
+                return identer.get(0).getIdent();
+            }
         } else {
             throw new RuntimeException(String.format("Feil ved kall mot Aktørregisteret. Feilmelding: %s",
                     aktørResponse.getFeilmelding())

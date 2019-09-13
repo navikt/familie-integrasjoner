@@ -22,4 +22,9 @@ public class Ident {
         this.ident = ident;
         return this;
     }
+
+    public Ident withGjeldende(boolean gjeldende) {
+        this.gjeldende = gjeldende;
+        return this;
+    }
 }
