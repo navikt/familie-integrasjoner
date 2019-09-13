@@ -2,8 +2,6 @@
 <configuration>
     <property name="ROOT_LOG_LEVEL" value="INFO"/>
 
-    <include resource="logback-default-without-abac.xml"/>
-
     <!-- Logger for sensitive data -->
     <appender name="secureLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>/secure-logs/secure.log</file>
@@ -15,37 +13,27 @@
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
             <maxFileSize>50MB</maxFileSize>
         </triggeringPolicy>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+    </appender>
+
+    <appender name="stdout_json" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
     </appender>
 
     <logger name="secureLogger" level="INFO" additivity="false">
-        <appender-ref ref="secureLog" />
+        <appender-ref ref="secureLog"/>
     </logger>
 
-    <!-- Spesiell håndtering av loggeren no.nav.log.LogFilter for å forhindre logging av isAlive-sjekker o.l. -->
-    <appender name="stdout_json_with_filter"  class="no.nav.log.MaskingAppender">
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-            <evaluator>
-                <matcher>
-                    <Name>isalive</Name>
-                    <!-- filter out odd numbered statements -->
-                    <regex>status=200, method=GET, path=(\/internal\/status\/isAlive|\/internal\/prometheus)</regex>
-                </matcher>
-
-                <expression>isalive.matches(formattedMessage)</expression>
-            </evaluator>
-            <OnMismatch>NEUTRAL</OnMismatch>
-            <OnMatch>DENY</OnMatch>
-        </filter>
-        <appender name="stdout_json_masked_with_filter" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
-        </appender>
-    </appender>
-
-    <logger name="no.nav.log.LogFilter" additivity="false">
+    <root level="${ROOT_LOG_LEVEL:-INFO}">
         <!-- nais+local -->
-        <appender-ref ref="stdout_json_with_filter"/>
-        <appender-ref ref="metrics"/>
-    </logger>
+        <appender-ref ref="stdout_json"/>
+    </root>
+
+    <logger name="no.nav" level="WARN"/>
+    <logger name="no.nav.familie" level="INFO"/>
+    <logger name="org.apache" level="INFO"/>
+    <logger name="org.apache.cxf" level="ERROR"/>
+    <logger name="org.apache.http.client.protocol.ResponseProcessCookies" level="ERROR"/>
+    <logger name="org.apache.wss4j.common.crypto.CryptoBase" level="ERROR"/>
 
 </configuration>
