@@ -9,11 +9,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v1
       - name: Lag Docker tag for deploy
-          env:
-            NAME: familie-ks-oppslag
-          run: |
-            echo "docker.pkg.github.com"/"$GITHUB_REPOSITORY"/"$NAME" > .docker_image
-            echo "$(date "+%Y.%m.%d")-$(git rev-parse --short HEAD)" > .docker_tag
+        env:
+          NAME: familie-ks-oppslag
+        run: |
+          echo "docker.pkg.github.com"/"$GITHUB_REPOSITORY"/"$NAME" > .docker_image
+          echo "$(date "+%Y.%m.%d")-$(git rev-parse --short HEAD)" > .docker_tag
       - name: Deploy til dev-fss
         uses: navikt/deployment-cli/action@b60ef91
         env:
