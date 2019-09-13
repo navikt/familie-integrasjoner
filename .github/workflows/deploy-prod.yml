@@ -1,6 +1,8 @@
 name: Deploy-Prod
 on:
-  push
+  push:
+    tags:
+      - 'v*'
 jobs:
   deploy-to-prod:
     name: Deploy tag til prod-fss
