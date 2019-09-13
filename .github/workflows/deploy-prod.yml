@@ -1,4 +1,4 @@
-name: Deploy-prod
+name: Deploy-Prod
 on:
   push:
     tags:

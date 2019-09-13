@@ -1,5 +1,8 @@
 name: Build-Deploy
-on: push
+on:
+  push:
+    branch:
+      - '*'
 jobs:
   deploy-to-dev:
     name: Build, push and deploy to dev-fss
