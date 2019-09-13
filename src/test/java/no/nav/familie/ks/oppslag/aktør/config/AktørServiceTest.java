@@ -38,7 +38,7 @@ public class AktørServiceTest {
         when(cacheManager.getCache(any(), any(), any()).get(anyString())).thenReturn(null);
         when(aktørClient.hentAktørId(anyString())).thenReturn(new AktørResponse()
                 .withAktør(PERSONIDENT, new Aktør().withIdenter(
-                        Collections.singletonList(new Ident().withIdent(TESTAKTORID)))));
+                        Collections.singletonList(new Ident().withIdent(TESTAKTORID).withGjeldende(true)))));
 
         String testAktørId = aktørService.getAktørId(PERSONIDENT);
         assertThat(testAktørId).isEqualTo(TESTAKTORID);

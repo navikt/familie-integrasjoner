@@ -19,7 +19,6 @@ import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkPersonIkk
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.feil.PersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.feil.Sikkerhetsbegrensning;
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest;
 import org.junit.Before;
@@ -29,7 +28,8 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class PersonopplysningerServiceTest {
 
@@ -39,11 +39,13 @@ public class PersonopplysningerServiceTest {
 
     private PersonConsumer personConsumer;
     private PersonopplysningerService personopplysningerService;
+    private AktørService mock;
 
     @Before
     public void setUp() throws Exception {
         personConsumer = new PersonopplysningerTestConfig().personConsumerMock();
-        personopplysningerService = new PersonopplysningerService(mock(AktørService.class), this.personConsumer, new TpsOversetter(new TpsAdresseOversetter()));
+        mock = mock(AktørService.class);
+        personopplysningerService = new PersonopplysningerService(mock(AktørService.class), this.personConsumer, new TpsOversetter(new TpsAdresseOversetter(), mock));
     }
 
     @Test(expected = IllegalArgumentException.class)
