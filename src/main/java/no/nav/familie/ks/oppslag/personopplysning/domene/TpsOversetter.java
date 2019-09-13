@@ -1,5 +1,7 @@
 package no.nav.familie.ks.oppslag.personopplysning.domene;
 
+import no.nav.familie.ks.oppslag.aktør.AktørService;
+import no.nav.familie.ks.oppslag.felles.ws.DateUtil;
 import no.nav.familie.ks.oppslag.personopplysning.domene.adresse.TpsAdresseOversetter;
 import no.nav.familie.ks.oppslag.personopplysning.domene.relasjon.Familierelasjon;
 import no.nav.familie.ks.oppslag.personopplysning.domene.relasjon.RelasjonsRolleType;
@@ -7,10 +9,7 @@ import no.nav.familie.ks.oppslag.personopplysning.domene.relasjon.SivilstandType
 import no.nav.familie.ks.oppslag.personopplysning.domene.status.PersonstatusPeriode;
 import no.nav.familie.ks.oppslag.personopplysning.domene.status.PersonstatusType;
 import no.nav.familie.ks.oppslag.personopplysning.domene.tilhørighet.Landkode;
-
-
 import no.nav.familie.ks.oppslag.personopplysning.domene.tilhørighet.StatsborgerskapPeriode;
-import no.nav.familie.ks.oppslag.felles.ws.DateUtil;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkResponse;
@@ -26,9 +25,11 @@ import static java.util.stream.Collectors.toSet;
 public class TpsOversetter {
 
     private TpsAdresseOversetter tpsAdresseOversetter;
+    private AktørService aktørService;
 
-    public TpsOversetter(TpsAdresseOversetter tpsAdresseOversetter) {
+    public TpsOversetter(TpsAdresseOversetter tpsAdresseOversetter, AktørService aktørService) {
         this.tpsAdresseOversetter = tpsAdresseOversetter;
+        this.aktørService = aktørService;
     }
 
     private Landkode utledLandkode(Statsborgerskap statsborgerskap) {
@@ -143,12 +144,23 @@ public class TpsOversetter {
     private Familierelasjon tilRelasjon(no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon familierelasjon) {
         String rollekode = familierelasjon.getTilRolle().getValue();
         RelasjonsRolleType relasjonsrolle = RelasjonsRolleType.valueOf(rollekode);
-        AktoerId aktoer = (AktoerId) familierelasjon.getTilPerson().getAktoer();
-        AktørId aktørId = aktoer == null ? null : new AktørId(aktoer.getAktoerId());
+        AktørId aktørId = utledAktørId(familierelasjon);
         Boolean harSammeBosted = familierelasjon.isHarSammeBosted();
 
         return new Familierelasjon(aktørId, relasjonsrolle,
                 tilLocalDate(familierelasjon.getTilPerson().getFoedselsdato()), harSammeBosted);
+    }
+
+    private AktørId utledAktørId(no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon familierelasjon) {
+        final var aktoer = familierelasjon.getTilPerson().getAktoer();
+        if (aktoer instanceof PersonIdent) {
+            final var aktørId = aktørService.getAktørId(((PersonIdent) aktoer).getIdent().getIdent());
+            return new AktørId(aktørId);
+        } else if (aktoer instanceof AktoerId) {
+            return new AktørId(((AktoerId) aktoer).getAktoerId());
+        }
+
+        throw new IllegalStateException("ukjent aktør type");
     }
 
     private LocalDate tilLocalDate(Foedselsdato fødselsdatoJaxb) {
