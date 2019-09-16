@@ -47,13 +47,14 @@ public class AktørService {
     private String hentAktørIdFraRegister(String personIdent) {
         AktørResponse response = aktørregisterClient.hentAktørId(personIdent);
         Aktør aktørResponse = response.get(personIdent);
+
+        secureLogger.info("Hentet aktør id'er for fnr: {}: {}", personIdent, aktørResponse);
         if (aktørResponse.getFeilmelding() == null) {
             final var identer = aktørResponse.getIdenter()
                     .stream()
                     .filter(Ident::getGjeldende)
                     .collect(Collectors.toList());
 
-            secureLogger.info("Henter aktør id'er for fnr: {}: {}", personIdent, identer);
             if(identer.size() > 1) {
                 throw new IllegalStateException("Flere gjeldende aktørIder");
             } else if(identer.isEmpty()) {
@@ -72,13 +73,14 @@ public class AktørService {
         final var ident = aktørId.getId();
         AktørResponse response = aktørregisterClient.hentPersonIdent(ident);
         Aktør aktørResponse = response.get(ident);
+
+        secureLogger.info("Hentet fnr for aktørId: {}: {}", aktørId, aktørResponse);
         if (aktørResponse.getFeilmelding() == null) {
             final var identer = aktørResponse.getIdenter()
                     .stream()
                     .filter(Ident::getGjeldende)
                     .collect(Collectors.toList());
 
-            secureLogger.info("Henter fnr for aktørId: {}: {}", aktørId, identer);
             if(identer.size() > 1) {
                 throw new IllegalStateException("Flere gjeldende norske identer");
             } else if(identer.isEmpty()) {

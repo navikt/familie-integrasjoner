@@ -24,4 +24,11 @@ public class Aktør {
         this.feilmelding = feilmelding;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "Aktør{" + "identer=" + identer +
+                ", feilmelding=" + feilmelding +
+                '}';
+    }
 }
