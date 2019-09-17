@@ -12,8 +12,8 @@ jobs:
         uses: actions/checkout@v1
       - name: Sjekk at tag ligger på master
         run: |
-          commit=$(git rev-parse --short HEAD)
-          if ! [ $(git branch -r --contains "$commit" | grep -E '(^|\s)master$') ] then exit 1 fi
+          commit=$(git rev-parse --short HEAD) |
+          if ! [[ $(git branch -r --contains "$commit" | grep -E '(^|\s)origin/master$') ]] then exit 1; fi
       - name: Lag Docker tag for deploy
         env:
           NAME: familie-ks-oppslag
