@@ -2,6 +2,7 @@ name: Build-Deploy
 on:
   push:
     branches:
+      - '*'
       - '*/*'
 jobs:
   deploy-to-dev:
