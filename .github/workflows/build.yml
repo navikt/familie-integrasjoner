@@ -1,8 +1,8 @@
 name: Build-Deploy
 on:
   push:
-    branch:
-      - '*'
+    branches:
+      - test-tag-script
 jobs:
   deploy-to-dev:
     name: Build, push and deploy to dev-fss
