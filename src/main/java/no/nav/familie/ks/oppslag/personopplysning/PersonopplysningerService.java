@@ -18,13 +18,17 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.context.annotation.ApplicationScope;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 
 @Service
@@ -43,41 +47,64 @@ public class PersonopplysningerService {
         this.oversetter = oversetter;
     }
 
-    public PersonhistorikkInfo hentHistorikkFor(AktørId aktørId, LocalDate fom, LocalDate tom) {
+    ResponseEntity<PersonhistorikkInfo> hentHistorikkFor(AktørId aktørId, LocalDate fom, LocalDate tom) {
         Objects.requireNonNull(aktørId, "aktørId");
         Objects.requireNonNull(fom, "fom");
         Objects.requireNonNull(tom, "tom");
-        final var personIdent = aktørService.getPersonIdent(aktørId);
-        var request = new HentPersonhistorikkRequest();
-        request.setAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)));
+
+        HttpStatus status;
+        var feilmelding = new LinkedMultiValueMap<String, String>();
+
+        var personIdentResponse = aktørService.getPersonIdent(aktørId);
         try {
+            String personIdent = Objects.requireNonNull(personIdentResponse.getBody());
+            var request = new HentPersonhistorikkRequest();
+            request.setAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)));
             var response = personConsumer.hentPersonhistorikkResponse(request);
-            return oversetter.tilPersonhistorikkInfo(aktørId.getId(), response);
+            return new ResponseEntity<>(oversetter.tilPersonhistorikkInfo(aktørId.getId(), response), HttpStatus.OK);
         } catch (HentPersonhistorikkSikkerhetsbegrensning hentPersonhistorikkSikkerhetsbegrensning) {
             LOG.info("Ikke tilgang til å hente historikk for person");
-            throw new IllegalArgumentException(hentPersonhistorikkSikkerhetsbegrensning);
+            status = HttpStatus.FORBIDDEN;
+            feilmelding.add("message", hentPersonhistorikkSikkerhetsbegrensning.getMessage());
         } catch (HentPersonhistorikkPersonIkkeFunnet hentPersonhistorikkPersonIkkeFunnet) {
-            // Fant ikke personen returnerer tomt sett
             LOG.info("Prøver å hente historikk for person som ikke finnes i TPS");
-            throw new IllegalArgumentException(hentPersonhistorikkPersonIkkeFunnet);
+            status = HttpStatus.NOT_FOUND;
+            feilmelding.add("message", hentPersonhistorikkPersonIkkeFunnet.getMessage());
+        } catch (NullPointerException npe) {
+            status = personIdentResponse.getStatusCode();
+            feilmelding.addAll("message", Optional.ofNullable(personIdentResponse.getHeaders().get("message"))
+                    .orElse(List.of("aktørService::getPersonIdent returnerte null"))
+            );
         }
+        return new ResponseEntity<>(feilmelding, status);
     }
 
-    public Personinfo hentPersoninfoFor(AktørId aktørId) {
-        Objects.requireNonNull(aktørId, "aktørId");
-        final var personIdent = aktørService.getPersonIdent(aktørId);
-        HentPersonRequest request = new HentPersonRequest()
-                .withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)))
-                .withInformasjonsbehov(List.of(Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.ADRESSE));
+    ResponseEntity<Personinfo> hentPersoninfoFor(AktørId aktørId) {
+        HttpStatus status;
+        var feilmelding = new LinkedMultiValueMap<String, String>();
+
+        var personIdentResponse = aktørService.getPersonIdent(aktørId);
         try {
+            String personIdent = Objects.requireNonNull(personIdentResponse.getBody());
+            HentPersonRequest request = new HentPersonRequest()
+                    .withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)))
+                    .withInformasjonsbehov(List.of(Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.ADRESSE));
             HentPersonResponse response = personConsumer.hentPersonResponse(request);
-            return oversetter.tilPersoninfo(aktørId, response);
+            return new ResponseEntity<>(oversetter.tilPersoninfo(aktørId, response), HttpStatus.OK);
         } catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
             LOG.info("Ikke tilgang til å hente personinfo for person");
-            throw new IllegalArgumentException(hentPersonSikkerhetsbegrensning);
+            status = HttpStatus.FORBIDDEN;
+            feilmelding.add("message", hentPersonSikkerhetsbegrensning.getMessage());
         } catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
             LOG.info("Prøver å hente personinfo for person som ikke finnes i TPS");
-            throw new IllegalArgumentException(hentPersonPersonIkkeFunnet);
+            status = HttpStatus.NOT_FOUND;
+            feilmelding.add("message", hentPersonPersonIkkeFunnet.getMessage());
+        } catch (NullPointerException npe) {
+            status = personIdentResponse.getStatusCode();
+            feilmelding.addAll("message", Optional.ofNullable(personIdentResponse.getHeaders().get("message"))
+                    .orElse(List.of("aktørService::getPersonIdent returnerte null"))
+            );
         }
+        return new ResponseEntity<>(feilmelding, status);
     }
 }

@@ -6,6 +6,7 @@ import no.nav.familie.ks.oppslag.personopplysning.domene.Personinfo;
 import no.nav.security.oidc.api.ProtectedWithClaims;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,14 +27,14 @@ public class PersonopplysningerController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "historikk")
-    public PersonhistorikkInfo historikk(@NotNull @RequestParam(name = "id") String aktørId,
+    public ResponseEntity<PersonhistorikkInfo> historikk(@NotNull @RequestParam(name = "id") String aktørId,
                                          @NotNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fomDato,
                                          @NotNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate tomDato) {
         return personopplysningerService.hentHistorikkFor(new AktørId(aktørId), fomDato, tomDato);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "info")
-    public Personinfo personInfo(@NotNull @RequestParam(name = "id") String aktørId) {
+    public ResponseEntity<Personinfo> personInfo(@NotNull @RequestParam(name = "id") String aktørId) {
         return personopplysningerService.hentPersoninfoFor(new AktørId(aktørId));
     }
 }

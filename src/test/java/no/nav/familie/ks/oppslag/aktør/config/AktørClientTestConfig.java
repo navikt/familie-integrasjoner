@@ -32,6 +32,13 @@ public class AktørClientTestConfig {
             return new AktørResponse()
                     .withAktør(identArg, new Aktør().withIdenter(Collections.singletonList(testIdent)));
         });
+
+        when(aktørregisterClient.hentPersonIdent(stringCaptor.capture())).thenAnswer(invocation -> {
+            String identArg = invocation.getArgument(0);
+
+            return new AktørResponse()
+                    .withAktør(identArg, new Aktør().withIdenter(Collections.singletonList(testIdent)));
+        });
         return aktørregisterClient;
     }
 }

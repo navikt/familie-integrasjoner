@@ -23,6 +23,8 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 
@@ -45,44 +47,49 @@ public class PersonopplysningerServiceTest {
     public void setUp() throws Exception {
         personConsumer = new PersonopplysningerTestConfig().personConsumerMock();
         mock = mock(AktørService.class);
-        personopplysningerService = new PersonopplysningerService(mock(AktørService.class), this.personConsumer, new TpsOversetter(new TpsAdresseOversetter(), mock));
+        when(mock.getPersonIdent(new AktørId(AKTØR_ID))).thenReturn(new ResponseEntity<String>("11111111111", HttpStatus.OK));
+        personopplysningerService = new PersonopplysningerService(mock, this.personConsumer, new TpsOversetter(new TpsAdresseOversetter(), mock));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void personhistorikkInfoSkalGiFeilVedUgyldigAktørId() throws Exception {
         when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class)))
                 .thenThrow(new HentPersonhistorikkPersonIkkeFunnet("Feil", any(PersonIkkeFunnet.class)));
 
-        PersonhistorikkInfo response = personopplysningerService.hentHistorikkFor(new AktørId(AKTØR_ID), FOM, TOM);
+        assertThat(personopplysningerService.hentHistorikkFor(new AktørId(AKTØR_ID), FOM, TOM).getStatusCode())
+                .isEqualTo(HttpStatus.NOT_FOUND);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void personHistorikkSkalGiFeilVedSikkerhetsbegrensning() throws Exception {
         when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class)))
                 .thenThrow(new HentPersonhistorikkSikkerhetsbegrensning("Feil", any(Sikkerhetsbegrensning.class)));
 
-        personopplysningerService.hentHistorikkFor(new AktørId(AKTØR_ID), FOM, TOM);
+        assertThat(personopplysningerService.hentHistorikkFor(new AktørId(AKTØR_ID), FOM, TOM).getStatusCode())
+                .isEqualTo(HttpStatus.FORBIDDEN);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void personinfoSkalGiFeilVedUgyldigAktørId() throws Exception {
         when(personConsumer.hentPersonResponse(any(HentPersonRequest.class)))
                 .thenThrow(new HentPersonPersonIkkeFunnet("Feil", any(PersonIkkeFunnet.class)));
 
-        personopplysningerService.hentPersoninfoFor(new AktørId(AKTØR_ID));
+        assertThat(personopplysningerService.hentPersoninfoFor(new AktørId(AKTØR_ID)).getStatusCode())
+                .isEqualTo(HttpStatus.NOT_FOUND);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void personinfoSkalGiFeilVedSikkerhetsbegrensning() throws Exception {
         when(personConsumer.hentPersonResponse(any(HentPersonRequest.class)))
                 .thenThrow(new HentPersonSikkerhetsbegrensning("Feil", any(Sikkerhetsbegrensning.class)));
 
-        personopplysningerService.hentPersoninfoFor(new AktørId(AKTØR_ID));
+        assertThat(personopplysningerService.hentPersoninfoFor(new AktørId(AKTØR_ID)).getStatusCode())
+                .isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     @Test
     public void skalKonvertereResponsTilPersonInfo() {
-        Personinfo response = personopplysningerService.hentPersoninfoFor(new AktørId(AKTØR_ID));
+        Personinfo response = personopplysningerService.hentPersoninfoFor(new AktørId(AKTØR_ID)).getBody();
 
         LocalDate forventetFødselsdato = LocalDate.parse("1990-01-01");
 
@@ -114,7 +121,7 @@ public class PersonopplysningerServiceTest {
 
     @Test
     public void skalKonvertereResponsTilPersonhistorikkInfo() {
-        PersonhistorikkInfo response = personopplysningerService.hentHistorikkFor(new AktørId(AKTØR_ID), FOM, TOM);
+        PersonhistorikkInfo response = personopplysningerService.hentHistorikkFor(new AktørId(AKTØR_ID), FOM, TOM).getBody();
 
         assertThat(response.getAktørId()).isEqualTo(AKTØR_ID);
         assertThat(response.getStatsborgerskaphistorikk()).hasSize(1);

@@ -155,7 +155,7 @@ public class TpsOversetter {
         final var aktoer = familierelasjon.getTilPerson().getAktoer();
         if (aktoer instanceof PersonIdent) {
             final var aktørId = aktørService.getAktørId(((PersonIdent) aktoer).getIdent().getIdent());
-            return new AktørId(aktørId);
+            return new AktørId(aktørId.getBody());
         } else if (aktoer instanceof AktoerId) {
             return new AktørId(((AktoerId) aktoer).getAktoerId());
         }

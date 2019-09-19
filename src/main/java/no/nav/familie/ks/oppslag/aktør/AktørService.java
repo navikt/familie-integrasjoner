@@ -2,7 +2,6 @@ package no.nav.familie.ks.oppslag.aktør;
 
 import no.nav.familie.ks.oppslag.aktør.domene.Aktør;
 import no.nav.familie.ks.oppslag.aktør.domene.Ident;
-import no.nav.familie.ks.oppslag.aktør.internal.AktørResponse;
 import no.nav.familie.ks.oppslag.aktør.internal.AktørregisterClient;
 import no.nav.familie.ks.oppslag.personopplysning.domene.AktørId;
 import org.ehcache.Cache;
@@ -10,8 +9,12 @@ import org.ehcache.CacheManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -28,71 +31,28 @@ public class AktørService {
         this.aktørregisterClient = aktørregisterClient;
     }
 
-    public String getAktørId(String personIdent) {
-        return Optional.ofNullable(aktørCache().get(personIdent)).orElseGet(() -> {
-            String aktørId = hentAktørIdFraRegister(personIdent);
-            aktørCache().put(personIdent, aktørId);
-            return aktørId;
-        });
+    public ResponseEntity<String> getAktørId(String personIdent) {
+        Objects.requireNonNull(personIdent, "personIdent");
+        return Optional.ofNullable(aktørCache().get(personIdent))
+                .map(cachedPersonIdent -> new ResponseEntity<>(cachedPersonIdent, HttpStatus.OK)).orElseGet(() -> {
+                    var responseFraRegister = hentAktørIdFraRegister(personIdent);
+                    if (!responseFraRegister.getStatusCode().isError()) {
+                        aktørCache().put(personIdent, responseFraRegister.getBody());
+                    }
+                    return responseFraRegister;
+                });
     }
 
-    public String getPersonIdent(AktørId aktørId) {
-        return Optional.ofNullable(personIdentCache().get(aktørId)).orElseGet(() -> {
-            final var personIdent = hentPersonIdentFraRegister(aktørId);
-            personIdentCache().put(aktørId, personIdent);
-            return personIdent;
-        });
-    }
-
-    private String hentAktørIdFraRegister(String personIdent) {
-        AktørResponse response = aktørregisterClient.hentAktørId(personIdent);
-        Aktør aktørResponse = response.get(personIdent);
-
-        secureLogger.info("Hentet aktør id'er for fnr: {}: {}", personIdent, aktørResponse);
-        if (aktørResponse.getFeilmelding() == null) {
-            final var identer = aktørResponse.getIdenter()
-                    .stream()
-                    .filter(Ident::getGjeldende)
-                    .collect(Collectors.toList());
-
-            if(identer.size() > 1) {
-                throw new IllegalStateException("Flere gjeldende aktørIder");
-            } else if(identer.isEmpty()) {
-                throw new IllegalStateException("Ingen gjeldene aktørIder");
-            } else {
-                return identer.get(0).getIdent();
-            }
-        } else {
-            throw new RuntimeException(String.format("Feil ved kall mot Aktørregisteret. Feilmelding: %s",
-                    aktørResponse.getFeilmelding())
-            );
-        }
-    }
-
-    private String hentPersonIdentFraRegister(AktørId aktørId) {
-        final var ident = aktørId.getId();
-        AktørResponse response = aktørregisterClient.hentPersonIdent(ident);
-        Aktør aktørResponse = response.get(ident);
-
-        secureLogger.info("Hentet fnr for aktørId: {}: {}", aktørId, aktørResponse);
-        if (aktørResponse.getFeilmelding() == null) {
-            final var identer = aktørResponse.getIdenter()
-                    .stream()
-                    .filter(Ident::getGjeldende)
-                    .collect(Collectors.toList());
-
-            if(identer.size() > 1) {
-                throw new IllegalStateException("Flere gjeldende norske identer");
-            } else if(identer.isEmpty()) {
-                throw new IllegalStateException("Ingen gjeldene norske identer");
-            } else {
-                return identer.get(0).getIdent();
-            }
-        } else {
-            throw new RuntimeException(String.format("Feil ved kall mot Aktørregisteret. Feilmelding: %s",
-                    aktørResponse.getFeilmelding())
-            );
-        }
+    public ResponseEntity<String> getPersonIdent(AktørId aktørId) {
+        Objects.requireNonNull(aktørId, "aktørId");
+        return Optional.ofNullable(personIdentCache().get(aktørId))
+                .map(cachedPersonIdent -> new ResponseEntity<>(cachedPersonIdent, HttpStatus.OK)).orElseGet(() -> {
+                    var responseFraRegister = hentPersonIdentFraRegister(aktørId);
+                    if (!responseFraRegister.getStatusCode().isError()) {
+                        personIdentCache().put(aktørId, responseFraRegister.getBody());
+                    }
+                    return responseFraRegister;
+                });
     }
 
     private Cache<String, String> aktørCache() {
@@ -101,5 +61,45 @@ public class AktørService {
 
     private Cache<AktørId, String> personIdentCache() {
         return aktørCacheManager.getCache("personIdentCache", AktørId.class, String.class);
+    }
+
+    private ResponseEntity<String> hentAktørIdFraRegister(String personIdent) {
+        return fra(personIdent);
+    }
+
+    private ResponseEntity<String> hentPersonIdentFraRegister(AktørId aktørId) {
+        return fra(aktørId);
+
+    }
+
+    private <T> ResponseEntity<String> fra(T idType) {
+        HttpStatus status;
+        var feilmelding = new LinkedMultiValueMap<String, String>();
+
+        boolean erAktørId = idType instanceof AktørId;
+        String id = erAktørId ? ((AktørId) idType).getId() : (String) idType;
+
+        Aktør response = erAktørId ?
+                aktørregisterClient.hentPersonIdent(id).get(id) :
+                aktørregisterClient.hentAktørId(id).get(id);
+
+        secureLogger.info(erAktørId ? "Hentet fnr for aktørId: {}: {}" : "Hentet aktør id'er for fnr: {}: {}", id, response);
+
+        if (response.getFeilmelding() == null) {
+            final var identer = response.getIdenter().stream()
+                    .filter(Ident::getGjeldende)
+                    .collect(Collectors.toList());
+            if (identer.size() == 1) {
+                return new ResponseEntity<>(identer.get(0).getIdent(), HttpStatus.OK);
+            } else {
+                status = identer.isEmpty() ? HttpStatus.NOT_FOUND : HttpStatus.CONFLICT;
+                feilmelding.add("message",
+                        String.format("%s gjeldene %s", identer.isEmpty() ? "Ingen" : "Flere", erAktørId ? "aktørIder" : "norske identer"));
+            }
+        } else {
+            status = HttpStatus.BAD_REQUEST;
+            feilmelding.add("message", String.format("Funksjonell feil. Fikk følgende feilmelding fra aktørregisteret: %s", response.getFeilmelding()));
+        }
+        return new ResponseEntity<>(feilmelding, status);
     }
 }
