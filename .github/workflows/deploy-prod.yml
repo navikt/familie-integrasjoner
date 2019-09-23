@@ -1,0 +1,41 @@
+name: Deploy-Prod
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  deploy-to-prod:
+    name: Deploy tag til prod-fss
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+      - name: Sjekk at tag ligger på master
+        run: |
+          commit=$(git rev-parse --short HEAD)
+          if ! [[ $(git branch -r --contains "$commit" | grep -E '(^|\s)origin/master$') ]]; then exit 1; fi
+      - name: Lag Docker tag for deploy
+        env:
+          NAME: familie-ks-oppslag
+        run: |
+          echo "docker.pkg.github.com"/"$GITHUB_REPOSITORY"/"$NAME" > .docker_image
+          commit=$(git rev-parse --short HEAD)
+          tags_for_commit=$(docker images docker.pkg.github.com/navikt/familie-ks-oppslag/familie-ks-oppslag --format "{{.Tag}}" | grep "$commit")
+          echo "Liste av docker tags: $tags_for_commit"
+          echo "$tags_for_commit" | cut -c 1-18 > .docker_tag
+      - name: Deploy til dev-fss
+        uses: navikt/deployment-cli/action@b60ef91
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+        with:
+          cluster: dev-fss
+          team: teamfamilie
+          resource: app-preprod.yaml
+      - name: Deploy til prod-fss
+        uses: navikt/deployment-cli/action@b60ef91
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+        with:
+          cluster: prod-fss
+          team: teamfamilie
+          resource: app-prod.yaml

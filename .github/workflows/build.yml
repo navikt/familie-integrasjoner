@@ -1,0 +1,44 @@
+name: Build-Deploy
+on:
+  push:
+    branches:
+      - '*'
+      - '*/*'
+jobs:
+  deploy-to-dev:
+    name: Build, push and deploy to dev-fss
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+      - name: Set up JDK 1.11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.11
+      - name: Bygg med maven
+        run: mvn package --file pom.xml
+      - name: Lag Docker tag
+        env:
+          NAME: familie-ks-oppslag
+        run: |
+          echo "docker.pkg.github.com"/"$GITHUB_REPOSITORY"/"$NAME" > .docker_image
+          echo "$(date "+%Y.%m.%d")-$(git rev-parse --short HEAD)" > .docker_tag
+      - name: Bygg Docker image
+        run: |
+          docker build -t $(cat .docker_image):$(cat .docker_tag) .
+      - name: Login to Github Package Registry
+        env:
+          DOCKER_USERNAME: x-access-token
+          DOCKER_PASSWORD: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+        run: |
+          echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin docker.pkg.github.com
+      - name: Push Docker image
+        run: "docker push $(cat .docker_image):$(cat .docker_tag)"
+      - name: Deploy til dev-fss
+        uses: navikt/deployment-cli/action@b60ef91
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+        with:
+          cluster: dev-fss
+          team: teamfamilie
+          resource: app-preprod.yaml
