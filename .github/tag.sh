@@ -38,6 +38,7 @@ new_minor=$current_minor
 
 if [ "$major" = true ]; then
     ((new_major++))
+    new_minor=0
 fi
 
 if [ "$minor" = true ]; then
