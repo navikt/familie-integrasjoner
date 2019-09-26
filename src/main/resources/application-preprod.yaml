@@ -9,3 +9,4 @@ SECURITYTOKENSERVICE_URL: https://sts-q1.preprod.local/SecurityTokenServiceProvi
 STS_REST_URL: https://security-token-service.nais.preprod.local
 AKTOERID_URL: https://app-q0.adeo.no/aktoerregister/api/v1
 PERSON_V3_URL: https://wasapp-q0.adeo.no/tpsws/ws/Person/v3
+DOKARKIV_V1_URL: https://dokarkiv-q0.nais.preprod.local

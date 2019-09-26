@@ -1,0 +1,12 @@
+{
+  "dokumenter": [
+    {
+      "brevkode": "NAV 34-00.08",
+      "dokumentInfoId": "123",
+      "tittel": "Søknad om kontanstøtte"
+    }
+  ],
+  "journalpostId": "12345678",
+  "journalpostferdigstilt": false,
+  "journalstatus": "MIDLERTIDIG"
+}
