@@ -1,6 +1,5 @@
 package no.nav.familie.ks.oppslag.dokarkiv;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.familie.ks.oppslag.DevLauncher;
 import no.nav.familie.ks.oppslag.dokarkiv.api.ArkiverDokumentRequest;
 import no.nav.familie.ks.oppslag.dokarkiv.api.Dokument;
@@ -45,7 +44,6 @@ public class DokarkivControllerTest {
     @Rule
     public MockServerRule mockServerRule = new MockServerRule(this, MOCK_SERVER_PORT);
 
-    private ObjectMapper objectMapper = new ObjectMapper();
     private TestRestTemplate restTemplate = new TestRestTemplate();
     private HttpHeaders headers = new HttpHeaders();
     private MockServerClient mockServerClient;

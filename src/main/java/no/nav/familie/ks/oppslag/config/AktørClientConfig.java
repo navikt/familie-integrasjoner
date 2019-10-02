@@ -1,7 +1,8 @@
-package no.nav.familie.ks.oppslag.aktør.internal;
+package no.nav.familie.ks.oppslag.config;
 
 
-import no.nav.familie.ks.oppslag.felles.rest.StsRestClient;
+import no.nav.familie.http.sts.StsRestClient;
+import no.nav.familie.ks.oppslag.aktør.internal.AktørregisterClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

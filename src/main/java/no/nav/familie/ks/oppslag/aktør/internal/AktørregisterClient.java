@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Timer;
+import no.nav.familie.http.sts.StsRestClient;
 import no.nav.familie.ks.oppslag.felles.MDCOperations;
-import no.nav.familie.ks.oppslag.felles.rest.StsRestClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -30,15 +32,17 @@ public class AktørregisterClient {
     private final Timer aktoerResponstid = Metrics.timer("aktoer.respons.tid");
     private final Counter aktoerSuccess = Metrics.counter("aktoer.response", "status", "success");
     private final Counter aktoerFailure = Metrics.counter("aktoer.response", "status", "failure");
+    private static final Logger LOG = LoggerFactory.getLogger(AktørregisterClient.class);
     private HttpClient httpClient;
     private StsRestClient stsRestClient;
     private ObjectMapper objectMapper;
     private String aktørRegisterUrl;
     private String consumer;
 
+    @Autowired
     public AktørregisterClient(@Value("${AKTOERID_URL}") String aktørRegisterUrl,
                                @Value("${CREDENTIAL_USERNAME}") String consumer,
-                               @Autowired StsRestClient stsRestClient) {
+                               StsRestClient stsRestClient) {
         this.stsRestClient = stsRestClient;
         this.consumer = consumer;
         this.aktørRegisterUrl = aktørRegisterUrl;

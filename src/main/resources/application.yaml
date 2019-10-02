@@ -14,3 +14,5 @@ management:
     path-mapping:
       info: "status/isAlive"
   metrics.export.prometheus.enabled: true
+
+STS_URL: http://security-token-service.default.svc.nais.local

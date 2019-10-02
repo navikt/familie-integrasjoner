@@ -21,7 +21,7 @@
         <changelist>-SNAPSHOT</changelist>
         <java.version>11</java.version>
         <common-java-modules.version>1.2019.07.11-12.31-0b875ec24c4e</common-java-modules.version>
-        <felles.version>1.0_20190819103533_69f5183</felles.version>
+        <felles.version>1.0_20191001111015_7b0e1f3</felles.version>
         <cxf.version>3.3.1</cxf.version>
         <oidc-support.version>0.2.18</oidc-support.version>
         <tjenestespesifikasjoner.version>1.2019.07.11-06.47-b55f47790a9d</tjenestespesifikasjoner.version>
@@ -118,6 +118,11 @@
         <dependency>
             <groupId>no.nav.familie.felles</groupId>
             <artifactId>log</artifactId>
+            <version>${felles.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.familie.felles</groupId>
+            <artifactId>http-client</artifactId>
             <version>${felles.version}</version>
         </dependency>
         <dependency>
