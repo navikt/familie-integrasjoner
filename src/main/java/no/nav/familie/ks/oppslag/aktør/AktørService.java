@@ -36,7 +36,8 @@ public class AktørService {
         return Optional.ofNullable(aktørCache().get(personIdent))
                 .map(cachedPersonIdent -> new ResponseEntity<>(cachedPersonIdent, HttpStatus.OK)).orElseGet(() -> {
                     var responseFraRegister = hentAktørIdFraRegister(personIdent);
-                    if (!responseFraRegister.getStatusCode().isError()) {
+                    if (!responseFraRegister.getStatusCode().isError() && responseFraRegister.getBody() != null && !responseFraRegister.getBody().isEmpty()) {
+                        secureLogger.info("Legger fnr {} med aktørid {} i aktør-cache", personIdent, responseFraRegister.getBody());
                         aktørCache().put(personIdent, responseFraRegister.getBody());
                     }
                     return responseFraRegister;
@@ -45,11 +46,12 @@ public class AktørService {
 
     public ResponseEntity<String> getPersonIdent(AktørId aktørId) {
         Objects.requireNonNull(aktørId, "aktørId");
-        return Optional.ofNullable(personIdentCache().get(aktørId))
+        return Optional.ofNullable(personIdentCache().get(aktørId.getId()))
                 .map(cachedPersonIdent -> new ResponseEntity<>(cachedPersonIdent, HttpStatus.OK)).orElseGet(() -> {
                     var responseFraRegister = hentPersonIdentFraRegister(aktørId);
-                    if (!responseFraRegister.getStatusCode().isError()) {
-                        personIdentCache().put(aktørId, responseFraRegister.getBody());
+                    if (!responseFraRegister.getStatusCode().isError() && responseFraRegister.getBody() != null && !responseFraRegister.getBody().isEmpty()) {
+                        secureLogger.info("Legger aktørid {} med fnr {} i personident-cache", aktørId.getId(), responseFraRegister.getBody());
+                        personIdentCache().put(aktørId.getId(), responseFraRegister.getBody());
                     }
                     return responseFraRegister;
                 });
@@ -59,8 +61,8 @@ public class AktørService {
         return aktørCacheManager.getCache("aktørIdCache", String.class, String.class);
     }
 
-    private Cache<AktørId, String> personIdentCache() {
-        return aktørCacheManager.getCache("personIdentCache", AktørId.class, String.class);
+    private Cache<String, String> personIdentCache() {
+        return aktørCacheManager.getCache("personIdentCache", String.class, String.class);
     }
 
     private ResponseEntity<String> hentAktørIdFraRegister(String personIdent) {
@@ -83,7 +85,7 @@ public class AktørService {
                 aktørregisterClient.hentPersonIdent(id).get(id) :
                 aktørregisterClient.hentAktørId(id).get(id);
 
-        secureLogger.info(erAktørId ? "Hentet fnr for aktørId: {}: {}" : "Hentet aktør id'er for fnr: {}: {}", id, response);
+        secureLogger.info(erAktørId ? "Hentet fnr for aktørId: {}: {} fra aktørregisteret" : "Hentet aktør id'er for fnr: {}: {} fra aktørregisteret", id, response);
 
         if (response.getFeilmelding() == null) {
             final var identer = response.getIdenter().stream()

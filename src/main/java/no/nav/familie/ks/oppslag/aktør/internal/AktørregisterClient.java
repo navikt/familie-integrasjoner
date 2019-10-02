@@ -75,6 +75,7 @@ public class AktørregisterClient {
         }
     }
 
+
     public AktørResponse hentPersonIdent(String personIdent) {
         URI uri = URI.create(String.format("%s/identer?gjeldende=true&identgruppe=%s", aktørRegisterUrl, PERSONIDENT_IDENTGRUPPE));
         return hentRespons(personIdent, uri);

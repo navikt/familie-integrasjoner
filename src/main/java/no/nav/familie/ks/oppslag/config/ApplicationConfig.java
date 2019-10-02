@@ -46,15 +46,5 @@ public class ApplicationConfig {
         return filterRegistration;
     }
 
-    @Bean
-    public CacheManager aktørCacheManager() {
-        ResourcePools pools = ResourcePoolsBuilder.heap(1000).build();
-        ExpiryPolicy<Object, Object> expiryPolicy = ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofHours(1));
-        final CacheManager cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
-                .withCache("aktørIdCache", newCacheConfigurationBuilder(String.class, String.class, pools).withExpiry(expiryPolicy))
-                .withCache("personIdentCache", newCacheConfigurationBuilder(AktørId.class, String.class, pools).withExpiry(expiryPolicy))
-                .build();
-        cacheManager.init();
-        return cacheManager;
-    }
+
 }
