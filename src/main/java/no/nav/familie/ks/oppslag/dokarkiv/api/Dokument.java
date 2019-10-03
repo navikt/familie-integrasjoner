@@ -13,6 +13,9 @@ public class Dokument {
     @NotEmpty
     private DokumentType dokumentType;
 
+    public Dokument() {
+    }
+
     public Dokument(@NotEmpty byte[] dokument, @NotEmpty FilType filType, String filnavn, @NotEmpty DokumentType dokumentType) {
         this.dokument = dokument;
         this.filType = filType;

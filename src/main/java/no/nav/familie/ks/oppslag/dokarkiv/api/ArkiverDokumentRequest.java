@@ -16,6 +16,9 @@ public class ArkiverDokumentRequest {
     @NotEmpty
     private List<Dokument> dokumenter;
 
+    public ArkiverDokumentRequest() {
+    }
+
     public ArkiverDokumentRequest(String fnr, String navn, boolean forsøkFerdigstill, List<Dokument> dokumenter) {
         this.fnr = fnr;
         this.navn = navn;
