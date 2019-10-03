@@ -11,6 +11,7 @@ AKTOERID_URL: https://app.adeo.no/aktoerregister/api/v1
 PERSON_V3_URL: https://wasapp.adeo.no/tpsws/ws/Person/v3
 DOKARKIV_V1_URL: https://dokarkiv.nais.adeo.no
 MEDL2_URL: https://app.adeo.no/medl2/api/v1
+SAF_URL: http://saf/graphql
 
 # Appdynamics
 APPDYNAMICS_CONTROLLER_HOST_NAME: appdynamics.adeo.no

@@ -1,0 +1,12 @@
+{
+  "data": {
+    "journalpost": {
+      "journalpostId": "12345678",
+      "sak": {
+        "arkivsaksystem": "GSAK",
+        "arkivsaksnummer": "87654321",
+        "datoOpprettet": "2019-07-05T14:02:11"
+      }
+    }
+  }
+}
