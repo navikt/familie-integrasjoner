@@ -1,51 +1,33 @@
 package no.nav.familie.ks.oppslag.journalpost;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jwt.SignedJWT;
-import no.nav.familie.ks.oppslag.DevLauncher;
+import no.nav.familie.ks.oppslag.OppslagSpringRunnerTest;
 import no.nav.security.oidc.test.support.JwtTokenGenerator;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockserver.client.MockServerClient;
 import org.mockserver.junit.MockServerRule;
-import org.mockserver.model.ConnectionOptions;
 import org.mockserver.model.Header;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.*;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = DevLauncher.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = {"dev", "mock-sts"})
-public class HentJournalpostControllerTest {
+public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
     public static final int MOCK_SERVER_PORT = 18321;
     public static final String JOURNALPOST_ID = "12345678";
     public static final String SAKSNUMMER = "87654321";
     public static final String JOURNALPOST_BASE_URL = "/api/journalpost/";
     @Rule
     public MockServerRule mockServerRule = new MockServerRule(this, MOCK_SERVER_PORT);
-
-    private ObjectMapper objectMapper = new ObjectMapper();
-    private TestRestTemplate restTemplate = new TestRestTemplate();
-    private HttpHeaders headers = new HttpHeaders();
-    @LocalServerPort
-    private int port;
 
     @Before
     public void setUp() {
@@ -69,7 +51,7 @@ public class HentJournalpostControllerTest {
 
 
         ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort(JOURNALPOST_BASE_URL + JOURNALPOST_ID + "/sak"), HttpMethod.GET, new HttpEntity<String>(null, headers), String.class
+                localhost(JOURNALPOST_BASE_URL + JOURNALPOST_ID + "/sak"), HttpMethod.GET, new HttpEntity<String>(headers), String.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK);
@@ -93,7 +75,7 @@ public class HentJournalpostControllerTest {
 
 
         ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort(JOURNALPOST_BASE_URL + JOURNALPOST_ID + "/sak"), HttpMethod.GET, new HttpEntity<String>(null, headers), String.class
+                localhost(JOURNALPOST_BASE_URL + JOURNALPOST_ID + "/sak"), HttpMethod.GET, new HttpEntity<String>(headers), String.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
@@ -117,7 +99,7 @@ public class HentJournalpostControllerTest {
 
 
         ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort(JOURNALPOST_BASE_URL + JOURNALPOST_ID + "/sak"), HttpMethod.GET, new HttpEntity<String>(null, headers), String.class
+                localhost(JOURNALPOST_BASE_URL + JOURNALPOST_ID + "/sak"), HttpMethod.GET, new HttpEntity<String>(headers), String.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
@@ -141,7 +123,7 @@ public class HentJournalpostControllerTest {
 
 
         ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort(JOURNALPOST_BASE_URL + JOURNALPOST_ID + "/sak"), HttpMethod.GET, new HttpEntity<String>(null, headers), String.class
+                localhost(JOURNALPOST_BASE_URL + JOURNALPOST_ID + "/sak"), HttpMethod.GET, new HttpEntity<String>(headers), String.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
@@ -165,16 +147,11 @@ public class HentJournalpostControllerTest {
 
 
         ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort(JOURNALPOST_BASE_URL + JOURNALPOST_ID + "/sak"), HttpMethod.GET, new HttpEntity<String>(null, headers), String.class
+                localhost(JOURNALPOST_BASE_URL + JOURNALPOST_ID + "/sak"), HttpMethod.GET, new HttpEntity<String>(headers), String.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
         assertThat(response.getBody()).isEqualTo("Feil ved henting av journalpostId=" + JOURNALPOST_ID);
-    }
-
-
-    private String createURLWithPort(String uri) {
-        return "http://localhost:" + port + uri;
     }
 
     private String testdata(String filnavn) throws IOException {

@@ -12,10 +12,12 @@ CLIENT_SECRET: ""
 
 SECURITYTOKENSERVICE_URL: https://localhost:8063/soap/SecurityTokenServiceProvider/
 AKTOERID_URL: #Denne er ikke i bruk da Aktøregisterklienten mockes ut lokalt
-PERSON_V3_URL: https://localhost:8063/soap/tpsws/ws/Person/v3
+PERSON_V3_URL: #Denne er ikke i bruk da PersonV3 mockes ut lokalt
 DOKARKIV_V1_URL: http://localhost:18321
+
 MEDL2_URL: #Denne er ikke i bruk da Medl2 mockes ut lokalt
 SAF_URL: http://localhost:18321/rest/saf/graphql
+BEHANDLE_OPPGAVE_V1_URL: # #Denne er ikke i bruk da den mockes ut lokalt
 
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw

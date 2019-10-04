@@ -1,6 +1,6 @@
 package no.nav.familie.ks.oppslag.dokarkiv;
 
-import no.nav.familie.ks.oppslag.DevLauncher;
+import no.nav.familie.ks.oppslag.OppslagSpringRunnerTest;
 import no.nav.familie.ks.oppslag.dokarkiv.api.ArkiverDokumentRequest;
 import no.nav.familie.ks.oppslag.dokarkiv.api.Dokument;
 import no.nav.familie.ks.oppslag.dokarkiv.api.DokumentType;
@@ -8,18 +8,12 @@ import no.nav.familie.ks.oppslag.dokarkiv.api.FilType;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockserver.client.MockServerClient;
 import org.mockserver.junit.MockServerRule;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -31,10 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = DevLauncher.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = {"dev", "mock-sts"})
-public class DokarkivControllerTest {
+public class DokarkivControllerTest extends OppslagSpringRunnerTest {
     public static final int MOCK_SERVER_PORT = 18321;
     public static final String JOURNALPOST_ID = "12345678";
     public static final String FULLT_NAVN = "Foo Bar";
@@ -44,18 +36,9 @@ public class DokarkivControllerTest {
     @Rule
     public MockServerRule mockServerRule = new MockServerRule(this, MOCK_SERVER_PORT);
 
-    private TestRestTemplate restTemplate = new TestRestTemplate();
-    private HttpHeaders headers = new HttpHeaders();
-    private MockServerClient mockServerClient;
-    @LocalServerPort
-    private int port;
-
     @Before
     public void setUp() {
-        HttpEntity<String> entity = new HttpEntity<String>(null, headers);
-        ResponseEntity<String> cookie = restTemplate.exchange(
-                createURLWithPort("/local/cookie"), HttpMethod.GET, entity, String.class);
-        headers.add("Authorization", "Bearer " + cookie.getBody().split("value\":\"")[1].split("\",\"")[0]);
+        headers.setBearerAuth(getLokalTestToken());
     }
 
     @Test
@@ -63,7 +46,7 @@ public class DokarkivControllerTest {
         ArkiverDokumentRequest body = new ArkiverDokumentRequest(null, FULLT_NAVN, false, List.of(new Dokument("foo".getBytes(), FilType.PDFA, null, DokumentType.KONTANTSTØTTE_SØKNAD)));
 
         ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<ArkiverDokumentRequest>(body, headers), String.class
+                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<ArkiverDokumentRequest>(body, headers), String.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
@@ -75,7 +58,7 @@ public class DokarkivControllerTest {
         ArkiverDokumentRequest body = new ArkiverDokumentRequest("fnr", "Foobar",false, new LinkedList<>());
 
         ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<ArkiverDokumentRequest>(body, headers), String.class
+                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<ArkiverDokumentRequest>(body, headers), String.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
@@ -99,7 +82,7 @@ public class DokarkivControllerTest {
 
         ArkiverDokumentRequest body = new ArkiverDokumentRequest("FNR", FULLT_NAVN, false, List.of(HOVEDDOKUMENT));
         ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), String.class
+                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), String.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(CREATED);
@@ -123,7 +106,7 @@ public class DokarkivControllerTest {
 
         ArkiverDokumentRequest body = new ArkiverDokumentRequest("FNR", FULLT_NAVN, false, List.of(HOVEDDOKUMENT, VEDLEGG));
         ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), String.class
+                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), String.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(CREATED);
@@ -147,15 +130,10 @@ public class DokarkivControllerTest {
 
         ArkiverDokumentRequest body = new ArkiverDokumentRequest("FNR", "Foobar", false, List.of(new Dokument("foo".getBytes(), FilType.PDFA, null, DokumentType.KONTANTSTØTTE_SØKNAD)));
         ResponseEntity<String> response = restTemplate.exchange(
-                createURLWithPort(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), String.class
+                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), String.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-
-    private String createURLWithPort(String uri) {
-        return "http://localhost:" + port + uri;
     }
 
     private String gyldigDokarkivResponse() throws IOException {

@@ -22,6 +22,7 @@
         <java.version>11</java.version>
         <common-java-modules.version>1.2019.07.11-12.31-0b875ec24c4e</common-java-modules.version>
         <felles.version>1.0_20191001111015_7b0e1f3</felles.version>
+        <kontrakt.version>1.0_20191001152708_01aaa0c</kontrakt.version>
         <cxf.version>3.3.1</cxf.version>
         <oidc-support.version>0.2.18</oidc-support.version>
         <tjenestespesifikasjoner.version>1.2019.07.11-06.47-b55f47790a9d</tjenestespesifikasjoner.version>
@@ -131,11 +132,26 @@
             <version>${oidc-support.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>no.nav.familie.ks</groupId>
+            <artifactId>kontrakt</artifactId>
+            <version>${kontrakt.version}</version>
+        </dependency>
 
         <!-- WSDL -->
         <dependency>
             <groupId>no.nav.tjenestespesifikasjoner</groupId>
             <artifactId>person-v3-tjenestespesifikasjon</artifactId>
+            <version>${tjenestespesifikasjoner.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <artifactId>behandleoppgave-v1-tjenestespesifikasjon</artifactId>
+            <version>${tjenestespesifikasjoner.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <artifactId>nav-fim-oppgave-v3-tjenestespesifikasjon</artifactId>
             <version>${tjenestespesifikasjoner.version}</version>
         </dependency>
 
@@ -180,6 +196,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>
