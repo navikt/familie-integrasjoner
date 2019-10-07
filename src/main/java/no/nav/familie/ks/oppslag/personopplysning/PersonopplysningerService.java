@@ -94,7 +94,7 @@ public class PersonopplysningerService {
     }
 
     private String[] hentEllerLagFeilmeldingForNPE(ResponseEntity personIdentResponse) {
-        return (String[]) Optional.ofNullable(personIdentResponse.getHeaders().get("message"))
-                .orElse(List.of("aktørService::getPersonIdent returnerte null")).toArray();
+        return Optional.ofNullable(personIdentResponse.getHeaders().get("message"))
+                .orElse(List.of("aktørService::getPersonIdent returnerte null")).toArray(String[]::new);
     }
 }

@@ -88,6 +88,15 @@ public class PersonopplysningerServiceTest {
     }
 
     @Test
+    public void personinfoSkalGiFeilmeldingVedNullPointerException() throws Exception {
+        when(personConsumer.hentPersonResponse(any(HentPersonRequest.class)))
+                .thenThrow(new NullPointerException("detail message"));
+
+        assertThat(personopplysningerService.hentPersoninfoFor(new AktørId(AKTØR_ID)).getHeaders().get("message"))
+                .contains("aktørService::getPersonIdent returnerte null");
+    }
+
+    @Test
     public void skalKonvertereResponsTilPersonInfo() {
         Personinfo response = personopplysningerService.hentPersoninfoFor(new AktørId(AKTØR_ID)).getBody();
 
