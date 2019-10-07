@@ -5,7 +5,7 @@ public enum RelasjonsRolleType {
     BARN,
     FARA,
     MORA,
-    REGISTRERT_PARTNER,
-    SAMBOER,
-    MEDMOR
+    REPA,
+    SAMB,
+    MMOR
 }
