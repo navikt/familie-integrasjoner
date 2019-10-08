@@ -24,7 +24,7 @@ public class AktørClientTestConfig {
     public AktørregisterClient aktørregisterClientMock() {
         AktørregisterClient aktørregisterClient = mock(AktørregisterClient.class);
         ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
-        Ident testIdent = new Ident().withIdent("1000011111111");
+        Ident testIdent = new Ident().withIdent("1000011111111").withGjeldende(true);
 
         when(aktørregisterClient.hentAktørId(stringCaptor.capture())).thenAnswer(invocation -> {
             String identArg = invocation.getArgument(0);

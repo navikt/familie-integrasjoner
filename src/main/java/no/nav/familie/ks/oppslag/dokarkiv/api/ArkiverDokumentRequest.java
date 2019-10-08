@@ -9,8 +9,6 @@ public class ArkiverDokumentRequest {
 
     @NotBlank
     private String fnr;
-    @NotBlank
-    private String navn;
 
     private boolean forsøkFerdigstill;
     @NotEmpty
@@ -21,7 +19,6 @@ public class ArkiverDokumentRequest {
 
     public ArkiverDokumentRequest(String fnr, String navn, boolean forsøkFerdigstill, List<Dokument> dokumenter) {
         this.fnr = fnr;
-        this.navn = navn;
         this.forsøkFerdigstill = forsøkFerdigstill;
         this.dokumenter = dokumenter;
     }
@@ -30,9 +27,6 @@ public class ArkiverDokumentRequest {
         return fnr;
     }
 
-    public String getNavn() {
-        return navn;
-    }
 
     public boolean isForsøkFerdigstill() {
         return forsøkFerdigstill;

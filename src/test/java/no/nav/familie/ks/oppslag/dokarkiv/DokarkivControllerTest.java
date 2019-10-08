@@ -25,10 +25,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
-@ActiveProfiles(profiles = {"dev", "mock-sts"})
+@ActiveProfiles(profiles = {"dev", "mock-sts", "mock-aktor", "mock-personopplysninger"})
 public class DokarkivControllerTest extends OppslagSpringRunnerTest {
     public static final int MOCK_SERVER_PORT = 18321;
-    public static final String JOURNALPOST_ID = "12345678";
     public static final String FULLT_NAVN = "Foo Bar";
     public static final String DOKARKIV_URL = "/api/arkiv/";
     public static final Dokument HOVEDDOKUMENT = new Dokument("foo".getBytes(), FilType.PDFA, "filnavn", DokumentType.KONTANTSTØTTE_SØKNAD);

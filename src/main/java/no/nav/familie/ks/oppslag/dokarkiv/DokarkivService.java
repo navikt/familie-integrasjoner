@@ -1,5 +1,6 @@
 package no.nav.familie.ks.oppslag.dokarkiv;
 
+import no.nav.familie.ks.oppslag.aktør.AktørService;
 import no.nav.familie.ks.oppslag.dokarkiv.api.*;
 import no.nav.familie.ks.oppslag.dokarkiv.client.DokarkivClient;
 import no.nav.familie.ks.oppslag.dokarkiv.client.domene.*;
@@ -8,8 +9,12 @@ import no.nav.familie.ks.oppslag.dokarkiv.metadata.AbstractDokumentMetadata;
 import no.nav.familie.ks.oppslag.dokarkiv.metadata.DokumentMetadata;
 import no.nav.familie.ks.oppslag.dokarkiv.metadata.KontanstøtteSøknadMetadata;
 import no.nav.familie.ks.oppslag.dokarkiv.metadata.KontanstøtteSøknadVedleggMetadata;
+import no.nav.familie.ks.oppslag.personopplysning.PersonopplysningerService;
+import no.nav.familie.ks.oppslag.personopplysning.domene.AktørId;
+import no.nav.familie.ks.oppslag.personopplysning.domene.Personinfo;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -26,15 +31,19 @@ public class DokarkivService {
     );
 
     private final DokarkivClient dokarkivClient;
+    private final PersonopplysningerService personopplysningerService;
+    private final AktørService aktørService;
 
     @Autowired
-    public DokarkivService(DokarkivClient dokarkivClient) {
+    public DokarkivService(DokarkivClient dokarkivClient, PersonopplysningerService personopplysningerService, AktørService aktørService) {
         this.dokarkivClient = dokarkivClient;
+        this.personopplysningerService = personopplysningerService;
+        this.aktørService = aktørService;
     }
 
     public ArkiverDokumentResponse lagInngåendeJournalpost(ArkiverDokumentRequest arkiverDokumentRequest) {
         String fnr = arkiverDokumentRequest.getFnr();
-        String navn = arkiverDokumentRequest.getNavn();
+        String navn = hentNavnForFnr(fnr);
 
         var request = mapTilOpprettJournalpostRequest(fnr, navn, arkiverDokumentRequest.getDokumenter());
 
@@ -42,12 +51,28 @@ public class DokarkivService {
         return response.map(this::mapTilArkiverDokumentResponse).orElse(null);
     }
 
+    private String hentNavnForFnr(String fnr) {
+        String navn = null;
+        ResponseEntity<String> aktørResponse = aktørService.getAktørId(fnr);
+        if (aktørResponse.getStatusCode().is2xxSuccessful()) {
+            ResponseEntity<Personinfo> personInfoResponse = personopplysningerService.hentPersoninfoFor(new AktørId(aktørResponse.getBody()));
+            if (personInfoResponse.getStatusCode().is2xxSuccessful() && personInfoResponse.getBody() != null) {
+                navn = personInfoResponse.getBody().getNavn();
+            }
+        }
+
+        if (navn == null) {
+            throw new RuntimeException("Kan ikke hente navn");
+        }
+        return navn;
+    }
+
     private OpprettJournalpostRequest mapTilOpprettJournalpostRequest(String fnr, String navn, List<no.nav.familie.ks.oppslag.dokarkiv.api.Dokument> dokumenter) {
         AbstractDokumentMetadata metadataHoveddokument = METADATA.get(dokumenter.get(0).getDokumentType().name());
         Assert.notNull(metadataHoveddokument, "Ukjent dokumenttype " +  dokumenter.get(0).getDokumentType());
 
         List<Dokument> dokumentRequest = dokumenter.stream()
-                .map(s -> mapTilDokument(s))
+                .map(this::mapTilDokument)
                 .collect(Collectors.toList());
 
         return new OpprettJournalpostRequest.OpprettJournalpostRequestBuilder().builder()

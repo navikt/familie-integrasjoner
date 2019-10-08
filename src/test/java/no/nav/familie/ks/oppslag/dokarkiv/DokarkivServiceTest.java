@@ -1,5 +1,6 @@
 package no.nav.familie.ks.oppslag.dokarkiv;
 
+import no.nav.familie.ks.oppslag.aktør.AktørService;
 import no.nav.familie.ks.oppslag.dokarkiv.api.*;
 import no.nav.familie.ks.oppslag.dokarkiv.client.DokarkivClient;
 import no.nav.familie.ks.oppslag.dokarkiv.client.domene.IdType;
@@ -8,13 +9,21 @@ import no.nav.familie.ks.oppslag.dokarkiv.client.domene.OpprettJournalpostReques
 import no.nav.familie.ks.oppslag.dokarkiv.client.domene.OpprettJournalpostResponse;
 import no.nav.familie.ks.oppslag.dokarkiv.metadata.DokumentMetadata;
 import no.nav.familie.ks.oppslag.dokarkiv.metadata.KontanstøtteSøknadMetadata;
+import no.nav.familie.ks.oppslag.personopplysning.PersonopplysningerService;
+import no.nav.familie.ks.oppslag.personopplysning.domene.AktørId;
+import no.nav.familie.ks.oppslag.personopplysning.domene.Personinfo;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Mockito.*;
 
 
@@ -27,18 +36,24 @@ public class DokarkivServiceTest {
     public static final String STRUKTURERT_VARIANTFORMAT = "ORIGINAL";
     public static final String JOURNALPOST_ID = "123";
     public static final String FILNAVN = "filnavn";
+    public static final String AKTØR_ID_STRING = "aktorid";
+    public static final AktørId AKTØR_ID = new AktørId(AKTØR_ID_STRING);
 
     private DokarkivClient dokarkivClient = mock(DokarkivClient.class);
     private DokarkivService dokarkivService;
+    private PersonopplysningerService personopplysningerService = mock(PersonopplysningerService.class);
+    private AktørService aktørService = mock(AktørService.class);
 
     @Before
     public void setUp() {
-        dokarkivService = new DokarkivService(dokarkivClient);
+        dokarkivService = new DokarkivService(dokarkivClient, personopplysningerService, aktørService);
     }
 
     @Test
     public void skal_mappe_request_til_oppretttJournalpostRequest_av_type_ARKIV_PDFA() {
         final ArgumentCaptor<OpprettJournalpostRequest> captor = ArgumentCaptor.forClass(OpprettJournalpostRequest.class);
+        when(aktørService.getAktørId(FNR)).thenReturn(new ResponseEntity<>(AKTØR_ID_STRING, HttpStatus.OK));
+        when(personopplysningerService.hentPersoninfoFor(AKTØR_ID)).thenReturn(new ResponseEntity<>(new Personinfo.Builder().medAktørId(AKTØR_ID).medFødselsdato(LocalDate.now()).medNavn(NAVN).build(), HttpStatus.OK));
 
         ArkiverDokumentRequest dto = new ArkiverDokumentRequest(FNR, NAVN, false, List.of(new Dokument(PDF_DOK, FilType.PDFA, FILNAVN, DokumentType.KONTANTSTØTTE_SØKNAD)));
         dokarkivService.lagInngåendeJournalpost(dto);
@@ -51,6 +66,8 @@ public class DokarkivServiceTest {
     @Test
     public void skal_mappe_request_til_oppretttJournalpostRequest_av_type_ORIGINAL_JSON() {
         final ArgumentCaptor<OpprettJournalpostRequest> captor = ArgumentCaptor.forClass(OpprettJournalpostRequest.class);
+        when(aktørService.getAktørId(FNR)).thenReturn(new ResponseEntity<>(AKTØR_ID_STRING, HttpStatus.OK));
+        when(personopplysningerService.hentPersoninfoFor(AKTØR_ID)).thenReturn(new ResponseEntity<>(new Personinfo.Builder().medAktørId(AKTØR_ID).medFødselsdato(LocalDate.now()).medNavn(NAVN).build(), HttpStatus.OK));
 
         ArkiverDokumentRequest dto = new ArkiverDokumentRequest(FNR, NAVN,  false, List.of(new Dokument(JSON_DOK, FilType.JSON, FILNAVN, DokumentType.KONTANTSTØTTE_SØKNAD)));
         dokarkivService.lagInngåendeJournalpost(dto);
@@ -66,12 +83,24 @@ public class DokarkivServiceTest {
         responseFraKlient.setJournalpostId(JOURNALPOST_ID);
         responseFraKlient.setJournalpostferdigstilt(true);
         when(dokarkivClient.lagJournalpost(any(OpprettJournalpostRequest.class), anyBoolean(), anyString())).thenReturn(responseFraKlient);
+        when(aktørService.getAktørId(FNR)).thenReturn(new ResponseEntity<>(AKTØR_ID_STRING, HttpStatus.OK));
+        when(personopplysningerService.hentPersoninfoFor(AKTØR_ID)).thenReturn(new ResponseEntity<>(new Personinfo.Builder().medAktørId(AKTØR_ID).medFødselsdato(LocalDate.now()).medNavn(NAVN).build(), HttpStatus.OK));
 
         ArkiverDokumentRequest dto = new ArkiverDokumentRequest(FNR, NAVN, false, List.of(new Dokument(JSON_DOK, FilType.JSON, FILNAVN, DokumentType.KONTANTSTØTTE_SØKNAD)));
         ArkiverDokumentResponse arkiverDokumentResponse = dokarkivService.lagInngåendeJournalpost(dto);
 
         assertThat(arkiverDokumentResponse.getJournalpostId()).isEqualTo(JOURNALPOST_ID);
         assertThat(arkiverDokumentResponse.isFerdigstilt()).isTrue();
+    }
+
+    @Test
+    public void skal_kaste_exception_hvis_aktørid_not_found() {
+        when(aktørService.getAktørId(FNR)).thenReturn(new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
+
+        ArkiverDokumentRequest dto = new ArkiverDokumentRequest(FNR, NAVN, false, List.of(new Dokument(PDF_DOK, FilType.PDFA, FILNAVN, DokumentType.KONTANTSTØTTE_SØKNAD)));
+
+        Throwable thrown = catchThrowable(() -> { dokarkivService.lagInngåendeJournalpost(dto); });
+        assertThat(thrown).isInstanceOf(RuntimeException.class).withFailMessage("Kan ikke hente navn");
     }
 
 

@@ -72,7 +72,7 @@ public class PersonopplysningerService {
         }
     }
 
-    ResponseEntity<Personinfo> hentPersoninfoFor(AktørId aktørId) {
+    public ResponseEntity<Personinfo> hentPersoninfoFor(AktørId aktørId) {
         var personIdentResponse = aktørService.getPersonIdent(aktørId);
         try {
             String personIdent = Objects.requireNonNull(personIdentResponse.getBody());
