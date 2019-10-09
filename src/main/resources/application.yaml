@@ -16,3 +16,4 @@ management:
   metrics.export.prometheus.enabled: true
 
 STS_URL: http://security-token-service.default.svc.nais.local
+INFOTRYGD_URL: http://infotrygd-kontantstotte

@@ -21,7 +21,7 @@
         <changelist>-SNAPSHOT</changelist>
         <java.version>11</java.version>
         <common-java-modules.version>1.2019.07.11-12.31-0b875ec24c4e</common-java-modules.version>
-        <felles.version>1.0_20191001111015_7b0e1f3</felles.version>
+        <felles.version>1.0_20191007152733_dff2e9b</felles.version>
         <kontrakt.version>1.0_20191001152708_01aaa0c</kontrakt.version>
         <cxf.version>3.3.1</cxf.version>
         <oidc-support.version>0.2.18</oidc-support.version>

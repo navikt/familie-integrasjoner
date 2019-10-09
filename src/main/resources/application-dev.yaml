@@ -6,9 +6,9 @@ no.nav.security.oidc:
     cookie_name: localhost-idtoken
 
 AAD_URL: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
-TENANT: ""
 CLIENT_ID: ""
 CLIENT_SECRET: ""
+INFOTRYGD_KS_SCOPE: ""
 
 SECURITYTOKENSERVICE_URL: https://localhost:8063/soap/SecurityTokenServiceProvider/
 AKTOERID_URL: #Denne er ikke i bruk da Aktøregisterklienten mockes ut lokalt
