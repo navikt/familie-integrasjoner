@@ -10,7 +10,9 @@ import org.mockserver.model.Header;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
@@ -107,7 +109,7 @@ public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
     }
 
     @Test
-    public void skal_status_404_hvis_journalpost_ikke_finnes() {
+    public void skal_returnerer_500_hvis_klient_returnerer_200_med_errorfeilmeldinger() throws IOException {
         mockServerRule.getClient()
                 .when(
                         HttpRequest
@@ -118,7 +120,8 @@ public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
                 )
 
                 .respond(
-                        HttpResponse.response().withStatusCode(404)
+                        HttpResponse.response().withBody(testdata("error_fra_saf.json")).withHeaders(
+                                new Header("Content-Type", "application/json"))
                 );
 
 
@@ -126,8 +129,8 @@ public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
                 localhost(JOURNALPOST_BASE_URL + JOURNALPOST_ID + "/sak"), HttpMethod.GET, new HttpEntity<String>(headers), String.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
-        assertThat(response.getBody()).isEqualTo("Fant ikke journalpost med id=" + JOURNALPOST_ID);
+        assertThat(response.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
+        assertThat(response.getBody()).contains("Feil ved henting av journalpost=12345678 klientfeilmelding=Kan ikke hente journalpost [SafError{message='Feilet ved henting av data (/journalpost) : null', exceptionType='TECHNICAL', exception='NullPointerException'}]");
     }
 
     @Test
@@ -151,7 +154,7 @@ public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
         );
 
         assertThat(response.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
-        assertThat(response.getBody()).isEqualTo("Feil ved henting av journalpostId=" + JOURNALPOST_ID);
+        assertThat(response.getBody()).contains("Feil ved henting av journalpost=12345678 statuscode=500 INTERNAL_SERVER_ERROR body=feilmelding");
     }
 
     private String testdata(String filnavn) throws IOException {

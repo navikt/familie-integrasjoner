@@ -14,7 +14,7 @@ public class JournalpostService {
 
     public String hentSaksnummer(String journalpostId) {
         Journalpost journalpost =  safClient.hentJournalpost(journalpostId);
-        if (journalpost.getSak() != null && "GSAK".equals(journalpost.getSak().getArkivsaksystem())) {
+        if (journalpost != null && journalpost.getSak() != null && "GSAK".equals(journalpost.getSak().getArkivsaksystem())) {
             return journalpost.getSak().getArkivsaksnummer();
         }
         return null;

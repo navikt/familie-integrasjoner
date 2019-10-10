@@ -16,7 +16,7 @@ public class DevLauncher {
 
     public static void main(String... args) {
         SpringApplication app = new SpringApplicationBuilder(ApplicationConfig.class)
-                .profiles("dev", "mock-sts", "mock-aktor", "mock-medlemskap", "mock-personopplysninger", "mock-saf", "mock-oppgave")
+                .profiles("dev", "mock-sts", "mock-aktor", "mock-medlemskap", "mock-personopplysninger", "mock-saf", "mock-oppgave", "mock-dokarkiv")
                 .build();
         app.run(args);
     }

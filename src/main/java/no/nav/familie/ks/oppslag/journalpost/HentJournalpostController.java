@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpStatusCodeException;
 
+import java.util.Map;
+
 @RestController
 @ProtectedWithClaims(issuer = "intern")
 @RequestMapping("/api/journalpost")
@@ -18,26 +20,28 @@ public class HentJournalpostController {
     @Autowired
     private JournalpostService journalpostService;
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(JournalpostRestClientException.class)
-    public ResponseEntity<String> handleRestClientException(
+    public Map<String, String> handleRestClientException(
             JournalpostRestClientException ex) {
-        if (ex.getCause() instanceof HttpStatusCodeException){
+        String errorMessage = "Feil ved henting av journalpost=" + ex.getJournalpostId();
+        if (ex.getCause() instanceof HttpStatusCodeException) {
             HttpStatusCodeException cex = (HttpStatusCodeException) ex.getCause();
-            LOG.warn("Kunne ikke hente journalpost med id={} statuscode={} body={}", ex.getJournalpostId(), cex.getStatusCode(), cex.getResponseBodyAsString());
-            if(cex.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-                return new ResponseEntity<>("Fant ikke journalpost med id=" + ex.getJournalpostId(), HttpStatus.NOT_FOUND);
-            }
+            errorMessage += String.format(" statuscode=%s body=%s", cex.getStatusCode(), cex.getResponseBodyAsString());
         } else {
-            LOG.warn("Feil ved henting av journalpostId={} klientfeilmelding={}", ex.getJournalpostId(), ex.getMessage(), ex);
+            errorMessage += " klientfeilmelding=" + ex.getMessage();
         }
-        return new ResponseEntity<>("Feil ved henting av journalpostId=" + ex.getJournalpostId(), HttpStatus.INTERNAL_SERVER_ERROR);
+        LOG.warn(errorMessage, ex);
+        return Map.of("journalpost", ex.getJournalpostId(), "message", errorMessage);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(RuntimeException.class)
-    public void handleRequestParserException(
+    public Map<String, String> handleRequestParserException(
             RuntimeException ex) {
-        LOG.error("Feil ved henting av journalpostId", ex);
+        String errorMessage = "Feil ved henting av journalpost";
+        LOG.error(errorMessage, ex);
+        return Map.of("message", errorMessage);
     }
 
 

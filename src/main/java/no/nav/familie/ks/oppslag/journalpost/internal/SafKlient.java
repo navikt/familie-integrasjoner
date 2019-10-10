@@ -1,15 +1,12 @@
 package no.nav.familie.ks.oppslag.journalpost.internal;
 
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Timer;
-import no.nav.familie.ks.oppslag.felles.MDCOperations;
 import no.nav.familie.http.sts.StsRestClient;
+import no.nav.familie.ks.oppslag.felles.MDCOperations;
 import no.nav.familie.ks.oppslag.journalpost.JournalpostRequestParserException;
 import no.nav.familie.ks.oppslag.journalpost.JournalpostRestClientException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.time.Duration;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.*;
 
 @Service
 public class SafKlient {
@@ -41,16 +35,14 @@ public class SafKlient {
     private String consumer;
     private URI safUri;
 
+    @Autowired
     public SafKlient(@Value("${SAF_URL}") String safUrl,
                      @Value("${CREDENTIAL_USERNAME}") String consumer,
-                     @Autowired StsRestClient stsRestClient) {
+                     StsRestClient stsRestClient,
+                     ObjectMapper objectMapper) {
         this.stsRestClient = stsRestClient;
         this.consumer = consumer;
-        this.objectMapper = new ObjectMapper();
-        objectMapper
-                .setVisibility(PropertyAccessor.FIELD, Visibility.ANY)
-                .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false)
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        this.objectMapper = objectMapper;
         restTemplate = new RestTemplateBuilder()
                 .setConnectTimeout(Duration.ofSeconds(5))
                 .setReadTimeout(Duration.ofSeconds(5))
@@ -79,9 +71,14 @@ public class SafKlient {
                     HttpMethod.POST,
                     request,
                     SafJournalpostResponse.class);
+
             hentJournalpostResponstid.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
-            hentJournalpostResponsSuccess.increment();
-            return Objects.requireNonNull(response.getBody()).getData().getJournalpost();
+            if (response.getBody() != null && !response.getBody().harFeil()) {
+                hentJournalpostResponsSuccess.increment();
+                return response.getBody().getData().getJournalpost();
+            } else {
+                throw new JournalpostRestClientException("Kan ikke hente journalpost " + response.getBody().getErrors().toString(), null, journalpostId);
+            }
         } catch (RestClientException e) {
             hentJournalpostResponsFailure.increment();
             throw new JournalpostRestClientException(e.getMessage(), e, journalpostId);
