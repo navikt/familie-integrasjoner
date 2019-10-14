@@ -65,6 +65,7 @@ public class PersonopplysningerTestConfig {
         Bruker person = new Bruker();
         person
                 .withBostedsadresse(NORSK_ADRESSE)
+                .withKjoenn(new Kjoenn().withKjoenn(new Kjoennstyper().withKodeRef("MANN")))
                 .withSivilstand(new Sivilstand().withSivilstand(new Sivilstander().withValue("GIFT")))
                 .withPersonstatus(new Personstatus().withPersonstatus(new Personstatuser().withValue("BOSA")))
                 .withPersonnavn(new Personnavn().withSammensattNavn("TEST TESTESEN"))
