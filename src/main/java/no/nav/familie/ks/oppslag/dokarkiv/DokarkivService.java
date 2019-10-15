@@ -9,6 +9,7 @@ import no.nav.familie.ks.oppslag.dokarkiv.metadata.AbstractDokumentMetadata;
 import no.nav.familie.ks.oppslag.dokarkiv.metadata.DokumentMetadata;
 import no.nav.familie.ks.oppslag.dokarkiv.metadata.KontanstøtteSøknadMetadata;
 import no.nav.familie.ks.oppslag.dokarkiv.metadata.KontanstøtteSøknadVedleggMetadata;
+import no.nav.familie.ks.oppslag.felles.MDCOperations;
 import no.nav.familie.ks.oppslag.personopplysning.PersonopplysningerService;
 import no.nav.familie.ks.oppslag.personopplysning.domene.AktørId;
 import no.nav.familie.ks.oppslag.personopplysning.domene.Personinfo;
@@ -51,6 +52,10 @@ public class DokarkivService {
         return response.map(this::mapTilArkiverDokumentResponse).orElse(null);
     }
 
+    public void ferdistillJournalpost(String journalpost) {
+        dokarkivClient.ferdigstillJournalpost(journalpost);
+    }
+
     private String hentNavnForFnr(String fnr) {
         String navn = null;
         ResponseEntity<String> aktørResponse = aktørService.getAktørId(fnr);
@@ -79,12 +84,13 @@ public class DokarkivService {
                 .medJournalpostType(JournalpostType.INNGAAENDE)
                 .medBehandlingstema(metadataHoveddokument.getBehandlingstema())
                 .medKanal(metadataHoveddokument.getKanal())
+                .medTittel(metadataHoveddokument.getTittel())
                 .medTema(metadataHoveddokument.getTema())
                 .medJournalfoerendeEnhet(DokumentMetadata.JOURNALFØRENDE_ENHET)
                 .medAvsenderMottaker(new AvsenderMottaker(fnr, IdType.FNR, navn))
                 .medBruker(new Bruker(IdType.FNR, fnr))
                 .medDokumenter(dokumentRequest)
-                .medEksternReferanseId(MDC.get("correlationId"))
+                .medEksternReferanseId(MDCOperations.getCallId())
 //                .medSak() Når vi tar over fagsak, så må dennne settes til vår. For BRUT001 behandling, så kan ikke denne settes
                 .build();
 

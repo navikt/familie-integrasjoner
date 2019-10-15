@@ -135,6 +135,49 @@ public class DokarkivControllerTest extends OppslagSpringRunnerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @Test
+    public void ferdigstill_returnerer_OK() throws IOException {
+        mockServerRule.getClient()
+                .when(
+                        HttpRequest
+                                .request()
+                                .withMethod("PATCH")
+                                .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill")
+                )
+                .respond(
+                        HttpResponse.response().withStatusCode(200)
+                );
+
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                localhost(DOKARKIV_URL + "/123/ferdigstill"), HttpMethod.PUT, new HttpEntity<>(null, headers), String.class
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void ferdigstill_returnerer_400_hvis_ikke_mulig_ferdigstill() throws IOException {
+        mockServerRule.getClient()
+                .when(
+                        HttpRequest
+                                .request()
+                                .withMethod("PATCH")
+                                .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill")
+                )
+                .respond(
+                        HttpResponse.response().withStatusCode(400)
+                );
+
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                localhost(DOKARKIV_URL + "/123/ferdigstill"), HttpMethod.PUT, new HttpEntity<>(null, headers), String.class
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
+        assertThat(response.getBody()).contains("Kan ikke ferdigstille journalpost 123");
+    }
+
     private String gyldigDokarkivResponse() throws IOException {
         return Files.readString(new ClassPathResource("dokarkiv/gyldigresponse.json").getFile().toPath(), StandardCharsets.UTF_8);
     }
