@@ -3,7 +3,6 @@ package no.nav.familie.ks.oppslag.journalpost;
 import no.nav.security.oidc.api.ProtectedWithClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +16,11 @@ import java.util.Map;
 public class HentJournalpostController {
     private static final Logger LOG = LoggerFactory.getLogger(HentJournalpostController.class);
 
-    @Autowired
-    private JournalpostService journalpostService;
+    private final JournalpostService journalpostService;
+
+    public HentJournalpostController(JournalpostService journalpostService) {
+        this.journalpostService = journalpostService;
+    }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(JournalpostRestClientException.class)
@@ -39,7 +41,7 @@ public class HentJournalpostController {
     @ExceptionHandler(RuntimeException.class)
     public Map<String, String> handleRequestParserException(
             RuntimeException ex) {
-        String errorMessage = "Feil ved henting av journalpost";
+        String errorMessage = "Feil ved henting av journalpost. " + ex.getMessage();
         LOG.error(errorMessage, ex);
         return Map.of("message", errorMessage);
     }
@@ -53,5 +55,15 @@ public class HentJournalpostController {
         } else {
             return new ResponseEntity<>(saksnummer, HttpStatus.OK);
         }
+    }
+
+
+    @GetMapping("/kanalreferanseid/{kanalReferanseId}")
+    public ResponseEntity<String> hentJournalpostId(@PathVariable(name = "kanalReferanseId") String kanalReferanseId) {
+        String journalpostId = journalpostService.hentJournalpostId(kanalReferanseId);
+        if (journalpostId == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity.ok(journalpostService.hentJournalpostId(kanalReferanseId));
     }
 }

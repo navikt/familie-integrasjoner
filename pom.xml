@@ -154,6 +154,11 @@
             <artifactId>nav-fim-oppgave-v3-tjenestespesifikasjon</artifactId>
             <version>${tjenestespesifikasjoner.version}</version>
         </dependency>
+        <dependency>
+            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <artifactId>nav-innsynJournal-v2-tjenestespesifikasjon</artifactId>
+            <version>${tjenestespesifikasjoner.version}</version>
+        </dependency>
 
         <!-- Logging -->
         <dependency>

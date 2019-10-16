@@ -17,3 +17,4 @@ DOKARKIV_V1_URL: https://dokarkiv-q0.nais.preprod.local
 MEDL2_URL: https://app-q0.adeo.no/medl2/api/v1
 SAF_URL: http://saf.q0/graphql
 BEHANDLE_OPPGAVE_V1_URL: https://wasapp-q0.adeo.no/nav-gsak-ws/BehandleOppgaveV1
+INNSYN_JOURNAL_V2_URL: https://wasapp-q0.adeo.no/joark/InnsynJournal/v2

@@ -17,6 +17,7 @@ DOKARKIV_V1_URL: https://dokarkiv.nais.adeo.no
 MEDL2_URL: https://app.adeo.no/medl2/api/v1
 SAF_URL: http://saf/graphql
 BEHANDLE_OPPGAVE_V1_URL: https://wasapp.adeo.no/nav-gsak-ws/BehandleOppgaveV1
+INNSYN_JOURNAL_V2_URL: https://wasapp.adeo.no/joark/InnsynJournal/v2
 
 # Appdynamics
 APPDYNAMICS_CONTROLLER_HOST_NAME: appdynamics.adeo.no
