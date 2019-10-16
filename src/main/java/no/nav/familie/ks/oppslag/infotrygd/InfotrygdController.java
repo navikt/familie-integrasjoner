@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import java.util.Map;
 import javax.validation.constraints.NotNull;
@@ -23,6 +22,7 @@ import javax.validation.constraints.NotNull;
 @RequestMapping("/api/infotrygd")
 public class InfotrygdController {
     private static final Logger LOG = LoggerFactory.getLogger(InfotrygdController.class);
+    private static final Logger secureLogger = LoggerFactory.getLogger("secureLogger");
 
     private InfotrygdService infotrygdService;
 
@@ -30,16 +30,11 @@ public class InfotrygdController {
         this.infotrygdService = infotrygdService;
     }
 
-    @ExceptionHandler(HttpServerErrorException.class)
-    public ResponseEntity<Map<String, String>> handleExceptions(HttpServerErrorException ex) {
-        LOG.error("Infotrygd-kontantstøtte 5xx-feil: " + ex.getStatusText());
-        return new ResponseEntity<Map<String, String>>(Map.of("error", ex.getStatusText()), ex.getStatusCode());
-    }
-
-    @ExceptionHandler(HttpClientErrorException.class)
-    public ResponseEntity<Map<String, String>> handleExceptions(HttpClientErrorException ex) {
-        LOG.error("Infotrygd-kontantstøtte 4xx-feil: " + ex.getStatusText());
-        return new ResponseEntity<Map<String, String>>(Map.of("error", ex.getStatusText()), ex.getStatusCode());
+    @ExceptionHandler(HttpStatusCodeException.class)
+    public ResponseEntity<Map<String, String>> handleExceptions(HttpStatusCodeException ex) {
+        LOG.error("Oppslag mot infotrygd-kontantstotte feilet. Status code: " + ex.getStatusCode());
+        secureLogger.error(ex.getMessage(), ex);
+        return new ResponseEntity<Map<String, String>>(Map.of("error", "" + ex.getStatusCode()), ex.getStatusCode());
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "harBarnAktivKontantstotte")
