@@ -18,7 +18,7 @@ import static java.util.Objects.requireNonNull;
 
 public class Personinfo {
 
-    private AktørId aktørId;
+    private PersonIdent personIdent;
     private String navn;
     private String adresse;
     private String kjønn;
@@ -38,8 +38,8 @@ public class Personinfo {
     private Personinfo() {
     }
 
-    public AktørId getAktørId() {
-        return aktørId;
+    public PersonIdent getPersonIdent() {
+        return personIdent;
     }
 
     public String getNavn() {
@@ -102,7 +102,7 @@ public class Personinfo {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "<aktørId=" + aktørId + ">"; //$NON-NLS-1$ //$NON-NLS-2$
+        return getClass().getSimpleName() + "<personIdent=" + personIdent + ">";
     }
 
     public static class Builder {
@@ -112,8 +112,8 @@ public class Personinfo {
             personinfoMal = new Personinfo();
         }
 
-        public Builder medAktørId(AktørId aktørId) {
-            personinfoMal.aktørId = aktørId;
+        public Builder medPersonIdent(PersonIdent personIdent) {
+            personinfoMal.personIdent = personIdent;
             return this;
         }
 
@@ -189,9 +189,9 @@ public class Personinfo {
         }
 
         public Personinfo build() {
-            requireNonNull(personinfoMal.aktørId, "Navbruker må ha aktørId"); //$NON-NLS-1$
-            requireNonNull(personinfoMal.navn, "Navbruker må ha navn"); //$NON-NLS-1$
-            requireNonNull(personinfoMal.fødselsdato, "Navbruker må ha fødselsdato"); //$NON-NLS-1$
+            requireNonNull(personinfoMal.personIdent, "Navbruker må ha personIdent");
+            requireNonNull(personinfoMal.navn, "Navbruker må ha navn");
+            requireNonNull(personinfoMal.fødselsdato, "Navbruker må ha fødselsdato");
             return personinfoMal;
         }
 

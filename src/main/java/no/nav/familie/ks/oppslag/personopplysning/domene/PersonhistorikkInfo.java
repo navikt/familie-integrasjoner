@@ -12,16 +12,13 @@ import static java.util.Objects.requireNonNull;
 
 public class PersonhistorikkInfo {
 
-    private String aktørId;
+    private PersonIdent personIdent;
     private List<PersonstatusPeriode> personstatushistorikk = new ArrayList<>();
     private List<StatsborgerskapPeriode> statsborgerskaphistorikk = new ArrayList<>();
     private List<AdressePeriode> adressehistorikk = new ArrayList<>();
 
-    private PersonhistorikkInfo() {
-    }
-
-    public String getAktørId() {
-        return this.aktørId;
+    public PersonIdent getPersonIdent() {
+        return this.personIdent;
     }
 
     public List<PersonstatusPeriode> getPersonstatushistorikk() {
@@ -51,15 +48,10 @@ public class PersonhistorikkInfo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PersonhistorikkInfo that = (PersonhistorikkInfo) o;
-        return Objects.equals(aktørId, that.aktørId) &&
+        return Objects.equals(personIdent, that.personIdent) &&
             Objects.equals(personstatushistorikk, that.personstatushistorikk) &&
             Objects.equals(statsborgerskaphistorikk, that.statsborgerskaphistorikk) &&
             Objects.equals(adressehistorikk, that.adressehistorikk);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(aktørId, personstatushistorikk, statsborgerskaphistorikk, adressehistorikk);
     }
 
     public static Builder builder() {
@@ -73,8 +65,8 @@ public class PersonhistorikkInfo {
             this.kladd = new PersonhistorikkInfo();
         }
 
-        public Builder medAktørId(String aktørId) {
-            this.kladd.aktørId = aktørId;
+        public Builder medPersonIdent(PersonIdent personIdent) {
+            this.kladd.personIdent = personIdent;
             return this;
         }
 
@@ -94,8 +86,7 @@ public class PersonhistorikkInfo {
         }
 
         public PersonhistorikkInfo build() {
-            requireNonNull(kladd.aktørId, "PersonhistorikkInfo må ha aktørId"); //$NON-NLS-1$
-            // TODO PK-49366 andre non-null?
+            requireNonNull(kladd.personIdent, "PersonhistorikkInfo må ha personIdent");
             return kladd;
         }
     }

@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 @Configuration
 public class PersonopplysningerTestConfig {
 
-    private static final String AKTØR_ID = "1000011111111";
+    private static final String FNR = "12345678911";
     private static final LocalDate TOM = LocalDate.now();
     private static final LocalDate FOM = TOM.minusYears(5);
     private static final Landkoder NORGE = new Landkoder().withValue("NOR");
@@ -33,6 +33,7 @@ public class PersonopplysningerTestConfig {
                     .withHusnummer(2)
                     .withPoststed(new Postnummer().withValue("0560"))
                     .withLandkode(NORGE));
+    private static final PersonIdent PERSON_IDENT = new PersonIdent().withIdent(new NorskIdent().withIdent(FNR));
 
     @Bean
     @Profile("mock-personopplysninger")
@@ -46,7 +47,7 @@ public class PersonopplysningerTestConfig {
 
     private HentPersonhistorikkResponse hentPersonHistorikkResponse() {
         HentPersonhistorikkResponse response = new HentPersonhistorikkResponse();
-        response.setAktoer(new AktoerId().withAktoerId(AKTØR_ID));
+        response.setAktoer(PERSON_IDENT);
         response
                 .withStatsborgerskapListe(hentStatsborgerskap())
                 .withPersonstatusListe(hentPersonstatus())
@@ -74,7 +75,7 @@ public class PersonopplysningerTestConfig {
                 .withGjeldendePostadressetype(new Postadressetyper().withValue("BOSTEDSADRESSE"))
                 .withStatsborgerskap(new Statsborgerskap().withLand(NORGE))
                 .withFoedselsdato(hentFoedselsdato("1990-01-01"))
-                .withAktoer(new AktoerId().withAktoerId(AKTØR_ID));
+                .withAktoer(PERSON_IDENT);
 
         return person;
     }
@@ -85,7 +86,7 @@ public class PersonopplysningerTestConfig {
                 .withHarSammeBosted(true)
                 .withTilRolle(new Familierelasjoner().withValue("EKTE"))
                 .withTilPerson(new Person()
-                        .withAktoer(new AktoerId().withAktoerId("1000011111112"))
+                        .withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent("12345678901")))
                         .withFoedselsdato(hentFoedselsdato("1990-01-01"))
                         .withPersonnavn(new Personnavn().withSammensattNavn("EKTEMANN TESTESEN")));
 
@@ -94,7 +95,7 @@ public class PersonopplysningerTestConfig {
                 .withHarSammeBosted(true)
                 .withTilRolle(new Familierelasjoner().withValue("BARN"))
                 .withTilPerson(new Person()
-                        .withAktoer(new AktoerId().withAktoerId("1000011111113"))
+                        .withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent("12345678901")))
                         .withFoedselsdato(hentFoedselsdato("2018-05-01"))
                         .withPersonnavn(new Personnavn().withSammensattNavn("BARN TESTESEN")));
 

@@ -58,12 +58,9 @@ public class DokarkivService {
 
     private String hentNavnForFnr(String fnr) {
         String navn = null;
-        ResponseEntity<String> aktørResponse = aktørService.getAktørId(fnr);
-        if (aktørResponse.getStatusCode().is2xxSuccessful()) {
-            ResponseEntity<Personinfo> personInfoResponse = personopplysningerService.hentPersoninfoFor(new AktørId(aktørResponse.getBody()));
-            if (personInfoResponse.getStatusCode().is2xxSuccessful() && personInfoResponse.getBody() != null) {
-                navn = personInfoResponse.getBody().getNavn();
-            }
+        ResponseEntity<Personinfo> personInfoResponse = personopplysningerService.hentPersoninfoFor(fnr);
+        if (personInfoResponse.getStatusCode().is2xxSuccessful() && personInfoResponse.getBody() != null) {
+            navn = personInfoResponse.getBody().getNavn();
         }
 
         if (navn == null) {
@@ -74,7 +71,7 @@ public class DokarkivService {
 
     private OpprettJournalpostRequest mapTilOpprettJournalpostRequest(String fnr, String navn, List<no.nav.familie.ks.oppslag.dokarkiv.api.Dokument> dokumenter) {
         AbstractDokumentMetadata metadataHoveddokument = METADATA.get(dokumenter.get(0).getDokumentType().name());
-        Assert.notNull(metadataHoveddokument, "Ukjent dokumenttype " +  dokumenter.get(0).getDokumentType());
+        Assert.notNull(metadataHoveddokument, "Ukjent dokumenttype " + dokumenter.get(0).getDokumentType());
 
         List<Dokument> dokumentRequest = dokumenter.stream()
                 .map(this::mapTilDokument)
@@ -98,7 +95,7 @@ public class DokarkivService {
 
     private Dokument mapTilDokument(no.nav.familie.ks.oppslag.dokarkiv.api.Dokument dokument) {
         AbstractDokumentMetadata metadata = METADATA.get(dokument.getDokumentType().name());
-        Assert.notNull(metadata, "Ukjent dokumenttype " +  dokument.getDokumentType());
+        Assert.notNull(metadata, "Ukjent dokumenttype " + dokument.getDokumentType());
 
         String variantFormat;
         if (dokument.getFilType().equals(FilType.PDFA)) {

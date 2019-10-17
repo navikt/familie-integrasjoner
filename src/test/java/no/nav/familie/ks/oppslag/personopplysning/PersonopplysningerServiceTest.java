@@ -1,7 +1,5 @@
 package no.nav.familie.ks.oppslag.personopplysning;
 
-import no.nav.familie.ks.oppslag.aktør.AktørService;
-import no.nav.familie.ks.oppslag.personopplysning.domene.AktørId;
 import no.nav.familie.ks.oppslag.personopplysning.domene.PersonhistorikkInfo;
 import no.nav.familie.ks.oppslag.personopplysning.domene.Personinfo;
 import no.nav.familie.ks.oppslag.personopplysning.domene.TpsOversetter;
@@ -24,31 +22,26 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PersonopplysningerServiceTest {
 
-    private static final String AKTØR_ID = "1000011111111";
+    private static final String PERSONIDENT = "12345678911";
     private static final LocalDate TOM = LocalDate.now();
     private static final LocalDate FOM = TOM.minusYears(5);
 
     private PersonConsumer personConsumer;
     private PersonopplysningerService personopplysningerService;
-    private AktørService mock;
 
     @Before
     public void setUp() throws Exception {
         personConsumer = new PersonopplysningerTestConfig().personConsumerMock();
-        mock = mock(AktørService.class);
-        when(mock.getPersonIdent(new AktørId(AKTØR_ID))).thenReturn(new ResponseEntity<String>("11111111111", HttpStatus.OK));
-        personopplysningerService = new PersonopplysningerService(mock, this.personConsumer, new TpsOversetter(new TpsAdresseOversetter(), mock));
+        personopplysningerService = new PersonopplysningerService(this.personConsumer, new TpsOversetter(new TpsAdresseOversetter()));
     }
 
     @Test
@@ -56,7 +49,7 @@ public class PersonopplysningerServiceTest {
         when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class)))
                 .thenThrow(new HentPersonhistorikkPersonIkkeFunnet("Feil", any(PersonIkkeFunnet.class)));
 
-        assertThat(personopplysningerService.hentHistorikkFor(new AktørId(AKTØR_ID), FOM, TOM).getStatusCode())
+        assertThat(personopplysningerService.hentHistorikkFor(PERSONIDENT, FOM, TOM).getStatusCode())
                 .isEqualTo(HttpStatus.NOT_FOUND);
     }
 
@@ -65,7 +58,7 @@ public class PersonopplysningerServiceTest {
         when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class)))
                 .thenThrow(new HentPersonhistorikkSikkerhetsbegrensning("Feil", any(Sikkerhetsbegrensning.class)));
 
-        assertThat(personopplysningerService.hentHistorikkFor(new AktørId(AKTØR_ID), FOM, TOM).getStatusCode())
+        assertThat(personopplysningerService.hentHistorikkFor(PERSONIDENT, FOM, TOM).getStatusCode())
                 .isEqualTo(HttpStatus.FORBIDDEN);
     }
 
@@ -74,7 +67,7 @@ public class PersonopplysningerServiceTest {
         when(personConsumer.hentPersonResponse(any(HentPersonRequest.class)))
                 .thenThrow(new HentPersonPersonIkkeFunnet("Feil", any(PersonIkkeFunnet.class)));
 
-        assertThat(personopplysningerService.hentPersoninfoFor(new AktørId(AKTØR_ID)).getStatusCode())
+        assertThat(personopplysningerService.hentPersoninfoFor(PERSONIDENT).getStatusCode())
                 .isEqualTo(HttpStatus.NOT_FOUND);
     }
 
@@ -83,22 +76,13 @@ public class PersonopplysningerServiceTest {
         when(personConsumer.hentPersonResponse(any(HentPersonRequest.class)))
                 .thenThrow(new HentPersonSikkerhetsbegrensning("Feil", any(Sikkerhetsbegrensning.class)));
 
-        assertThat(personopplysningerService.hentPersoninfoFor(new AktørId(AKTØR_ID)).getStatusCode())
+        assertThat(personopplysningerService.hentPersoninfoFor(PERSONIDENT).getStatusCode())
                 .isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     @Test
-    public void personinfoSkalGiFeilmeldingVedNullPointerException() throws Exception {
-        when(personConsumer.hentPersonResponse(any(HentPersonRequest.class)))
-                .thenThrow(new NullPointerException("detail message"));
-
-        assertThat(personopplysningerService.hentPersoninfoFor(new AktørId(AKTØR_ID)).getHeaders().get("message"))
-                .contains("aktørService::getPersonIdent returnerte null");
-    }
-
-    @Test
     public void skalKonvertereResponsTilPersonInfo() {
-        Personinfo response = personopplysningerService.hentPersoninfoFor(new AktørId(AKTØR_ID)).getBody();
+        Personinfo response = personopplysningerService.hentPersoninfoFor(PERSONIDENT).getBody();
 
         LocalDate forventetFødselsdato = LocalDate.parse("1990-01-01");
 
@@ -109,7 +93,7 @@ public class PersonopplysningerServiceTest {
                 .filter(p -> p.getRelasjonsrolle().equals(RelasjonsRolleType.EKTE))
                 .findFirst().orElse(null);
 
-        assertThat(response.getAktørId().getId()).isEqualTo(AKTØR_ID);
+        assertThat(response.getPersonIdent().getId()).isEqualTo(PERSONIDENT);
         assertThat(response.getStatsborgerskap().erNorge()).isTrue();
         assertThat(response.getSivilstand()).isEqualTo(SivilstandType.GIFT);
         assertThat(response.getAlder()).isEqualTo(29);
@@ -130,9 +114,9 @@ public class PersonopplysningerServiceTest {
 
     @Test
     public void skalKonvertereResponsTilPersonhistorikkInfo() {
-        PersonhistorikkInfo response = personopplysningerService.hentHistorikkFor(new AktørId(AKTØR_ID), FOM, TOM).getBody();
+        PersonhistorikkInfo response = personopplysningerService.hentHistorikkFor(PERSONIDENT, FOM, TOM).getBody();
 
-        assertThat(response.getAktørId()).isEqualTo(AKTØR_ID);
+        assertThat(response.getPersonIdent().getId()).isEqualTo(PERSONIDENT);
         assertThat(response.getStatsborgerskaphistorikk()).hasSize(1);
         assertThat(response.getPersonstatushistorikk()).hasSize(1);
         assertThat(response.getAdressehistorikk()).hasSize(2);

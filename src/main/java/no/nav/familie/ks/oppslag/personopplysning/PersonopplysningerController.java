@@ -1,16 +1,12 @@
 package no.nav.familie.ks.oppslag.personopplysning;
 
-import no.nav.familie.ks.oppslag.personopplysning.domene.AktørId;
 import no.nav.familie.ks.oppslag.personopplysning.domene.PersonhistorikkInfo;
 import no.nav.familie.ks.oppslag.personopplysning.domene.Personinfo;
 import no.nav.security.oidc.api.ProtectedWithClaims;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -27,14 +23,14 @@ public class PersonopplysningerController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "historikk")
-    public ResponseEntity<PersonhistorikkInfo> historikk(@NotNull @RequestParam(name = "id") String aktørId,
+    public ResponseEntity<PersonhistorikkInfo> historikk(@NotNull @RequestHeader(name = "Nav-Personident") String personIdent,
                                          @NotNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fomDato,
                                          @NotNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate tomDato) {
-        return personopplysningerService.hentHistorikkFor(new AktørId(aktørId), fomDato, tomDato);
+        return personopplysningerService.hentHistorikkFor(personIdent, fomDato, tomDato);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "info")
-    public ResponseEntity<Personinfo> personInfo(@NotNull @RequestParam(name = "id") String aktørId) {
-        return personopplysningerService.hentPersoninfoFor(new AktørId(aktørId));
+    public ResponseEntity<Personinfo> personInfo(@NotNull @RequestHeader(name = "Nav-Personident") String personIdent) {
+        return personopplysningerService.hentPersoninfoFor(personIdent);
     }
 }
