@@ -394,6 +394,12 @@ public class TpsAdresseOversetter {
         return "UDEFINERT ADRESSE";
     }
 
+    public Adresseinfo finnBostedsadresseFor(Person person) {
+        Bruker bruker = (Bruker) person;
+        StrukturertAdresse adresse = person.getBostedsadresse().getStrukturertAdresse();
+        return konverterStrukturertAdresse(bruker, adresse, AdresseType.BOSTEDSADRESSE);
+    }
+
     private String byggOppAdresse(Adresseinfo adresseinfo) {
         String linje1 = adresseinfo.getAdresselinje1();
         String linje2 = Optional.ofNullable(adresseinfo.getAdresselinje2()).map(linje -> "\n" + linje).orElse("");
