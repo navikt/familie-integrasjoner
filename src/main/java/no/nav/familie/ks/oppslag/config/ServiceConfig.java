@@ -2,6 +2,7 @@ package no.nav.familie.ks.oppslag.config;
 
 
 import no.nav.sbl.dialogarena.common.cxf.CXFClient;
+import no.nav.tjeneste.pip.egen.ansatt.v1.EgenAnsattV1;
 import no.nav.tjeneste.virksomhet.behandleoppgave.v1.BehandleOppgaveV1;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.InnsynJournalV2;
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3;
@@ -49,6 +50,19 @@ public class ServiceConfig {
         setSystemProperties(stsUrl, systemuserUsername, systemuserPwd);
         return new CXFClient<>(InnsynJournalV2.class)
                 .address(innsynJournalUrl)
+                .configureStsForSystemUser()
+                .build();
+    }
+
+    @Bean
+    public EgenAnsattV1 egenAnsattV1port(@Value("${EGEN_ANSATT_V1_URL}") String egenAnsattUrl,
+                                            @Value("${SECURITYTOKENSERVICE_URL}") String stsUrl,
+                                            @Value("${CREDENTIAL_USERNAME}") String systemuserUsername,
+                                            @Value("${CREDENTIAL_PASSWORD}") String systemuserPwd) {
+
+        setSystemProperties(stsUrl, systemuserUsername, systemuserPwd);
+        return new CXFClient<>(EgenAnsattV1.class)
+                .address(egenAnsattUrl)
                 .configureStsForSystemUser()
                 .build();
     }

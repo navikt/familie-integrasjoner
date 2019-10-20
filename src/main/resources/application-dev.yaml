@@ -15,6 +15,7 @@ AKTOERID_URL: #Denne er ikke i bruk da Aktøregisterklienten mockes ut lokalt
 PERSON_V3_URL: #Denne er ikke i bruk da PersonV3 mockes ut lokalt
 DOKARKIV_V1_URL: http://localhost:18321
 INNSYN_JOURNAL_V2_URL: #InnsynJournalV2 mockes ut lokalt
+EGEN_ANSATT_V1_URL: #Mockes ut lokalt
 
 MEDL2_URL: #Denne er ikke i bruk da Medl2 mockes ut lokalt
 SAF_URL: http://localhost:18321/rest/saf/graphql

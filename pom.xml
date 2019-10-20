@@ -25,7 +25,7 @@
         <kontrakt.version>1.0_20191001152708_01aaa0c</kontrakt.version>
         <cxf.version>3.3.1</cxf.version>
         <oidc-support.version>0.2.18</oidc-support.version>
-        <tjenestespesifikasjoner.version>1.2019.07.11-06.47-b55f47790a9d</tjenestespesifikasjoner.version>
+        <tjenestespesifikasjoner.version>1.2019.09.25-00.21-49b69f0625e0</tjenestespesifikasjoner.version>
     </properties>
 
     <dependencies>
@@ -159,6 +159,13 @@
             <artifactId>nav-innsynJournal-v2-tjenestespesifikasjon</artifactId>
             <version>${tjenestespesifikasjoner.version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/no.nav.tjenestespesifikasjoner/egenansatt-v1-tjenestespesifikasjon -->
+        <dependency>
+            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <artifactId>egenansatt-v1-tjenestespesifikasjon</artifactId>
+            <version>${tjenestespesifikasjoner.version}</version>
+        </dependency>
+
 
         <!-- Logging -->
         <dependency>

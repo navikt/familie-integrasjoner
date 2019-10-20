@@ -16,6 +16,7 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class PersonopplysningerService {
 
     private static final Logger LOG = LoggerFactory.getLogger(PersonopplysningerService.class);
+    public static final String PERSON = "PERSON";
     private final PersonConsumer personConsumer;
     private TpsOversetter oversetter;
 
@@ -75,5 +77,23 @@ public class PersonopplysningerService {
             LOG.info("Prøver å hente personinfo for person som ikke finnes i TPS");
             return ResponseEntity.status(NOT_FOUND).header("message", exception.getMessage()).build();
         }
+    }
+
+    @Cacheable(cacheNames = PERSON, key = "#personIdent", condition = "#personIdent != null")
+    public Personinfo hentPersoninfo(String personIdent) {
+            HentPersonRequest request = new HentPersonRequest()
+                    .withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)))
+                    .withInformasjonsbehov(List.of(Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.ADRESSE));
+        HentPersonResponse response = null;
+        try {
+            response = personConsumer.hentPersonResponse(request);
+        } catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
+            LOG.info("Prøver å hente personinfo for person som ikke finnes i TPS");
+            return null;
+        } catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
+            LOG.info("Ikke tilgang til å hente personinfo for person");
+            return null;
+        }
+        return oversetter.tilPersoninfo(new no.nav.familie.ks.oppslag.personopplysning.domene.PersonIdent(personIdent), response);
     }
 }
