@@ -42,7 +42,7 @@ public class HentJournalpostController {
     public Map<String, String> handleRequestParserException(
             RuntimeException ex) {
         String errorMessage = "Feil ved henting av journalpost. " + ex.getMessage();
-        LOG.error(errorMessage, ex);
+        LOG.warn(errorMessage, ex);
         return Map.of("message", errorMessage);
     }
 
