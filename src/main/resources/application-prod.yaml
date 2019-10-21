@@ -13,7 +13,7 @@ INFOTRYGD_KS_SCOPE: ${INFOTRYGD_KS_SCOPE}
 SECURITYTOKENSERVICE_URL: https://sts.adeo.no/SecurityTokenServiceProvider/
 AKTOERID_URL: https://app.adeo.no/aktoerregister/api/v1
 PERSON_V3_URL: https://wasapp.adeo.no/tpsws/ws/Person/v3
-EGEN_ANSATT_V1_URL: https://wasapp.adeo.no/tpsws/ws/EgenAnsatt_v1
+EGEN_ANSATT_V1_URL: https://wasapp.adeo.no/tpsws/EgenAnsatt_v1
 DOKARKIV_V1_URL: https://dokarkiv.nais.adeo.no
 MEDL2_URL: https://app.adeo.no/medl2/api/v1
 SAF_URL: http://saf/graphql
