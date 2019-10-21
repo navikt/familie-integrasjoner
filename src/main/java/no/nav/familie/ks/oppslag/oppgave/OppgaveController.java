@@ -1,6 +1,7 @@
 package no.nav.familie.ks.oppslag.oppgave;
 
 import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
+import no.nav.familie.ks.kontrakter.oppgave.OppgaveKt;
 import no.nav.security.oidc.api.ProtectedWithClaims;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,8 @@ public class OppgaveController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, path = "/oppdater")
-    public ResponseEntity oppdaterOppgave(@RequestBody Oppgave request) {
+    public ResponseEntity oppdaterOppgave(@RequestBody String oppgaveJson) {
+        Oppgave request = OppgaveKt.toOppgave(oppgaveJson);
         return oppgaveService.oppdaterOppgave(request);
     }
 }
