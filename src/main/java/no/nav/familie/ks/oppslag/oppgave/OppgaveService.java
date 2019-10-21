@@ -47,6 +47,9 @@ public class OppgaveService {
         } catch (Exception e) {
             throw new RuntimeException("Ukjent feil ved kall mot oppgave/api/v1", e);
         }
+        if (oppgaveJsonDto == null) {
+            return ResponseEntity.badRequest().body("Fant ingen oppgave for " + request.getJournalpostId());
+        }
 
         return ResponseEntity.ok(oppgaveJsonDto.getId());
     }

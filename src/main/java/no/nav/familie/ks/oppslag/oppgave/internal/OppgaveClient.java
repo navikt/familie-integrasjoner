@@ -20,7 +20,7 @@ public class OppgaveClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(MedlemskapService.class);
     private static final String TEMA = "KON";
-    private static final String OPPGAVE_TYPE = "BEH_SAK_KON";
+    private static final String OPPGAVE_TYPE = "BEH_SAK";
     private static final String X_CORRELATION_ID = "X-Correlation-ID";
 
     private URI oppgaveUri;
@@ -41,6 +41,9 @@ public class OppgaveClient {
     public OppgaveJsonDto finnOppgave(Oppgave request) {
             URI requestUrl = lagRequestUrlMed(oppgaveUri, request.getAktorId(), request.getJournalpostId());
             var response = getRequest(requestUrl, FinnOppgaveResponseDto.class);
+            if (response.getBody().getOppgaver().isEmpty()) {
+                return null;
+            }
             return response.getBody().getOppgaver().get(0);
     }
 
