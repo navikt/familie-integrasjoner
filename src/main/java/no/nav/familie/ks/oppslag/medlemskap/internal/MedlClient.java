@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.familie.http.client.HttpRequestUtil;
 import no.nav.familie.http.client.NavHttpHeaders;
 import no.nav.familie.http.sts.StsRestClient;
-import no.nav.familie.ks.oppslag.felles.OppslagException;
 import no.nav.familie.ks.oppslag.medlemskap.MedlemskapService;
 import no.nav.familie.ks.oppslag.medlemskap.MedlemskapsUnntakResponse;
 import org.slf4j.Logger;

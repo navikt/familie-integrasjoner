@@ -17,3 +17,4 @@ management:
 
 STS_URL: http://security-token-service.default.svc.nais.local
 INFOTRYGD_URL: http://infotrygd-kontantstotte
+OPPGAVE_URL: http://oppgave/api/v1

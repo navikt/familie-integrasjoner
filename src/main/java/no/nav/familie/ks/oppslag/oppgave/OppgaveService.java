@@ -1,18 +1,19 @@
 package no.nav.familie.ks.oppslag.oppgave;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
-import no.nav.familie.ks.oppslag.oppgave.internal.OppgaveConsumer;
-import no.nav.tjeneste.virksomhet.behandleoppgave.v1.WSOppgaveIkkeFunnetException;
-import no.nav.tjeneste.virksomhet.behandleoppgave.v1.WSOptimistiskLasingException;
-import no.nav.tjeneste.virksomhet.behandleoppgave.v1.WSSikkerhetsbegrensningException;
+import no.nav.familie.ks.oppslag.oppgave.internal.OppgaveClient;
+import no.nav.oppgave.v1.OppgaveJsonDto;
+import no.nav.sbl.util.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.remoting.soap.SoapFaultException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.context.annotation.ApplicationScope;
 
 import static org.springframework.http.HttpStatus.*;
@@ -22,50 +23,31 @@ import static org.springframework.http.HttpStatus.*;
 public class OppgaveService {
 
     private static final Logger LOG = LoggerFactory.getLogger(OppgaveService.class);
-    private final OppgaveConsumer oppgaveConsumer;
+    private final OppgaveClient oppgaveClient;
 
     @Autowired
-    public OppgaveService(OppgaveConsumer oppgaveConsumer) {
-        this.oppgaveConsumer = oppgaveConsumer;
+    public OppgaveService(OppgaveClient oppgaveClient) {
+        this.oppgaveClient = oppgaveClient;
     }
 
-    ResponseEntity opprettEllerOppdaterOppgave(Oppgave request) {
+    ResponseEntity oppdaterOppgave(Oppgave request) {
+        OppgaveJsonDto oppgaveJsonDto;
         try {
-            if (request.getEksisterendeOppgaveId() != null) {
-                return ResponseEntity.ok(oppgaveConsumer.oppdaterOppgave(request));
+            if (StringUtils.nullOrEmpty(request.getEksisterendeOppgaveId())) {
+                oppgaveJsonDto = oppgaveClient.finnOppgave(request);
             } else {
-                return opprettOppgaveResponse(request);
+                oppgaveJsonDto = oppgaveClient.finnOppgave(request.getEksisterendeOppgaveId());
             }
-        } catch (WSSikkerhetsbegrensningException | WSOppgaveIkkeFunnetException | WSOptimistiskLasingException e) {
-            return ResponseEntity.status(setPassendeStatus(e)).header("message", e.getMessage()).build();
-        } catch (SoapFaultException e) {
-            return ResponseEntity.status(BAD_GATEWAY)
-                    .header("message", String.format("SOAP tjenesten returnerte en SOAP Fault: %s", e.getMessage())).build();
+            oppgaveClient.oppdaterOppgave(oppgaveJsonDto, request.getBeskrivelse());
+        } catch (JsonProcessingException e) {
+            LOG.info("Mapping av OppgaveJsonDto til String feilet.");
+            return ResponseEntity.status(EXPECTATION_FAILED).build();
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            return ResponseEntity.status(e.getStatusCode()).header("message", e.getMessage()).build();
+        } catch (Exception e) {
+            throw new RuntimeException("Ukjent feil ved kall mot oppgave/api/v1", e);
         }
-    }
 
-    private ResponseEntity opprettOppgaveResponse(Oppgave request) throws WSSikkerhetsbegrensningException {
-        var response = oppgaveConsumer.opprettOppgave(request);
-        if (response.getOppgaveId() != null) {
-            return ResponseEntity.ok(response.getOppgaveId());
-        }
-        return ResponseEntity.status(EXPECTATION_FAILED)
-                .header("message", "Ugyldig respons: Fikk ingen oppgaveId tilbake fra GSAK").build();
-    }
-
-    private HttpStatus setPassendeStatus(Exception e) {
-        if (e instanceof WSSikkerhetsbegrensningException) {
-            LOG.info("Ikke tilgang til å opprette eller oppdatere oppgave i Gosys.");
-            return UNAUTHORIZED;
-        } else if (e instanceof WSOppgaveIkkeFunnetException) {
-            LOG.info("Prøver å oppdatere oppgave som ikke finnes i Gosys.");
-            return NOT_FOUND;
-        } else if (e instanceof WSOptimistiskLasingException) {
-            LOG.info("WSLagreOppgaveRequest returnerte WSOptimistiskLasingException...");
-            return BAD_REQUEST;
-        } else {
-            LOG.info("Det oppstod en uventet feil.");
-            return EXPECTATION_FAILED;
-        }
+        return ResponseEntity.ok(oppgaveJsonDto.getId());
     }
 }
