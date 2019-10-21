@@ -47,12 +47,8 @@ public class TilgangskontrollController {
     }
 
     private ResponseEntity lagRespons(Tilgang tilgang) {
-        if (tilgang.isHarTilgang())
             return ok()
                     .contentType(APPLICATION_JSON)
                     .body(tilgang);
-        return status(FORBIDDEN)
-                .contentType(APPLICATION_JSON)
-                .body(tilgang);
     }
 }

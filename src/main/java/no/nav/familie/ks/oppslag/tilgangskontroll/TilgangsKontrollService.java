@@ -3,6 +3,8 @@ package no.nav.familie.ks.oppslag.tilgangskontroll;
 import no.nav.familie.ks.oppslag.egenansatt.EgenAnsattService;
 import no.nav.familie.ks.oppslag.personopplysning.domene.Personinfo;
 import no.nav.familie.ks.oppslag.tilgangskontroll.domene.Tilgang;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,10 @@ public class TilgangsKontrollService {
     public final static String DISKRESJONSKODE_KODE7 = "SPFO";
 
 
+    private static final Logger secureLogger = LoggerFactory.getLogger("secureLogger");
+    private static final Logger LOG = LoggerFactory.getLogger(TilgangsKontrollService.class);
+
+
     @Autowired
     TilgangsKontrollService(EgenAnsattService egenAnsattService) {
         this.egenAnsattService = egenAnsattService;
@@ -35,15 +41,18 @@ public class TilgangsKontrollService {
     @Cacheable(cacheNames = TILGANGTILBRUKER, key = "#saksbehandlerId.concat(#personFnr)", condition = "#personFnr != null && #saksbehandlerId != null")
     public Tilgang sjekkTilgang(String personFnr, String saksbehandlerId, Personinfo personInfo) {
 
-
         String diskresjonskode = personInfo.getDiskresjonskode();
+
         if (DISKRESJONSKODE_KODE6.equals(diskresjonskode) && !harTilgangTilKode6(saksbehandlerId)) {
+            secureLogger.info(saksbehandlerId + " har ikke tilgang til " + personFnr);
             return new Tilgang().withHarTilgang(false).withBegrunnelse(KODE6.name());
         } else if (DISKRESJONSKODE_KODE7.equals(diskresjonskode) && !harTilgangTilKode7(saksbehandlerId)) {
+            secureLogger.info(saksbehandlerId + " har ikke tilgang til " + personFnr);
             return new Tilgang().withHarTilgang(false).withBegrunnelse(KODE7.name());
         }
 
         if (egenAnsattService.erEgenAnsatt(personFnr) && !harTilgangTilEgenAnsatt(saksbehandlerId)) {
+            secureLogger.info(saksbehandlerId + " har ikke tilgang til egen ansatt " + personFnr);
             return new Tilgang().withHarTilgang(false).withBegrunnelse(EGEN_ANSATT.name());
         }
 
