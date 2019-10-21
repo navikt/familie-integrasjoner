@@ -55,7 +55,7 @@ public class OppgaveClient {
 
     public void oppdaterOppgave(OppgaveJsonDto dto, String beskrivelse) throws JsonProcessingException {
         dto.setBeskrivelse(dto.getBeskrivelse() + beskrivelse);
-        putRequest(oppgaveUri, objectMapper.writeValueAsString(dto), String.class);
+        putRequest(URI.create(oppgaveUri + "/" + dto.getId()), objectMapper.writeValueAsString(dto), String.class);
     }
 
     private URI lagRequestUrlMed(URI oppgaveUri, String aktoerId, String journalpostId) {

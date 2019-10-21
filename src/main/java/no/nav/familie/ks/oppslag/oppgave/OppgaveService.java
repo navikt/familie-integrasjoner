@@ -38,6 +38,9 @@ public class OppgaveService {
             } else {
                 oppgaveJsonDto = oppgaveClient.finnOppgave(request.getEksisterendeOppgaveId());
             }
+            if (oppgaveJsonDto == null) {
+                return ResponseEntity.badRequest().body("Fant ingen oppgave for " + request.getJournalpostId());
+            }
             oppgaveClient.oppdaterOppgave(oppgaveJsonDto, request.getBeskrivelse());
         } catch (JsonProcessingException e) {
             LOG.info("Mapping av OppgaveJsonDto til String feilet.");
@@ -46,9 +49,6 @@ public class OppgaveService {
             return ResponseEntity.status(e.getStatusCode()).header("message", e.getMessage()).build();
         } catch (Exception e) {
             throw new RuntimeException("Ukjent feil ved kall mot oppgave/api/v1", e);
-        }
-        if (oppgaveJsonDto == null) {
-            return ResponseEntity.badRequest().body("Fant ingen oppgave for " + request.getJournalpostId());
         }
 
         return ResponseEntity.ok(oppgaveJsonDto.getId());
