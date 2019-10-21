@@ -1,5 +1,6 @@
 package no.nav.familie.ks.oppslag.personopplysning;
 
+import no.nav.familie.ks.oppslag.felles.ws.DateUtil;
 import no.nav.familie.ks.oppslag.personopplysning.domene.PersonhistorikkInfo;
 import no.nav.familie.ks.oppslag.personopplysning.domene.Personinfo;
 import no.nav.familie.ks.oppslag.personopplysning.domene.TpsOversetter;
@@ -10,6 +11,7 @@ import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkPersonIkk
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Periode;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.ApplicationScope;
 
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -52,6 +55,7 @@ public class PersonopplysningerService {
         try {
             var request = new HentPersonhistorikkRequest();
             request.setAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)));
+            request.setPeriode(new Periode().withFom(DateUtil.convertToXMLGregorianCalendar(fom)).withTom(DateUtil.convertToXMLGregorianCalendar(tom)));
             var response = personConsumer.hentPersonhistorikkResponse(request);
             return ResponseEntity.ok(oversetter.tilPersonhistorikkInfo(new no.nav.familie.ks.oppslag.personopplysning.domene.PersonIdent(personIdent), response));
         } catch (HentPersonhistorikkSikkerhetsbegrensning exception) {
