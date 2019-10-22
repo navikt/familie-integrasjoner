@@ -49,7 +49,7 @@ public class DokarkivController {
     public Map<String, String> handleValidationExceptions(
             RuntimeException ex) {
         LOG.warn("Uventet arkiveringsfeil: ", ex);
-        return Map.of("message", ex.getMessage());
+        return Map.of("message", ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
