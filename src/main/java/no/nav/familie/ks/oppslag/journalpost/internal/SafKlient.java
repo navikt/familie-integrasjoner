@@ -77,6 +77,7 @@ public class SafKlient {
                 hentJournalpostResponsSuccess.increment();
                 return response.getBody().getData().getJournalpost();
             } else {
+                //noinspection ConstantConditions
                 throw new JournalpostRestClientException("Kan ikke hente journalpost " + response.getBody().getErrors().toString(), null, journalpostId);
             }
         } catch (RestClientException e) {

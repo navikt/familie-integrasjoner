@@ -3,7 +3,6 @@ package no.nav.familie.ks.oppslag.dokarkiv;
 import no.nav.familie.ks.oppslag.dokarkiv.api.ArkiverDokumentRequest;
 import no.nav.familie.ks.oppslag.dokarkiv.api.ArkiverDokumentResponse;
 import no.nav.familie.ks.oppslag.dokarkiv.client.KanIkkeFerdigstilleJournalpostException;
-import no.nav.familie.ks.oppslag.felles.MDCOperations;
 import no.nav.security.oidc.api.ProtectedWithClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,7 @@ import java.util.Map;
 public class DokarkivController {
     private static final Logger LOG = LoggerFactory.getLogger(DokarkivController.class);
 
-    private DokarkivService journalføringService;
+    private final DokarkivService journalføringService;
 
     DokarkivController(DokarkivService journalføringService) {
         this.journalføringService = journalføringService;
@@ -56,7 +55,7 @@ public class DokarkivController {
     @ExceptionHandler(KanIkkeFerdigstilleJournalpostException.class)
     public Map<String, String> handleKanIkkeFerdigstilleException(
             KanIkkeFerdigstilleJournalpostException ex) {
-        LOG.warn("Feil ved ferdigstilling ", ex.getMessage());
+        LOG.warn("Feil ved ferdigstilling {}", ex.getMessage());
         return Map.of("message", ex.getMessage());
     }
 
@@ -68,11 +67,11 @@ public class DokarkivController {
 
     @PutMapping("/{journalpostId}/ferdigstill")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> ferdigstillJournalpost(@PathVariable(name = "journalpostId") String journalpostId) {
+    public ResponseEntity ferdigstillJournalpost(@PathVariable(name = "journalpostId") String journalpostId) {
         if (journalpostId == null) {
-            return new ResponseEntity("journalpostId er null",HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body("journalpostId er null");
         }
         journalføringService.ferdistillJournalpost(journalpostId);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(journalpostId);
     }
 }

@@ -45,7 +45,7 @@ public class DokarkivControllerTest extends OppslagSpringRunnerTest {
         ArkiverDokumentRequest body = new ArkiverDokumentRequest(null, FULLT_NAVN, false, List.of(new Dokument("foo".getBytes(), FilType.PDFA, null, DokumentType.KONTANTSTØTTE_SØKNAD)));
 
         ResponseEntity<String> response = restTemplate.exchange(
-                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<ArkiverDokumentRequest>(body, headers), String.class
+                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), String.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
@@ -57,7 +57,7 @@ public class DokarkivControllerTest extends OppslagSpringRunnerTest {
         ArkiverDokumentRequest body = new ArkiverDokumentRequest("fnr", "Foobar",false, new LinkedList<>());
 
         ResponseEntity<String> response = restTemplate.exchange(
-                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<ArkiverDokumentRequest>(body, headers), String.class
+                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), String.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);

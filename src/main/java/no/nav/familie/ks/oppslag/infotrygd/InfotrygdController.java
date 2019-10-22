@@ -34,11 +34,11 @@ public class InfotrygdController {
     public ResponseEntity<Map<String, String>> handleExceptions(HttpStatusCodeException ex) {
         LOG.error("Oppslag mot infotrygd-kontantstotte feilet. Status code: " + ex.getStatusCode());
         secureLogger.error(ex.getMessage(), ex);
-        return new ResponseEntity<Map<String, String>>(Map.of("error", "" + ex.getStatusCode()), ex.getStatusCode());
+        return new ResponseEntity<>(Map.of("error", "" + ex.getStatusCode()), ex.getStatusCode());
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "harBarnAktivKontantstotte")
     public ResponseEntity<AktivKontantstøtteInfo> aktivKontantstøtte(@NotNull @RequestHeader(name = "Nav-Personident") String fnr) {
-        return new ResponseEntity<AktivKontantstøtteInfo>(infotrygdService.hentAktivKontantstøtteFor(fnr), HttpStatus.OK);
+        return new ResponseEntity<>(infotrygdService.hentAktivKontantstøtteFor(fnr), HttpStatus.OK);
     }
 }

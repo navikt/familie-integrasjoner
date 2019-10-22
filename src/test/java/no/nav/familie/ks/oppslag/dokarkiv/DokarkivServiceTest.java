@@ -98,7 +98,7 @@ public class DokarkivServiceTest {
 
         ArkiverDokumentRequest dto = new ArkiverDokumentRequest(FNR, NAVN, false, List.of(new Dokument(PDF_DOK, FilType.PDFA, FILNAVN, DokumentType.KONTANTSTØTTE_SØKNAD)));
 
-        Throwable thrown = catchThrowable(() -> { dokarkivService.lagInngåendeJournalpost(dto); });
+        Throwable thrown = catchThrowable(() -> dokarkivService.lagInngåendeJournalpost(dto));
         assertThat(thrown).isInstanceOf(RuntimeException.class).withFailMessage("Kan ikke hente navn");
     }
 

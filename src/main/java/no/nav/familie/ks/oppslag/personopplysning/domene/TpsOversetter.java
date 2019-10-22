@@ -105,17 +105,15 @@ public class TpsOversetter {
     }
 
     private void konverterStatsborgerskapPerioder(HentPersonhistorikkResponse response, PersonhistorikkInfo.Builder builder) {
-        Optional.ofNullable(response.getStatsborgerskapListe()).ifPresent(list -> {
-            list.forEach(e -> {
-                Periode periode = Periode.innenfor(
-                        DateUtil.convertToLocalDate(e.getPeriode().getFom()),
-                        DateUtil.convertToLocalDate(e.getPeriode().getTom()));
+        Optional.ofNullable(response.getStatsborgerskapListe()).ifPresent(list -> list.forEach(e -> {
+            Periode periode = Periode.innenfor(
+                    DateUtil.convertToLocalDate(e.getPeriode().getFom()),
+                    DateUtil.convertToLocalDate(e.getPeriode().getTom()));
 
-                Landkode landkoder = new Landkode(e.getStatsborgerskap().getLand().getValue());
-                StatsborgerskapPeriode element = new StatsborgerskapPeriode(periode, landkoder);
-                builder.leggTil(element);
-            });
-        });
+            Landkode landkoder = new Landkode(e.getStatsborgerskap().getLand().getValue());
+            StatsborgerskapPeriode element = new StatsborgerskapPeriode(periode, landkoder);
+            builder.leggTil(element);
+        }));
     }
 
     private PersonstatusType tilPersonstatusType(Personstatus personstatus) {

@@ -75,27 +75,21 @@ public class InfotrygdControllerTest extends OppslagSpringRunnerTest {
     public void skal_feile_når_respons_mangler() {
         spesifiserResponsFraInfotrygd("");
 
-        assertThatThrownBy(() -> {
-                infotrygdService.hentAktivKontantstøtteFor("12345678901"); 
-        }).isInstanceOf(HttpServerErrorException.class);
+        assertThatThrownBy(() -> infotrygdService.hentAktivKontantstøtteFor("12345678901")).isInstanceOf(HttpServerErrorException.class);
     }
 
     @Test
     public void skal_feile_når_returobjekt_er_tomt() {
         spesifiserResponsFraInfotrygd("{}");
 
-        assertThatThrownBy(() -> {
-                infotrygdService.hentAktivKontantstøtteFor("12345678901"); 
-        }).isInstanceOf(HttpServerErrorException.class);
+        assertThatThrownBy(() -> infotrygdService.hentAktivKontantstøtteFor("12345678901")).isInstanceOf(HttpServerErrorException.class);
     }
 
     @Test
     public void skal_feile_når_returobjekt_har_feil_type() {
         spesifiserResponsFraInfotrygd("{ \"harAKtivKontantstotte\": 42 }");
 
-        assertThatThrownBy(() -> {
-                infotrygdService.hentAktivKontantstøtteFor("12345678901"); 
-        }).isInstanceOf(HttpServerErrorException.class);
+        assertThatThrownBy(() -> infotrygdService.hentAktivKontantstøtteFor("12345678901")).isInstanceOf(HttpServerErrorException.class);
     }
 
     private void spesifiserResponsFraInfotrygd(String respons) {

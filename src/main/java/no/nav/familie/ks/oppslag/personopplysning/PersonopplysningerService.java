@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.ApplicationScope;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -90,7 +89,7 @@ public class PersonopplysningerService {
             HentPersonRequest request = new HentPersonRequest()
                     .withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)))
                     .withInformasjonsbehov(List.of(Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.ADRESSE));
-        HentPersonResponse response = null;
+        HentPersonResponse response;
         try {
             response = personConsumer.hentPersonResponse(request);
         } catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {

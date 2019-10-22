@@ -2,16 +2,11 @@ package no.nav.familie.ks.oppslag.dokarkiv;
 
 import no.nav.familie.ks.oppslag.dokarkiv.client.DokarkivClient;
 import no.nav.familie.ks.oppslag.dokarkiv.client.domene.OpprettJournalpostResponse;
-import no.nav.familie.ks.oppslag.journalpost.internal.Journalpost;
-import no.nav.familie.ks.oppslag.journalpost.internal.SafKlient;
-import no.nav.familie.ks.oppslag.journalpost.internal.Sak;
-import org.mockito.ArgumentCaptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
