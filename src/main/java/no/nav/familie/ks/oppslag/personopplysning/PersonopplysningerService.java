@@ -57,7 +57,6 @@ public class PersonopplysningerService {
             request.setAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)));
             request.setPeriode(new Periode().withFom(DateUtil.convertToXMLGregorianCalendar(fom)).withTom(DateUtil.convertToXMLGregorianCalendar(tom)));
             var response = personConsumer.hentPersonhistorikkResponse(request);
-            response.getBostedsadressePeriodeListe().forEach(periode -> secureLogger.info("Bostedsadresse for " + personIdent + ": fom " + periode.getPeriode().getFom() + " tom " + periode.getPeriode().getTom()));
             return ResponseEntity.ok(oversetter.tilPersonhistorikkInfo(new no.nav.familie.ks.oppslag.personopplysning.domene.PersonIdent(personIdent), response));
         } catch (HentPersonhistorikkSikkerhetsbegrensning exception) {
             LOG.info("Ikke tilgang til å hente historikk for person");

@@ -54,7 +54,7 @@ public class TpsOversetter {
 
         return new Personinfo.Builder()
                 .medPersonIdent(identFraTps != null ? identFraTps : personIdent)
-                .medKjønn(person.getKjoenn().getKjoenn().getKodeRef())
+                .medKjønn(person.getKjoenn().getKjoenn().getValue())
                 .medFamilierelasjon(familierelasjoner)
                 .medBostedsadresse(tpsAdresseOversetter.finnBostedsadresseFor(person))
                 .medAdresseLandkode(tpsAdresseOversetter.finnAdresseLandkodeFor(person))
