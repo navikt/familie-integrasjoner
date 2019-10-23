@@ -7,15 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 
-import java.util.Map;
 import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 @RestController
 @ProtectedWithClaims(issuer = "intern")
@@ -24,7 +21,7 @@ public class InfotrygdController {
     private static final Logger LOG = LoggerFactory.getLogger(InfotrygdController.class);
     private static final Logger secureLogger = LoggerFactory.getLogger("secureLogger");
 
-    private InfotrygdService infotrygdService;
+    private final InfotrygdService infotrygdService;
 
     public InfotrygdController(InfotrygdService infotrygdService) {
         this.infotrygdService = infotrygdService;
@@ -32,9 +29,13 @@ public class InfotrygdController {
 
     @ExceptionHandler(HttpStatusCodeException.class)
     public ResponseEntity<Map<String, String>> handleExceptions(HttpStatusCodeException ex) {
-        LOG.error("Oppslag mot infotrygd-kontantstotte feilet. Status code: " + ex.getStatusCode());
-        secureLogger.error(ex.getMessage(), ex);
-        return new ResponseEntity<>(Map.of("error", "" + ex.getStatusCode()), ex.getStatusCode());
+        if (ex instanceof HttpClientErrorException.NotFound) {
+            LOG.info("404 mot infotrygd-kontantstotte");
+        } else {
+            LOG.error("Oppslag mot infotrygd-kontantstotte feilet. Status code: " + ex.getStatusCode());
+            secureLogger.error("Oppslag mot infotrygd-kontantstotte feilet. feilmelding={} exception={}", ex.getMessage(), ex);
+        }
+        return new ResponseEntity<>(Map.of("error", ex.getStatusCode().toString()), ex.getStatusCode());
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "harBarnAktivKontantstotte")
