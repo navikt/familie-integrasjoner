@@ -131,7 +131,7 @@ public class PersonopplysningerServiceTest {
         assertThat(response.getAdressehistorikk().get(0).getAdresse().getLand()).isEqualTo(Landkode.NORGE.getKode());
         assertThat(response.getAdressehistorikk().get(0).getAdresse().getAdresselinje1()).isEqualTo("Sannergata 2");
         assertThat(response.getAdressehistorikk().get(0).getAdresse().getPostnummer()).isEqualTo("0560");
-        assertThat(response.getAdressehistorikk().get(0).getAdresse().getPoststed()).isEqualTo("UDEFINERT");
+        assertThat(response.getAdressehistorikk().get(0).getAdresse().getPoststed()).isEqualTo("OSLO");
 
         assertThat(response.getAdressehistorikk().get(1).getAdresse().getAdresseType()).isEqualTo(AdresseType.MIDLERTIDIG_POSTADRESSE_UTLAND);
         assertThat(response.getAdressehistorikk().get(1).getAdresse().getLand()).isEqualTo("SWE");

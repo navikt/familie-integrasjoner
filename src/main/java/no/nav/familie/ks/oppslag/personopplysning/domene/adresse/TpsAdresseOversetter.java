@@ -9,7 +9,12 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkResponse;
 import org.springframework.stereotype.Component;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
@@ -419,11 +424,25 @@ public class TpsAdresseOversetter {
     }
 
     private String tilPoststed(String postnummer) {
-        if (HARDKODET_POSTNR.equals(postnummer)) {
-            return HARDKODET_POSTSTED;
+        InputStream postnummerFil = getPostnummerFil();
+        BufferedReader bf = new BufferedReader(new InputStreamReader(postnummerFil));
+        try (Stream<String> filLinje = bf.lines()) {
+            String[][] allePostnumre = filLinje.map(s -> s.split("\t", 5))
+                    .toArray(String[][]::new);
+
+            for (String[] linje : allePostnumre) {
+                if (postnummer.equals(linje[0])) {
+                    return linje[1];
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Feil ved mapping av postnummer", e);
         }
-        // FIXME: Slå opp mot poststed-tabell elns
         return HARDKODET_POSTSTED;
+    }
+
+    private InputStream getPostnummerFil() {
+        return getClass().getClassLoader().getResourceAsStream("kodeverk/postnummer.txt");
     }
 
     private String tilLand(Landkoder landkoder) {
