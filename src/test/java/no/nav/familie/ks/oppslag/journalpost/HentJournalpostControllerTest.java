@@ -1,5 +1,8 @@
 package no.nav.familie.ks.oppslag.journalpost;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import no.nav.familie.ks.oppslag.OppslagSpringRunnerTest;
 import no.nav.security.oidc.test.support.JwtTokenGenerator;
 import org.junit.Before;
@@ -9,6 +12,7 @@ import org.mockserver.junit.MockServerRule;
 import org.mockserver.model.Header;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -24,6 +28,8 @@ import static org.springframework.http.HttpStatus.*;
 
 @ActiveProfiles(profiles = {"dev", "mock-sts", "mock-innsyn"})
 public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
+    Logger testLogger = (Logger) LoggerFactory.getLogger(HentJournalpostController.class);
+
     public static final int MOCK_SERVER_PORT = 18321;
     public static final String JOURNALPOST_ID = "12345678";
     public static final String SAKSNUMMER = "87654321";
@@ -33,6 +39,7 @@ public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
 
     @Before
     public void setUp() {
+        testLogger.addAppender(listAppender);
         headers.setBearerAuth(JwtTokenGenerator.signedJWTAsString("testbruker"));
     }
 
@@ -131,6 +138,7 @@ public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
         assertThat(response.getBody()).contains("Feil ved henting av journalpost=12345678 klientfeilmelding=Kan ikke hente journalpost [SafError{message='Feilet ved henting av data (/journalpost) : null', exceptionType='TECHNICAL', exception='NullPointerException'}]");
+        assertThat(loggingEvents).extracting(ILoggingEvent::getLevel).containsExactly(Level.WARN);
     }
 
     @Test
@@ -155,6 +163,7 @@ public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
         assertThat(response.getBody()).contains("Feil ved henting av journalpost=12345678 statuscode=500 INTERNAL_SERVER_ERROR body=feilmelding");
+        assertThat(loggingEvents).extracting(ILoggingEvent::getLevel).containsExactly(Level.WARN);
     }
 
 
@@ -184,6 +193,7 @@ public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
         );
 
         assertThat(response.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
+        assertThat(loggingEvents).extracting(ILoggingEvent::getLevel).containsExactly(Level.WARN);
     }
 
     private String testdata(String filnavn) throws IOException {

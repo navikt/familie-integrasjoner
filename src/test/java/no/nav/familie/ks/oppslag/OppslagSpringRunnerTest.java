@@ -1,5 +1,8 @@
 package no.nav.familie.ks.oppslag;
 
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
+import org.junit.After;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -7,17 +10,27 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = DevLauncher.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class OppslagSpringRunnerTest {
 
     private static final String LOCALHOST = "http://localhost:";
 
-    @LocalServerPort
-    private int port;
+    protected ListAppender<ILoggingEvent> listAppender = initLoggingEventListAppender();
+    protected List<ILoggingEvent> loggingEvents = listAppender.list;
 
     protected TestRestTemplate restTemplate = new TestRestTemplate();
     protected HttpHeaders headers = new HttpHeaders();
+
+    @LocalServerPort
+    private int port;
+
+    @After
+    public void reset() {
+        loggingEvents.clear();
+    }
 
     protected String getPort() {
         return String.valueOf(port);
@@ -38,6 +51,12 @@ public abstract class OppslagSpringRunnerTest {
 
     private String tokenFraRespons(ResponseEntity<String> cookie) {
         return cookie.getBody().split("value\":\"")[1].split("\"")[0];
+    }
+
+    protected static ListAppender<ILoggingEvent> initLoggingEventListAppender() {
+        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+        listAppender.start();
+        return listAppender;
     }
 }
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.familie.http.sts.StsRestClient;
 import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
+import no.nav.familie.ks.oppslag.oppgave.OppgaveIkkeFunnetException;
 import no.nav.familie.log.mdc.MDCConstants;
 import no.nav.oppgave.v1.FinnOppgaveResponseDto;
 import no.nav.oppgave.v1.OppgaveJsonDto;
@@ -37,29 +38,33 @@ public class OppgaveClient {
 
     public OppgaveJsonDto finnOppgave(Oppgave request) {
         URI requestUrl = lagRequestUrlMed(oppgaveUri, request.getAktorId(), request.getJournalpostId());
-        var response = getRequest(requestUrl, FinnOppgaveResponseDto.class);
-        if (Objects.requireNonNull(response.getBody()).getOppgaver().isEmpty()) {
-            return null;
-        }
-        return response.getBody().getOppgaver().get(0);
+        return requestOppgaveJson(requestUrl);
     }
 
     public OppgaveJsonDto finnOppgave(String oppgaveId) {
         URI requestUrl = URI.create(oppgaveUri + "/" + oppgaveId);
-        var response = getRequest(requestUrl, FinnOppgaveResponseDto.class);
-        if (Objects.requireNonNull(response.getBody()).getOppgaver().isEmpty()) {
-            return null;
-        }
-        return response.getBody().getOppgaver().get(0);
+        return requestOppgaveJson(requestUrl);
     }
 
-    public void oppdaterOppgave(OppgaveJsonDto dto, String beskrivelse) throws JsonProcessingException {
+    public void oppdaterOppgave(OppgaveJsonDto dto, String beskrivelse) {
         dto.setBeskrivelse(dto.getBeskrivelse() + beskrivelse);
-        putRequest(URI.create(oppgaveUri + "/" + dto.getId()), objectMapper.writeValueAsString(dto), String.class);
+        try {
+            putRequest(URI.create(oppgaveUri + "/" + dto.getId()), objectMapper.writeValueAsString(dto), String.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Mapping av OppgaveJsonDto til String feilet.", e);
+        }
     }
 
     private URI lagRequestUrlMed(URI oppgaveUri, String aktoerId, String journalpostId) {
         return URI.create(oppgaveUri + String.format("?aktoerId=%s&tema=%s&oppgavetype=%s&journalpostId=%s", aktoerId, TEMA, OPPGAVE_TYPE, journalpostId));
+    }
+
+    private OppgaveJsonDto requestOppgaveJson(URI requestUrl) {
+        var response = getRequest(requestUrl, FinnOppgaveResponseDto.class);
+        if (Objects.requireNonNull(response.getBody()).getOppgaver().isEmpty()) {
+            throw new OppgaveIkkeFunnetException("Mislykket finnOppgave request med url: " + requestUrl.getPath());
+        }
+        return response.getBody().getOppgaver().get(0);
     }
 
     private <T> ResponseEntity<T> getRequest(URI uri, Class<T> responseType) {

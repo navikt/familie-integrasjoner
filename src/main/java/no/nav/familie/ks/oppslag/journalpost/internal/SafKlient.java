@@ -39,14 +39,15 @@ public class SafKlient {
     public SafKlient(@Value("${SAF_URL}") String safUrl,
                      @Value("${CREDENTIAL_USERNAME}") String consumer,
                      StsRestClient stsRestClient,
+                     RestTemplate restTemplate,
                      ObjectMapper objectMapper) {
         this.stsRestClient = stsRestClient;
         this.consumer = consumer;
         this.objectMapper = objectMapper;
-        restTemplate = new RestTemplateBuilder()
+        this.restTemplate = new RestTemplateBuilder()
                 .setConnectTimeout(Duration.ofSeconds(5))
                 .setReadTimeout(Duration.ofSeconds(5))
-                .build();
+                .configure(restTemplate);
         safUri = URI.create(safUrl);
     }
 
