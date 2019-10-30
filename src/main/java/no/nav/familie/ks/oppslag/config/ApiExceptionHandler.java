@@ -1,10 +1,12 @@
 package no.nav.familie.ks.oppslag.config;
 
+import no.nav.familie.http.azure.AzureAccessTokenException;
 import no.nav.security.spring.oidc.validation.interceptor.OIDCUnauthorizedException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -24,26 +26,30 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     public ApiExceptionHandler() {
     }
 
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler({OIDCUnauthorizedException.class})
-    public Map<String, String> handleUnauthorizedException(OIDCUnauthorizedException e) {
+    public ResponseEntity<Map<String, String>> handleUnauthorizedException(OIDCUnauthorizedException e) {
         logger.warn("Kan ikke logget inn.", e);
-        return Map.of("error", "Du er ikke logget inn");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Du er ikke logget inn"));
     }
 
-    @ResponseStatus(INTERNAL_SERVER_ERROR)
     @ExceptionHandler({RestClientResponseException.class})
-    public Map<String, String> handleRestClientResponseException(RestClientResponseException e) {
+    public ResponseEntity<Map<String, String>> handleRestClientResponseException(RestClientResponseException e) {
         secureLogger.error("RestClientResponseException : {} {}", e.getResponseBodyAsString(), e);
         logger.error("RestClientResponseException : {} {} {}", e.getRawStatusCode(), e.getStatusText(), ExceptionUtils.getStackTrace(e));
-        return Map.of("error", "Feil mot ekstern tjeneste " + e.getRawStatusCode() +  " " + e.getResponseBodyAsString() + " Message: " + e.getMessage());
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(Map.of("error", "Feil mot ekstern tjeneste " + e.getRawStatusCode() +  " " + e.getResponseBodyAsString() + " Message: " + e.getMessage()));
+    }
+
+    @ExceptionHandler({AzureAccessTokenException.class})
+    public ResponseEntity<Map<String, String>> handleRestClientResponseException(AzureAccessTokenException e) {
+        logger.error("AzureAccessTokenException : {} ", ExceptionUtils.getStackTrace(e));
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(Map.of("error", "Feil mot azure " + " Message: " + e.getMessage()));
     }
 
     @ExceptionHandler({Exception.class})
-    public Map<String, String> handleException(Exception e) {
+    public ResponseEntity<Map<String, String>> handleException(Exception e) {
         secureLogger.error("Exception : ", e);
         logger.error("Exception : {}", ExceptionUtils.getStackTrace(e));
-        return Map.of("error", "Det oppstod en feil " + e.getMessage());
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(Map.of("error", "Det oppstod en feil " + e.getMessage()));
     }
 
 }
