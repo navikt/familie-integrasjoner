@@ -11,8 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
 
 @Configuration
 public class OppgaveTestConfig {
@@ -27,6 +27,8 @@ public class OppgaveTestConfig {
         when(klient.finnOppgave(matcherBeskrivelse("test oppgave ikke funnet"))).thenThrow(new OppgaveIkkeFunnetException("Mislykket finnOppgave request med url: ..."));
         when(klient.finnOppgave(matcherBeskrivelse("test generell feil"))).thenThrow(new RuntimeException("Uventet feil"));
 
+        doNothing().when(klient).oppdaterOppgave(any(), anyString());
+        doNothing().when(klient).ping();
         return klient;
     }
 

@@ -14,8 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @Configuration
 public class MedlemskapTestConfig {
@@ -25,9 +24,10 @@ public class MedlemskapTestConfig {
     @Bean
     @Profile("mock-medlemskap")
     @Primary
-    public MedlClient medlClientMock() {
+    public MedlClient medlClientMock() throws Exception {
         MedlClient medlMock = mock(MedlClient.class);
         when(medlMock.hentMedlemskapsUnntakResponse(anyString())).thenReturn(mockMedlemskapResponse());
+        doNothing().when(medlMock).ping();
         return medlMock;
     }
 

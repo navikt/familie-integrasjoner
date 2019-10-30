@@ -24,6 +24,7 @@ public class MedlClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(MedlemskapService.class);
 
+    private String medl2BaseUrl;
     private URI medl2Uri;
     private HttpClient httpClient;
     private StsRestClient stsRestClient;
@@ -31,7 +32,8 @@ public class MedlClient {
     private ObjectMapper objectMapper;
 
     public MedlClient(String url, String srvBruker, StsRestClient stsRestClient, ObjectMapper objectMapper) {
-        this.medl2Uri = URI.create(String.format("%s/medlemskapsunntak", url));
+        this.medl2BaseUrl = url;
+        this.medl2Uri = URI.create(String.format("%s/api/v1/medlemskapsunntak", url));
         this.srvBruker = srvBruker;
         this.stsRestClient = stsRestClient;
         this.httpClient = HttpClient.newHttpClient();
@@ -55,6 +57,20 @@ public class MedlClient {
             return Arrays.asList(objectMapper.readValue(httpResponse.body(), MedlemskapsUnntakResponse[].class));
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Feil ved kall til MEDL2", e);
+        }
+    }
+
+    public void ping() throws Exception {
+        URI pingURI = URI.create(String.format("%s/internal/isAlive", medl2BaseUrl));
+
+        HttpRequest request = HttpRequestUtil.createRequest("Bearer " + stsRestClient.getSystemOIDCToken())
+                .uri(pingURI)
+                .build();
+
+        var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (HttpStatus.OK.value() != response.statusCode()) {
+            throw new Exception("Feil ved ping til MEDL");
         }
     }
 

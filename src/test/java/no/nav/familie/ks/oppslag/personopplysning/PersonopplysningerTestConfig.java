@@ -17,8 +17,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @Configuration
 public class PersonopplysningerTestConfig {
@@ -42,6 +41,7 @@ public class PersonopplysningerTestConfig {
         PersonConsumer personConsumer = mock(PersonConsumer.class);
         when(personConsumer.hentPersonhistorikkResponse(any())).thenReturn(hentPersonHistorikkResponse());
         when(personConsumer.hentPersonResponse(any())).thenReturn(hentPersonResponse());
+        doNothing().when(personConsumer).ping();
         return personConsumer;
     }
 

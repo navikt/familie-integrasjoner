@@ -24,4 +24,8 @@ public class EgenAnsattConsumer {
                                                                                .withIdent(fnr)
         ).isEgenAnsatt();
     }
+
+    public void ping() {
+        egenAnsattV1.ping();
+    }
 }

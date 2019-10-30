@@ -51,4 +51,8 @@ public class InfotrygdService {
             throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Ufullstendig eller tom respons.");
         }
     }
+
+    public void ping() {
+        restTemplate.getForEntity(String.format("%s/actuator/health", infotrygdURL), String.class);
+    }
 }

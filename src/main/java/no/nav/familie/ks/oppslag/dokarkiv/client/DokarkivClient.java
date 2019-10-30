@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Timer;
+import no.nav.familie.http.client.HttpRequestUtil;
 import no.nav.familie.http.sts.StsRestClient;
 import no.nav.familie.ks.oppslag.dokarkiv.client.domene.OpprettJournalpostRequest;
 import no.nav.familie.ks.oppslag.dokarkiv.client.domene.OpprettJournalpostResponse;
@@ -131,6 +132,18 @@ public class DokarkivClient {
         } catch (IOException | InterruptedException e) {
             ferdigstillJournalpostFailure.increment();
             throw new RuntimeException("Feil ved kall mot Dokarkiv uri=" + uri, e);
+        }
+    }
+
+    public void ping() throws Exception {
+        URI uri = URI.create(String.format("%s/isAlive", dokarkivUrl));
+        HttpRequest request = HttpRequestUtil.createRequest("Bearer " + stsRestClient.getSystemOIDCToken())
+                .uri(uri)
+                .build();
+
+        var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (HttpStatus.OK.value() != response.statusCode()) {
+            throw new Exception("Feil ved ping til Dokarkiv");
         }
     }
 

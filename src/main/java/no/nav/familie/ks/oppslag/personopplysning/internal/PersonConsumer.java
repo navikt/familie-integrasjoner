@@ -53,4 +53,8 @@ public class PersonConsumer {
         }
     }
 
+    public void ping() {
+        port.ping();
+    }
+
 }

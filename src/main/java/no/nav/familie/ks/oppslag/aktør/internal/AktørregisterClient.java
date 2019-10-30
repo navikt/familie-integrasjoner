@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Timer;
+import no.nav.familie.http.client.HttpRequestUtil;
 import no.nav.familie.http.sts.StsRestClient;
 import no.nav.familie.ks.oppslag.felles.MDCOperations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.net.URI;
@@ -32,7 +32,6 @@ public class AktørregisterClient {
     private final Timer aktoerResponstid = Metrics.timer("aktoer.respons.tid");
     private final Counter aktoerSuccess = Metrics.counter("aktoer.response", "status", "success");
     private final Counter aktoerFailure = Metrics.counter("aktoer.response", "status", "failure");
-    private static final Logger LOG = LoggerFactory.getLogger(AktørregisterClient.class);
     private HttpClient httpClient;
     private StsRestClient stsRestClient;
     private ObjectMapper objectMapper;
@@ -51,7 +50,7 @@ public class AktørregisterClient {
     }
 
     public AktørResponse hentAktørId(String personIdent) {
-        URI uri = URI.create(String.format("%s/identer?gjeldende=true&identgruppe=%s", aktørRegisterUrl, AKTOERID_IDENTGRUPPE));
+        URI uri = URI.create(String.format("%s/api/v1/identer?gjeldende=true&identgruppe=%s", aktørRegisterUrl, AKTOERID_IDENTGRUPPE));
         return hentRespons(personIdent, uri);
     }
 
@@ -81,8 +80,21 @@ public class AktørregisterClient {
 
 
     public AktørResponse hentPersonIdent(String personIdent) {
-        URI uri = URI.create(String.format("%s/identer?gjeldende=true&identgruppe=%s", aktørRegisterUrl, PERSONIDENT_IDENTGRUPPE));
+        URI uri = URI.create(String.format("%s/api/v1/identer?gjeldende=true&identgruppe=%s", aktørRegisterUrl, PERSONIDENT_IDENTGRUPPE));
         return hentRespons(personIdent, uri);
+    }
+
+    public void ping() throws Exception {
+        URI pingURI = URI.create(String.format("%s/internal/isAlive", aktørRegisterUrl));
+        HttpRequest request = HttpRequestUtil.createRequest("Bearer " + stsRestClient.getSystemOIDCToken())
+                .uri(pingURI)
+                .build();
+
+        var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (HttpStatus.OK.value() != response.statusCode()) {
+            throw new Exception("Feil ved ping til Aktørregisteret");
+        }
     }
 
 }

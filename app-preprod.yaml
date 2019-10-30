@@ -10,7 +10,7 @@ spec:
   image: docker.pkg.github.com/navikt/familie-ks-oppslag/familie-ks-oppslag:{{tag}}
   port: 8085
   liveness:
-    path: /internal/status/isAlive
+    path: /internal/health
     initialDelay: 30
   readiness:
     path: /internal/status/isAlive

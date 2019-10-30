@@ -25,15 +25,17 @@ public class OppgaveClient {
     private final RestTemplate restTemplate;
     private final StsRestClient stsRestClient;
     private final ObjectMapper objectMapper;
+    private final String oppgaveBaseUrl;
 
     public OppgaveClient(String url,
                          RestTemplate restTemplate,
                          StsRestClient stsRestClient,
                          ObjectMapper objectMapper) {
-        this.oppgaveUri = URI.create(url + "/oppgaver");
+        this.oppgaveUri = URI.create(url + "/api/v1/oppgaver");
         this.restTemplate = restTemplate;
         this.stsRestClient = stsRestClient;
         this.objectMapper = objectMapper;
+        this.oppgaveBaseUrl = url;
     }
 
     public OppgaveJsonDto finnOppgave(Oppgave request) {
@@ -53,6 +55,10 @@ public class OppgaveClient {
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Mapping av OppgaveJsonDto til String feilet.", e);
         }
+    }
+
+    public void ping() {
+        getRequest(URI.create(String.format("%s/internal/alive", oppgaveBaseUrl)), String.class);
     }
 
     private URI lagRequestUrlMed(URI oppgaveUri, String aktoerId, String journalpostId) {

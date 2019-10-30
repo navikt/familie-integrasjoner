@@ -34,6 +34,7 @@ public class SafKlient {
     private ObjectMapper objectMapper;
     private String consumer;
     private URI safUri;
+    private String safBaseUrl;
 
     @Autowired
     public SafKlient(@Value("${SAF_URL}") String safUrl,
@@ -48,7 +49,8 @@ public class SafKlient {
                 .setConnectTimeout(Duration.ofSeconds(5))
                 .setReadTimeout(Duration.ofSeconds(5))
                 .configure(restTemplate);
-        safUri = URI.create(safUrl);
+        safUri = URI.create(String.format("%s/graphql", safUrl));
+        safBaseUrl = safUrl;
     }
 
     public Journalpost hentJournalpost(String journalpostId) {
@@ -85,6 +87,17 @@ public class SafKlient {
             hentJournalpostResponsFailure.increment();
             throw new JournalpostRestClientException(e.getMessage(), e, journalpostId);
         }
+    }
+
+    public void ping() {
+        var headers = new HttpHeaders();
+        headers.setBearerAuth(stsRestClient.getSystemOIDCToken());
+        var entity = new HttpEntity(headers);
+
+        restTemplate.exchange(String.format("%s/isAlive", safBaseUrl),
+                HttpMethod.GET,
+                entity,
+                String.class);
     }
 
     private String convertRequestToJsonString(String journalpostId, SafJournalpostRequest safJournalpostRequest) {

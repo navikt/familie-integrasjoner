@@ -12,8 +12,7 @@ import org.springframework.context.annotation.Profile;
 
 import java.util.Collections;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @Configuration
 public class AktørClientTestConfig {
@@ -21,7 +20,7 @@ public class AktørClientTestConfig {
     @Bean
     @Profile("mock-aktor")
     @Primary
-    public AktørregisterClient aktørregisterClientMock() {
+    public AktørregisterClient aktørregisterClientMock() throws Exception {
         AktørregisterClient aktørregisterClient = mock(AktørregisterClient.class);
         ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
         Ident testIdent = new Ident().withIdent("1000011111111").withGjeldende(true);
@@ -39,6 +38,8 @@ public class AktørClientTestConfig {
             return new AktørResponse()
                     .withAktør(identArg, new Aktør().withIdenter(Collections.singletonList(testIdent)));
         });
+
+        doNothing().when(aktørregisterClient).ping();
         return aktørregisterClient;
     }
 }

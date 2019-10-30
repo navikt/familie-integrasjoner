@@ -25,7 +25,7 @@ public class MedlemskapServiceTest {
     private MedlClient medlClient;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         medlClient = new MedlemskapTestConfig().medlClientMock();
         medlemskapService = new MedlemskapService(medlClient, new MedlemskapsOversetter());
     }

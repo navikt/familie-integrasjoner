@@ -11,8 +11,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @Configuration
 public class DokarkivClientTestConfig {
@@ -20,7 +19,7 @@ public class DokarkivClientTestConfig {
     @Bean
     @Profile("mock-dokarkiv")
     @Primary
-    public DokarkivClient dokarkivMockClient() {
+    public DokarkivClient dokarkivMockClient() throws Exception {
         DokarkivClient klient = mock(DokarkivClient.class);
 
         OpprettJournalpostResponse response = new OpprettJournalpostResponse();
@@ -28,6 +27,7 @@ public class DokarkivClientTestConfig {
         response.setJournalpostferdigstilt(false);
 
         when(klient.lagJournalpost(any(),anyBoolean(),anyString())).thenReturn(response);
+        doNothing().when(klient).ping();
         return klient;
     }
 

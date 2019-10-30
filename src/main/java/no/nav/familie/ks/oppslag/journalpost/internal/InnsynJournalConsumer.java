@@ -29,4 +29,8 @@ public class InnsynJournalConsumer {
             return null;
         }
     }
+
+    public void ping() {
+        port.ping();
+    }
 }
