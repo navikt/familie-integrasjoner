@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @ProtectedWithClaims(issuer = "intern")
 @RequestMapping("/api/oppgave")
@@ -30,10 +32,10 @@ public class OppgaveController {
     }
 
     @ExceptionHandler(OppgaveIkkeFunnetException.class)
-    public ResponseEntity handleOppgaveIkkeFunnetException(RuntimeException e) {
+    public ResponseEntity<Map<String, String>> handleOppgaveIkkeFunnetException(RuntimeException e) {
         String errorMessage = "Feil ved oppdatering av Gosysoppgave: " + ExceptionUtils.getStackTrace(e);
         LOG.warn(errorMessage, e);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).header("message", e.getMessage()).build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Ingen oppgaver funnet " + e.getMessage()));
     }
 
 }

@@ -68,7 +68,7 @@ public class OppgaveClient {
     private OppgaveJsonDto requestOppgaveJson(URI requestUrl) {
         var response = getRequest(requestUrl, FinnOppgaveResponseDto.class);
         if (Objects.requireNonNull(response.getBody()).getOppgaver().isEmpty()) {
-            throw new OppgaveIkkeFunnetException("Mislykket finnOppgave request med url: " + requestUrl.getPath());
+            throw new OppgaveIkkeFunnetException("Mislykket finnOppgave request med url: " + requestUrl);
         }
         return response.getBody().getOppgaver().get(0);
     }

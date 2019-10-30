@@ -19,7 +19,6 @@ EGEN_ANSATT_V1_URL: #Mockes ut lokalt
 
 MEDL2_URL: #Denne er ikke i bruk da Medl2 mockes ut lokalt
 SAF_URL: http://localhost:18321/rest/saf
-OPPGAVE_URL: # må mockes ut lokalt
-
+OPPGAVE_URL: http://localhost:18321
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw
