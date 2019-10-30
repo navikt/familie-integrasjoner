@@ -401,7 +401,13 @@ public class TpsAdresseOversetter {
 
     public Adresseinfo finnBostedsadresseFor(Person person) {
         Bruker bruker = (Bruker) person;
-        StrukturertAdresse adresse = person.getBostedsadresse().getStrukturertAdresse();
+        Bostedsadresse bostedsadresse = person.getBostedsadresse();
+
+        if (bostedsadresse == null) {
+            return null;
+        }
+
+        StrukturertAdresse adresse = bostedsadresse.getStrukturertAdresse();
         return konverterStrukturertAdresse(bruker, adresse, AdresseType.BOSTEDSADRESSE);
     }
 
