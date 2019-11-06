@@ -2,6 +2,8 @@ package no.nav.familie.ks.oppslag.oppgave.internal;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Metrics;
 import no.nav.familie.http.sts.StsRestClient;
 import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
 import no.nav.familie.ks.oppslag.oppgave.OppgaveIkkeFunnetException;
@@ -21,6 +23,8 @@ public class OppgaveClient {
     private static final String OPPGAVE_TYPE = "BEH_SAK";
     private static final String X_CORRELATION_ID = "X-Correlation-ID";
 
+    private final Counter returnerteIngenOppgaver = Metrics.counter("oppslag.oppgave.response", "antall.oppgaver", "ingen");
+    private final Counter returnerteMerEnnEnOppgave = Metrics.counter("oppslag.oppgave.response", "antall.oppgaver", "flerEnnEn");
     private final URI oppgaveUri;
     private final RestTemplate restTemplate;
     private final StsRestClient stsRestClient;
@@ -68,7 +72,11 @@ public class OppgaveClient {
     private OppgaveJsonDto requestOppgaveJson(URI requestUrl) {
         var response = getRequest(requestUrl, FinnOppgaveResponseDto.class);
         if (Objects.requireNonNull(response.getBody()).getOppgaver().isEmpty()) {
+            returnerteIngenOppgaver.increment();
             throw new OppgaveIkkeFunnetException("Mislykket finnOppgave request med url: " + requestUrl);
+        }
+        if (response.getBody().getOppgaver().size()>1) {
+            returnerteMerEnnEnOppgave.increment();
         }
         return response.getBody().getOppgaver().get(0);
     }

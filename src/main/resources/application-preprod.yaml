@@ -6,7 +6,7 @@ no.nav.security.oidc:
     cookie_name: ID_token
 
 AAD_URL: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
-CLIENT_ID: ${CLIENT_ID}
+CLIENT_ID: ${KS_OPPSLAG_CLIENT_ID}
 CLIENT_SECRET: ${CLIENT_SECRET}
 INFOTRYGD_KS_SCOPE: ${INFOTRYGD_KS_SCOPE}
 

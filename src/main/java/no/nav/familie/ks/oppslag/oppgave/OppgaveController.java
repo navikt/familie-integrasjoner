@@ -37,5 +37,4 @@ public class OppgaveController {
         LOG.warn(errorMessage, e);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Ingen oppgaver funnet " + e.getMessage()));
     }
-
 }
