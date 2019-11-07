@@ -2,7 +2,7 @@ package no.nav.familie.ks.oppslag.personopplysning;
 
 import no.nav.familie.ks.oppslag.personopplysning.domene.PersonhistorikkInfo;
 import no.nav.familie.ks.oppslag.personopplysning.domene.Personinfo;
-import no.nav.security.oidc.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @RestController
-@ProtectedWithClaims(issuer = "intern")
+@ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/personopplysning")
 public class PersonopplysningerController {
 

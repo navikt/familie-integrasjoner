@@ -1,6 +1,6 @@
 package no.nav.familie.ks.oppslag.journalpost;
 
-import no.nav.security.oidc.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -11,8 +11,8 @@ import org.springframework.web.client.HttpStatusCodeException;
 import java.util.Map;
 
 @RestController
-@ProtectedWithClaims(issuer = "intern")
 @RequestMapping("/api/journalpost")
+@ProtectedWithClaims(issuer = "azuread")
 public class HentJournalpostController {
     private static final Logger LOG = LoggerFactory.getLogger(HentJournalpostController.class);
 

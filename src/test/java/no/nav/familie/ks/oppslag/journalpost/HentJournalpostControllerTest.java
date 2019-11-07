@@ -4,7 +4,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import no.nav.familie.ks.oppslag.OppslagSpringRunnerTest;
-import no.nav.security.oidc.test.support.JwtTokenGenerator;
+import no.nav.security.token.support.test.JwtTokenGenerator;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,7 +26,7 @@ import java.nio.file.Files;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.*;
 
-@ActiveProfiles(profiles = {"dev", "mock-sts", "mock-innsyn"})
+@ActiveProfiles({"integrasjonstest", "mock-sts", "mock-innsyn"})
 public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
     Logger testLogger = (Logger) LoggerFactory.getLogger(HentJournalpostController.class);
 

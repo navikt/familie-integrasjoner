@@ -15,6 +15,8 @@ import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Objects;
 
 public class OppgaveClient {
@@ -92,7 +94,7 @@ public class OppgaveClient {
     private <T> void putRequest(URI uri, String requestBody, Class<T> responseType) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(stsRestClient.getSystemOIDCToken());
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Content-Type", "application/json;charset=UTF-8");
         headers.add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID));
 
         restTemplate.exchange(uri, HttpMethod.PUT, new HttpEntity<>(requestBody, headers), responseType);

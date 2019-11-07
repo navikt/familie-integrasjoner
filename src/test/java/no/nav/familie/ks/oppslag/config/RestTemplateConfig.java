@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-@Profile("!dev")
+@Profile("dev")
 public class RestTemplateConfig {
 
     @Bean
@@ -18,13 +18,11 @@ public class RestTemplateConfig {
     @Bean
     public RestTemplate restTemplateMedProxy() {
         return new RestTemplateBuilder()
-                .additionalCustomizers(new NaisProxyCustomizer())
                 .build();
     }
 
     @Bean
     public RestTemplateBuilder restTemplateBuilderMedProxy() {
-        return new RestTemplateBuilder()
-                .additionalCustomizers(new NaisProxyCustomizer());
+        return new RestTemplateBuilder();
     }
 }

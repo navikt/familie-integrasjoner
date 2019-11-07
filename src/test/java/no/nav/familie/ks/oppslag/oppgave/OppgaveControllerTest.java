@@ -26,7 +26,7 @@ import java.nio.file.Files;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ActiveProfiles(profiles = {"dev", "mock-sts"})
+@ActiveProfiles({"integrasjonstest", "mock-sts"})
 public class OppgaveControllerTest extends OppslagSpringRunnerTest {
     private static final String OPPDATER_OPPGAVE_URL = "/api/oppgave/oppdater";
     private static final Integer MOCK_SERVER_PORT = 18321;

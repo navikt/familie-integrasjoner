@@ -1,7 +1,7 @@
 package no.nav.familie.ks.oppslag.config;
 
 import no.nav.familie.http.azure.AzureAccessTokenException;
-import no.nav.security.spring.oidc.validation.interceptor.OIDCUnauthorizedException;
+import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -26,8 +25,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     public ApiExceptionHandler() {
     }
 
-    @ExceptionHandler({OIDCUnauthorizedException.class})
-    public ResponseEntity<Map<String, String>> handleUnauthorizedException(OIDCUnauthorizedException e) {
+    @ExceptionHandler({JwtTokenUnauthorizedException.class})
+    public ResponseEntity<Map<String, String>> handleUnauthorizedException(JwtTokenUnauthorizedException e) {
         logger.warn("Kan ikke logget inn.", e);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Du er ikke logget inn"));
     }

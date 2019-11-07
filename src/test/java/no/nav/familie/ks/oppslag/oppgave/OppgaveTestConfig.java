@@ -2,6 +2,7 @@ package no.nav.familie.ks.oppslag.oppgave;
 
 import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
 import no.nav.familie.ks.oppslag.oppgave.internal.OppgaveClient;
+import no.nav.oppgave.v1.OppgaveJsonDto;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -23,6 +24,7 @@ public class OppgaveTestConfig {
     public OppgaveClient oppgaveMockClient() {
         OppgaveClient klient = mock(OppgaveClient.class);
 
+        when(klient.finnOppgave(any(Oppgave.class))).thenReturn(new OppgaveJsonDto());
         when(klient.finnOppgave(matcherBeskrivelse("test RestClientException"))).thenThrow(HttpClientErrorException.create(HttpStatus.ACCEPTED, "status text", new HttpHeaders(), null, null));
         when(klient.finnOppgave(matcherBeskrivelse("test oppgave ikke funnet"))).thenThrow(new OppgaveIkkeFunnetException("Mislykket finnOppgave request med url: ..."));
         when(klient.finnOppgave(matcherBeskrivelse("test generell feil"))).thenThrow(new RuntimeException("Uventet feil"));

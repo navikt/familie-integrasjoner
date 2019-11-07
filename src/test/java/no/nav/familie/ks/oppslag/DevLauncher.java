@@ -7,11 +7,8 @@ import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConf
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Import;
 
-import no.nav.security.oidc.test.support.spring.TokenGeneratorConfiguration;
-
-
 @SpringBootApplication(exclude = ErrorMvcAutoConfiguration.class)
-@Import({ApplicationConfig.class, TokenGeneratorConfiguration.class})
+@Import({ApplicationConfig.class})
 public class DevLauncher {
 
     public static void main(String... args) {

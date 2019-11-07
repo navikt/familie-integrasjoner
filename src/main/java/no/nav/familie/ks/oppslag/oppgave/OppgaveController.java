@@ -2,7 +2,7 @@ package no.nav.familie.ks.oppslag.oppgave;
 
 import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
 import no.nav.familie.ks.kontrakter.oppgave.OppgaveKt;
-import no.nav.security.oidc.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@ProtectedWithClaims(issuer = "intern")
+@ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/oppgave")
 public class OppgaveController {
     private static final Logger LOG = LoggerFactory.getLogger(OppgaveController.class);

@@ -1,5 +1,7 @@
 package no.nav.familie.ks.oppslag.tilgangskontroll;
 
+import no.nav.familie.ks.oppslag.azure.AzureGraphService;
+import no.nav.familie.ks.oppslag.azure.domene.Saksbehandler;
 import no.nav.familie.ks.oppslag.egenansatt.EgenAnsattService;
 import no.nav.familie.ks.oppslag.personopplysning.domene.PersonIdent;
 import no.nav.familie.ks.oppslag.personopplysning.domene.Personinfo;
@@ -27,41 +29,45 @@ public class TilgangskontrollServiceTest {
     private EgenAnsattService egenAnsattService;
     private TilgangsKontrollService tilgangsKontrollService;
 
+    @MockBean
+    private AzureGraphService azureGraphService;
+    private Saksbehandler saksbehandler = new Saksbehandler("", "sdfsdf");
+
 
     @Before
-    public void setUp() throws Exception {
-        tilgangsKontrollService = new TilgangsKontrollService(egenAnsattService);
+    public void setUp() {
+        tilgangsKontrollService = new TilgangsKontrollService(azureGraphService, egenAnsattService);
     }
 
     @Test
-    public void tilgang_til_egen_ansatt_gir_ikke_tilgang_hvis_saksbehandler_mangler_rollen() throws Exception {
+    public void tilgang_til_egen_ansatt_gir_ikke_tilgang_hvis_saksbehandler_mangler_rollen() {
         when(egenAnsattService.erEgenAnsatt(any(String.class))).thenReturn(Boolean.TRUE);
 
-        assertThat(tilgangsKontrollService.sjekkTilgang("123", "sdfsdf", this.personinfoUtenKode6og7()).isHarTilgang())
+        assertThat(tilgangsKontrollService.sjekkTilgang("123", saksbehandler, this.personinfoUtenKode6og7()).isHarTilgang())
                 .isEqualTo(new Tilgang().withHarTilgang(false).isHarTilgang());
     }
 
     @Test
-    public void tilgang_til_egen_ansatt_gir_OK_hvis_søker_ikke_er_egen_ansatt() throws Exception {
+    public void tilgang_til_egen_ansatt_gir_OK_hvis_søker_ikke_er_egen_ansatt() {
         when(egenAnsattService.erEgenAnsatt(any(String.class))).thenReturn(Boolean.FALSE);
 
-        assertThat(tilgangsKontrollService.sjekkTilgang("123", "sdfsdf", this.personinfoUtenKode6og7()).isHarTilgang())
+        assertThat(tilgangsKontrollService.sjekkTilgang("123", saksbehandler, this.personinfoUtenKode6og7()).isHarTilgang())
                 .isEqualTo(new Tilgang().withHarTilgang(true).isHarTilgang());
     }
 
     @Test
-    public void hvis_kode6_har_ikke_saksbehandler_tilgang() throws Exception {
+    public void hvis_kode6_har_ikke_saksbehandler_tilgang() {
         when(egenAnsattService.erEgenAnsatt(any(String.class))).thenReturn(Boolean.FALSE);
 
-        assertThat(tilgangsKontrollService.sjekkTilgang("123", "sdfsdf", this.personinfoMedKode6()).isHarTilgang())
+        assertThat(tilgangsKontrollService.sjekkTilgang("123", saksbehandler, this.personinfoMedKode6()).isHarTilgang())
                 .isEqualTo(new Tilgang().withHarTilgang(false).isHarTilgang());
     }
 
     @Test
-    public void hvis_kode7_har_ikke_saksbehandler_tilgang() throws Exception {
+    public void hvis_kode7_har_ikke_saksbehandler_tilgang() {
         when(egenAnsattService.erEgenAnsatt(any(String.class))).thenReturn(Boolean.FALSE);
 
-        assertThat(tilgangsKontrollService.sjekkTilgang("123", "sdfsdf", this.personinfoMedKode7()).isHarTilgang())
+        assertThat(tilgangsKontrollService.sjekkTilgang("123", saksbehandler, this.personinfoMedKode7()).isHarTilgang())
                 .isEqualTo(new Tilgang().withHarTilgang(false).isHarTilgang());
     }
 

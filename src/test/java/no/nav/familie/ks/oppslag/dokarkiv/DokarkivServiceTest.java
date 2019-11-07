@@ -94,7 +94,7 @@ public class DokarkivServiceTest {
 
     @Test
     public void skal_kaste_exception_hvis_aktørid_not_found() {
-        when(aktørService.getAktørId(FNR)).thenReturn(new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
+        when(aktørService.getAktørId(FNR)).thenReturn(new ResponseEntity<>("", HttpStatus.NOT_FOUND));
 
         ArkiverDokumentRequest dto = new ArkiverDokumentRequest(FNR, NAVN, false, List.of(new Dokument(PDF_DOK, FilType.PDFA, FILNAVN, DokumentType.KONTANTSTØTTE_SØKNAD)));
 

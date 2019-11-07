@@ -1,7 +1,7 @@
 package no.nav.familie.ks.oppslag.infotrygd;
 
 import no.nav.familie.ks.oppslag.infotrygd.domene.AktivKontantstøtteInfo;
-import no.nav.security.oidc.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 @RestController
-@ProtectedWithClaims(issuer = "intern")
+@ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/infotrygd")
 public class InfotrygdController {
     private static final Logger LOG = LoggerFactory.getLogger(InfotrygdController.class);

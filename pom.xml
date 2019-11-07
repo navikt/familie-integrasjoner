@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.8.RELEASE</version>
+        <version>2.2.0.RELEASE</version>
     </parent>
 
     <groupId>no.nav.familie.ks.oppslag</groupId>
@@ -21,10 +21,10 @@
         <changelist>-SNAPSHOT</changelist>
         <java.version>11</java.version>
         <common-java-modules.version>1.2019.07.11-12.31-0b875ec24c4e</common-java-modules.version>
-        <felles.version>1.0_20191007152733_dff2e9b</felles.version>
+        <felles.version>1.0_20191106113227_c2ad869</felles.version>
         <kontrakt.version>1.0_20191024145448_d452ee4</kontrakt.version>
         <cxf.version>3.3.1</cxf.version>
-        <oidc-support.version>0.2.18</oidc-support.version>
+        <token-validation-spring.version>1.1.2</token-validation-spring.version>
         <tjenestespesifikasjoner.version>1.2019.09.25-00.21-49b69f0625e0</tjenestespesifikasjoner.version>
     </properties>
 
@@ -113,8 +113,19 @@
         </dependency>
         <dependency>
             <groupId>no.nav.security</groupId>
-            <artifactId>oidc-spring-support</artifactId>
-            <version>${oidc-support.version}</version>
+            <artifactId>token-client-spring</artifactId>
+            <version>${token-validation-spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.security</groupId>
+            <artifactId>token-validation-spring</artifactId>
+            <version>${token-validation-spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.security</groupId>
+            <artifactId>token-validation-test-support</artifactId>
+            <version>${token-validation-spring.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>no.nav.familie.felles</groupId>
@@ -126,12 +137,7 @@
             <artifactId>http-client</artifactId>
             <version>${felles.version}</version>
         </dependency>
-        <dependency>
-            <groupId>no.nav.security</groupId>
-            <artifactId>oidc-test-support</artifactId>
-            <version>${oidc-support.version}</version>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>no.nav.familie.ks</groupId>
             <artifactId>kontrakt</artifactId>

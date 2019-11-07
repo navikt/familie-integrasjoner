@@ -31,7 +31,7 @@ public class IntegrasjonConfig {
     @Autowired
     public AccessTokenClient accessTokenClient(RestTemplate restTemplateMedProxy,
                                                @Value("${AAD_URL}") URI aadAccessTokenUrl,
-                                               @Value("${CLIENT_ID}") String clientId,
+                                               @Value("${KS_OPPSLAG_CLIENT_ID}") String clientId,
                                                @Value("${CLIENT_SECRET}") String clientSecret) {
         return new AccessTokenClient(aadAccessTokenUrl, clientId, clientSecret, restTemplateMedProxy);
     }

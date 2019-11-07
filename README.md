@@ -12,7 +12,6 @@ Appen er da tilgjengelig under `localhost:8085`.
 
 Dersom man vil gå mot endepunkter som krever autentisering lokalt, kan man få et testtoken ved å gå mot `localhost:8085/local/cookie`. 
 
-
 ## Produksjonssetting
 Hvis du skal deploye appen til prod, må du pushe en ny tag på master. Dette gjøres ved å kjøre tag-scriptet som ligger i `.github`-mappen. Da spesifiserer du om du vil bumpe major eller minor, scriptet vil da bumpe med 1 opp fra nyeste tag. 
 

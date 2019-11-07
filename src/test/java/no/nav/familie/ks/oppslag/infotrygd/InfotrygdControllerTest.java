@@ -4,12 +4,6 @@ import no.nav.familie.http.azure.AccessTokenClient;
 import no.nav.familie.http.azure.AccessTokenDto;
 import no.nav.familie.ks.oppslag.OppslagSpringRunnerTest;
 import no.nav.familie.ks.oppslag.infotrygd.domene.AktivKontantstøtteInfo;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,7 +16,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.HttpServerErrorException;
 
-@ActiveProfiles(profiles = { "dev" })
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+@ActiveProfiles("integrasjonstest")
 public class InfotrygdControllerTest extends OppslagSpringRunnerTest {
         public static final int MOCK_SERVER_PORT = 18321;
         AccessTokenClient accessTokenClient = mock(AccessTokenClient.class);

@@ -3,7 +3,7 @@ package no.nav.familie.ks.oppslag.dokarkiv;
 import no.nav.familie.ks.oppslag.dokarkiv.api.ArkiverDokumentRequest;
 import no.nav.familie.ks.oppslag.dokarkiv.api.ArkiverDokumentResponse;
 import no.nav.familie.ks.oppslag.dokarkiv.client.KanIkkeFerdigstilleJournalpostException;
-import no.nav.security.oidc.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@ProtectedWithClaims(issuer = "intern")
+@ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/arkiv")
 public class DokarkivController {
     private static final Logger LOG = LoggerFactory.getLogger(DokarkivController.class);

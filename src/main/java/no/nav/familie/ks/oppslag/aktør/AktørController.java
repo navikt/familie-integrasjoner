@@ -1,7 +1,7 @@
 package no.nav.familie.ks.oppslag.aktør;
 
 import no.nav.familie.ks.oppslag.personopplysning.domene.AktørId;
-import no.nav.security.oidc.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.constraints.NotNull;
 
 @RestController
-@ProtectedWithClaims(issuer = "intern")
+@ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/aktoer")
 public class AktørController {
 
