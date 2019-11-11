@@ -12,9 +12,13 @@ spec:
   liveness:
     path: /internal/health
     initialDelay: 30
+    timeout: 5
+    failureThreshold: 10
   readiness:
     path: /internal/status/isAlive
     initialDelay: 30
+    timeout: 5
+    failureThreshold: 10
   vault:
     enabled: true
   secureLogs:
