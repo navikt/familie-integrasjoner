@@ -16,7 +16,7 @@ no.nav.security.jwt:
           client-auth-method: client_secret_basic
 
 AAD_URL: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
-KS_OPPSLAG_CLIENT_ID: ""
+KS_OPPSLAG_CLIENT_ID: "ks-oppslag-dummy-klient-id"
 CLIENT_SECRET: ""
 INFOTRYGD_KS_SCOPE: ""
 
