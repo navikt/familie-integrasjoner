@@ -22,7 +22,7 @@
         <java.version>11</java.version>
         <common-java-modules.version>1.2019.07.11-12.31-0b875ec24c4e</common-java-modules.version>
         <felles.version>1.0_20191106113227_c2ad869</felles.version>
-        <kontrakt.version>1.0_20191024145448_d452ee4</kontrakt.version>
+        <kontrakt.version>1.0_20191112090933_edaddf2</kontrakt.version>
         <cxf.version>3.3.1</cxf.version>
         <token-validation-spring.version>1.1.2</token-validation-spring.version>
         <tjenestespesifikasjoner.version>1.2019.09.25-00.21-49b69f0625e0</tjenestespesifikasjoner.version>
@@ -212,6 +212,13 @@
 
 
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/navikt/familie-ks-kontrakt</url>
+        </repository>
+    </repositories>
 
     <build>
         <finalName>${project.artifactId}</finalName>
