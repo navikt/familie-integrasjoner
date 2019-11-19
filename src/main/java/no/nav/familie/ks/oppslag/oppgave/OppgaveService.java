@@ -4,7 +4,6 @@ import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
 import no.nav.familie.ks.oppslag.oppgave.internal.OppgaveClient;
 import no.nav.oppgave.v1.OppgaveJsonDto;
 import no.nav.sbl.util.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

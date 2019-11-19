@@ -22,10 +22,13 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -49,8 +52,7 @@ public class PersonopplysningerServiceTest {
         when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class)))
                 .thenThrow(new HentPersonhistorikkPersonIkkeFunnet("Feil", any(PersonIkkeFunnet.class)));
 
-        assertThat(personopplysningerService.hentHistorikkFor(PERSONIDENT, FOM, TOM).getStatusCode())
-                .isEqualTo(HttpStatus.NOT_FOUND);
+        assertThatThrownBy(() -> personopplysningerService.hentHistorikkFor(PERSONIDENT, FOM, TOM)).isInstanceOf(HttpClientErrorException.NotFound.class);
     }
 
     @Test
@@ -58,8 +60,7 @@ public class PersonopplysningerServiceTest {
         when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class)))
                 .thenThrow(new HentPersonhistorikkSikkerhetsbegrensning("Feil", any(Sikkerhetsbegrensning.class)));
 
-        assertThat(personopplysningerService.hentHistorikkFor(PERSONIDENT, FOM, TOM).getStatusCode())
-                .isEqualTo(HttpStatus.FORBIDDEN);
+        assertThatThrownBy(() -> personopplysningerService.hentHistorikkFor(PERSONIDENT, FOM, TOM)).isInstanceOf(HttpClientErrorException.Forbidden.class);
     }
 
     @Test
@@ -67,8 +68,7 @@ public class PersonopplysningerServiceTest {
         when(personConsumer.hentPersonResponse(any(HentPersonRequest.class)))
                 .thenThrow(new HentPersonPersonIkkeFunnet("Feil", any(PersonIkkeFunnet.class)));
 
-        assertThat(personopplysningerService.hentPersoninfoFor(PERSONIDENT).getStatusCode())
-                .isEqualTo(HttpStatus.NOT_FOUND);
+        assertThatThrownBy(() -> personopplysningerService.hentPersoninfoFor(PERSONIDENT)).isInstanceOf(HttpClientErrorException.NotFound.class);
     }
 
     @Test
@@ -76,13 +76,12 @@ public class PersonopplysningerServiceTest {
         when(personConsumer.hentPersonResponse(any(HentPersonRequest.class)))
                 .thenThrow(new HentPersonSikkerhetsbegrensning("Feil", any(Sikkerhetsbegrensning.class)));
 
-        assertThat(personopplysningerService.hentPersoninfoFor(PERSONIDENT).getStatusCode())
-                .isEqualTo(HttpStatus.FORBIDDEN);
+        assertThatThrownBy(() -> personopplysningerService.hentPersoninfoFor(PERSONIDENT)).isInstanceOf(HttpClientErrorException.Forbidden.class);
     }
 
     @Test
     public void skalKonvertereResponsTilPersonInfo() {
-        Personinfo response = personopplysningerService.hentPersoninfoFor(PERSONIDENT).getBody();
+        Personinfo response = personopplysningerService.hentPersoninfoFor(PERSONIDENT);
 
         LocalDate forventetFødselsdato = LocalDate.parse("1990-01-01");
 
@@ -114,7 +113,7 @@ public class PersonopplysningerServiceTest {
 
     @Test
     public void skalKonvertereResponsTilPersonhistorikkInfo() {
-        PersonhistorikkInfo response = personopplysningerService.hentHistorikkFor(PERSONIDENT, FOM, TOM).getBody();
+        PersonhistorikkInfo response = personopplysningerService.hentHistorikkFor(PERSONIDENT, FOM, TOM);
 
         assertThat(response.getPersonIdent().getId()).isEqualTo(PERSONIDENT);
         assertThat(response.getStatsborgerskaphistorikk()).hasSize(1);

@@ -21,15 +21,15 @@ public class InfotrygdService {
     private String infotrygdURL;
 
     @Autowired
-    public InfotrygdService(AccessTokenClient accessTokenClient, 
-                            @Value("${INFOTRYGD_KS_SCOPE}") String scope, 
+    public InfotrygdService(AccessTokenClient accessTokenClient,
+                            @Value("${INFOTRYGD_KS_SCOPE}") String scope,
                             @Value("${INFOTRYGD_URL}") String infotrygdURL) {
         this.accessTokenClient = accessTokenClient;
         this.scope = scope;
         this.infotrygdURL = infotrygdURL;
     }
 
-    AktivKontantstøtteInfo hentAktivKontantstøtteFor(String fnr) {
+    public AktivKontantstøtteInfo hentAktivKontantstøtteFor(String fnr) {
         if (!fnr.matches("[0-9]+")) {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "fnr må være et tall");
         }
@@ -41,9 +41,9 @@ public class InfotrygdService {
         var entity = new HttpEntity(headers);
 
         var response = restTemplate.exchange(String.format("%s/v1/harBarnAktivKontantstotte", infotrygdURL),
-                                        HttpMethod.GET,
-                                        entity,
-                                        AktivKontantstøtteInfo.class);
+                HttpMethod.GET,
+                entity,
+                AktivKontantstøtteInfo.class);
 
         if (response.getBody() != null && response.getBody().getHarAktivKontantstotte() != null) {
             return response.getBody();

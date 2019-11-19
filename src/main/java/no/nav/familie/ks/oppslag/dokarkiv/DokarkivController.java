@@ -1,5 +1,6 @@
 package no.nav.familie.ks.oppslag.dokarkiv;
 
+import no.nav.familie.ks.kontrakter.sak.Ressurs;
 import no.nav.familie.ks.oppslag.dokarkiv.api.ArkiverDokumentRequest;
 import no.nav.familie.ks.oppslag.dokarkiv.api.ArkiverDokumentResponse;
 import no.nav.familie.ks.oppslag.dokarkiv.client.KanIkkeFerdigstilleJournalpostException;
@@ -29,9 +30,8 @@ public class DokarkivController {
         this.journalføringService = journalføringService;
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(
+    public ResponseEntity<Ressurs> handleValidationExceptions(
             MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
@@ -39,39 +39,40 @@ public class DokarkivController {
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
+
         LOG.warn("Valideringsfeil av input ved arkivering: " + errors);
-        return errors;
+        return ResponseEntity.badRequest().body(Ressurs.Companion.failure("Valideringsfeil av input ved arkivering " + errors, ex));
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(RuntimeException.class)
-    public Map<String, String> handleValidationExceptions(
-            RuntimeException ex) {
-        LOG.warn("Uventet arkiveringsfeil: ", ex);
-        return Map.of("message", ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName());
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(KanIkkeFerdigstilleJournalpostException.class)
-    public Map<String, String> handleKanIkkeFerdigstilleException(
+    public ResponseEntity<Ressurs> handleKanIkkeFerdigstilleException(
             KanIkkeFerdigstilleJournalpostException ex) {
         LOG.warn("Feil ved ferdigstilling {}", ex.getMessage());
-        return Map.of("message", ex.getMessage());
+        return ResponseEntity.badRequest().body(Ressurs.Companion.failure(null, ex));
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public ArkiverDokumentResponse arkiverDokument(@Valid @RequestBody ArkiverDokumentRequest arkiverDokumentRequest) {
+    @Deprecated(since = "TODO slettes når mottak bytter endepunkt")
+    public ArkiverDokumentResponse arkiverDokumentGammel(@Valid @RequestBody ArkiverDokumentRequest arkiverDokumentRequest) {
         return journalføringService.lagInngåendeJournalpost(arkiverDokumentRequest);
     }
 
-    @PutMapping("/{journalpostId}/ferdigstill")
+    @PostMapping(path = "v1", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Ressurs> arkiverDokument(@Valid @RequestBody ArkiverDokumentRequest arkiverDokumentRequest) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(Ressurs.Companion.success(journalføringService.lagInngåendeJournalpost(arkiverDokumentRequest), "Arkivert journalpost OK"));
+    }
+
+    @PutMapping("v1/{journalpostId}/ferdigstill")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity ferdigstillJournalpost(@PathVariable(name = "journalpostId") String journalpostId) {
+    public ResponseEntity<Ressurs> ferdigstillJournalpost(@PathVariable(name = "journalpostId") String journalpostId) {
         if (journalpostId == null) {
-            return ResponseEntity.badRequest().body("journalpostId er null");
+            return ResponseEntity.badRequest().body(Ressurs.Companion.failure("journalpostId er null", null));
         }
         journalføringService.ferdistillJournalpost(journalpostId);
-        return ResponseEntity.ok(journalpostId);
+        return ResponseEntity
+                .ok(Ressurs.Companion.success(Map.of("journalpostId", journalpostId), "Ferdigstilt journalpost " + journalpostId));
     }
 }

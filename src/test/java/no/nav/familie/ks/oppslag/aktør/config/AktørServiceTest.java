@@ -38,7 +38,7 @@ public class AktørServiceTest {
                 .withAktør(PERSONIDENT, new Aktør().withIdenter(
                         Collections.singletonList(new Ident().withIdent(TESTAKTORID).withGjeldende(true)))));
 
-        String testAktørId = aktørService.getAktørId(PERSONIDENT).getBody();
+        String testAktørId = aktørService.getAktørId(PERSONIDENT);
         assertThat(testAktørId).isEqualTo(TESTAKTORID);
         verify(aktørClient, times(1)).hentAktørId(anyString());
     }
@@ -47,7 +47,7 @@ public class AktørServiceTest {
     public void skalReturnereAktørIdFraCacheNaarDenLiggerDer() {
         when(cacheManager.getCache(any(), any(), any()).get(anyString())).thenReturn(TESTAKTORID);
 
-        String testAktørId = aktørService.getAktørId(PERSONIDENT).getBody();
+        String testAktørId = aktørService.getAktørId(PERSONIDENT);
         assertThat(testAktørId).isEqualTo(TESTAKTORID);
         verifyZeroInteractions(aktørClient);
     }

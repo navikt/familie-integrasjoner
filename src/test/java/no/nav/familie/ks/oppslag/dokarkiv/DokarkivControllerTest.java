@@ -1,5 +1,6 @@
 package no.nav.familie.ks.oppslag.dokarkiv;
 
+import no.nav.familie.ks.kontrakter.sak.Ressurs;
 import no.nav.familie.ks.oppslag.OppslagSpringRunnerTest;
 import no.nav.familie.ks.oppslag.dokarkiv.api.ArkiverDokumentRequest;
 import no.nav.familie.ks.oppslag.dokarkiv.api.Dokument;
@@ -12,7 +13,10 @@ import org.mockserver.junit.MockServerRule;
 import org.mockserver.model.HttpRequest;
 import org.mockserver.model.HttpResponse;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
@@ -27,11 +31,11 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 @ActiveProfiles(profiles = {"integrasjonstest", "mock-sts", "mock-aktor", "mock-personopplysninger"})
 public class DokarkivControllerTest extends OppslagSpringRunnerTest {
-    public static final int MOCK_SERVER_PORT = 18321;
-    public static final String FULLT_NAVN = "Foo Bar";
-    public static final String DOKARKIV_URL = "/api/arkiv/";
-    public static final Dokument HOVEDDOKUMENT = new Dokument("foo".getBytes(), FilType.PDFA, "filnavn", DokumentType.KONTANTSTØTTE_SØKNAD);
-    public static final Dokument VEDLEGG = new Dokument("foo".getBytes(), FilType.PDFA, "filnavn", DokumentType.KONTANTSTØTTE_SØKNAD_VEDLEGG);
+    private static final int MOCK_SERVER_PORT = 18321;
+    private static final String FULLT_NAVN = "Foo Bar";
+    private static final String DOKARKIV_URL = "/api/arkiv/v1";
+    private static final Dokument HOVEDDOKUMENT = new Dokument("foo".getBytes(), FilType.PDFA, "filnavn", DokumentType.KONTANTSTØTTE_SØKNAD);
+    private static final Dokument VEDLEGG = new Dokument("foo".getBytes(), FilType.PDFA, "filnavn", DokumentType.KONTANTSTØTTE_SØKNAD_VEDLEGG);
     @Rule
     public MockServerRule mockServerRule = new MockServerRule(this, MOCK_SERVER_PORT);
 
@@ -44,24 +48,26 @@ public class DokarkivControllerTest extends OppslagSpringRunnerTest {
     public void skal_returnere_Bad_Request_hvis_fNr_mangler() {
         ArkiverDokumentRequest body = new ArkiverDokumentRequest(null, FULLT_NAVN, false, List.of(new Dokument("foo".getBytes(), FilType.PDFA, null, DokumentType.KONTANTSTØTTE_SØKNAD)));
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), String.class
+        ResponseEntity<Ressurs> response = restTemplate.exchange(
+                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), Ressurs.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-        assertThat(response.getBody()).contains("fnr\":\"must not be blank");
+        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
+        assertThat(response.getBody().getMelding()).contains("fnr=must not be blank");
     }
 
     @Test
     public void skal_returnere_Bad_Request_hvis_ingen_dokumenter() {
-        ArkiverDokumentRequest body = new ArkiverDokumentRequest("fnr", "Foobar",false, new LinkedList<>());
+        ArkiverDokumentRequest body = new ArkiverDokumentRequest("fnr", "Foobar", false, new LinkedList<>());
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), String.class
+        ResponseEntity<Ressurs> response = restTemplate.exchange(
+                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), Ressurs.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-        assertThat(response.getBody()).contains("dokumenter\":\"must not be empty");
+        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
+        assertThat(response.getBody().getMelding()).contains("dokumenter=must not be empty");
     }
 
     @Test
@@ -80,12 +86,14 @@ public class DokarkivControllerTest extends OppslagSpringRunnerTest {
 
 
         ArkiverDokumentRequest body = new ArkiverDokumentRequest("FNR", FULLT_NAVN, false, List.of(HOVEDDOKUMENT));
-        ResponseEntity<String> response = restTemplate.exchange(
-                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), String.class
+        ResponseEntity<Ressurs> response = restTemplate.exchange(
+                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), Ressurs.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(CREATED);
-        assertThat(response.getBody()).isEqualTo("{\"journalpostId\":\"12345678\",\"ferdigstilt\":false}");
+        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.SUKSESS);
+        assertThat(response.getBody().getData().get("journalpostId").textValue()).isEqualTo("12345678");
+        assertThat(response.getBody().getData().get("ferdigstilt").booleanValue()).isFalse();
     }
 
     @Test
@@ -104,12 +112,14 @@ public class DokarkivControllerTest extends OppslagSpringRunnerTest {
 
 
         ArkiverDokumentRequest body = new ArkiverDokumentRequest("FNR", FULLT_NAVN, false, List.of(HOVEDDOKUMENT, VEDLEGG));
-        ResponseEntity<String> response = restTemplate.exchange(
-                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), String.class
+        ResponseEntity<Ressurs> response = restTemplate.exchange(
+                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), Ressurs.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(CREATED);
-        assertThat(response.getBody()).isEqualTo("{\"journalpostId\":\"12345678\",\"ferdigstilt\":false}");
+        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.SUKSESS);
+        assertThat(response.getBody().getData().get("journalpostId").textValue()).isEqualTo("12345678");
+        assertThat(response.getBody().getData().get("ferdigstilt").booleanValue()).isFalse();
     }
 
     @Test
@@ -123,16 +133,18 @@ public class DokarkivControllerTest extends OppslagSpringRunnerTest {
                                 .withQueryStringParameter("foersoekFerdigstill", "false")
                 )
                 .respond(
-                        HttpResponse.response().withStatusCode(401)
+                        HttpResponse.response().withStatusCode(401).withBody("Tekst fra body")
                 );
 
 
         ArkiverDokumentRequest body = new ArkiverDokumentRequest("FNR", "Foobar", false, List.of(new Dokument("foo".getBytes(), FilType.PDFA, null, DokumentType.KONTANTSTØTTE_SØKNAD)));
-        ResponseEntity<String> response = restTemplate.exchange(
-                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), String.class
+        ResponseEntity<Ressurs> response = restTemplate.exchange(
+                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), Ressurs.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
+        assertThat(response.getBody().getMelding()).contains("Feilresponse fra dokarkiv-tjenesten 401 Tekst fra body");
     }
 
     @Test
@@ -149,11 +161,12 @@ public class DokarkivControllerTest extends OppslagSpringRunnerTest {
                 );
 
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                localhost(DOKARKIV_URL + "/123/ferdigstill"), HttpMethod.PUT, new HttpEntity<>(null, headers), String.class
+        ResponseEntity<Ressurs> response = restTemplate.exchange(
+                localhost(DOKARKIV_URL + "/123/ferdigstill"), HttpMethod.PUT, new HttpEntity<>(null, headers), Ressurs.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.SUKSESS);
     }
 
     @Test
@@ -170,12 +183,13 @@ public class DokarkivControllerTest extends OppslagSpringRunnerTest {
                 );
 
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                localhost(DOKARKIV_URL + "/123/ferdigstill"), HttpMethod.PUT, new HttpEntity<>(null, headers), String.class
+        ResponseEntity<Ressurs> response = restTemplate.exchange(
+                localhost(DOKARKIV_URL + "/123/ferdigstill"), HttpMethod.PUT, new HttpEntity<>(null, headers), Ressurs.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-        assertThat(response.getBody()).contains("Kan ikke ferdigstille journalpost 123");
+        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
+        assertThat(response.getBody().getMelding()).contains("Kan ikke ferdigstille journalpost 123");
     }
 
     private String gyldigDokarkivResponse() throws IOException {

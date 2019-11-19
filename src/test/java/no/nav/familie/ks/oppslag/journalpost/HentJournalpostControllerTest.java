@@ -3,6 +3,7 @@ package no.nav.familie.ks.oppslag.journalpost;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import no.nav.familie.ks.kontrakter.sak.Ressurs;
 import no.nav.familie.ks.oppslag.OppslagSpringRunnerTest;
 import no.nav.security.token.support.test.JwtTokenGenerator;
 import org.junit.Before;
@@ -23,8 +24,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+import static no.nav.familie.ks.oppslag.journalpost.HentJournalpostTestConfig.GENERISK_ERROR_CALLID;
+import static no.nav.familie.ks.oppslag.journalpost.HentJournalpostTestConfig.NOT_FOUND_CALLID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.*;
+import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 
 @ActiveProfiles({"integrasjonstest", "mock-sts", "mock-innsyn"})
 public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
@@ -34,13 +38,19 @@ public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
     public static final String JOURNALPOST_ID = "12345678";
     public static final String SAKSNUMMER = "87654321";
     public static final String JOURNALPOST_BASE_URL = "/api/journalpost/";
+
+
     @Rule
     public MockServerRule mockServerRule = new MockServerRule(this, MOCK_SERVER_PORT);
+    private String uriHentSaksnummer;
+
 
     @Before
     public void setUp() {
         testLogger.addAppender(listAppender);
         headers.setBearerAuth(JwtTokenGenerator.signedJWTAsString("testbruker"));
+        uriHentSaksnummer = fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/sak")
+                .queryParam("journalpostId", JOURNALPOST_ID).toUriString();
     }
 
     @Test
@@ -58,13 +68,12 @@ public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
                                 new Header("Content-Type", "application/json"))
                 );
 
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                localhost(JOURNALPOST_BASE_URL + JOURNALPOST_ID + "/sak"), HttpMethod.GET, new HttpEntity<String>(headers), String.class
+        ResponseEntity<Ressurs> response = restTemplate.exchange(uriHentSaksnummer, HttpMethod.GET, new HttpEntity<String>(headers), Ressurs.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK);
-        assertThat(response.getBody()).isEqualTo(SAKSNUMMER);
+        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.SUKSESS);
+        assertThat(response.getBody().getData().asText()).isEqualTo(SAKSNUMMER);
     }
 
     @Test
@@ -83,12 +92,12 @@ public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
                 );
 
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                localhost(JOURNALPOST_BASE_URL + JOURNALPOST_ID + "/sak"), HttpMethod.GET, new HttpEntity<String>(headers), String.class
-        );
+        ResponseEntity<Ressurs> response = restTemplate.exchange(uriHentSaksnummer, HttpMethod.GET, new HttpEntity<String>(headers), Ressurs.class);
+
 
         assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
-        assertThat(response.getBody()).isEqualTo("Sak mangler for journalpostId=" + JOURNALPOST_ID);
+        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
+        assertThat(response.getBody().getMelding()).isEqualTo("Sak mangler for journalpostId=" + JOURNALPOST_ID);
     }
 
     @Test
@@ -107,12 +116,11 @@ public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
                 );
 
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                localhost(JOURNALPOST_BASE_URL + JOURNALPOST_ID + "/sak"), HttpMethod.GET, new HttpEntity<String>(headers), String.class
-        );
+        ResponseEntity<Ressurs> response = restTemplate.exchange(uriHentSaksnummer, HttpMethod.GET, new HttpEntity<String>(headers), Ressurs.class);
 
         assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
-        assertThat(response.getBody()).isEqualTo("Sak mangler for journalpostId=" + JOURNALPOST_ID);
+        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
+        assertThat(response.getBody().getMelding()).isEqualTo("Sak mangler for journalpostId=" + JOURNALPOST_ID);
     }
 
     @Test
@@ -132,12 +140,12 @@ public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
                 );
 
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                localhost(JOURNALPOST_BASE_URL + JOURNALPOST_ID + "/sak"), HttpMethod.GET, new HttpEntity<String>(headers), String.class
+        ResponseEntity<Ressurs> response = restTemplate.exchange(uriHentSaksnummer, HttpMethod.GET, new HttpEntity<String>(headers), Ressurs.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
-        assertThat(response.getBody()).contains("Feil ved henting av journalpost=12345678 klientfeilmelding=Kan ikke hente journalpost [SafError{message='Feilet ved henting av data (/journalpost) : null', exceptionType='TECHNICAL', exception='NullPointerException'}]");
+        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
+        assertThat(response.getBody().getMelding()).contains("Feil ved henting av journalpost=12345678 klientfeilmelding=Kan ikke hente journalpost [SafError{message='Feilet ved henting av data (/journalpost) : null', exceptionType='TECHNICAL', exception='NullPointerException'}]");
         assertThat(loggingEvents).extracting(ILoggingEvent::getLevel).containsExactly(Level.WARN);
     }
 
@@ -157,46 +165,51 @@ public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
                 );
 
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                localhost(JOURNALPOST_BASE_URL + JOURNALPOST_ID + "/sak"), HttpMethod.GET, new HttpEntity<String>(headers), String.class
+        ResponseEntity<Ressurs> response = restTemplate.exchange(
+                localhost(JOURNALPOST_BASE_URL + JOURNALPOST_ID + "/sak"), HttpMethod.GET, new HttpEntity<String>(headers), Ressurs.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
-        assertThat(response.getBody()).contains("Feil ved henting av journalpost=12345678 statuscode=500 INTERNAL_SERVER_ERROR body=feilmelding");
+        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
+        assertThat(response.getBody().getMelding()).contains("Feil ved henting av journalpost=12345678 statuscode=500 INTERNAL_SERVER_ERROR body=feilmelding");
         assertThat(loggingEvents).extracting(ILoggingEvent::getLevel).containsExactly(Level.WARN);
     }
 
-
     @Test
     public void hente_journalpost_basert_på_kanalreferanseId_skal_returnere_journalpost() {
-        ResponseEntity<String> response = restTemplate.exchange(
-                localhost(JOURNALPOST_BASE_URL + "/kanalreferanseid/CallId"), HttpMethod.GET, new HttpEntity<String>(headers), String.class
+        ResponseEntity<Ressurs> response = restTemplate.exchange(
+                fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
+                        .queryParam("kanalReferanseId", JOURNALPOST_ID).toUriString(), HttpMethod.GET, new HttpEntity<String>(headers), Ressurs.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(OK);
-        assertThat(response.getBody()).isEqualTo(JOURNALPOST_ID);
+        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.SUKSESS);
+        assertThat(response.getBody().getData().get("journalpostId").textValue()).isEqualTo(JOURNALPOST_ID);
     }
 
     @Test
     public void hente_journalpost_basert_på_kanalreferanseId_skal_returnere_not_found_hvis_ingen_journalpost() {
-        ResponseEntity<String> response = restTemplate.exchange(
-                localhost(JOURNALPOST_BASE_URL + "/kanalreferanseid/" + HentJournalpostTestConfig.NOT_FOUND_CALLID), HttpMethod.GET, new HttpEntity<String>(headers), String.class
+        ResponseEntity<Ressurs> response = restTemplate.exchange(fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
+                .queryParam("kanalReferanseId", NOT_FOUND_CALLID).toUriString(), HttpMethod.GET, new HttpEntity<String>(headers), Ressurs.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
+        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
     }
 
     @Test
     public void hente_journalpost_basert_på_kanalreferanseId_skal_returnere_internal_error_ved_ukjent_feil() {
-        ResponseEntity<String> response = restTemplate.exchange(
-                localhost(JOURNALPOST_BASE_URL + "/kanalreferanseid/" + HentJournalpostTestConfig.GENERISK_ERROR_CALLID), HttpMethod.GET, new HttpEntity<String>(headers), String.class
+        ResponseEntity<Ressurs> response = restTemplate.exchange(fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
+                .queryParam("kanalReferanseId", GENERISK_ERROR_CALLID).toUriString(), HttpMethod.GET, new HttpEntity<String>(headers), Ressurs.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
         assertThat(loggingEvents).extracting(ILoggingEvent::getLevel).containsExactly(Level.WARN);
+        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
     }
 
     private String testdata(String filnavn) throws IOException {
         return Files.readString(new ClassPathResource("saf/" + filnavn).getFile().toPath(), StandardCharsets.UTF_8);
     }
+
 }

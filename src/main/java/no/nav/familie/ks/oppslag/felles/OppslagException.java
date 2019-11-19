@@ -1,22 +1,51 @@
 package no.nav.familie.ks.oppslag.felles;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.net.URI;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
-@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 public class OppslagException extends RuntimeException {
 
-    private static final Logger SECURELOG = LoggerFactory.getLogger("secureLogger");
-    private static final Logger LOG = LoggerFactory.getLogger(OppslagException.class);
+    private HttpStatus httpStatus;
+    private String kilde;
+    private Level level;
+    private Throwable error;
 
-    public OppslagException(String msg, Exception e, URI uri) {
-        super(msg);
+    public enum Level {
+        LAV,
+        MEDIUM,
+        KRITISK
+    }
 
-        SECURELOG.info("Ukjent feil ved oppslag mot {}. {}", uri, e.getMessage());
-        LOG.warn("Ukjent feil ved oppslag mot '" + uri + "'.");
+    public OppslagException(String message, String kilde, Level level, HttpStatus httpStatus, Exception error) {
+        super(message);
+        this.httpStatus = httpStatus == null ? INTERNAL_SERVER_ERROR : httpStatus;
+        this.kilde = kilde;
+        this.level = level;
+        this.error = error;
+    }
+
+    public OppslagException(String message, String kilde, Level level, HttpStatus httpStatus) {
+        this(message, kilde, level, httpStatus, null);
+    }
+
+    public OppslagException(String message, String kilde, Level level) {
+        this(message, kilde, level, null, null);
+    }
+
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
+    }
+
+    public String getKilde() {
+        return kilde;
+    }
+
+    public Level getLevel() {
+        return level;
+    }
+
+    public Throwable getError() {
+        return error;
     }
 }

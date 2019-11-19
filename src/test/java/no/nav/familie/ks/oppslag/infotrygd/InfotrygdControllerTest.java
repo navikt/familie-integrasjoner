@@ -2,8 +2,8 @@ package no.nav.familie.ks.oppslag.infotrygd;
 
 import no.nav.familie.http.azure.AccessTokenClient;
 import no.nav.familie.http.azure.AccessTokenDto;
+import no.nav.familie.ks.kontrakter.sak.Ressurs;
 import no.nav.familie.ks.oppslag.OppslagSpringRunnerTest;
-import no.nav.familie.ks.oppslag.infotrygd.domene.AktivKontantstøtteInfo;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,26 +23,30 @@ import static org.mockito.Mockito.when;
 
 @ActiveProfiles("integrasjonstest")
 public class InfotrygdControllerTest extends OppslagSpringRunnerTest {
-        public static final int MOCK_SERVER_PORT = 18321;
-        AccessTokenClient accessTokenClient = mock(AccessTokenClient.class);
-        InfotrygdService infotrygdService = new InfotrygdService(accessTokenClient, "", "http://localhost:" + MOCK_SERVER_PORT);
+    public static final int MOCK_SERVER_PORT = 18321;
+    public static final String HAR_BARN_AKTIV_KONTANTSTØTTE = "/api/infotrygd/v1/harBarnAktivKontantstotte";
+    AccessTokenClient accessTokenClient = mock(AccessTokenClient.class);
+    InfotrygdService infotrygdService = new InfotrygdService(accessTokenClient, "", "http://localhost:" + MOCK_SERVER_PORT);
 
-        @Rule
-        public MockServerRule mockServerRule = new MockServerRule(this, MOCK_SERVER_PORT);
+    @Rule
+    public MockServerRule mockServerRule = new MockServerRule(this, MOCK_SERVER_PORT);
 
     @Before
     public void setUp() {
         headers.setBearerAuth(getLokalTestToken());
         when(accessTokenClient.getAccessToken("")).thenReturn(new AccessTokenDto("", "", 0));
     }
-    
+
     @Test
     public void skal_gi_bad_request_hvis_fnr_mangler() {
         var response = restTemplate.exchange(
-                localhost("/api/infotrygd/harBarnAktivKontantstotte"), HttpMethod.GET, new HttpEntity<>(headers), AktivKontantstøtteInfo.class
+                localhost(HAR_BARN_AKTIV_KONTANTSTØTTE), HttpMethod.GET, new HttpEntity<>(headers), Ressurs.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
+        assertThat(response.getBody().getMelding()).isEqualTo("Mangler påkrevd request header");
+        assertThat(response.getBody().getStacktrace()).contains("Missing request header 'Nav-Personident' for method parameter of type String");
     }
 
     @Test
@@ -50,12 +54,13 @@ public class InfotrygdControllerTest extends OppslagSpringRunnerTest {
         headers.add("Nav-Personident", "foo");
 
         var response = restTemplate.exchange(
-                localhost("/api/infotrygd/harBarnAktivKontantstotte"), HttpMethod.GET, new HttpEntity<>(headers), AktivKontantstøtteInfo.class
+                localhost(HAR_BARN_AKTIV_KONTANTSTØTTE), HttpMethod.GET, new HttpEntity<>(headers), Ressurs.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
     }
-    
+
     @Test
     public void skal_korrekt_behandle_returobjekt() {
         spesifiserResponsFraInfotrygd("{ \"harAktivKontantstotte\": true }");

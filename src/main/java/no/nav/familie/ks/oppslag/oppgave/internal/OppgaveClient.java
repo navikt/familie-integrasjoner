@@ -6,6 +6,7 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import no.nav.familie.http.sts.StsRestClient;
 import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
+import no.nav.familie.ks.oppslag.felles.OppslagException;
 import no.nav.familie.ks.oppslag.oppgave.OppgaveIkkeFunnetException;
 import no.nav.familie.log.mdc.MDCConstants;
 import no.nav.oppgave.v1.FinnOppgaveResponseDto;
@@ -15,8 +16,6 @@ import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.Objects;
 
 public class OppgaveClient {
@@ -75,7 +74,7 @@ public class OppgaveClient {
         var response = getRequest(requestUrl, FinnOppgaveResponseDto.class);
         if (Objects.requireNonNull(response.getBody()).getOppgaver().isEmpty()) {
             returnerteIngenOppgaver.increment();
-            throw new OppgaveIkkeFunnetException("Mislykket finnOppgave request med url: " + requestUrl);
+            throw new OppslagException("Ingen oppgaver funnet for " + requestUrl, "oppgave", OppslagException.Level.MEDIUM, HttpStatus.NOT_FOUND);
         }
         if (response.getBody().getOppgaver().size()>1) {
             returnerteMerEnnEnOppgave.increment();

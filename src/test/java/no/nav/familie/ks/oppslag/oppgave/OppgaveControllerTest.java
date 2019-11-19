@@ -109,7 +109,7 @@ public class OppgaveControllerTest extends OppslagSpringRunnerTest {
                 localhost(OPPDATER_OPPGAVE_URL), HttpMethod.POST, new HttpEntity<>(test, headers), String.class
         );
         assertThat(loggingEvents).extracting(ILoggingEvent::getFormattedMessage).anyMatch(s ->
-                s.contains("OppgaveIkkeFunnetException: Mislykket finnOppgave request med url: http://localhost:18321/api/v1/oppgaver?aktoerId=1234567891011")
+                s.contains("[oppgave][Ingen oppgaver funnet for http://localhost:18321/api/v1/oppgaver?aktoerId=1234567891011&tema=KON&oppgavetype=BEH_SAK&journalpostId=1]")
         );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }

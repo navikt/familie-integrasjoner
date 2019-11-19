@@ -1,5 +1,6 @@
 package no.nav.familie.ks.oppslag.infotrygd;
 
+import no.nav.familie.ks.kontrakter.sak.Ressurs;
 import no.nav.familie.ks.oppslag.infotrygd.domene.AktivKontantstøtteInfo;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.slf4j.Logger;
@@ -12,7 +13,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 
 import javax.validation.constraints.NotNull;
-import java.util.Map;
 
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
@@ -28,18 +28,26 @@ public class InfotrygdController {
     }
 
     @ExceptionHandler(HttpStatusCodeException.class)
-    public ResponseEntity<Map<String, String>> handleExceptions(HttpStatusCodeException ex) {
+    public ResponseEntity<Ressurs> handleExceptions(HttpStatusCodeException ex) {
         if (ex instanceof HttpClientErrorException.NotFound) {
             LOG.info("404 mot infotrygd-kontantstotte");
         } else {
-            LOG.error("Oppslag mot infotrygd-kontantstotte feilet. Status code: " + ex.getStatusCode());
-            secureLogger.error("Oppslag mot infotrygd-kontantstotte feilet. feilmelding={} exception={}", ex.getMessage(), ex);
+            LOG.error("Oppslag mot infotrygd-kontantstotte feilet. Status code: {}", ex.getStatusCode());
+            secureLogger.error("Oppslag mot infotrygd-kontantstotte feilet. feilmelding={} responsebody={} exception={}", ex.getMessage(), ex.getResponseBodyAsString(), ex);
         }
-        return new ResponseEntity<>(Map.of("error", ex.getStatusCode().toString()), ex.getStatusCode());
+        return ResponseEntity
+                .status(ex.getStatusCode())
+                .body(Ressurs.Companion.failure("Oppslag mot infotrygd-kontanstøtte feilet " + ex.getResponseBodyAsString(), ex));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "harBarnAktivKontantstotte")
-    public ResponseEntity<AktivKontantstøtteInfo> aktivKontantstøtte(@NotNull @RequestHeader(name = "Nav-Personident") String fnr) {
+    @Deprecated(since = "TODO Slettes når endepunkt er endret")
+    public ResponseEntity<AktivKontantstøtteInfo> aktivKontantstøtteGammel(@NotNull @RequestHeader(name = "Nav-Personident") String fnr) {
         return new ResponseEntity<>(infotrygdService.hentAktivKontantstøtteFor(fnr), HttpStatus.OK);
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "v1/harBarnAktivKontantstotte")
+    public ResponseEntity<Ressurs> aktivKontantstøtte(@NotNull @RequestHeader(name = "Nav-Personident") String fnr) {
+        return ResponseEntity.ok(Ressurs.Companion.success(infotrygdService.hentAktivKontantstøtteFor(fnr), "Oppslag mot Infotrygd OK"));
     }
 }

@@ -56,9 +56,9 @@ public class DokarkivService {
 
     private String hentNavnForFnr(String fnr) {
         String navn = null;
-        ResponseEntity<Personinfo> personInfoResponse = personopplysningerService.hentPersoninfoFor(fnr);
-        if (personInfoResponse.getStatusCode().is2xxSuccessful() && personInfoResponse.getBody() != null) {
-            navn = personInfoResponse.getBody().getNavn();
+        Personinfo personInfoResponse = personopplysningerService.hentPersoninfoFor(fnr);
+        if (personInfoResponse != null) {
+            navn = personInfoResponse.getNavn();
         }
 
         if (navn == null) {
