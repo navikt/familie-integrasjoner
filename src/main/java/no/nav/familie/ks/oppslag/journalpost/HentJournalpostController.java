@@ -52,7 +52,7 @@ public class HentJournalpostController {
         if (saksnummer == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Ressurs.Companion.failure("Sak mangler for journalpostId=" + journalpostId, null));
         } else {
-            return ResponseEntity.ok(Ressurs.Companion.success(saksnummer, "OK"));
+            return ResponseEntity.ok(Ressurs.Companion.success(Map.of("saksnummer", saksnummer), "OK"));
         }
     }
 

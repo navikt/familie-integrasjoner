@@ -73,7 +73,7 @@ public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.SUKSESS);
-        assertThat(response.getBody().getData().asText()).isEqualTo(SAKSNUMMER);
+        assertThat(response.getBody().getData().get("saksnummer").asText()).isEqualTo(SAKSNUMMER);
     }
 
     @Test
