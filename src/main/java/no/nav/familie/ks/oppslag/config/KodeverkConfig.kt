@@ -12,6 +12,6 @@ data class KodeverkConfig(val KODEVERK_URL: String, val CREDENTIAL_USERNAME: Str
     val consumer = CREDENTIAL_USERNAME
 
     companion object {
-        private const val PATH_POSTNUMMER = "/Postnummer/koder/betydninger?ekskluderUgyldige=true&spraak=nb"
+        private const val PATH_POSTNUMMER = "/api/v1/kodeverk/Postnummer/koder/betydninger?ekskluderUgyldige=true&spraak=nb"
     }
 }

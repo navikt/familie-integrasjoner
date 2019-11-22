@@ -31,4 +31,4 @@ SAF_URL: http://saf.q0
 INNSYN_JOURNAL_V2_URL: https://wasapp-q0.adeo.no/joark/InnsynJournal/v2
 OPPGAVE_URL: http://oppgave.q0
 EGEN_ANSATT_V1_URL: https://wasapp-q0.adeo.no/tpsws/EgenAnsatt_v1
-KODEVERK_URL: https://kodeverk.nais.preprod.local/api/v1/kodeverk
+KODEVERK_URL: https://kodeverk.nais.preprod.local
