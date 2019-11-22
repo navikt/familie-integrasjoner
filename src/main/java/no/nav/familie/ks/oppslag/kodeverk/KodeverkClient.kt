@@ -4,8 +4,10 @@ import no.nav.familie.ef.mottak.api.kodeverk.domene.PostnummerDto
 import no.nav.familie.http.client.NavHttpHeaders
 import no.nav.familie.ks.kontrakter.objectMapper
 import no.nav.familie.ks.oppslag.config.KodeverkConfig
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import java.io.IOException
+import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
@@ -29,7 +31,7 @@ class KodeverkClient(val config: KodeverkConfig) { //val httpClient
         }
     }
 
-    /*
+
     @Throws(Exception::class) fun ping() {
         val pingURI = URI.create(String.format("%s/internal/isAlive", config.KODEVERK_URL))
         val request = HttpRequest.newBuilder()
@@ -40,8 +42,5 @@ class KodeverkClient(val config: KodeverkConfig) { //val httpClient
             throw Exception("Feil ved ping til kodeverk")
         }
     }
-
-     */
-
 }
 

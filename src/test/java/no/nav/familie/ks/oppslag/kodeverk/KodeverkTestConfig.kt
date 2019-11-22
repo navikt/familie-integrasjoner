@@ -26,7 +26,7 @@ class KodeverkTestConfig {
     @Throws(Exception::class) fun kodeverkClientMock(): KodeverkClient? {
         val kodeverkClient = Mockito.mock(KodeverkClient::class.java)
         Mockito.`when`(kodeverkClient.hentPostnummerBetydninger()).thenReturn(mockPostnummerRespons())
-        //Mockito.doNothing().`when`(kodeverkClient).ping()
+        Mockito.doNothing().`when`(kodeverkClient).ping()
         return kodeverkClient
     }
 
