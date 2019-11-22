@@ -9,14 +9,15 @@ import no.nav.familie.ks.oppslag.kodeverk.domene.Språk
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.mockito.Mockito
-/*
+
 class KodeverkServiceTest {
     private val kodeverkClientMock = Mockito.mock(KodeverkClient::class.java)
     private val kodeverkService = KodeverkService(kodeverkClientMock)
 
-    @Test fun skalReturnerePoststed() {
-        val poststedMock = PoststedDto(POSTSTED, POSTSTED)
-        val betydningerMock = BetydningerDto("00.00.0000", "99.99.9999", mapOf(Språk.BOKMÅL.kode to poststedMock))
+    @Test
+    fun skalReturnerePoststed() {
+        val poststedMock = PoststedDto(POSTSTED, "")
+        val betydningerMock = BetydningerDto("", "", mapOf(Språk.BOKMÅL.kode to poststedMock))
         val postnummerMock = PostnummerDto(mapOf(POSTNUMMER to listOf(betydningerMock)))
 
         Mockito.`when`(kodeverkClientMock.hentPostnummerBetydninger()).thenReturn(postnummerMock)
@@ -30,4 +31,3 @@ class KodeverkServiceTest {
         private const val POSTSTED = "Oslo"
     }
 }
-*/

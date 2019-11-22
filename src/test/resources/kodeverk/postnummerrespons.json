@@ -1,0 +1,64 @@
+{
+  "betydninger": {
+    "1001": [
+      {
+        "gyldigFra": "1900-01-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nn": {
+            "term": "OSLO",
+            "tekst": "OSLO"
+          },
+          "nb": {
+            "term": "OSLO",
+            "tekst": "OSLO"
+          },
+          "en": {
+            "term": "OSLO",
+            "tekst": "OSLO"
+          }
+        }
+      }
+    ],
+    "2301": [
+      {
+        "gyldigFra": "1900-01-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nn": {
+            "term": "HAMAR",
+            "tekst": "HAMAR"
+          },
+          "nb": {
+            "term": "HAMAR",
+            "tekst": "HAMAR"
+          },
+          "en": {
+            "term": "HAMAR",
+            "tekst": "HAMAR"
+          }
+        }
+      }
+    ],
+    "7650": [
+      {
+        "gyldigFra": "1900-01-01",
+        "gyldigTil": "9999-12-31",
+        "beskrivelser": {
+          "nn": {
+            "term": "VERDAL",
+            "tekst": "VERDAL"
+          },
+          "nb": {
+            "term": "VERDAL",
+            "tekst": "VERDAL"
+          },
+          "en": {
+            "term": "VERDAL",
+            "tekst": "VERDAL"
+          }
+        }
+      }
+    ]
+  }
+}

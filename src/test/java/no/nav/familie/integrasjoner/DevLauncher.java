@@ -23,7 +23,8 @@ public class DevLauncher {
                         "mock-oppgave",
                         "mock-personopplysninger",
                         "mock-saf",
-                        "mock-sts"
+                        "mock-sts",
+                        "mock-kodeverk"
                 ).build();
         app.run(args);
     }

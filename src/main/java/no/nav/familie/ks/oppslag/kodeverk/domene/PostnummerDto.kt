@@ -1,11 +1,12 @@
 package no.nav.familie.ef.mottak.api.kodeverk.domene
 
-data class PostnummerDto(val betydninger: Map<String,List<BetydningerDto>>)
+import com.fasterxml.jackson.annotation.JsonProperty
 
-data class BetydningerDto(val gyldigFra: String,
-                          val gyldigTil: String,
-                          val beskrivelser: Map<String,PoststedDto>)
+data class PostnummerDto(@JsonProperty("betydninger") val betydninger: Map<String,List<BetydningerDto>>)
 
-data class PoststedDto(val term: String,
-                       val tekst:String)
+data class BetydningerDto(@JsonProperty("gyldigFra") val gyldigFra: String,
+                          @JsonProperty("gyldigTil") val gyldigTil: String,
+                          @JsonProperty("beskrivelser") val beskrivelser: Map<String,PoststedDto>)
 
+data class PoststedDto(@JsonProperty("term") val term: String,
+                       @JsonProperty("tekst") val tekst : String)
