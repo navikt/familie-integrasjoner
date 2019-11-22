@@ -1,10 +1,8 @@
 package no.nav.familie.ks.oppslag.kodeverk
 
-import no.nav.familie.ef.mottak.api.kodeverk.KodeverkClient
-import no.nav.familie.ef.mottak.api.kodeverk.KodeverkService
-import no.nav.familie.ef.mottak.api.kodeverk.domene.BetydningerDto
-import no.nav.familie.ef.mottak.api.kodeverk.domene.PostnummerDto
-import no.nav.familie.ef.mottak.api.kodeverk.domene.PoststedDto
+import no.nav.familie.ks.oppslag.kodeverk.domene.BetydningerDto
+import no.nav.familie.ks.oppslag.kodeverk.domene.PostnummerDto
+import no.nav.familie.ks.oppslag.kodeverk.domene.PoststedDto
 import no.nav.familie.ks.oppslag.kodeverk.domene.Språk
 import org.assertj.core.api.Assertions
 import org.junit.Test

@@ -1,11 +1,11 @@
-package no.nav.familie.ef.mottak.api.kodeverk
+package no.nav.familie.ks.oppslag.kodeverk
 
-import no.nav.security.token.support.core.api.Unprotected
+import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@Unprotected
+@ProtectedWithClaims(issuer = "azuread")
 @RequestMapping(path = ["/api/kodeverk/poststed"], produces = [MediaType.APPLICATION_JSON_VALUE])
 class PostnummerController(val kodeverkService: KodeverkService) {
 

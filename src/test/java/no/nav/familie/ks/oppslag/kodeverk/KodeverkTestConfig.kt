@@ -2,8 +2,7 @@ package no.nav.familie.ks.oppslag.kodeverk
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
-import no.nav.familie.ef.mottak.api.kodeverk.KodeverkClient
-import no.nav.familie.ef.mottak.api.kodeverk.domene.PostnummerDto
+import no.nav.familie.ks.oppslag.kodeverk.domene.PostnummerDto
 import org.mockito.Mockito
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding

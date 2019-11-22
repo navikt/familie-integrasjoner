@@ -1,10 +1,10 @@
-package no.nav.familie.ef.mottak.api.kodeverk
+package no.nav.familie.ks.oppslag.kodeverk
 
-import no.nav.familie.ef.mottak.api.kodeverk.domene.PostnummerDto
 import no.nav.familie.http.client.NavHttpHeaders.*
 import no.nav.familie.ks.kontrakter.objectMapper
 import no.nav.familie.ks.oppslag.config.KodeverkConfig
 import no.nav.familie.ks.oppslag.felles.MDCOperations
+import no.nav.familie.ks.oppslag.kodeverk.domene.PostnummerDto
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import java.io.IOException

@@ -1,4 +1,4 @@
-package no.nav.familie.ef.mottak.api.kodeverk.domene
+package no.nav.familie.ks.oppslag.kodeverk.domene
 
 import com.fasterxml.jackson.annotation.JsonProperty
 

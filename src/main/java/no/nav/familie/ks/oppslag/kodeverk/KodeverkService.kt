@@ -1,4 +1,4 @@
-package no.nav.familie.ef.mottak.api.kodeverk
+package no.nav.familie.ks.oppslag.kodeverk
 
 import no.nav.familie.ks.oppslag.kodeverk.domene.Språk
 import org.springframework.stereotype.Service
