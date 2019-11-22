@@ -30,6 +30,7 @@ DOKARKIV_V1_URL: https://dokarkiv.nais.adeo.no
 MEDL2_URL: https://app.adeo.no/medl2
 SAF_URL: http://saf
 INNSYN_JOURNAL_V2_URL: https://wasapp.adeo.no/joark/InnsynJournal/v2
+KODEVERK_URL: https://kodeverk.nais.orea.no/api/v1/kodeverk
 
 # Appdynamics
 APPDYNAMICS_CONTROLLER_HOST_NAME: appdynamics.adeo.no
