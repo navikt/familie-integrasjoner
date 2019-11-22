@@ -19,7 +19,10 @@ jobs:
         with:
           java-version: 1.11
       - name: Bygg med maven
-        run: mvn package --file pom.xml
+        env:
+          GITHUB_USERNAME: x-access-token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn package --settings .github/maven-settings.xml --file pom.xml
       - name: Lag Docker tag
         env:
           NAME: familie-ks-oppslag
