@@ -6,6 +6,7 @@ import no.nav.familie.ks.oppslag.medlemskap.internal.MedlClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.core.NestedExceptionUtils;
 
 public class MedlHelsesjekk implements HealthIndicator {
 
@@ -24,7 +25,7 @@ public class MedlHelsesjekk implements HealthIndicator {
             return Health.up().build();
         } catch (Exception e) {
             medlNede.increment();
-            return Health.status("DOWN-NONCRITICAL").withDetail("Feilmelding", e.getMessage()).build();
+            return Health.status("DOWN-NONCRITICAL").withDetail("Feilmelding", NestedExceptionUtils.getMostSpecificCause(e).getClass().getName() + ": " + e.getMessage()).build();
         }
     }
 }

@@ -6,6 +6,7 @@ import no.nav.familie.ks.oppslag.egenansatt.internal.EgenAnsattConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.core.NestedExceptionUtils;
 
 public class EgenAnsattV1Helsesjekk implements HealthIndicator {
 
@@ -23,7 +24,7 @@ public class EgenAnsattV1Helsesjekk implements HealthIndicator {
             return Health.up().build();
         } catch (Exception e) {
             egenAnsattV1Nede.increment();
-            return Health.status("DOWN-NONCRITICAL").withDetail("Feilmelding", e.getMessage()).build();
+            return Health.status("DOWN-NONCRITICAL").withDetail("Feilmelding", NestedExceptionUtils.getMostSpecificCause(e).getClass().getName() + ": " + e.getMessage()).build();
         }
     }
 }

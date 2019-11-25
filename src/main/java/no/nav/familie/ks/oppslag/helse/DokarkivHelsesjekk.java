@@ -6,6 +6,7 @@ import no.nav.familie.ks.oppslag.dokarkiv.client.DokarkivClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.core.NestedExceptionUtils;
 
 public class DokarkivHelsesjekk implements HealthIndicator {
 
@@ -23,7 +24,7 @@ public class DokarkivHelsesjekk implements HealthIndicator {
             return Health.up().build();
         } catch (Exception e) {
             dokarkivNede.increment();
-            return Health.status("DOWN-NONCRITICAL").withDetail("Feilmelding", e.getMessage()).build();
+            return Health.status("DOWN-NONCRITICAL").withDetail("Feilmelding", NestedExceptionUtils.getMostSpecificCause(e).getClass().getName() + ": " + e.getMessage()).build();
         }
     }
 }

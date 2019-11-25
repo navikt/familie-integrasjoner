@@ -6,6 +6,7 @@ import no.nav.familie.ks.oppslag.journalpost.internal.InnsynJournalConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.core.NestedExceptionUtils;
 
 public class InnsynJournalV2Helsesjekk implements HealthIndicator {
 
@@ -23,7 +24,7 @@ public class InnsynJournalV2Helsesjekk implements HealthIndicator {
             return Health.up().build();
         } catch (Exception e) {
             innsynJournalV2Nede.increment();
-            return Health.status("DOWN-NONCRITICAL").withDetail("Feilmelding", e.getMessage()).build();
+            return Health.status("DOWN-NONCRITICAL").withDetail("Feilmelding", NestedExceptionUtils.getMostSpecificCause(e).getClass().getName() + ": " + e.getMessage()).build();
         }
     }
 }
