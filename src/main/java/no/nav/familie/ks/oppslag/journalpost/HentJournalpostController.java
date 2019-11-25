@@ -56,27 +56,6 @@ public class HentJournalpostController {
         }
     }
 
-    @Deprecated(since = "TODO slettes når mottak bytter endepunkt")
-    @GetMapping("/{journalpostId}/sak")
-    public ResponseEntity<String> hentSaksnummerMedPathVariable(@PathVariable(name = "journalpostId") String journalpostId) {
-        String saksnummer = journalpostService.hentSaksnummer(journalpostId);
-        if (saksnummer == null) {
-            return new ResponseEntity<>("Sak mangler for journalpostId=" + journalpostId, HttpStatus.NOT_FOUND);
-        } else {
-            return new ResponseEntity<>(saksnummer, HttpStatus.OK);
-        }
-    }
-
-    @Deprecated(since = "TODO slettes når mottak bytter endepunkt")
-    @GetMapping("/kanalreferanseid/{kanalReferanseId}")
-    public ResponseEntity<String> hentJournalpostIdPathVariable(@PathVariable(name = "kanalReferanseId") String kanalReferanseId) {
-        String journalpostId = journalpostService.hentJournalpostId(kanalReferanseId);
-        if (journalpostId == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return ResponseEntity.ok(journalpostService.hentJournalpostId(kanalReferanseId));
-    }
-
     @GetMapping
     public ResponseEntity<Ressurs> hentJournalpostId(@RequestParam(name = "kanalReferanseId") String kanalReferanseId) {
         String journalpostId = journalpostService.hentJournalpostId(kanalReferanseId);

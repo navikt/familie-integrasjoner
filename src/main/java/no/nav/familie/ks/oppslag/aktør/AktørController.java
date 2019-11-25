@@ -25,18 +25,6 @@ public class AktørController {
         this.aktørService = aktørService;
     }
 
-    @Deprecated(since = "TODO slettes når mottak bytter endepunkt")
-    @GetMapping
-    public ResponseEntity<String> getAktørIdForPersonIdentGammel(@NotNull @RequestHeader(name = "Nav-Personident") String personIdent) {
-        return aktørService.getAktørIdGammel(personIdent);
-    }
-
-    @Deprecated(since = "TODO slettes når mottak bytter endepunkt")
-    @GetMapping(path = "/fraaktorid")
-    public ResponseEntity<String> getPersonIdentForAktørIdGammel(@NotNull @RequestHeader(name = "Nav-Aktorid") String aktørId) {
-        return aktørService.getPersonIdentGammel(new AktørId(aktørId));
-    }
-
     @GetMapping("v1")
     public ResponseEntity<Ressurs> getAktørIdForPersonIdent(@NotNull @RequestHeader(name = "Nav-Personident") String personIdent) {
         return ResponseEntity

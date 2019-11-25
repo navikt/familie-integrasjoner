@@ -1,7 +1,6 @@
 package no.nav.familie.ks.oppslag.medlemskap;
 
 import no.nav.familie.ks.kontrakter.sak.Ressurs;
-import no.nav.familie.ks.oppslag.medlemskap.domain.MedlemskapsInfo;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,12 +17,6 @@ public class MedlemskapController {
 
     public MedlemskapController(MedlemskapService service) {
         this.medlemskapService = service;
-    }
-
-    @GetMapping
-    @Deprecated(since = "TODO slettes når mottak bytter endepunkt")
-    public ResponseEntity<MedlemskapsInfo> hentMedlemskapsUnntakGammel(@RequestParam("id") String aktørId) {
-        return ResponseEntity.ok(medlemskapService.hentMedlemskapsUnntak(aktørId));
     }
 
     @GetMapping("v1")

@@ -1,8 +1,6 @@
 package no.nav.familie.ks.oppslag.personopplysning;
 
 import no.nav.familie.ks.kontrakter.sak.Ressurs;
-import no.nav.familie.ks.oppslag.personopplysning.domene.PersonhistorikkInfo;
-import no.nav.familie.ks.oppslag.personopplysning.domene.Personinfo;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
@@ -36,20 +34,6 @@ public class PersonopplysningerController {
         return ResponseEntity
                 .status(e.getRawStatusCode())
                 .body(Ressurs.Companion.ikkeTilgang("Ikke tilgang mot personopplysning " + e.getMessage()));
-    }
-
-    @Deprecated(since = "TODO slettes når mottak bytter endepunkt")
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "historikk")
-    public ResponseEntity<PersonhistorikkInfo> historikkGammel(@NotNull @RequestHeader(name = "Nav-Personident") String personIdent,
-                                                               @NotNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fomDato,
-                                                               @NotNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate tomDato) {
-        return personopplysningerService.hentHistorikkForGammel(personIdent, fomDato, tomDato);
-    }
-
-    @Deprecated(since = "TODO slettes når mottak bytter endepunkt")
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "info")
-    public ResponseEntity<Personinfo> personInfoGammel(@NotNull @RequestHeader(name = "Nav-Personident") String personIdent) {
-        return personopplysningerService.hentPersoninfoForGammel(personIdent);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "v1/historikk")

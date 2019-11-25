@@ -165,8 +165,7 @@ public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
                 );
 
 
-        ResponseEntity<Ressurs> response = restTemplate.exchange(
-                localhost(JOURNALPOST_BASE_URL + JOURNALPOST_ID + "/sak"), HttpMethod.GET, new HttpEntity<String>(headers), Ressurs.class
+        ResponseEntity<Ressurs> response = restTemplate.exchange(uriHentSaksnummer, HttpMethod.GET, new HttpEntity<String>(headers), Ressurs.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);

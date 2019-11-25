@@ -2,7 +2,6 @@ package no.nav.familie.ks.oppslag.dokarkiv;
 
 import no.nav.familie.ks.kontrakter.sak.Ressurs;
 import no.nav.familie.ks.oppslag.dokarkiv.api.ArkiverDokumentRequest;
-import no.nav.familie.ks.oppslag.dokarkiv.api.ArkiverDokumentResponse;
 import no.nav.familie.ks.oppslag.dokarkiv.client.KanIkkeFerdigstilleJournalpostException;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.slf4j.Logger;
@@ -49,13 +48,6 @@ public class DokarkivController {
             KanIkkeFerdigstilleJournalpostException ex) {
         LOG.warn("Feil ved ferdigstilling {}", ex.getMessage());
         return ResponseEntity.badRequest().body(Ressurs.Companion.failure(null, ex));
-    }
-
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    @Deprecated(since = "TODO slettes når mottak bytter endepunkt")
-    public ArkiverDokumentResponse arkiverDokumentGammel(@Valid @RequestBody ArkiverDokumentRequest arkiverDokumentRequest) {
-        return journalføringService.lagInngåendeJournalpost(arkiverDokumentRequest);
     }
 
     @PostMapping(path = "v1", produces = MediaType.APPLICATION_JSON_VALUE)

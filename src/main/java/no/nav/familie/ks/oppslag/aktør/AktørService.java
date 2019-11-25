@@ -10,16 +10,13 @@ import org.ehcache.CacheManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @Service
 public class AktørService {
@@ -33,68 +30,6 @@ public class AktørService {
         this.aktørCacheManager = aktørCacheManager;
         this.aktørregisterClient = aktørregisterClient;
     }
-
-    @Deprecated(since = "TODO slettes når mottak bytter endepunkt")
-    public ResponseEntity<String> getAktørIdGammel(String personIdent) {
-        Objects.requireNonNull(personIdent, "personIdent");
-        return Optional.ofNullable(aktørCache().get(personIdent)).map(ResponseEntity::ok).orElseGet(() -> {
-            var responseFraRegister = hentAktørIdFraRegisterGammel(personIdent);
-            if (!responseFraRegister.getStatusCode().isError() && responseFraRegister.getBody() != null && !responseFraRegister.getBody().isEmpty()) {
-                secureLogger.info("Legger fnr {} med aktørid {} i aktør-cache", personIdent, responseFraRegister.getBody());
-                aktørCache().put(personIdent, responseFraRegister.getBody());
-            }
-            return responseFraRegister;
-        });
-    }
-
-    @Deprecated(since = "TODO slettes når mottak bytter endepunkt")
-    public ResponseEntity<String> getPersonIdentGammel(AktørId aktørId) {
-        Objects.requireNonNull(aktørId, "aktørId");
-        return Optional.ofNullable(personIdentCache().get(aktørId.getId())).map(ResponseEntity::ok).orElseGet(() -> {
-            var responseFraRegister = hentPersonIdentFraRegisterGammel(aktørId);
-            if (!responseFraRegister.getStatusCode().isError() && responseFraRegister.getBody() != null && !responseFraRegister.getBody().isEmpty()) {
-                secureLogger.info("Legger aktørid {} med fnr {} i personident-cache", aktørId.getId(), responseFraRegister.getBody());
-                personIdentCache().put(aktørId.getId(), responseFraRegister.getBody());
-            }
-            return responseFraRegister;
-        });
-    }
-
-    private ResponseEntity<String> hentAktørIdFraRegisterGammel(String personIdent) {
-        return fraGammel(personIdent);
-    }
-
-    private ResponseEntity<String> hentPersonIdentFraRegisterGammel(AktørId aktørId) {
-        return fraGammel(aktørId);
-
-    }
-
-    private <T> ResponseEntity<String> fraGammel(T idType) {
-        boolean erAktørId = idType instanceof AktørId;
-        String id = erAktørId ? ((AktørId) idType).getId() : (String) idType;
-
-        Aktør response = erAktørId ?
-                aktørregisterClient.hentPersonIdent(id).get(id) :
-                aktørregisterClient.hentAktørId(id).get(id);
-
-        secureLogger.info(erAktørId ? "Hentet fnr for aktørId: {}: {} fra aktørregisteret" : "Hentet aktør id'er for fnr: {}: {} fra aktørregisteret", id, response);
-
-        if (response.getFeilmelding() == null) {
-            final var identer = response.getIdenter().stream().filter(Ident::getGjeldende).collect(Collectors.toList());
-            if (identer.size() == 1) {
-                return ResponseEntity.ok(identer.get(0).getIdent());
-            } else {
-                return ResponseEntity.status(identer.isEmpty() ? NOT_FOUND : CONFLICT).header("message", String
-                        .format("%s gjeldene %s", identer.isEmpty() ? "Ingen" : "Flere", erAktørId ? "aktørIder" : "norske identer"))
-                        .build();
-            }
-        } else {
-            return ResponseEntity.status(BAD_REQUEST).header("message", String
-                    .format("Funksjonell feil. Fikk følgende feilmelding fra aktørregisteret: %s", response.getFeilmelding()))
-                    .build();
-        }
-    }
-
 
     public String getAktørId(String personIdent) {
         Objects.requireNonNull(personIdent, "personIdent");

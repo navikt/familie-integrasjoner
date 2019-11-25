@@ -1,11 +1,9 @@
 package no.nav.familie.ks.oppslag.infotrygd;
 
 import no.nav.familie.ks.kontrakter.sak.Ressurs;
-import no.nav.familie.ks.oppslag.infotrygd.domene.AktivKontantstøtteInfo;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,12 +36,6 @@ public class InfotrygdController {
         return ResponseEntity
                 .status(ex.getStatusCode())
                 .body(Ressurs.Companion.failure("Oppslag mot infotrygd-kontanstøtte feilet " + ex.getResponseBodyAsString(), ex));
-    }
-
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "harBarnAktivKontantstotte")
-    @Deprecated(since = "TODO Slettes når endepunkt er endret")
-    public ResponseEntity<AktivKontantstøtteInfo> aktivKontantstøtteGammel(@NotNull @RequestHeader(name = "Nav-Personident") String fnr) {
-        return new ResponseEntity<>(infotrygdService.hentAktivKontantstøtteFor(fnr), HttpStatus.OK);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "v1/harBarnAktivKontantstotte")

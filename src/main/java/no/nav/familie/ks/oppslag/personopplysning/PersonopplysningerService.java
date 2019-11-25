@@ -18,13 +18,10 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.context.annotation.ApplicationScope;
 
 import java.time.LocalDate;
@@ -67,43 +64,6 @@ public class PersonopplysningerService {
         } catch (HentPersonhistorikkPersonIkkeFunnet exception) {
             LOG.info("Prøver å hente historikk for person som ikke finnes i TPS");
             throw  HttpClientErrorException.create(NOT_FOUND, "Kan ikke hente historikk for person som ikke finnes i TPS" + exception.getMessage(),  null, null, null);
-        }
-    }
-    @Deprecated(since = "TODO slettes når mottak bytter endepunkt")
-    ResponseEntity<PersonhistorikkInfo> hentHistorikkForGammel(String personIdent, LocalDate fom, LocalDate tom) {
-        Objects.requireNonNull(personIdent, "personIdent");
-        Objects.requireNonNull(fom, "fom");
-        Objects.requireNonNull(tom, "tom");
-        try {
-            var request = new HentPersonhistorikkRequest();
-            request.setAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)));
-            request.setPeriode(new Periode().withFom(DateUtil.convertToXMLGregorianCalendar(fom)).withTom(DateUtil.convertToXMLGregorianCalendar(tom)));
-            var response = personConsumer.hentPersonhistorikkResponse(request);
-            return ResponseEntity.ok(oversetter.tilPersonhistorikkInfo(new no.nav.familie.ks.oppslag.personopplysning.domene.PersonIdent(personIdent), response));
-        } catch (HentPersonhistorikkSikkerhetsbegrensning exception) {
-            LOG.info("Ikke tilgang til å hente historikk for person");
-            return ResponseEntity.status(FORBIDDEN).header("message", exception.getMessage()).build();
-        } catch (HentPersonhistorikkPersonIkkeFunnet exception) {
-            LOG.info("Prøver å hente historikk for person som ikke finnes i TPS");
-            return ResponseEntity.status(NOT_FOUND).header("message", exception.getMessage()).build();
-        }
-    }
-
-
-    @Deprecated(since = "TODO slettes når mottak bytter endepunkt")
-    public ResponseEntity<Personinfo> hentPersoninfoForGammel(String personIdent) {
-        try {
-            HentPersonRequest request = new HentPersonRequest()
-                    .withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)))
-                    .withInformasjonsbehov(List.of(Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.ADRESSE));
-            HentPersonResponse response = personConsumer.hentPersonResponse(request);
-            return ResponseEntity.ok(oversetter.tilPersoninfo(new no.nav.familie.ks.oppslag.personopplysning.domene.PersonIdent(personIdent), response));
-        } catch (HentPersonSikkerhetsbegrensning exception) {
-            LOG.info("Ikke tilgang til å hente personinfo for person");
-            return ResponseEntity.status(FORBIDDEN).header("message", exception.getMessage()).build();
-        } catch (HentPersonPersonIkkeFunnet exception) {
-            LOG.info("Prøver å hente personinfo for person som ikke finnes i TPS");
-            return ResponseEntity.status(NOT_FOUND).header("message", exception.getMessage()).build();
         }
     }
 
