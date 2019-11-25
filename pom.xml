@@ -20,10 +20,10 @@
         <sha1></sha1>
         <changelist>-SNAPSHOT</changelist>
         <java.version>11</java.version>
-        <common-java-modules.version>1.2019.07.11-12.31-0b875ec24c4e</common-java-modules.version>
+        <common-java-modules.version>1.2019.11.06-15.14-6ca860e6cead</common-java-modules.version>
         <felles.version>1.0_20191106113227_c2ad869</felles.version>
         <kontrakt.version>1.0_20191115092849_f8fbb14</kontrakt.version>
-        <cxf.version>3.3.1</cxf.version>
+        <cxf.version>3.3.4</cxf.version>
         <token-validation-spring.version>1.1.2</token-validation-spring.version>
         <tjenestespesifikasjoner.version>1.2019.09.25-00.21-49b69f0625e0</tjenestespesifikasjoner.version>
     </properties>
@@ -199,7 +199,7 @@
         <dependency>
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-netty</artifactId>
-            <version>5.6.1</version>
+            <version>5.7.2</version>
             <scope>test</scope>
         </dependency>
 
@@ -207,7 +207,7 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>1.5.0</version>
+            <version>1.6.0</version>
         </dependency>
 
 
@@ -230,7 +230,7 @@
             <plugin>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-codegen-maven-plugin</artifactId>
-                <version>2.3.1</version>
+                <version>2.4.10</version>
                 <executions>
                     <execution>
                         <goals>

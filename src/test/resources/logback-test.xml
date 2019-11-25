@@ -6,6 +6,6 @@
               value="%d [%-5level] [%thread] %logger{5} %replace(- [%X{consumerId}, %X{callId}, %X{userId}] ){'- \[, , \] ',''}- %m%n"/>
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
-    <logger name="org.mockserver.mock" level="WARN"/>
+    <logger name="org.mockserver" level="WARN"/>
 
 </configuration>
