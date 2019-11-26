@@ -1,5 +1,5 @@
-# familie-ks-oppslag
-App for oppslag mot NAV-interne registre, GSAK, infotrygd mm. Brukes i saksbehandling av kontantstøtte-søknader.
+# familie-integrasjoner
+App for integrasjoner mot NAV-interne registre, GSAK, infotrygd mm. Brukes i saksbehandling av kontantstøtte, barnetrygd og enslig forsørger.
 
 ## Bygging lokalt
 Appen kjører på Java 11. Bygging gjøres ved å kjøre `mvn clean install`. 
