@@ -24,7 +24,7 @@ jobs:
         env:
           NAME: familie-integrasjoner
         run: |
-          echo "docker.pkg.github.com/navikt/familie"/"$NAME" > .docker_image
+          echo "docker.pkg.github.com/navikt"/"$NAME"/"$NAME" > .docker_image
           echo "$(date "+%Y.%m.%d")-$(git rev-parse --short HEAD)" > .docker_tag
       - name: Bygg Docker image
         run: |
