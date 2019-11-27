@@ -11,12 +11,12 @@ no.nav.security.jwt:
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${AAD_GRAPH_SCOPE}
         authentication:
-          client-id: ${KS_OPPSLAG_CLIENT_ID}
+          client-id: ${INTEGRASJONER_CLIENT_ID}
           client-secret: ${CLIENT_SECRET}
           client-auth-method: client_secret_basic
 
 AAD_URL: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
-KS_OPPSLAG_CLIENT_ID: ""
+INTEGRASJONER_CLIENT_ID: ""
 CLIENT_SECRET: ""
 INFOTRYGD_KS_SCOPE: ""
 

@@ -10,8 +10,8 @@
         <version>2.2.0.RELEASE</version>
     </parent>
 
-    <groupId>no.nav.familie.ks.oppslag</groupId>
-    <artifactId>familie-ks-oppslag</artifactId>
+    <groupId>no.nav.familie.integrasjoner</groupId>
+    <artifactId>familie-integrasjoner</artifactId>
     <version>${revision}${sha1}${changelist}</version>
     <packaging>jar</packaging>
 
