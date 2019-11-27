@@ -22,7 +22,7 @@ jobs:
         run: mvn package --settings .github/maven-settings.xml --file pom.xml
       - name: Lag Docker tag
         env:
-          NAME: familie-integrasjoner
+          NAME: familie-integrasjon
         run: |
           echo "docker.pkg.github.com"/"$GITHUB_REPOSITORY"/"$NAME" > .docker_image
           echo "$(date "+%Y.%m.%d")-$(git rev-parse --short HEAD)" > .docker_tag
