@@ -1,6 +1,6 @@
-package no.nav.familie.ks.oppslag.kodeverk
+package no.nav.familie.integrasjoner.kodeverk
 
-import no.nav.familie.ks.oppslag.kodeverk.domene.Språk
+import no.nav.familie.integrasjoner.kodeverk.domene.Språk
 import org.springframework.stereotype.Service
 
 @Service

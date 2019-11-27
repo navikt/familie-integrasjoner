@@ -1,4 +1,4 @@
-package no.nav.familie.ks.oppslag.config
+package no.nav.familie.integrasjoner.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding

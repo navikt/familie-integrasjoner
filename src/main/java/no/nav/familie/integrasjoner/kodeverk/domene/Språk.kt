@@ -1,4 +1,4 @@
-package no.nav.familie.ks.oppslag.kodeverk.domene
+package no.nav.familie.integrasjoner.kodeverk.domene
 
 enum class Språk(val kode: String) {
     BOKMÅL("nb")

@@ -1,9 +1,9 @@
-package no.nav.familie.ks.oppslag.kodeverk
+package no.nav.familie.integrasjoner.kodeverk
 
-import no.nav.familie.ks.oppslag.kodeverk.domene.BetydningerDto
-import no.nav.familie.ks.oppslag.kodeverk.domene.PostnummerDto
-import no.nav.familie.ks.oppslag.kodeverk.domene.PoststedDto
-import no.nav.familie.ks.oppslag.kodeverk.domene.Språk
+import no.nav.familie.integrasjoner.kodeverk.domene.BetydningerDto
+import no.nav.familie.integrasjoner.kodeverk.domene.PostnummerDto
+import no.nav.familie.integrasjoner.kodeverk.domene.PoststedDto
+import no.nav.familie.integrasjoner.kodeverk.domene.Språk
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.mockito.Mockito

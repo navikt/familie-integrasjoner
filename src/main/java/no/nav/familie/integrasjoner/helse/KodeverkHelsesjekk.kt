@@ -1,7 +1,7 @@
-package no.nav.familie.ks.oppslag.helse
+package no.nav.familie.integrasjoner.helse
 
 import io.micrometer.core.instrument.Metrics
-import no.nav.familie.ks.oppslag.kodeverk.KodeverkClient
+import no.nav.familie.integrasjoner.kodeverk.KodeverkClient
 import org.springframework.boot.actuate.health.Health
 import org.springframework.boot.actuate.health.HealthIndicator
 

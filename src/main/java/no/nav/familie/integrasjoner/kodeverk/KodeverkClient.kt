@@ -1,10 +1,10 @@
-package no.nav.familie.ks.oppslag.kodeverk
+package no.nav.familie.integrasjoner.kodeverk
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.nav.familie.http.client.NavHttpHeaders.*
-import no.nav.familie.ks.kontrakter.objectMapper
-import no.nav.familie.ks.oppslag.config.KodeverkConfig
-import no.nav.familie.ks.oppslag.felles.MDCOperations
-import no.nav.familie.ks.oppslag.kodeverk.domene.PostnummerDto
+import no.nav.familie.integrasjoner.config.KodeverkConfig
+import no.nav.familie.integrasjoner.felles.MDCOperations
+import no.nav.familie.integrasjoner.kodeverk.domene.PostnummerDto
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import java.io.IOException
@@ -14,8 +14,10 @@ import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
 @Component
-class KodeverkClient(val config: KodeverkConfig) {
-    val httpClient : HttpClient = HttpClient.newHttpClient()
+class KodeverkClient(val config: KodeverkConfig,
+                     val objectMapper: ObjectMapper,
+                     val httpClient : HttpClient = HttpClient.newHttpClient()) {
+
     fun hentPostnummerBetydninger(): PostnummerDto {
         val request = HttpRequest.newBuilder()
                 .uri(config.postnummerUri)
@@ -32,7 +34,6 @@ class KodeverkClient(val config: KodeverkConfig) {
             throw RuntimeException("Feil ved kall mot kodeverk", e)
         }
     }
-
 
     @Throws(Exception::class) fun ping() {
         val pingURI = URI.create(String.format("%s/internal/isAlive", config.KODEVERK_URL))
