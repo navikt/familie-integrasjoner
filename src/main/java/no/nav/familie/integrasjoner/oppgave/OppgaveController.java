@@ -30,6 +30,7 @@ public class OppgaveController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, path = "/oppdater")
     public ResponseEntity<Ressurs> oppdaterOppgave(@RequestBody String oppgaveJson) {
         Oppgave request = OppgaveKt.toOppgave(oppgaveJson);
-        return ResponseEntity.ok().body(Ressurs.Companion.success(Map.of("oppgaveId", oppgaveService.oppdaterOppgave(request)), "Oppslag mot oppgave OK"));
+        Long oppgaveId = oppgaveService.oppdaterOppgave(request);
+        return ResponseEntity.ok().body(Ressurs.Companion.success(Map.of("oppgaveId", oppgaveId), "Oppslag mot oppgave OK"));
     }
 }

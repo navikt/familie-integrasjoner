@@ -23,7 +23,7 @@ public class OppgaveService {
         this.oppgaveClient = oppgaveClient;
     }
 
-    ResponseEntity oppdaterOppgave(Oppgave request) {
+    Long oppdaterOppgave(Oppgave request) {
         OppgaveJsonDto oppgaveJsonDto;
         if (StringUtils.nullOrEmpty(request.getEksisterendeOppgaveId())) {
             oppgaveJsonDto = oppgaveClient.finnOppgave(request);
@@ -31,6 +31,6 @@ public class OppgaveService {
             oppgaveJsonDto = oppgaveClient.finnOppgave(request.getEksisterendeOppgaveId());
         }
         oppgaveClient.oppdaterOppgave(oppgaveJsonDto, request.getBeskrivelse());
-        return ResponseEntity.ok(oppgaveJsonDto.getId());
+        return oppgaveJsonDto.getId();
     }
 }
