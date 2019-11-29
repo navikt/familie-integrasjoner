@@ -1,49 +1,42 @@
 package no.nav.familie.integrasjoner.kodeverk
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import no.nav.familie.http.client.NavHttpHeaders.*
+import no.nav.familie.http.client.NavHttpHeaders.NAV_CALLID
+import no.nav.familie.http.client.NavHttpHeaders.NAV_CONSUMER_ID
 import no.nav.familie.integrasjoner.config.KodeverkConfig
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.kodeverk.domene.PostnummerDto
-import org.springframework.http.HttpStatus
+import org.springframework.http.*
 import org.springframework.stereotype.Component
+import org.springframework.web.client.RestTemplate
 import java.io.IOException
 import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 
 @Component
 class KodeverkClient(val config: KodeverkConfig,
                      val objectMapper: ObjectMapper,
-                     val httpClient : HttpClient = HttpClient.newHttpClient()) {
+                     val restTemplate: RestTemplate) {
 
     fun hentPostnummerBetydninger(): PostnummerDto {
-        val request = HttpRequest.newBuilder()
-                .uri(config.postnummerUri)
-                .header(javax.ws.rs.core.HttpHeaders.ACCEPT, "application/json")
-                .header(NAV_CONSUMER_ID.asString(), config.consumer)
-                .header(NAV_CALLID.asString(), MDCOperations.getCallId())
-                .build()
-        return try {
-            val httpResponse: HttpResponse<String> = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
-            objectMapper.readValue(httpResponse.body(), PostnummerDto::class.java)
-        } catch (e: IOException) {
-            throw RuntimeException("Feil ved kall mot kodeverk ", e)
-        } catch (e: InterruptedException) {
-            throw RuntimeException("Feil ved kall mot kodeverk", e)
+        val headers = HttpHeaders().apply {
+            add(NAV_CALLID.asString(), MDCOperations.getCallId())
+            add(NAV_CONSUMER_ID.asString(), config.consumer)
         }
+        val response = restTemplate.exchange(config.KODEVERK_URL,
+                                             HttpMethod.GET,
+                                             HttpEntity(null, headers),
+                                             PostnummerDto::class.java)
+        return response.body
     }
 
     @Throws(Exception::class) fun ping() {
         val pingURI = URI.create(String.format("%s/internal/isAlive", config.KODEVERK_URL))
-        val request = HttpRequest.newBuilder()
-                .uri(pingURI)
-                .build()
-        val response: HttpResponse<String> = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
-        if (HttpStatus.OK.value() != response.statusCode()) {
+        val response : ResponseEntity<String> = restTemplate.exchange(pingURI,
+                                                                      HttpMethod.GET,
+                                                                      null,
+                                                                      String::class.java)
+        if (HttpStatus.OK.value() != response.statusCodeValue) {
             throw Exception("Feil ved ping til kodeverk")
         }
     }
 }
-
