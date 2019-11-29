@@ -22,15 +22,15 @@ INFOTRYGD_KS_SCOPE: ""
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 SECURITYTOKENSERVICE_URL: http://vtp:8060/soap/SecurityTokenServiceProvider/
-AKTOERID_URL: #TODO lokal mockserver AKTOERID_URL
-PERSON_V3_URL: #TODO lokal mockserver PERSON_V3_URL
-DOKARKIV_V1_URL: #TODO lokal mockserver DOKARKIV_V1_URL
+AKTOERID_URL: http://vtp:8060/rest/aktoerregister
+PERSON_V3_URL: http://vtp:8060/soap/tpsws/ws/Person/v3
+DOKARKIV_V1_URL: http://vtp:8060/rest/dokarkiv/rest/journalpostapi/v1
 INFOTRYGD_URL: http://vtp:8060/rest/infotrygd-kontantstotte
-INNSYN_JOURNAL_V2_URL: #TODO lokal mockserver INNSYN_JOURNAL_V2_URL
-EGEN_ANSATT_V1_URL: #TODO lokal mockserver EGEN_ANSATT_V1_URL
+INNSYN_JOURNAL_V2_URL: http://vtp:8060/soap/joark/InnsynJournal/v2
+EGEN_ANSATT_V1_URL: http://vtp:8060/soap/tpsws/EgenAnsatt_v1
+MEDL2_URL: http://vtp:8060/rest/medl2
+SAF_URL: http://vtp:8060/rest/api/saf
+OPPGAVE_URL: http://vtp:8060/rest/dokarkiv/rest/oppgave-kontantstotte
 
-MEDL2_URL: #TODO lokal mockserver MEDL2_URL
-SAF_URL: #TODO lokal mockserver SAF_URL
-OPPGAVE_URL: #TODO lokal mockserver OPPGAVE_URL
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw
