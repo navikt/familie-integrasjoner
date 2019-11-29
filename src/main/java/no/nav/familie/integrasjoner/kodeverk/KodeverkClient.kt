@@ -22,7 +22,7 @@ class KodeverkClient(val config: KodeverkConfig,
             add(NAV_CALLID.asString(), MDCOperations.getCallId())
             add(NAV_CONSUMER_ID.asString(), config.consumer)
         }
-        val response = restTemplate.exchange(config.KODEVERK_URL,
+        val response = restTemplate.exchange(config.postnummerUri,
                                              HttpMethod.GET,
                                              HttpEntity(null, headers),
                                              PostnummerDto::class.java)
