@@ -6,6 +6,7 @@ import no.nav.security.token.support.spring.api.EnableJwtTokenValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootConfiguration
 @ComponentScan({"no.nav.familie"})
+@ConfigurationPropertiesScan
 @EnableJwtTokenValidation
 @EnableOAuth2Client(cacheEnabled = true)
 public class ApplicationConfig {
