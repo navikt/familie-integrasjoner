@@ -38,7 +38,7 @@ spec:
       memory: 1Gi
       cpu: 200m
   ingresses: # Optional. List of ingress URLs that will route HTTP traffic to the application.
-    - https://familie-integrasjoners.nais.adeo.no
+    - https://familie-integrasjoner.nais.adeo.no
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: prod
