@@ -1,9 +1,7 @@
 package no.nav.familie.integrasjoner.dokarkiv;
 
-import no.nav.familie.integrasjoner.dokarkiv.api.*;
 import no.nav.familie.integrasjoner.dokarkiv.api.Dokument;
 import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient;
-import no.nav.familie.integrasjoner.dokarkiv.client.domene.*;
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService;
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo;
 import no.nav.familie.integrasjoner.aktør.AktørService;

@@ -1,7 +1,6 @@
 package no.nav.familie.integrasjoner.config;
 
 import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient;
-import no.nav.familie.integrasjoner.helse.*;
 import no.nav.familie.integrasjoner.journalpost.internal.InnsynJournalConsumer;
 import no.nav.familie.integrasjoner.journalpost.internal.SafKlient;
 import no.nav.familie.integrasjoner.medlemskap.internal.MedlClient;
