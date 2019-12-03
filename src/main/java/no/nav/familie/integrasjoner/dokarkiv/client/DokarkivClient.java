@@ -33,7 +33,7 @@ public class DokarkivClient {
     private static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
     private static final String NAV_CALL_ID = "Nav-Call-Id";
     private static final String NAV_PERSONIDENTER = "Nav-Personidenter";
-    public static final String FERDIGSTILL_JOURNALPOST_JSON = "{\"journalfoerendeEnhet\":9999}";
+    public static final String FERDIGSTILL_JOURNALPOST_JSON = "{\"journalfoerendeEnhet\":%s}";
     private final Timer opprettJournalpostResponstid = Metrics.timer("dokarkiv.opprett.respons.tid");
     private final Counter opprettJournalpostSuccess = Metrics.counter("dokarkiv.opprett.response", "status", "success");
     private final Counter opprettJournalpostFailure = Metrics.counter("dokarkiv.opprett.response", "status", "failure");
@@ -101,7 +101,7 @@ public class DokarkivClient {
     }
 
 
-    public void ferdigstillJournalpost(String journalpostId) {
+    public void ferdigstillJournalpost(String journalpostId, String journalførendeEnhet) {
         URI uri = URI.create(String.format("%s/rest/journalpostapi/v1/journalpost/%s/ferdigstill", dokarkivUrl, journalpostId));
         String systembrukerToken = stsRestClient.getSystemOIDCToken();
         try {
@@ -112,7 +112,7 @@ public class DokarkivClient {
                     .header(NAV_CONSUMER_ID, consumer)
                     .header(NAV_CALL_ID, MDCOperations.getCallId())
                     .header(AUTHORIZATION, "Bearer " + systembrukerToken)
-                    .method("PATCH", HttpRequest.BodyPublishers.ofString(FERDIGSTILL_JOURNALPOST_JSON))
+                    .method("PATCH", HttpRequest.BodyPublishers.ofString(String.format(FERDIGSTILL_JOURNALPOST_JSON, journalførendeEnhet)))
                     .timeout(Duration.ofSeconds(20)) // kall tar opptil 8s i preprod.
                     .build();
 
