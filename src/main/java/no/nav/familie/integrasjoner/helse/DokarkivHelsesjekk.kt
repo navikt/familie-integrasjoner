@@ -1,30 +1,12 @@
-package no.nav.familie.integrasjoner.helse;
+package no.nav.familie.integrasjoner.helse
 
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Metrics;
-import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.core.NestedExceptionUtils;
+import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.Metrics
+import no.nav.familie.integrasjoner.client.rest.DokarkivClient
+import org.springframework.stereotype.Component
 
-public class DokarkivHelsesjekk implements HealthIndicator {
+@Component
+internal class DokarkivHelsesjekk(dokarkivClient: DokarkivClient) : AbstractHealthIndicator(dokarkivClient) {
 
-    private final Counter dokarkivNede = Metrics.counter("helsesjekk.dokarkiv", "status", "nede");
-    private DokarkivClient dokarkivClient;
-
-    public DokarkivHelsesjekk(@Autowired DokarkivClient dokarkivClient) {
-        this.dokarkivClient = dokarkivClient;
-    }
-
-    @Override
-    public Health health() {
-        try {
-            dokarkivClient.ping();
-            return Health.up().build();
-        } catch (Exception e) {
-            dokarkivNede.increment();
-            return Health.status("DOWN-NONCRITICAL").withDetail("Feilmelding", NestedExceptionUtils.getMostSpecificCause(e).getClass().getName() + ": " + e.getMessage()).build();
-        }
-    }
+    override val failureCounter: Counter = Metrics.counter("helsesjekk.dokarkiv", "status", "nede")
 }

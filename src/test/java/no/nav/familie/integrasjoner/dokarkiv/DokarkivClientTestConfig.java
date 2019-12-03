@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.dokarkiv;
 
-import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient;
+import no.nav.familie.integrasjoner.client.rest.DokarkivClient;
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -2,7 +2,7 @@ package no.nav.familie.integrasjoner.dokarkiv;
 
 import no.nav.familie.integrasjoner.aktør.AktørService;
 import no.nav.familie.integrasjoner.dokarkiv.api.*;
-import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient;
+import no.nav.familie.integrasjoner.client.rest.DokarkivClient;
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.IdType;
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.JournalpostType;
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse;
@@ -11,7 +11,6 @@ import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadMetada
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService;
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent;
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo;
-import no.nav.familie.integrasjoner.dokarkiv.api.*;
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest;
 import org.junit.Before;
 import org.junit.Test;

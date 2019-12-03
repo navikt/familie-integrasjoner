@@ -1,21 +1,12 @@
 package no.nav.familie.integrasjoner.helse
 
+import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
-import no.nav.familie.integrasjoner.kodeverk.KodeverkClient
-import org.springframework.boot.actuate.health.Health
-import org.springframework.boot.actuate.health.HealthIndicator
+import no.nav.familie.integrasjoner.client.rest.KodeverkClient
+import org.springframework.stereotype.Component
 
-class KodeverkHelsesjekk(val kodeverkClient: KodeverkClient) : HealthIndicator {
-    private val kodeverkNede = Metrics.counter("helsesjekk.kodeverk", "status", "nede")
+@Component
+internal class KodeverkHelsesjekk(kodeverkClient: KodeverkClient) : AbstractHealthIndicator(kodeverkClient) {
 
-    override fun health(): Health {
-        return try {
-            kodeverkClient.ping()
-            Health.up().build()
-        } catch (e: Exception) {
-            kodeverkNede.increment()
-            Health.status("DOWN-NONCRITICAL").withDetail("Feilmelding", e.message).build()
-        }
-    }
-
+    override val failureCounter: Counter = Metrics.counter("helsesjekk.kodeverk", "status", "nede")
 }

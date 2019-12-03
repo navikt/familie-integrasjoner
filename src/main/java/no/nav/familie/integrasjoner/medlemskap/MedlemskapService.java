@@ -2,7 +2,7 @@ package no.nav.familie.integrasjoner.medlemskap;
 
 import no.nav.familie.integrasjoner.medlemskap.domain.MedlemskapsInfo;
 import no.nav.familie.integrasjoner.medlemskap.domain.MedlemskapsOversetter;
-import no.nav.familie.integrasjoner.medlemskap.internal.MedlClient;
+import no.nav.familie.integrasjoner.client.rest.MedlClient;
 import no.nav.familie.integrasjoner.felles.OppslagException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

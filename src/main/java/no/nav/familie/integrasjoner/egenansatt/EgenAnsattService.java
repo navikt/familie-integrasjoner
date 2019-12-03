@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.egenansatt;
 
-import no.nav.familie.integrasjoner.egenansatt.internal.EgenAnsattConsumer;
+import no.nav.familie.integrasjoner.client.soap.EgenAnsattConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

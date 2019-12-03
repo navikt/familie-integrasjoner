@@ -5,7 +5,7 @@ import no.nav.familie.integrasjoner.medlemskap.domain.MedlemskapsInfo;
 import no.nav.familie.integrasjoner.medlemskap.domain.MedlemskapsOversetter;
 import no.nav.familie.integrasjoner.medlemskap.domain.PeriodeInfo;
 import no.nav.familie.integrasjoner.medlemskap.domain.PeriodeStatus;
-import no.nav.familie.integrasjoner.medlemskap.internal.MedlClient;
+import no.nav.familie.integrasjoner.client.rest.MedlClient;
 import org.junit.Before;
 import org.junit.Test;
 

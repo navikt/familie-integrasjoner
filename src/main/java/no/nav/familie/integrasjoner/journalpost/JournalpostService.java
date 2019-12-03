@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.journalpost;
 
-import no.nav.familie.integrasjoner.journalpost.internal.InnsynJournalConsumer;
+import no.nav.familie.integrasjoner.config.InnsynJournalConsumer;
 import no.nav.familie.integrasjoner.journalpost.internal.SafKlient;
 import no.nav.familie.integrasjoner.journalpost.internal.Journalpost;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.IdentifiserJournalpostResponse;

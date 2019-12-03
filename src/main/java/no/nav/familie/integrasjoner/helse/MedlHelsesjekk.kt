@@ -1,31 +1,12 @@
-package no.nav.familie.integrasjoner.helse;
+package no.nav.familie.integrasjoner.helse
 
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Metrics;
-import no.nav.familie.integrasjoner.medlemskap.internal.MedlClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.core.NestedExceptionUtils;
+import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.Metrics
+import no.nav.familie.integrasjoner.client.rest.MedlClient
+import org.springframework.stereotype.Component
 
-public class MedlHelsesjekk implements HealthIndicator {
+@Component
+internal class MedlHelsesjekk(medlClient: MedlClient) : AbstractHealthIndicator(medlClient) {
 
-    private final Counter medlNede = Metrics.counter("helsesjekk.medl", "status", "nede");
-
-    private MedlClient medlClient;
-
-    public MedlHelsesjekk(@Autowired MedlClient medlClient) {
-        this.medlClient = medlClient;
-    }
-
-    @Override
-    public Health health() {
-        try {
-            medlClient.ping();
-            return Health.up().build();
-        } catch (Exception e) {
-            medlNede.increment();
-            return Health.status("DOWN-NONCRITICAL").withDetail("Feilmelding", NestedExceptionUtils.getMostSpecificCause(e).getClass().getName() + ": " + e.getMessage()).build();
-        }
-    }
+    override val failureCounter: Counter = Metrics.counter("helsesjekk.medl", "status", "nede")
 }

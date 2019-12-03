@@ -13,7 +13,7 @@ management:
       order: DOWN, DOWN-NONCRITICAL, UP
   endpoints.web:
     exposure.include: info, health, metrics, prometheus
-    base-path: "/internal"
+    base-path: "/client"
     path-mapping:
       info: "status/isAlive"
   metrics.export.prometheus.enabled: true

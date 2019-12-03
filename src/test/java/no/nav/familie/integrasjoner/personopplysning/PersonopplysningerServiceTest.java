@@ -6,7 +6,7 @@ import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter;
 import no.nav.familie.integrasjoner.personopplysning.domene.adresse.AdresseType;
 import no.nav.familie.integrasjoner.personopplysning.domene.adresse.TpsAdresseOversetter;
 import no.nav.familie.integrasjoner.personopplysning.domene.status.PersonstatusType;
-import no.nav.familie.integrasjoner.personopplysning.internal.PersonConsumer;
+import no.nav.familie.integrasjoner.client.soap.PersonConsumer;
 import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.Familierelasjon;
 import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.RelasjonsRolleType;
 import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.SivilstandType;

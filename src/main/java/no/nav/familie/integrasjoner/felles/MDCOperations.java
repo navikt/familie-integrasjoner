@@ -14,8 +14,6 @@ import static org.slf4j.MDC.put;
  * (Knabbet fra modig-log-common)
  */
 public final class MDCOperations {
-    public static final String HTTP_HEADER_CALL_ID = "Nav-Callid";
-    public static final String HTTP_HEADER_CONSUMER_ID = "Nav-Consumer-Id";
 
     public static final String MDC_CALL_ID = "callId";
     public static final String MDC_USER_ID = "userId";

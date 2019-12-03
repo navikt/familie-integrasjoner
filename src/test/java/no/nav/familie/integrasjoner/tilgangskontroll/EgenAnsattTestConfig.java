@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.tilgangskontroll;
 
-import no.nav.familie.integrasjoner.egenansatt.internal.EgenAnsattConsumer;
+import no.nav.familie.integrasjoner.client.soap.EgenAnsattConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;

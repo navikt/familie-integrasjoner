@@ -1,45 +1,78 @@
-package no.nav.familie.integrasjoner.config;
+package no.nav.familie.integrasjoner.config
 
-import no.nav.familie.log.filter.LogFilter;
-import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client;
-import no.nav.security.token.support.spring.api.EnableJwtTokenValidation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
-import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
+import no.nav.familie.http.interceptor.ConsumerIdClientInterceptor
+import no.nav.familie.http.interceptor.MdcValuesPropagatingClientInterceptor
+import no.nav.familie.http.interceptor.StsBearerTokenClientInterceptor
+import no.nav.familie.http.interceptor.TimingAndLoggingClientHttpRequestInterceptor
+import no.nav.familie.http.sts.StsRestClient
+import no.nav.familie.integrasjoner.interceptor.AzureBearerTokenClientInterceptor
+import no.nav.familie.log.filter.LogFilter
+import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client
+import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.SpringBootConfiguration
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan
+import org.springframework.boot.web.client.RestTemplateBuilder
+import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory
+import org.springframework.boot.web.servlet.FilterRegistrationBean
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
+import org.springframework.web.client.RestOperations
 
 @SpringBootConfiguration
-@ComponentScan({"no.nav.familie"})
+@ComponentScan("no.nav.familie")
 @ConfigurationPropertiesScan
 @EnableJwtTokenValidation
 @EnableOAuth2Client(cacheEnabled = true)
-public class ApplicationConfig {
+class ApplicationConfig {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ApplicationConfig.class);
-
-    @Bean
-    ServletWebServerFactory servletWebServerFactory() {
-
-        JettyServletWebServerFactory serverFactory = new JettyServletWebServerFactory();
-
-        serverFactory.setPort(8085);
-
-        return serverFactory;
+    @Bean("azure")
+    fun restTemplateAzureAd(interceptorAzure: AzureBearerTokenClientInterceptor): RestOperations {
+        return RestTemplateBuilder()
+                .interceptors(interceptorAzure)
+                .requestFactory(this::requestFactory)
+                .build()
     }
 
-    @Bean
-    public FilterRegistrationBean<LogFilter> logFilter() {
-        LOG.info("Registering LogFilter filter");
-        final FilterRegistrationBean<LogFilter> filterRegistration = new FilterRegistrationBean<>();
-        filterRegistration.setFilter(new LogFilter());
-        filterRegistration.setOrder(1);
-        return filterRegistration;
+    @Bean("sts")
+    fun restTemplateSts(@Value("\${CREDENTIAL_USERNAME}") consumer: String,
+                        stsRestClient: StsRestClient): RestOperations {
+
+        return RestTemplateBuilder()
+                .interceptors(ConsumerIdClientInterceptor(consumer),
+                              StsBearerTokenClientInterceptor(stsRestClient),
+                              MdcValuesPropagatingClientInterceptor(),
+                              TimingAndLoggingClientHttpRequestInterceptor())
+                .requestFactory(this::requestFactory)
+                .build()
     }
 
+    fun requestFactory() = HttpComponentsClientHttpRequestFactory()
+            .apply {
+                setConnectionRequestTimeout(20 * 1000)
+                setReadTimeout(20 * 1000)
+                setConnectTimeout(20 * 1000)
+            }
 
+
+    @Bean fun servletWebServerFactory(): ServletWebServerFactory {
+        val serverFactory = JettyServletWebServerFactory()
+        serverFactory.port = 8085
+        return serverFactory
+    }
+
+    @Bean fun logFilter(): FilterRegistrationBean<LogFilter> {
+        LOG.info("Registering LogFilter filter")
+        val filterRegistration = FilterRegistrationBean<LogFilter>()
+        filterRegistration.filter = LogFilter()
+        filterRegistration.order = 1
+        return filterRegistration
+    }
+
+    companion object {
+        private val LOG = LoggerFactory.getLogger(ApplicationConfig::class.java)
+    }
 }

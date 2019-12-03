@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.oppgave;
 
 import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
-import no.nav.familie.integrasjoner.oppgave.internal.OppgaveClient;
+import no.nav.familie.integrasjoner.client.rest.OppgaveClient;
 import no.nav.oppgave.v1.OppgaveJsonDto;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

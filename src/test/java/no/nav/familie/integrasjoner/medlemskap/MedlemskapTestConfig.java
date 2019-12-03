@@ -2,7 +2,7 @@ package no.nav.familie.integrasjoner.medlemskap;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import no.nav.familie.integrasjoner.medlemskap.internal.MedlClient;
+import no.nav.familie.integrasjoner.client.rest.MedlClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;

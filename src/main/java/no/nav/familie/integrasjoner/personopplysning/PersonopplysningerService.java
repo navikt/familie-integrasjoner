@@ -4,7 +4,7 @@ import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo;
 import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter;
 import no.nav.familie.integrasjoner.felles.ws.DateUtil;
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo;
-import no.nav.familie.integrasjoner.personopplysning.internal.PersonConsumer;
+import no.nav.familie.integrasjoner.client.soap.PersonConsumer;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkPersonIkkeFunnet;
