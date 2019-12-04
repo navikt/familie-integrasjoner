@@ -4,7 +4,7 @@ import no.nav.familie.integrasjoner.aktør.AktørService;
 import no.nav.familie.integrasjoner.aktør.domene.Aktør;
 import no.nav.familie.integrasjoner.aktør.domene.Ident;
 import no.nav.familie.integrasjoner.aktør.internal.AktørResponse;
-import no.nav.familie.integrasjoner.aktør.internal.AktørregisterClient;
+import no.nav.familie.integrasjoner.client.rest.AktørregisterClient;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
 import org.junit.Before;
@@ -20,7 +20,7 @@ public class AktørServiceTest {
     private static final String PERSONIDENT = "11111111111";
     private static final String TESTAKTORID = "1000011111111";
 
-    private CacheManager cacheManager = mock(CacheManager.class);
+    private final CacheManager cacheManager = mock(CacheManager.class);
     private AktørregisterClient aktørClient = mock(AktørregisterClient.class);
     private AktørService aktørService;
 

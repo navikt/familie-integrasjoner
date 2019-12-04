@@ -3,6 +3,8 @@ package no.nav.familie.integrasjoner.infotrygd;
 import no.nav.familie.http.azure.AccessTokenClient;
 import no.nav.familie.http.azure.AccessTokenDto;
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest;
+import no.nav.familie.integrasjoner.client.rest.InfotrygdClient;
+import no.nav.familie.integrasjoner.infotrygd.domene.AktivKontantstøtteInfo;
 import no.nav.familie.ks.kontrakter.sak.Ressurs;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
@@ -16,6 +18,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+
+import java.net.URI;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -27,7 +32,8 @@ public class InfotrygdControllerTest extends OppslagSpringRunnerTest {
     public static final int MOCK_SERVER_PORT = 18321;
     public static final String HAR_BARN_AKTIV_KONTANTSTØTTE = "/api/infotrygd/v1/harBarnAktivKontantstotte";
     AccessTokenClient accessTokenClient = mock(AccessTokenClient.class);
-    InfotrygdService infotrygdService = new InfotrygdService(accessTokenClient, "", "http://localhost:" + MOCK_SERVER_PORT);
+
+    InfotrygdClient infotrygdService = new InfotrygdClient(new RestTemplate(), URI.create("http://localhost:" + MOCK_SERVER_PORT));
 
     @Rule
     public MockServerRule mockServerRule = new MockServerRule(this, MOCK_SERVER_PORT);
@@ -80,21 +86,23 @@ public class InfotrygdControllerTest extends OppslagSpringRunnerTest {
     public void skal_feile_når_respons_mangler() {
         spesifiserResponsFraInfotrygd("");
 
-        assertThatThrownBy(() -> infotrygdService.hentAktivKontantstøtteFor("12345678901")).isInstanceOf(HttpServerErrorException.class);
+        assertThatThrownBy(() -> infotrygdService.hentAktivKontantstøtteFor("12345678901")).isInstanceOf(Exception.class);
     }
 
     @Test
-    public void skal_feile_når_returobjekt_er_tomt() {
+    public void skal_returnere_false_når_returobjekt_er_tomt() {
         spesifiserResponsFraInfotrygd("{}");
 
-        assertThatThrownBy(() -> infotrygdService.hentAktivKontantstøtteFor("12345678901")).isInstanceOf(HttpServerErrorException.class);
+        var aktivKontantstøtteInfo = infotrygdService.hentAktivKontantstøtteFor("12345678901");
+        Assertions.assertThat(aktivKontantstøtteInfo.getHarAktivKontantstotte()).isEqualTo(false);
     }
 
     @Test
-    public void skal_feile_når_returobjekt_har_feil_type() {
+    public void skal_retunere_false_hvis_feltverdi_ikke_kan_parses_som_boolean() {
         spesifiserResponsFraInfotrygd("{ \"harAKtivKontantstotte\": 42 }");
 
-        assertThatThrownBy(() -> infotrygdService.hentAktivKontantstøtteFor("12345678901")).isInstanceOf(HttpServerErrorException.class);
+        var aktivKontantstøtteInfo = infotrygdService.hentAktivKontantstøtteFor("12345678901");
+        Assertions.assertThat(aktivKontantstøtteInfo.getHarAktivKontantstotte()).isEqualTo(false);
     }
 
     private void spesifiserResponsFraInfotrygd(String respons) {

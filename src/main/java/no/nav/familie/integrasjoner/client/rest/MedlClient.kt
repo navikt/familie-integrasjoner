@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.medlemskap.MedlemskapService
 import no.nav.familie.integrasjoner.medlemskap.MedlemskapsUnntakResponse
 import no.nav.familie.log.NavHttpHeaders
@@ -11,11 +12,13 @@ import org.springframework.web.client.RestOperations
 import java.net.URI
 
 @Component
-class MedlClient(@Value("\${MEDL2_URL}") val medl2BaseUrl: String,
-                 @Qualifier("sts") val restTemplate: RestOperations) : AbstractRestClient(restTemplate) {
+class MedlClient(@Value("\${MEDL2_URL}") private val medl2BaseUrl: URI,
+                 @Qualifier("sts") private val restTemplate: RestOperations)
+    : AbstractPingableRestClient(restTemplate, "medlemskap") {
 
-    override val pingUri = URI.create(String.format("%s/client/isAlive", medl2BaseUrl))
-    val medl2Uri: URI = URI.create(String.format("%s/api/v1/medlemskapsunntak", medl2BaseUrl))
+    override val pingUri = UriUtil.uri(medl2BaseUrl, PATH_PING )
+
+    val medlemskapsunntakUri = UriUtil.uri(medl2BaseUrl, PATH_MEDLEMSKAPSUNNTAK)
 
     fun hentMedlemskapsUnntakResponse(aktørId: String?): List<MedlemskapsUnntakResponse> {
 
@@ -24,14 +27,15 @@ class MedlClient(@Value("\${MEDL2_URL}") val medl2BaseUrl: String,
         }
 
         try {
-            return getForEntity(medl2Uri, httpHeaders)
+            return getForEntity(medlemskapsunntakUri, httpHeaders)
         } catch (e: Exception) {
             throw RuntimeException("Feil ved kall til MEDL2", e)
         }
     }
 
     companion object {
-        private val LOG = LoggerFactory.getLogger(MedlemskapService::class.java)
+        private const val PATH_PING = "client/isAlive"
+        private const val PATH_MEDLEMSKAPSUNNTAK = "api/v1/medlemskapsunntak"
     }
 
 }

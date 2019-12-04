@@ -2,6 +2,10 @@ package no.nav.familie.integrasjoner.oppgave;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import no.nav.familie.integrasjoner.config.JacksonJsonConfig;
+import no.nav.familie.integrasjoner.oppgave.domene.FinnOppgaveResponseDto;
+import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto;
 import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest;
 import no.nav.familie.integrasjoner.config.ApiExceptionHandler;
@@ -23,6 +27,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,8 +36,8 @@ public class OppgaveControllerTest extends OppslagSpringRunnerTest {
     private static final String OPPDATER_OPPGAVE_URL = "/api/oppgave/oppdater";
     private static final Integer MOCK_SERVER_PORT = 18321;
 
-    private Logger oppgaveControllerLogger = (Logger) LoggerFactory.getLogger(OppgaveController.class);
-    private Logger exceptionHandler = (Logger) LoggerFactory.getLogger(ApiExceptionHandler.class);
+    private final Logger oppgaveControllerLogger = (Logger) LoggerFactory.getLogger(OppgaveController.class);
+    private final Logger exceptionHandler = (Logger) LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     @Rule
     public MockServerRule mockServerRule = new MockServerRule(this, MOCK_SERVER_PORT);
@@ -46,7 +51,7 @@ public class OppgaveControllerTest extends OppslagSpringRunnerTest {
     }
 
     @Test
-    public void skal_logge_stack_trace_og_returnere_INTERNAL_SERVER_ERROR_ved_NullPointerException() {
+    public void skal_logge_stack_trace_og_returnere_INTERNAL_SERVER_ERROR_ved_404_Not_Found() {
         mockServerRule.getClient()
                 .when(
                         HttpRequest
@@ -64,7 +69,7 @@ public class OppgaveControllerTest extends OppslagSpringRunnerTest {
                 localhost(OPPDATER_OPPGAVE_URL), HttpMethod.POST, new HttpEntity<>(test, headers), String.class
         );
         assertThat(loggingEvents).extracting(ILoggingEvent::getFormattedMessage)
-                                 .anyMatch(s -> s.contains("java.lang.NullPointerException"));
+                                 .anyMatch(s -> s.contains("HttpClientErrorException$NotFound: 404 Not Found"));
        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -116,6 +121,8 @@ public class OppgaveControllerTest extends OppslagSpringRunnerTest {
     }
 
     private String gyldigOppgaveResponse() throws IOException {
-        return Files.readString(new ClassPathResource("oppgave/tom_response.json").getFile().toPath(), StandardCharsets.UTF_8);
+        final String s =
+                new JacksonJsonConfig().objectMapper().writeValueAsString(new FinnOppgaveResponseDto(0, new ArrayList<>()));
+        return s;
     }
 }

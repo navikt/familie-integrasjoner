@@ -1,10 +1,10 @@
 package no.nav.familie.integrasjoner.aktør.config;
 
-import no.nav.familie.ks.kontrakter.søknad.testdata.SøknadTestdata;
 import no.nav.familie.integrasjoner.aktør.domene.Aktør;
 import no.nav.familie.integrasjoner.aktør.domene.Ident;
 import no.nav.familie.integrasjoner.aktør.internal.AktørResponse;
-import no.nav.familie.integrasjoner.aktør.internal.AktørregisterClient;
+import no.nav.familie.integrasjoner.client.rest.AktørregisterClient;
+import no.nav.familie.ks.kontrakter.søknad.testdata.SøknadTestdata;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

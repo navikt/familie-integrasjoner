@@ -1,8 +1,8 @@
 package no.nav.familie.integrasjoner.journalpost;
 
-import no.nav.familie.integrasjoner.config.InnsynJournalConsumer;
+import no.nav.familie.integrasjoner.client.rest.SafKlient;
+import no.nav.familie.integrasjoner.client.soap.InnsynJournalConsumer;
 import no.nav.familie.integrasjoner.journalpost.internal.Journalpost;
-import no.nav.familie.integrasjoner.journalpost.internal.SafKlient;
 import no.nav.familie.integrasjoner.journalpost.internal.Sak;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.IdentifiserJournalpostResponse;
 import org.mockito.ArgumentCaptor;

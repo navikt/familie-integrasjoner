@@ -7,9 +7,11 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkResponse
+import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 import javax.xml.ws.soap.SOAPFaultException
 
+@Component
 class PersonConsumer(private val port: PersonV3): Pingable {
     private val personResponsTid =
             Metrics.timer("personV3.respons.tid")

@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.config
 
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.familie.http.interceptor.ConsumerIdClientInterceptor
 import no.nav.familie.http.interceptor.MdcValuesPropagatingClientInterceptor
 import no.nav.familie.http.interceptor.StsBearerTokenClientInterceptor
@@ -28,6 +29,8 @@ import org.springframework.web.client.RestOperations
 @EnableJwtTokenValidation
 @EnableOAuth2Client(cacheEnabled = true)
 class ApplicationConfig {
+
+    private val logger = LoggerFactory.getLogger(ApplicationConfig::class.java)
 
     @Bean("azure")
     fun restTemplateAzureAd(interceptorAzure: AzureBearerTokenClientInterceptor): RestOperations {
@@ -58,21 +61,23 @@ class ApplicationConfig {
             }
 
 
-    @Bean fun servletWebServerFactory(): ServletWebServerFactory {
+    @Bean
+    fun kotlinModule(): KotlinModule = KotlinModule()
+
+    @Bean
+    fun servletWebServerFactory(): ServletWebServerFactory {
         val serverFactory = JettyServletWebServerFactory()
         serverFactory.port = 8085
         return serverFactory
     }
 
-    @Bean fun logFilter(): FilterRegistrationBean<LogFilter> {
-        LOG.info("Registering LogFilter filter")
+    @Bean
+    fun logFilter(): FilterRegistrationBean<LogFilter> {
+        logger.info("Registering LogFilter filter")
         val filterRegistration = FilterRegistrationBean<LogFilter>()
         filterRegistration.filter = LogFilter()
         filterRegistration.order = 1
         return filterRegistration
     }
 
-    companion object {
-        private val LOG = LoggerFactory.getLogger(ApplicationConfig::class.java)
-    }
 }

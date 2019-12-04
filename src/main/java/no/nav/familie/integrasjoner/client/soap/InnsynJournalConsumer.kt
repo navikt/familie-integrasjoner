@@ -1,37 +1,33 @@
 package no.nav.familie.integrasjoner.client.soap
 
 import no.nav.familie.integrasjoner.client.Pingable
-import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.*
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.IdentifiserJournalpostObjektIkkeFunnet
+import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.InnsynJournalV2
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.IdentifiserJournalpostRequest
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.IdentifiserJournalpostResponse
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 
-class InnsynJournalConsumer(private val port: InnsynJournalV2): Pingable {
-    fun hentJournalpost(kanalReferanseId: String): IdentifiserJournalpostResponse? {
-        val request = IdentifiserJournalpostRequest()
-        request.kanalReferanseId = kanalReferanseId
+@Component
+class InnsynJournalConsumer(private val port: InnsynJournalV2) : AbstractSoapClient("InnsynJournalV2"), Pingable {
+
+    private val logger = LoggerFactory.getLogger(InnsynJournalConsumer::class.java)
+
+    fun hentJournalpost(referanseId: String): IdentifiserJournalpostResponse? {
+        val request = IdentifiserJournalpostRequest().apply {
+            kanalReferanseId = referanseId
+        }
         return try {
-            port.identifiserJournalpost(request)
-        } catch (e: IdentifiserJournalpostJournalpostIkkeInngaaende) {
-            throw RuntimeException("Innsyn klarte ikke å hente journalpost med kanalReferanseId=$kanalReferanseId", e)
-        } catch (e: IdentifiserJournalpostUgyldingInput) {
-            throw RuntimeException("Innsyn klarte ikke å hente journalpost med kanalReferanseId=$kanalReferanseId", e)
-        } catch (e: IdentifiserJournalpostUgyldigAntallJournalposter) {
-            throw RuntimeException("Innsyn klarte ikke å hente journalpost med kanalReferanseId=$kanalReferanseId", e)
+            executeMedMetrics { port.identifiserJournalpost(request) }
         } catch (e: IdentifiserJournalpostObjektIkkeFunnet) {
-            LOG.info("Fant ikke journalpost med kanalReferanseId={}",
-                     kanalReferanseId)
+            logger.info("Fant ikke journalpost med kanalReferanseId={}", referanseId)
             null
+        } catch (e: Exception) {
+            throw RuntimeException("Innsyn klarte ikke å hente journalpost med kanalReferanseId=$referanseId", e)
         }
     }
 
     override fun ping() {
         port.ping()
     }
-
-    companion object {
-        private val LOG =
-                LoggerFactory.getLogger(InnsynJournalConsumer::class.java)
-    }
-
 }

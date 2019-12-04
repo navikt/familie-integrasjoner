@@ -1,40 +1,46 @@
-package no.nav.familie.integrasjoner.oppgave;
+package no.nav.familie.integrasjoner.oppgave
 
-import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
-import no.nav.familie.integrasjoner.client.rest.OppgaveClient;
-import no.nav.oppgave.v1.OppgaveJsonDto;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
-
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.doNothing;
+import no.nav.familie.integrasjoner.client.rest.OppgaveClient
+import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto
+import no.nav.familie.ks.kontrakter.oppgave.Oppgave
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
+import org.springframework.context.annotation.Profile
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.web.client.HttpClientErrorException
 
 @Configuration
-public class OppgaveTestConfig {
-
+class OppgaveTestConfig {
     @Bean
     @Profile("mock-oppgave")
-    @Primary
-    public OppgaveClient oppgaveMockClient() {
-        OppgaveClient klient = mock(OppgaveClient.class);
-
-        when(klient.finnOppgave(any(Oppgave.class))).thenReturn(new OppgaveJsonDto());
-        when(klient.finnOppgave(matcherBeskrivelse("test RestClientException"))).thenThrow(HttpClientErrorException.create(HttpStatus.ACCEPTED, "status text", new HttpHeaders(), null, null));
-        when(klient.finnOppgave(matcherBeskrivelse("test oppgave ikke funnet"))).thenThrow(new OppgaveIkkeFunnetException("Mislykket finnOppgave request med url: ..."));
-        when(klient.finnOppgave(matcherBeskrivelse("test generell feil"))).thenThrow(new RuntimeException("Uventet feil"));
-
-        doNothing().when(klient).oppdaterOppgave(any(), anyString());
-        doNothing().when(klient).ping();
-        return klient;
+    @Primary fun oppgaveMockClient(): OppgaveClient {
+        val klient = Mockito.mock(OppgaveClient::class.java)
+        Mockito.`when`(klient.finnOppgave(ArgumentMatchers.any(Oppgave::class.java)))
+                .thenReturn(OppgaveJsonDto(1L))
+        Mockito.`when`(klient.finnOppgave(matcherBeskrivelse("test RestClientException")))
+                .thenThrow(HttpClientErrorException.create(HttpStatus.ACCEPTED,
+                                                           "status text",
+                                                           HttpHeaders(),
+                                                           null,
+                                                           null))
+        Mockito.`when`(klient.finnOppgave(matcherBeskrivelse("test oppgave ikke funnet")))
+                .thenThrow(OppgaveIkkeFunnetException("Mislykket finnOppgave request med url: ..."))
+        Mockito.`when`(klient.finnOppgave(matcherBeskrivelse("test generell feil")))
+                .thenThrow(RuntimeException("Uventet feil"))
+        Mockito.doNothing().`when`(klient)
+                .oppdaterOppgave(ArgumentMatchers.any(), ArgumentMatchers.anyString())
+        Mockito.doNothing().`when`(klient).ping()
+        return klient
     }
 
-    private Oppgave matcherBeskrivelse(String beskrivelse) {
-        return eq(new Oppgave("1234567891011", "1", null, beskrivelse));
+    private fun matcherBeskrivelse(beskrivelse: String): Oppgave {
+        return ArgumentMatchers.eq(Oppgave("1234567891011",
+                                           "1",
+                                           null,
+                                           beskrivelse))
     }
 }

@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.client.rest
 
-import io.micrometer.core.instrument.Metrics
+import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.FerdigstillJournalPost
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
@@ -9,76 +9,57 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestOperations
 import java.net.URI
-import java.util.concurrent.TimeUnit
 
 @Component
-class DokarkivClient(@Value("\${DOKARKIV_V1_URL}")
-                     private val dokarkivUrl: String,
-                     @Qualifier("sts") private val restOperations: RestOperations) : AbstractRestClient(restOperations) {
+class DokarkivClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
+                     @Qualifier("sts") private val restOperations: RestOperations)
+    : AbstractPingableRestClient(restOperations, "dokarkiv.opprett") {
 
-    val FERDIGSTILL_JOURNALPOST_DTO = FerdigstillJournalPost(9999)
+    override val pingUri: URI = UriUtil.uri(dokarkivUrl, PATH_PING)
 
-    override val pingUri: URI = URI.create(String.format("%s/isAlive", dokarkivUrl))
+    private val ferdigstillJournalPostClient = FerdigstillJourrnalPostClient(restOperations, dokarkivUrl)
 
-
-    private val opprettJournalpostResponstid =
-            Metrics.timer("dokarkiv.opprett.respons.tid")
-    private val opprettJournalpostSuccess =
-            Metrics.counter("dokarkiv.opprett.response", "status", "success")
-    private val opprettJournalpostFailure =
-            Metrics.counter("dokarkiv.opprett.response", "status", "failure")
-    private val ferdigstillJournalpostResponstid =
-            Metrics.timer("dokarkiv.ferdigstill.respons.tid")
-    private val ferdigstillJournalpostSuccess =
-            Metrics.counter("dokarkiv.ferdigstill.response", "status", "success")
-    private val ferdigstillJournalpostFailure =
-            Metrics.counter("dokarkiv.ferdigstill.response", "status", "failure")
+    fun lagJournalpostUri(ferdigstill: Boolean): URI =
+            UriUtil.uri(dokarkivUrl, PATH_JOURNALPOST, String.format(QUERY_FERDIGSTILL, ferdigstill))
 
     fun lagJournalpost(jp: OpprettJournalpostRequest,
                        ferdigstill: Boolean,
                        personIdent: String?): OpprettJournalpostResponse {
-        val uri = URI.create(String.format("%s/rest/journalpostapi/v1/journalpost?foersoekFerdigstill=%b",
-                                           dokarkivUrl,
-                                           ferdigstill))
+        val uri = lagJournalpostUri(ferdigstill)
         val httpHeaders = org.springframework.http.HttpHeaders().apply {
             add(NAV_PERSONIDENTER, personIdent)
         }
-        try {
-            val startTime = System.nanoTime()
-            val opprettJournalpostResponse: OpprettJournalpostResponse = postForEntity(uri, jp, httpHeaders)
-            opprettJournalpostResponstid.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS)
-            opprettJournalpostSuccess.increment()
-            return opprettJournalpostResponse
-
-        } catch (e: Exception) {
-            opprettJournalpostFailure.increment()
-            throw RuntimeException("Feil ved kall mot Dokarkiv uri=$uri", e)
-        } catch (e: InterruptedException) {
-            opprettJournalpostFailure.increment()
-            throw RuntimeException("Feil ved kall mot Dokarkiv uri=$uri", e)
-        }
+        return postForEntity(uri, jp, httpHeaders)
     }
 
     fun ferdigstillJournalpost(journalpostId: String) {
-        val uri = URI.create(String.format("%s/rest/journalpostapi/v1/journalpost/%s/ferdigstill",
-                                           dokarkivUrl,
-                                           journalpostId))
-        try {
-            val startTime = System.nanoTime()
-            patchForObject<Any>(uri, FERDIGSTILL_JOURNALPOST_DTO)
-            ferdigstillJournalpostResponstid.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS)
-            ferdigstillJournalpostSuccess.increment()
+        ferdigstillJournalPostClient.ferdigstillJournalpost(journalpostId)
+    }
 
-        } catch (e: Exception) {
-            ferdigstillJournalpostFailure.increment()
-            throw e
+    /**
+     * Privat klasse for å gi egne metrics for ferdigstilling av jpurnalpost.
+     *
+     */
+    private class FerdigstillJourrnalPostClient(restOperations: RestOperations, private val dokarkivUrl: URI)
+        : AbstractRestClient(restOperations, "dokarkiv.ferdigstill") {
+
+        val ferdigstillJournalPost = FerdigstillJournalPost(9999)
+
+        private fun ferdigstillJournalpostUri(journalpostId: String): URI {
+            return UriUtil.uri(dokarkivUrl, String.format(PATH_FERDIGSTILL_JOURNALPOST, journalpostId))
+        }
+
+        fun ferdigstillJournalpost(journalpostId: String) {
+            val uri = ferdigstillJournalpostUri(journalpostId)
+            patchForEntity<Any>(uri, ferdigstillJournalPost)
         }
     }
 
     companion object {
         private const val NAV_PERSONIDENTER = "Nav-Personidenter"
-
+        private const val PATH_PING = "isAlive"
+        private const val PATH_JOURNALPOST = "rest/journalpostapi/v1/journalpost"
+        private const val QUERY_FERDIGSTILL = "foersoekFerdigstill=%b"
+        private const val PATH_FERDIGSTILL_JOURNALPOST = "rest/journalpostapi/v1/journalpost/%s/ferdigstill"
     }
-
-
 }

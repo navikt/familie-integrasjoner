@@ -1,9 +1,11 @@
 package no.nav.familie.integrasjoner.infotrygd;
 
+import no.nav.familie.integrasjoner.client.rest.InfotrygdClient;
 import no.nav.familie.ks.kontrakter.sak.Ressurs;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +21,10 @@ public class InfotrygdController {
     private static final Logger LOG = LoggerFactory.getLogger(InfotrygdController.class);
     private static final Logger secureLogger = LoggerFactory.getLogger("secureLogger");
 
-    private final InfotrygdService infotrygdService;
+    private final InfotrygdClient infotrygdClient;
 
-    public InfotrygdController(InfotrygdService infotrygdService) {
-        this.infotrygdService = infotrygdService;
+    public InfotrygdController(InfotrygdClient infotrygdClient) {
+        this.infotrygdClient = infotrygdClient;
     }
 
     @ExceptionHandler(HttpStatusCodeException.class)
@@ -40,6 +42,9 @@ public class InfotrygdController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "v1/harBarnAktivKontantstotte")
     public ResponseEntity<Ressurs> aktivKontantstøtte(@NotNull @RequestHeader(name = "Nav-Personident") String fnr) {
-        return ResponseEntity.ok(Ressurs.Companion.success(infotrygdService.hentAktivKontantstøtteFor(fnr), "Oppslag mot Infotrygd OK"));
+        if (!fnr.matches("[0-9]+")) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "fnr må være et tall");
+        }
+        return ResponseEntity.ok(Ressurs.Companion.success(infotrygdClient.hentAktivKontantstøtteFor(fnr), "Oppslag mot Infotrygd OK"));
     }
 }

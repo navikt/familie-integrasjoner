@@ -1,10 +1,10 @@
 package no.nav.familie.integrasjoner.aktør;
 
 import no.nav.familie.integrasjoner.aktør.domene.Aktør;
+import no.nav.familie.integrasjoner.aktør.domene.Ident;
+import no.nav.familie.integrasjoner.client.rest.AktørregisterClient;
 import no.nav.familie.integrasjoner.felles.OppslagException;
 import no.nav.familie.integrasjoner.personopplysning.domene.AktørId;
-import no.nav.familie.integrasjoner.aktør.domene.Ident;
-import no.nav.familie.integrasjoner.aktør.internal.AktørregisterClient;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
 import org.slf4j.Logger;

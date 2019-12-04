@@ -1,41 +1,27 @@
-package no.nav.familie.integrasjoner.azure;
+package no.nav.familie.integrasjoner.azure
 
-import no.nav.familie.integrasjoner.azure.domene.Saksbehandler;
-import no.nav.familie.integrasjoner.config.BaseService;
-import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService;
-import no.nav.security.token.support.client.spring.ClientConfigurationProperties;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.stereotype.Service;
+import no.nav.familie.http.util.UriUtil
+import no.nav.familie.integrasjoner.azure.domene.Saksbehandler
+import no.nav.familie.integrasjoner.client.rest.AbstractRestClient
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Service
+import org.springframework.web.client.RestOperations
+import java.net.URI
 
 @Service
-public class AzureGraphService extends BaseService {
+class AzureGraphService @Autowired constructor(restTemplate: RestOperations,
+                                               @Value("\${AAD_GRAPH_API_URI}") private val aadGrapURI: URI)
+    : AbstractRestClient(restTemplate, "AzureGraph") {
 
-    private static final String OAUTH2_CLIENT_CONFIG_KEY = "aad-graph-onbehalfof";
-    private String aadGrapURI;
+    val saksbehandler: Saksbehandler
+        get() {
 
-    @Autowired
-    public AzureGraphService(RestTemplateBuilder restTemplateBuilderMedProxy,
-                             ClientConfigurationProperties clientConfigurationProperties,
-                             OAuth2AccessTokenService oAuth2AccessTokenService,
-                             @Value("${AAD_GRAPH_API_URI}") String URI) {
-        super(OAUTH2_CLIENT_CONFIG_KEY, restTemplateBuilderMedProxy, clientConfigurationProperties, oAuth2AccessTokenService);
+            return getForEntity(UriUtil.uri(aadGrapURI, PATH))
+        }
 
-        this.aadGrapURI = URI;
+    companion object {
+        private const val PATH = "me?\$select=displayName,onPremisesSamAccountName,userPrincipalName"
     }
 
-    public Saksbehandler getSaksbehandler() {
-
-        var headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json;charset=UTF-8");
-        var entity = new HttpEntity(headers);
-
-        var response = restTemplate.exchange(String.format("%sme?$select=displayName,onPremisesSamAccountName,userPrincipalName", aadGrapURI), HttpMethod.GET, entity, Saksbehandler.class);
-
-        return response.getBody();
-    }
 }

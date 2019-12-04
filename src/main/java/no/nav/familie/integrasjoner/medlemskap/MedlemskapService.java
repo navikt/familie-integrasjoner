@@ -24,7 +24,7 @@ public class MedlemskapService {
         try {
             return medlemskapsOversetter.tilMedlemskapsInfo(medlClient.hentMedlemskapsUnntakResponse(aktørId));
         } catch (Exception e) {
-            throw new OppslagException("Feil ved oppslag for Aktør " + aktørId + " og uri " + medlClient.getMedl2Uri(), "MEDL2", OppslagException.Level.MEDIUM, HttpStatus.INTERNAL_SERVER_ERROR, e);
+            throw new OppslagException("Feil ved oppslag for Aktør " + aktørId + " og uri " + medlClient.getMedlemskapsunntakUri(), "MEDL2", OppslagException.Level.MEDIUM, HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
 }

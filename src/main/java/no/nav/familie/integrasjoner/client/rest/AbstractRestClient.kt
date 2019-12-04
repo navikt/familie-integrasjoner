@@ -1,5 +1,8 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.Metrics
+import io.micrometer.core.instrument.Timer
 import no.nav.familie.integrasjoner.client.Pingable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -8,64 +11,67 @@ import org.slf4j.MarkerFactory
 import org.springframework.http.*
 import org.springframework.web.client.*
 import java.net.URI
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
+import java.util.concurrent.TimeUnit
 
-abstract class AbstractRestClient(protected val operations: RestOperations): Pingable {
+abstract class AbstractRestClient(protected val operations: RestOperations,
+                                  metricsPrefix: String)  {
 
-    abstract val pingUri: URI
+    protected val responstid: Timer = Metrics.timer("$metricsPrefix.tid")
+    protected val responsSuccess: Counter = Metrics.counter("$metricsPrefix.response", "status", "success")
+    protected val responsFailure: Counter = Metrics.counter("$metricsPrefix.response", "status", "failure")
 
     private val confidential: Marker = MarkerFactory.getMarker("CONFIDENTIAL")
     protected val log: Logger = LoggerFactory.getLogger(this::class.java)
 
     protected inline fun <reified T : Any> getForEntity(uri: URI): T {
-        val respons: ResponseEntity<T> = operations.getForEntity(uri)
-        return validerOgPakkUt(respons, uri)
+        return executeMedMetrics(uri) { operations.getForEntity<T>(uri) }
     }
 
     protected inline fun <reified T : Any> getForEntity(uri: URI, httpHeaders: HttpHeaders): T {
-        val respons: ResponseEntity<T> = operations.exchange(uri, HttpMethod.GET, HttpEntity(null, httpHeaders))
-        return validerOgPakkUt(respons, uri)
+        return executeMedMetrics(uri) { operations.exchange<T>(uri, HttpMethod.GET, HttpEntity(null, httpHeaders)) }
     }
 
     protected inline fun <reified T : Any> postForEntity(uri: URI, payload: Any): T {
-        val respons: ResponseEntity<T> = operations.postForEntity(uri, payload)
-        return validerOgPakkUt(respons, uri)
+        return executeMedMetrics(uri) { operations.postForEntity<T>(uri, payload) }
     }
 
     protected inline fun <reified T : Any> postForEntity(uri: URI, payload: Any, httpHeaders: HttpHeaders): T {
-        val respons: ResponseEntity<T> = operations.exchange(uri, HttpMethod.POST, HttpEntity(payload, httpHeaders))
-        return validerOgPakkUt(respons, uri)
+        return executeMedMetrics(uri) { operations.exchange<T>(uri, HttpMethod.POST, HttpEntity(payload, httpHeaders)) }
     }
 
-    protected inline fun <reified T : Any> putForObject(uri: URI, payload: Any): T {
-        val respons: ResponseEntity<T> = operations.exchange(RequestEntity.put(uri).body(payload))
-        return validerOgPakkUt(respons, uri)
+    protected inline fun <reified T : Any> putForEntity(uri: URI, payload: Any): T {
+        return executeMedMetrics(uri) { operations.exchange<T>(RequestEntity.put(uri).body(payload)) }
     }
 
-    protected inline fun <reified T : Any> patchForObject(uri: URI, payload: Any): T {
-        val respons: ResponseEntity<T> = operations.patchForObject(uri, payload)
-        return validerOgPakkUt(respons, uri)
+    protected inline fun <reified T : Any> putForEntity(uri: URI, payload: Any, httpHeaders: HttpHeaders): T {
+        return executeMedMetrics(uri) { operations.exchange<T>(uri, HttpMethod.PUT, HttpEntity(payload, httpHeaders)) }
     }
 
+    protected inline fun <reified T : Any> patchForEntity(uri: URI, payload: Any): T {
+        return executeMedMetrics(uri) { operations.exchange<T>(RequestEntity.patch(uri).body(payload)) }
+    }
 
-    protected fun <T> validerOgPakkUt(respons: ResponseEntity<T>, uri: URI): T {
-        log.trace(confidential, "Respons: {}", respons)
-        if (!respons.statusCode.is2xxSuccessful) {
-            log.info("Kall mot $uri feilet: ${respons.body}")
+    private fun <T> validerOgPakkUt(respons: ResponseEntity<T>, uri: URI): T {
+        if (!respons.statusCode.is2xxSuccessful || respons.body == null) {
+            log.info(confidential, "Kall mot $uri feilet: ${respons.body}")
+            log.info("Kall mot $uri feilet: ${respons.statusCode}")
             throw HttpServerErrorException(respons.statusCode)
         }
-        return respons.body ?: throw IllegalStateException()
+        return respons.body as T
     }
 
-    override fun ping() {
-        val respons: ResponseEntity<String> = operations.getForEntity(pingUri)
-        if (!respons.statusCode.is2xxSuccessful) {
-            throw HttpServerErrorException(respons.statusCode)
+    protected fun <T> executeMedMetrics(uri: URI, function: () -> ResponseEntity<T>): T {
+        try {
+            val startTime = System.nanoTime()
+            val responseEntity = function.invoke()
+            responstid.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS)
+            responsSuccess.increment()
+            return validerOgPakkUt(responseEntity, uri)
+        } catch (e: Exception) {
+            responsFailure.increment()
+            throw RuntimeException("Feil ved kall mot uri=$uri", e)
         }
     }
-
-
 
     override fun toString(): String = this::class.simpleName + " [operations=" + operations + "]"
 }

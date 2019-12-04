@@ -240,36 +240,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-codegen-maven-plugin</artifactId>
-                <version>2.4.10</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-
-                            <inputSpec>${project.basedir}/src/main/resources/oppgave/oppgave-swagger.json</inputSpec>
-                            <language>jaxrs</language>
-                            <generateApis>false</generateApis>
-
-                            <modelPackage>no.nav.oppgave.v1</modelPackage>
-                            <modelNameSuffix>Dto</modelNameSuffix>
-
-                            <generateSupportingFiles>false</generateSupportingFiles>
-
-                            <configOptions>
-                                <java8>true</java8>
-                                <useBeanValidation>false</useBeanValidation>
-                                <sourceFolder>oppgave</sourceFolder>
-                            </configOptions>
-
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <dependencies>
                     <dependency>
                         <groupId>org.jetbrains.kotlin</groupId>
@@ -296,7 +266,6 @@
                         <configuration>
                             <sourceDirs>
                                 <source>src/main/java</source>
-                                <source>target/generated-sources/swagger/oppgave</source>
                             </sourceDirs>
                         </configuration>
                     </execution>
