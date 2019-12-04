@@ -63,7 +63,7 @@ public class OppgaveControllerTest extends OppslagSpringRunnerTest {
         ResponseEntity<String> response = restTemplate.exchange(
                 localhost(OPPDATER_OPPGAVE_URL), HttpMethod.POST, new HttpEntity<>(test, headers), String.class
         );
-        assertThat(loggingEvents).extracting(ILoggingEvent::getFormattedMessage).anyMatch(s -> s.contains("java.lang.NullPointerException\n\tat"));
+        assertThat(loggingEvents).extracting(ILoggingEvent::getFormattedMessage).anyMatch(s -> s.contains("Exception : java.lang.NullPointerException null"));
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

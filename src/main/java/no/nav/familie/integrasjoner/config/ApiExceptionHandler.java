@@ -31,7 +31,7 @@ public class ApiExceptionHandler {
         logger.warn("Kan ikke logget inn.", e);
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(Ressurs.Companion.failure("Du er ikke logget inn.", null));
+                .body(Ressurs.Companion.failure("Du er ikke logget inn.", e));
     }
 
     @ExceptionHandler({RestClientResponseException.class})
@@ -40,7 +40,7 @@ public class ApiExceptionHandler {
         logger.error("RestClientResponseException : {} {} {}", e.getRawStatusCode(), e.getStatusText(), ExceptionUtils.getStackTrace(e));
         return ResponseEntity
                 .status(INTERNAL_SERVER_ERROR)
-                .body(Ressurs.Companion.failure("Feil mot ekstern tjeneste. " + e.getRawStatusCode() + " " + e.getResponseBodyAsString() + " Message=" + e.getMessage(), null));
+                .body(Ressurs.Companion.failure("Feil mot ekstern tjeneste. " + e.getRawStatusCode() + " " + e.getResponseBodyAsString() + " Message=" + e.getMessage(), e));
     }
 
     @ExceptionHandler({MissingRequestHeaderException.class})
@@ -56,16 +56,16 @@ public class ApiExceptionHandler {
         logger.error("AzureAccessTokenException : {} ", ExceptionUtils.getStackTrace(e));
         return ResponseEntity
                 .status(INTERNAL_SERVER_ERROR)
-                .body(Ressurs.Companion.failure("Feil mot azure. Message=" + e.getMessage(), null));
+                .body(Ressurs.Companion.failure("Feil mot azure. Message=" + e.getMessage(), e));
     }
 
     @ExceptionHandler({Exception.class})
     public ResponseEntity<Ressurs> handleException(Exception e) {
         secureLogger.error("Exception : ", e);
-        logger.error("Exception : {}", ExceptionUtils.getStackTrace(e));
+        logger.error("Exception : {} {}", e.getClass().getName(), e.getMessage(), e);
         return ResponseEntity
                 .status(INTERNAL_SERVER_ERROR)
-                .body(Ressurs.Companion.failure("Det oppstod en feil. " + e.getMessage(), null));
+                .body(Ressurs.Companion.failure("Det oppstod en feil. " + e.getMessage(), e));
     }
 
     @ExceptionHandler({OppslagException.class})
