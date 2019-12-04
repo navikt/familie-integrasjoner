@@ -162,7 +162,7 @@ public class DokarkivControllerTest extends OppslagSpringRunnerTest {
 
 
         ResponseEntity<Ressurs> response = restTemplate.exchange(
-                localhost(DOKARKIV_URL + "/123/ferdigstill"), HttpMethod.PUT, new HttpEntity<>(null, headers), Ressurs.class
+                localhost(DOKARKIV_URL + "/123/ferdigstill?journalfoerendeEnhet=9999"), HttpMethod.PUT, new HttpEntity<>(null, headers), Ressurs.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -184,7 +184,7 @@ public class DokarkivControllerTest extends OppslagSpringRunnerTest {
 
 
         ResponseEntity<Ressurs> response = restTemplate.exchange(
-                localhost(DOKARKIV_URL + "/123/ferdigstill"), HttpMethod.PUT, new HttpEntity<>(null, headers), Ressurs.class
+                localhost(DOKARKIV_URL + "/123/ferdigstill?journalfoerendeEnhet=9999"), HttpMethod.PUT, new HttpEntity<>(null, headers), Ressurs.class
         );
 
         assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);

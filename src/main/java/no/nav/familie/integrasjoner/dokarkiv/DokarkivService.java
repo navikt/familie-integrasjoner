@@ -49,8 +49,8 @@ public class DokarkivService {
         return response.map(this::mapTilArkiverDokumentResponse).orElse(null);
     }
 
-    public void ferdistillJournalpost(String journalpost) {
-        dokarkivClient.ferdigstillJournalpost(journalpost);
+    public void ferdistillJournalpost(String journalpost, String journalførendeEnhet) {
+        dokarkivClient.ferdigstillJournalpost(journalpost, journalførendeEnhet);
     }
 
     private String hentNavnForFnr(String fnr) {
@@ -80,7 +80,6 @@ public class DokarkivService {
                 .medKanal(metadataHoveddokument.getKanal())
                 .medTittel(metadataHoveddokument.getTittel())
                 .medTema(metadataHoveddokument.getTema())
-                .medJournalfoerendeEnhet(DokumentMetadata.JOURNALFØRENDE_ENHET)
                 .medAvsenderMottaker(new AvsenderMottaker(fnr, IdType.FNR, navn))
                 .medBruker(new Bruker(IdType.FNR, fnr))
                 .medDokumenter(dokumentRequest)

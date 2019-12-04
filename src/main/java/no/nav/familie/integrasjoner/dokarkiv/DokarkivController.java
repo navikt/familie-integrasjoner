@@ -59,11 +59,11 @@ public class DokarkivController {
 
     @PutMapping("v1/{journalpostId}/ferdigstill")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Ressurs> ferdigstillJournalpost(@PathVariable(name = "journalpostId") String journalpostId) {
+    public ResponseEntity<Ressurs> ferdigstillJournalpost(@PathVariable(name = "journalpostId") String journalpostId, @RequestParam(name = "journalfoerendeEnhet") String journalførendeEnhet) {
         if (journalpostId == null) {
             return ResponseEntity.badRequest().body(Ressurs.Companion.failure("journalpostId er null", null));
         }
-        journalføringService.ferdistillJournalpost(journalpostId);
+        journalføringService.ferdistillJournalpost(journalpostId, journalførendeEnhet);
         return ResponseEntity
                 .ok(Ressurs.Companion.success(Map.of("journalpostId", journalpostId), "Ferdigstilt journalpost " + journalpostId));
     }
