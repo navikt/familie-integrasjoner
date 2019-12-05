@@ -24,16 +24,20 @@ class SafKlient(@Value("\${SAF_URL}") safBaseUrl: URI,
 
     fun hentJournalpost(journalpostId: String): Journalpost {
         val safJournalpostRequest = SafJournalpostRequest(SafRequestVariable(journalpostId))
-        val response = postForEntity<SafJournalpostResponse>(safUri,
-                                                             safJournalpostRequest,
-                                                             httpHeaders())
-        if (!response.harFeil()) {
-            return response.data.journalpost
-        } else {
-            responsFailure.increment()
-            throw JournalpostRestClientException("Kan ikke hente journalpost " + response.errors.toString(),
-                                                 null,
-                                                 journalpostId)
+        try {
+            val response = postForEntity<SafJournalpostResponse>(safUri,
+                                                                 safJournalpostRequest,
+                                                                 httpHeaders())
+            if (response != null && !response.harFeil()) {
+                return response.data.journalpost
+            } else {
+                responsFailure.increment()
+                throw JournalpostRestClientException("Kan ikke hente journalpost " + response?.errors?.toString(),
+                                                     null,
+                                                     journalpostId)
+            }
+        } catch (e: Exception) {
+            throw JournalpostRestClientException(e.message, e, journalpostId)
         }
     }
 

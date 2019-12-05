@@ -1,12 +1,14 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.util.UriUtil
+import no.nav.familie.integrasjoner.dokarkiv.client.KanIkkeFerdigstilleJournalpostException
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.FerdigstillJournalPost
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.RestOperations
 import java.net.URI
 
@@ -24,7 +26,7 @@ class DokarkivClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
 
     fun lagJournalpost(jp: OpprettJournalpostRequest,
                        ferdigstill: Boolean,
-                       personIdent: String?): OpprettJournalpostResponse {
+                       personIdent: String?): OpprettJournalpostResponse? {
         val uri = lagJournalpostUri(ferdigstill)
         val httpHeaders = org.springframework.http.HttpHeaders().apply {
             add(NAV_PERSONIDENTER, personIdent)
@@ -51,7 +53,14 @@ class DokarkivClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
 
         fun ferdigstillJournalpost(journalpostId: String) {
             val uri = ferdigstillJournalpostUri(journalpostId)
-            patchForEntity<Any>(uri, ferdigstillJournalPost)
+            try {
+                patchForEntity<Any>(uri, ferdigstillJournalPost)
+            } catch (e: RuntimeException) {
+                if (e.cause is RestClientResponseException  && (e.cause as RestClientResponseException).rawStatusCode == 400 ) {
+                    throw KanIkkeFerdigstilleJournalpostException("Kan ikke ferdigstille journalpost $journalpostId")
+                }
+                throw e
+            }
         }
     }
 

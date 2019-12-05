@@ -3,7 +3,6 @@ package no.nav.familie.integrasjoner.client.rest
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.Metrics
 import io.micrometer.core.instrument.Timer
-import no.nav.familie.integrasjoner.client.Pingable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.Marker
@@ -14,7 +13,7 @@ import java.net.URI
 import java.util.concurrent.TimeUnit
 
 abstract class AbstractRestClient(protected val operations: RestOperations,
-                                  metricsPrefix: String)  {
+                                  metricsPrefix: String) {
 
     protected val responstid: Timer = Metrics.timer("$metricsPrefix.tid")
     protected val responsSuccess: Counter = Metrics.counter("$metricsPrefix.response", "status", "success")
@@ -24,49 +23,53 @@ abstract class AbstractRestClient(protected val operations: RestOperations,
     protected val log: Logger = LoggerFactory.getLogger(this::class.java)
 
     protected inline fun <reified T : Any> getForEntity(uri: URI): T {
-        return executeMedMetrics(uri) { operations.getForEntity<T>(uri) }
+        return executeMedMetrics(uri) { operations.getForEntity<T>(uri) } ?: error("Get feilet ved kall til $uri")
     }
 
     protected inline fun <reified T : Any> getForEntity(uri: URI, httpHeaders: HttpHeaders): T {
         return executeMedMetrics(uri) { operations.exchange<T>(uri, HttpMethod.GET, HttpEntity(null, httpHeaders)) }
+               ?: error("Get feilet ved kall til $uri")
     }
 
-    protected inline fun <reified T : Any> postForEntity(uri: URI, payload: Any): T {
+    protected inline fun <reified T : Any> postForEntity(uri: URI, payload: Any): T? {
         return executeMedMetrics(uri) { operations.postForEntity<T>(uri, payload) }
     }
 
-    protected inline fun <reified T : Any> postForEntity(uri: URI, payload: Any, httpHeaders: HttpHeaders): T {
+    protected inline fun <reified T : Any> postForEntity(uri: URI, payload: Any, httpHeaders: HttpHeaders): T? {
         return executeMedMetrics(uri) { operations.exchange<T>(uri, HttpMethod.POST, HttpEntity(payload, httpHeaders)) }
     }
 
-    protected inline fun <reified T : Any> putForEntity(uri: URI, payload: Any): T {
+    protected inline fun <reified T : Any> putForEntity(uri: URI, payload: Any): T? {
         return executeMedMetrics(uri) { operations.exchange<T>(RequestEntity.put(uri).body(payload)) }
     }
 
-    protected inline fun <reified T : Any> putForEntity(uri: URI, payload: Any, httpHeaders: HttpHeaders): T {
+    protected inline fun <reified T : Any> putForEntity(uri: URI, payload: Any, httpHeaders: HttpHeaders): T? {
         return executeMedMetrics(uri) { operations.exchange<T>(uri, HttpMethod.PUT, HttpEntity(payload, httpHeaders)) }
     }
 
-    protected inline fun <reified T : Any> patchForEntity(uri: URI, payload: Any): T {
+    protected inline fun <reified T : Any> patchForEntity(uri: URI, payload: Any): T? {
         return executeMedMetrics(uri) { operations.exchange<T>(RequestEntity.patch(uri).body(payload)) }
     }
 
-    private fun <T> validerOgPakkUt(respons: ResponseEntity<T>, uri: URI): T {
-        if (!respons.statusCode.is2xxSuccessful || respons.body == null) {
-            log.info(confidential, "Kall mot $uri feilet: ${respons.body}")
+    private fun <T> validerOgPakkUt(respons: ResponseEntity<T>, uri: URI): T? {
+        if (!respons.statusCode.is2xxSuccessful) {
+            log.info(confidential, "Kall mot $uri feilet:  ${respons.body}")
             log.info("Kall mot $uri feilet: ${respons.statusCode}")
             throw HttpServerErrorException(respons.statusCode)
         }
-        return respons.body as T
+        return respons.body
     }
 
-    protected fun <T> executeMedMetrics(uri: URI, function: () -> ResponseEntity<T>): T {
+    protected fun <T> executeMedMetrics(uri: URI, function: () -> ResponseEntity<T>): T? {
         try {
             val startTime = System.nanoTime()
             val responseEntity = function.invoke()
             responstid.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS)
             responsSuccess.increment()
             return validerOgPakkUt(responseEntity, uri)
+        } catch (e: RestClientResponseException) {
+            responsFailure.increment()
+            throw RuntimeException("Feil ved kall mot uri=$uri. Http responskode ${e.rawStatusCode}.", e)
         } catch (e: Exception) {
             responsFailure.increment()
             throw RuntimeException("Feil ved kall mot uri=$uri", e)

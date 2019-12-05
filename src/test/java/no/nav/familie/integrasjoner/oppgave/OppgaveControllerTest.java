@@ -60,7 +60,7 @@ public class OppgaveControllerTest extends OppslagSpringRunnerTest {
                                 .withPath("/api/v1/oppgaver")
                 )
                 .respond(
-                        HttpResponse.response()
+                        HttpResponse.response().withStatusCode(404)
                 );
 
         Oppgave test = new Oppgave("1234567891011", "1", null, "test NPE");

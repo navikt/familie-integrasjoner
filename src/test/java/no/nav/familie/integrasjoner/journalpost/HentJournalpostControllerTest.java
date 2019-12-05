@@ -61,7 +61,7 @@ public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
                                 .request()
                                 .withMethod("POST")
                                 .withPath("/rest/saf/graphql")
-                                .withBody(testdata("gyldigrequest.json"))
+//                                .withBody(testdata("gyldigrequest.json"))
                 )
                 .respond(
                         HttpResponse.response().withBody(testdata("gyldigresponse.json")).withHeaders(
@@ -170,7 +170,7 @@ public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
         assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
-        assertThat(response.getBody().getMelding()).contains("Feil ved henting av journalpost=12345678 statuscode=500 INTERNAL_SERVER_ERROR body=feilmelding");
+        assertThat(response.getBody().getMelding()).contains("Feil ved henting av journalpost=12345678");
         assertThat(loggingEvents).extracting(ILoggingEvent::getLevel).containsExactly(Level.WARN);
     }
 

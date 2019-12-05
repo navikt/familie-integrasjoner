@@ -81,7 +81,7 @@ public class DokarkivControllerTest extends OppslagSpringRunnerTest {
                                 .withQueryStringParameter("foersoekFerdigstill", "false")
                 )
                 .respond(
-                        HttpResponse.response().withBody(gyldigDokarkivResponse())
+                        HttpResponse.response().withHeader("Content-Type", "application/json").withBody(gyldigDokarkivResponse())
                 );
 
 
@@ -107,7 +107,7 @@ public class DokarkivControllerTest extends OppslagSpringRunnerTest {
                                 .withQueryStringParameter("foersoekFerdigstill", "false")
                 )
                 .respond(
-                        HttpResponse.response().withBody(gyldigDokarkivResponse())
+                        HttpResponse.response().withHeader("Content-Type", "application/json").withBody(gyldigDokarkivResponse())
                 );
 
 
@@ -144,7 +144,7 @@ public class DokarkivControllerTest extends OppslagSpringRunnerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
-        assertThat(response.getBody().getMelding()).contains("Feilresponse fra dokarkiv-tjenesten 401 Tekst fra body");
+        assertThat(response.getBody().getMelding()).contains("Http responskode 401.");
     }
 
     @Test
