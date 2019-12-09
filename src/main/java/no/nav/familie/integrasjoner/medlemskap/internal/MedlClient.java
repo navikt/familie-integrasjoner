@@ -2,7 +2,6 @@ package no.nav.familie.integrasjoner.medlemskap.internal;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.familie.http.client.HttpRequestUtil;
-import no.nav.familie.http.client.NavHttpHeaders;
 import no.nav.familie.http.sts.StsRestClient;
 import no.nav.familie.integrasjoner.medlemskap.MedlemskapService;
 import no.nav.familie.integrasjoner.medlemskap.MedlemskapsUnntakResponse;
@@ -19,6 +18,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static javax.ws.rs.core.HttpHeaders.ACCEPT;
+import static no.nav.familie.log.NavHttpHeaders.NAV_PERSONIDENT;
+import static no.nav.familie.log.NavHttpHeaders.NAV_CONSUMER_ID;
 
 public class MedlClient {
 
@@ -44,8 +45,8 @@ public class MedlClient {
         HttpRequest request = HttpRequestUtil.createRequest("Bearer " + stsRestClient.getSystemOIDCToken())
                 .uri(medl2Uri)
                 .header(ACCEPT, "application/json")
-                .header(NavHttpHeaders.NAV_PERSONIDENT.asString(), aktørId)
-                .header(NavHttpHeaders.NAV_CONSUMER_ID.asString(), srvBruker)
+                .header(NAV_PERSONIDENT.asString(), aktørId)
+                .header(NAV_CONSUMER_ID.asString(), srvBruker)
                 .build();
 
         try {

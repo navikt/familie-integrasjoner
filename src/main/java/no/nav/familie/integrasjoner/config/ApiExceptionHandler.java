@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.config;
 
 import no.nav.familie.http.azure.AzureAccessTokenException;
-import no.nav.familie.ks.kontrakter.sak.Ressurs;
+import no.nav.familie.kontrakt.Ressurs;
 import no.nav.familie.integrasjoner.felles.OppslagException;
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException;
 import org.apache.commons.lang3.exception.ExceptionUtils;

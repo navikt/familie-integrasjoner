@@ -1,15 +1,14 @@
 package no.nav.familie.integrasjoner.kodeverk
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import no.nav.familie.http.client.NavHttpHeaders.NAV_CALLID
-import no.nav.familie.http.client.NavHttpHeaders.NAV_CONSUMER_ID
+import no.nav.familie.log.NavHttpHeaders.NAV_CALL_ID
+import no.nav.familie.log.NavHttpHeaders.NAV_CONSUMER_ID
 import no.nav.familie.integrasjoner.config.KodeverkConfig
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.kodeverk.domene.PostnummerDto
 import org.springframework.http.*
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
-import java.io.IOException
 import java.net.URI
 
 @Component
@@ -19,7 +18,7 @@ class KodeverkClient(val config: KodeverkConfig,
 
     fun hentPostnummerBetydninger(): PostnummerDto {
         val headers = HttpHeaders().apply {
-            add(NAV_CALLID.asString(), MDCOperations.getCallId())
+            add(NAV_CALL_ID.asString(), MDCOperations.getCallId())
             add(NAV_CONSUMER_ID.asString(), config.consumer)
         }
         val response = restTemplate.exchange(config.postnummerUri,
