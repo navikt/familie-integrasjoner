@@ -35,7 +35,7 @@ public class InfotrygdService {
         }
 
         var headers = new HttpHeaders();
-        headers.setBearerAuth(accessTokenClient.getAccessToken(scope).access_token);
+        headers.setBearerAuth(accessTokenClient.getAccessToken(scope).getAccess_token());
         headers.add("Accept", "application/json");
         headers.add("fnr", fnr);
         var entity = new HttpEntity(headers);

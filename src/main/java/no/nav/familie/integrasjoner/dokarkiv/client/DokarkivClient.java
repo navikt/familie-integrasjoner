@@ -27,12 +27,12 @@ import java.util.concurrent.TimeUnit;
 
 import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+import static no.nav.familie.log.NavHttpHeaders.NAV_CALL_ID;
+import static no.nav.familie.log.NavHttpHeaders.NAV_CONSUMER_ID;
+import static no.nav.familie.log.NavHttpHeaders.NAV_PERSONIDENT;
 
 @Service
 public class DokarkivClient {
-    private static final String NAV_CONSUMER_ID = "Nav-Consumer-Id";
-    private static final String NAV_CALL_ID = "Nav-Call-Id";
-    private static final String NAV_PERSONIDENTER = "Nav-Personidenter";
     public static final String FERDIGSTILL_JOURNALPOST_JSON = "{\"journalfoerendeEnhet\":%s}";
     private final Timer opprettJournalpostResponstid = Metrics.timer("dokarkiv.opprett.respons.tid");
     private final Counter opprettJournalpostSuccess = Metrics.counter("dokarkiv.opprett.response", "status", "success");
@@ -74,9 +74,9 @@ public class DokarkivClient {
                     .uri(uri)
                     .header(ACCEPT, "application/json")
                     .header("Content-Type", "application/json")
-                    .header(NAV_PERSONIDENTER, personIdent)
-                    .header(NAV_CONSUMER_ID, consumer)
-                    .header(NAV_CALL_ID, MDCOperations.getCallId())
+                    .header(NAV_PERSONIDENT.asString(), personIdent)
+                    .header(NAV_CONSUMER_ID.asString(), consumer)
+                    .header(NAV_CALL_ID.asString(), MDCOperations.getCallId())
                     .header(AUTHORIZATION, "Bearer " + systembrukerToken)
                     .POST(HttpRequest.BodyPublishers.ofByteArray(requestBody))
                     .timeout(Duration.ofSeconds(20)) // kall tar opptil 8s i preprod.
@@ -109,8 +109,8 @@ public class DokarkivClient {
                     .uri(uri)
                     .header(ACCEPT, "application/json")
                     .header("Content-Type", "application/json")
-                    .header(NAV_CONSUMER_ID, consumer)
-                    .header(NAV_CALL_ID, MDCOperations.getCallId())
+                    .header(NAV_CONSUMER_ID.asString(), consumer)
+                    .header(NAV_CALL_ID.asString(), MDCOperations.getCallId())
                     .header(AUTHORIZATION, "Bearer " + systembrukerToken)
                     .method("PATCH", HttpRequest.BodyPublishers.ofString(String.format(FERDIGSTILL_JOURNALPOST_JSON, journalførendeEnhet)))
                     .timeout(Duration.ofSeconds(20)) // kall tar opptil 8s i preprod.
