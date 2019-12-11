@@ -10,6 +10,7 @@ import no.nav.familie.integrasjoner.felles.OppslagException;
 import no.nav.familie.log.mdc.MDCConstants;
 import no.nav.oppgave.v1.FinnOppgaveResponseDto;
 import no.nav.oppgave.v1.OppgaveJsonDto;
+import no.nav.oppgave.v1.PatchOppgaveJsonDto;
 import org.slf4j.MDC;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
@@ -53,9 +54,8 @@ public class OppgaveClient {
     }
 
     public void oppdaterOppgave(OppgaveJsonDto dto, String beskrivelse) {
-        dto.setBeskrivelse(dto.getBeskrivelse() + beskrivelse);
         try {
-            putRequest(URI.create(oppgaveUri + "/" + dto.getId()), objectMapper.writeValueAsString(dto), String.class);
+            patchRequest(URI.create(oppgaveUri + "/" + dto.getId()), lagRequestBody(dto, beskrivelse), String.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Mapping av OppgaveJsonDto til String feilet.", e);
         }
@@ -67,6 +67,14 @@ public class OppgaveClient {
 
     private URI lagRequestUrlMed(URI oppgaveUri, String aktoerId, String journalpostId) {
         return URI.create(oppgaveUri + String.format("?aktoerId=%s&tema=%s&oppgavetype=%s&journalpostId=%s", aktoerId, TEMA, OPPGAVE_TYPE, journalpostId));
+    }
+
+    private String lagRequestBody(OppgaveJsonDto responseDto, String beskrivelse) throws JsonProcessingException {
+        PatchOppgaveJsonDto requestDto = new PatchOppgaveJsonDto();
+        requestDto.setId(responseDto.getId());
+        requestDto.setVersjon(responseDto.getVersjon());
+        requestDto.setBeskrivelse(responseDto.getBeskrivelse() + beskrivelse);
+        return objectMapper.writeValueAsString(requestDto);
     }
 
     private OppgaveJsonDto requestOppgaveJson(URI requestUrl) {
@@ -89,12 +97,12 @@ public class OppgaveClient {
         return restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), responseType);
     }
 
-    private <T> void putRequest(URI uri, String requestBody, Class<T> responseType) {
+    private <T> void patchRequest(URI uri, String requestBody, Class<T> responseType) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(stsRestClient.getSystemOIDCToken());
         headers.add("Content-Type", "application/json;charset=UTF-8");
         headers.add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID));
 
-        restTemplate.exchange(uri, HttpMethod.PUT, new HttpEntity<>(requestBody, headers), responseType);
+        restTemplate.exchange(uri, HttpMethod.PATCH, new HttpEntity<>(requestBody, headers), responseType);
     }
 }
