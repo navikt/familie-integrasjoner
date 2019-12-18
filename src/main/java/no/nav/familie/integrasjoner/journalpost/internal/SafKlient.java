@@ -26,6 +26,8 @@ import static no.nav.familie.log.NavHttpHeaders.NAV_CONSUMER_ID;
 
 @Service
 public class SafKlient {
+    private static final String NAV_CALL_ID = "Nav-Callid";
+
     private final Timer hentJournalpostResponstid = Metrics.timer("saf.journalpost.tid");
     private final Counter hentJournalpostResponsSuccess = Metrics.counter("saf.journalpost.response", "status", "success");
     private final Counter hentJournalpostResponsFailure = Metrics.counter("saf.journalpost.response", "status", "failure");
@@ -63,7 +65,7 @@ public class SafKlient {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(systembrukerToken);
-        headers.add(NAV_CALL_ID.asString(), MDCOperations.getCallId());
+        headers.add(NAV_CALL_ID, MDCOperations.getCallId());
         headers.add(NAV_CONSUMER_ID.asString(), consumer);
 
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
