@@ -17,7 +17,7 @@ public class OppslagException extends RuntimeException {
         KRITISK
     }
 
-    public OppslagException(String message, String kilde, Level level, HttpStatus httpStatus, Exception error) {
+    public OppslagException(String message, String kilde, Level level, HttpStatus httpStatus, Throwable error) {
         super(message);
         this.httpStatus = httpStatus == null ? INTERNAL_SERVER_ERROR : httpStatus;
         this.kilde = kilde;
