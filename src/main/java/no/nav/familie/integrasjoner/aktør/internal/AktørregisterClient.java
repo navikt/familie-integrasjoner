@@ -23,9 +23,11 @@ import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static no.nav.familie.log.NavHttpHeaders.NAV_CALL_ID;
 import static no.nav.familie.log.NavHttpHeaders.NAV_CONSUMER_ID;
-import static no.nav.familie.log.NavHttpHeaders.NAV_PERSONIDENT;
 
 public class AktørregisterClient {
+
+    private static final String NAV_PERSONIDENTER = "Nav-Personidenter";
+
     private static final String AKTOERID_IDENTGRUPPE = "AktoerId";
     private static final String PERSONIDENT_IDENTGRUPPE = "NorskIdent";
     private final Timer aktoerResponstid = Metrics.timer("aktoer.respons.tid");
@@ -59,7 +61,7 @@ public class AktørregisterClient {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .header(ACCEPT, "application/json")
-                .header(NAV_PERSONIDENT.asString(), personIdent)
+                .header(NAV_PERSONIDENTER, personIdent)
                 .header(NAV_CONSUMER_ID.asString(), consumer)
                 .header(NAV_CALL_ID.asString(), MDCOperations.getCallId())
                 .header(AUTHORIZATION, "Bearer " + systembrukerToken)
