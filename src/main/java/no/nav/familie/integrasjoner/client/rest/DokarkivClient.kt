@@ -34,8 +34,8 @@ class DokarkivClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
         return postForEntity(uri, jp, httpHeaders)
     }
 
-    fun ferdigstillJournalpost(journalpostId: String) {
-        ferdigstillJournalPostClient.ferdigstillJournalpost(journalpostId)
+    fun ferdigstillJournalpost(journalpostId: String, journalførendeEnhet: String) {
+        ferdigstillJournalPostClient.ferdigstillJournalpost(journalpostId, journalførendeEnhet)
     }
 
     /**
@@ -45,16 +45,14 @@ class DokarkivClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
     private class FerdigstillJourrnalPostClient(restOperations: RestOperations, private val dokarkivUrl: URI)
         : AbstractRestClient(restOperations, "dokarkiv.ferdigstill") {
 
-        val ferdigstillJournalPost = FerdigstillJournalPost(9999)
-
         private fun ferdigstillJournalpostUri(journalpostId: String): URI {
             return UriUtil.uri(dokarkivUrl, String.format(PATH_FERDIGSTILL_JOURNALPOST, journalpostId))
         }
 
-        fun ferdigstillJournalpost(journalpostId: String) {
+        fun ferdigstillJournalpost(journalpostId: String, journalførendeEnhet: String) {
             val uri = ferdigstillJournalpostUri(journalpostId)
             try {
-                patchForEntity<Any>(uri, ferdigstillJournalPost)
+                patchForEntity<Any>(uri, FerdigstillJournalPost(journalførendeEnhet))
             } catch (e: RuntimeException) {
                 if (e.cause is RestClientResponseException  && (e.cause as RestClientResponseException).rawStatusCode == 400 ) {
                     throw KanIkkeFerdigstilleJournalpostException("Kan ikke ferdigstille journalpost $journalpostId")

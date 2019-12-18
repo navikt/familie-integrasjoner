@@ -2,7 +2,7 @@ package no.nav.familie.integrasjoner.oppgave;
 
 import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
 import no.nav.familie.ks.kontrakter.oppgave.OppgaveKt;
-import no.nav.familie.ks.kontrakter.sak.Ressurs;
+import no.nav.familie.kontrakt.Ressurs;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

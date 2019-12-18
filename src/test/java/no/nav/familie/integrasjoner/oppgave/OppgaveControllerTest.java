@@ -2,10 +2,6 @@ package no.nav.familie.integrasjoner.oppgave;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import no.nav.familie.integrasjoner.config.JacksonJsonConfig;
-import no.nav.familie.integrasjoner.oppgave.domene.FinnOppgaveResponseDto;
-import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto;
 import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest;
 import no.nav.familie.integrasjoner.config.ApiExceptionHandler;
@@ -27,7 +23,6 @@ import org.springframework.test.context.ActiveProfiles;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,7 +55,7 @@ public class OppgaveControllerTest extends OppslagSpringRunnerTest {
                                 .withPath("/api/v1/oppgaver")
                 )
                 .respond(
-                        HttpResponse.response().withStatusCode(404)
+                        HttpResponse.response()
                 );
 
         Oppgave test = new Oppgave("1234567891011", "1", null, "test NPE");
@@ -121,8 +116,6 @@ public class OppgaveControllerTest extends OppslagSpringRunnerTest {
     }
 
     private String gyldigOppgaveResponse() throws IOException {
-        final String s =
-                new JacksonJsonConfig().objectMapper().writeValueAsString(new FinnOppgaveResponseDto(0, new ArrayList<>()));
-        return s;
+        return Files.readString(new ClassPathResource("oppgave/tom_response.json").getFile().toPath(), StandardCharsets.UTF_8);
     }
 }

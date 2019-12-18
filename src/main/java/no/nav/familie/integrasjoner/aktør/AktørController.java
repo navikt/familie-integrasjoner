@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.aktør;
 
 import no.nav.familie.integrasjoner.personopplysning.domene.AktørId;
-import no.nav.familie.ks.kontrakter.sak.Ressurs;
+import no.nav.familie.kontrakt.Ressurs;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

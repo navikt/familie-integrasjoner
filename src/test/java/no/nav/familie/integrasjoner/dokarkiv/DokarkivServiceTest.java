@@ -105,7 +105,6 @@ public class DokarkivServiceTest {
         assertThat(request.getBruker().getId()).isEqualTo(FNR);
         assertThat(request.getBruker().getIdType()).isEqualTo(IdType.FNR);
         assertThat(request.getBehandlingstema()).isEqualTo(KontanstøtteSøknadMetadata.BEHANDLINGSTEMA);
-        assertThat(request.getJournalfoerendeEnhet()).isEqualTo(DokumentMetadata.JOURNALFØRENDE_ENHET);
         assertThat(request.getJournalpostType()).isEqualTo(JournalpostType.INNGAAENDE);
         assertThat(request.getKanal()).isEqualTo(KontanstøtteSøknadMetadata.KANAL);
         assertThat(request.getTema()).isEqualTo(KontanstøtteSøknadMetadata.TEMA);

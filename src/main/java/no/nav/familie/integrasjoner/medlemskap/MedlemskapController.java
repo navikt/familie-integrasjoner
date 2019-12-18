@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.medlemskap;
 
-import no.nav.familie.ks.kontrakter.sak.Ressurs;
+import no.nav.familie.kontrakt.Ressurs;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

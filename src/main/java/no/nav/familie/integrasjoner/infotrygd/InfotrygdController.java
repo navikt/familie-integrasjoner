@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.infotrygd;
 
 import no.nav.familie.integrasjoner.client.rest.InfotrygdClient;
-import no.nav.familie.ks.kontrakter.sak.Ressurs;
+import no.nav.familie.kontrakt.Ressurs;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

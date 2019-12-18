@@ -5,7 +5,7 @@ import no.nav.familie.http.azure.AccessTokenDto;
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest;
 import no.nav.familie.integrasjoner.client.rest.InfotrygdClient;
 import no.nav.familie.integrasjoner.infotrygd.domene.AktivKontantstøtteInfo;
-import no.nav.familie.ks.kontrakter.sak.Ressurs;
+import no.nav.familie.kontrakt.Ressurs;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Rule;
