@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.journalpost.internal;
 
-class SafRequestVariable {
+public class SafRequestVariable {
 
     private String journalpostId;
 
