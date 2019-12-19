@@ -28,10 +28,7 @@ class DokarkivClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
                        ferdigstill: Boolean,
                        personIdent: String?): OpprettJournalpostResponse? {
         val uri = lagJournalpostUri(ferdigstill)
-        val httpHeaders = org.springframework.http.HttpHeaders().apply {
-            add(NAV_PERSONIDENTER, personIdent)
-        }
-        return postForEntity(uri, jp, httpHeaders)
+        return postForEntity(uri, jp)
     }
 
     fun ferdigstillJournalpost(journalpostId: String, journalførendeEnhet: String) {
@@ -63,7 +60,6 @@ class DokarkivClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
     }
 
     companion object {
-        private const val NAV_PERSONIDENTER = "Nav-Personidenter"
         private const val PATH_PING = "isAlive"
         private const val PATH_JOURNALPOST = "rest/journalpostapi/v1/journalpost"
         private const val QUERY_FERDIGSTILL = "foersoekFerdigstill=%b"
