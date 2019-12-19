@@ -1,5 +1,3 @@
-package no.nav.familie.integrasjoner.dokarkiv.metadata;
+package no.nav.familie.integrasjoner.dokarkiv.metadata
 
-public abstract class AbstractDokumentMetadata implements DokumentMetadata {
-
-}
+abstract class AbstractDokumentMetadata : DokumentMetadata

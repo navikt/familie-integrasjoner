@@ -1,6 +1,5 @@
-package no.nav.familie.integrasjoner.dokarkiv.api;
+package no.nav.familie.integrasjoner.dokarkiv.api
 
-public enum DokumentType {
-    KONTANTSTØTTE_SØKNAD,
-    KONTANTSTØTTE_SØKNAD_VEDLEGG
+enum class DokumentType {
+    KONTANTSTØTTE_SØKNAD, KONTANTSTØTTE_SØKNAD_VEDLEGG
 }

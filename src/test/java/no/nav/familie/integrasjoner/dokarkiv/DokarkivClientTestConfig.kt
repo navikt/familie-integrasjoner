@@ -1,34 +1,32 @@
-package no.nav.familie.integrasjoner.dokarkiv;
+package no.nav.familie.integrasjoner.dokarkiv
 
-import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient;
-import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
+import org.springframework.context.annotation.Profile
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Configuration
-public class DokarkivClientTestConfig {
+class DokarkivClientTestConfig {
 
     @Bean
     @Profile("mock-dokarkiv")
     @Primary
-    public DokarkivClient dokarkivMockClient() throws Exception {
-        DokarkivClient klient = mock(DokarkivClient.class);
-
-        OpprettJournalpostResponse response = new OpprettJournalpostResponse();
-        response.setJournalpostId(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
-        response.setJournalpostferdigstilt(false);
-
-        when(klient.lagJournalpost(any(),anyBoolean(),anyString())).thenReturn(response);
-        doNothing().when(klient).ping();
-        return klient;
+    fun dokarkivMockClient(): DokarkivClient {
+        val klient = Mockito.mock(DokarkivClient::class.java)
+        val pattern = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
+        val response = OpprettJournalpostResponse(journalpostId = LocalDateTime.now().format(pattern),
+                                                  journalpostferdigstilt = false)
+        Mockito.`when`(klient.lagJournalpost(ArgumentMatchers.any<OpprettJournalpostRequest>(),
+                                             ArgumentMatchers.anyBoolean(),
+                                             ArgumentMatchers.anyString())).thenReturn(response)
+        Mockito.doNothing().`when`(klient).ping()
+        return klient
     }
-
 }

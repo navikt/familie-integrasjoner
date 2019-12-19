@@ -1,117 +1,92 @@
-package no.nav.familie.integrasjoner.dokarkiv;
+package no.nav.familie.integrasjoner.dokarkiv
 
-import no.nav.familie.integrasjoner.dokarkiv.api.Dokument;
-import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient;
-import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService;
-import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo;
-import no.nav.familie.integrasjoner.aktør.AktørService;
-import no.nav.familie.integrasjoner.dokarkiv.api.*;
-import no.nav.familie.integrasjoner.dokarkiv.client.domene.*;
-import no.nav.familie.integrasjoner.dokarkiv.metadata.AbstractDokumentMetadata;
-import no.nav.familie.integrasjoner.dokarkiv.metadata.DokumentMetadata;
-import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadMetadata;
-import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadVedleggMetadata;
-import no.nav.familie.integrasjoner.felles.MDCOperations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import no.nav.familie.integrasjoner.aktør.AktørService
+import no.nav.familie.integrasjoner.dokarkiv.api.*
+import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
+import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadMetadata
+import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadVedleggMetadata
+import no.nav.familie.integrasjoner.felles.MDCOperations
+import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
+import org.springframework.util.Assert
 
 @Service
-public class DokarkivService {
-    private static final Map<String, ? extends AbstractDokumentMetadata> METADATA = Map.of(
-            DokumentType.KONTANTSTØTTE_SØKNAD.name(), new KontanstøtteSøknadMetadata(),
-            DokumentType.KONTANTSTØTTE_SØKNAD_VEDLEGG.name(), new KontanstøtteSøknadVedleggMetadata()
-    );
-
-    private final DokarkivClient dokarkivClient;
-    private final PersonopplysningerService personopplysningerService;
-    private final AktørService aktørService;
-
-    @Autowired
-    public DokarkivService(DokarkivClient dokarkivClient, PersonopplysningerService personopplysningerService, AktørService aktørService) {
-        this.dokarkivClient = dokarkivClient;
-        this.personopplysningerService = personopplysningerService;
-        this.aktørService = aktørService;
+class DokarkivService @Autowired constructor(private val dokarkivClient: DokarkivClient,
+                                             private val personopplysningerService: PersonopplysningerService,
+                                             private val aktørService: AktørService) {
+    fun lagInngåendeJournalpost(arkiverDokumentRequest: ArkiverDokumentRequest): ArkiverDokumentResponse {
+        val fnr = arkiverDokumentRequest.fnr
+        val navn = hentNavnForFnr(fnr)
+        val request = mapTilOpprettJournalpostRequest(fnr, navn, arkiverDokumentRequest.dokumenter)
+        val response = dokarkivClient.lagJournalpost(request, arkiverDokumentRequest.isForsøkFerdigstill, fnr)
+        return mapTilArkiverDokumentResponse(response)
     }
 
-    public ArkiverDokumentResponse lagInngåendeJournalpost(ArkiverDokumentRequest arkiverDokumentRequest) {
-        String fnr = arkiverDokumentRequest.getFnr();
-        String navn = hentNavnForFnr(fnr);
-
-        var request = mapTilOpprettJournalpostRequest(fnr, navn, arkiverDokumentRequest.getDokumenter());
-
-        Optional<OpprettJournalpostResponse> response = Optional.ofNullable(dokarkivClient.lagJournalpost(request, arkiverDokumentRequest.isForsøkFerdigstill(), fnr));
-        return response.map(this::mapTilArkiverDokumentResponse).orElse(null);
+    fun ferdistillJournalpost(journalpost: String, journalførendeEnhet: String?) {
+        dokarkivClient.ferdigstillJournalpost(journalpost, journalførendeEnhet)
     }
 
-    public void ferdistillJournalpost(String journalpost, String journalførendeEnhet) {
-        dokarkivClient.ferdigstillJournalpost(journalpost, journalførendeEnhet);
-    }
-
-    private String hentNavnForFnr(String fnr) {
-        String navn = null;
-        Personinfo personInfoResponse = personopplysningerService.hentPersoninfoFor(fnr);
+    private fun hentNavnForFnr(fnr: String?): String {
+        var navn: String? = null
+        val personInfoResponse = personopplysningerService.hentPersoninfoFor(fnr)
         if (personInfoResponse != null) {
-            navn = personInfoResponse.getNavn();
+            navn = personInfoResponse.navn
         }
-
         if (navn == null) {
-            throw new RuntimeException("Kan ikke hente navn");
+            throw RuntimeException("Kan ikke hente navn")
         }
-        return navn;
+        return navn
     }
 
-    private OpprettJournalpostRequest mapTilOpprettJournalpostRequest(String fnr, String navn, List<Dokument> dokumenter) {
-        AbstractDokumentMetadata metadataHoveddokument = METADATA.get(dokumenter.get(0).getDokumentType().name());
-        Assert.notNull(metadataHoveddokument, "Ukjent dokumenttype " + dokumenter.get(0).getDokumentType());
+    private fun mapTilOpprettJournalpostRequest(fnr: String,
+                                                navn: String,
+                                                dokumenter: List<Dokument>): OpprettJournalpostRequest {
+        val metadataHoveddokument =
+                METADATA[dokumenter[0].dokumentType.name]!!
+        Assert.notNull(metadataHoveddokument,
+                       "Ukjent dokumenttype " + dokumenter[0].dokumentType)
+        val arkivdokumenter = dokumenter.map(this::mapTilArkivdokument)
 
-        List<no.nav.familie.integrasjoner.dokarkiv.client.domene.Dokument> dokumentRequest = dokumenter.stream()
-                                                                                                       .map(this::mapTilDokument)
-                                                                                                       .collect(Collectors.toList());
-
-        return new OpprettJournalpostRequest.OpprettJournalpostRequestBuilder().builder()
-                .medJournalpostType(JournalpostType.INNGAAENDE)
-                .medBehandlingstema(metadataHoveddokument.getBehandlingstema())
-                .medKanal(metadataHoveddokument.getKanal())
-                .medTittel(metadataHoveddokument.getTittel())
-                .medTema(metadataHoveddokument.getTema())
-                .medAvsenderMottaker(new AvsenderMottaker(fnr, IdType.FNR, navn))
-                .medBruker(new Bruker(IdType.FNR, fnr))
-                .medDokumenter(dokumentRequest)
-                .medEksternReferanseId(MDCOperations.getCallId())
-//                .medSak() Når vi tar over fagsak, så må dennne settes til vår. For BRUT001 behandling, så kan ikke denne settes
-                .build();
-
+        return OpprettJournalpostRequest(journalpostType = JournalpostType.INNGAAENDE,
+                                         behandlingstema = metadataHoveddokument.behandlingstema,
+                                         kanal = metadataHoveddokument.kanal,
+                                         tittel = metadataHoveddokument.tittel,
+                                         tema = metadataHoveddokument.tema,
+                                         avsenderMottaker = AvsenderMottaker(fnr, IdType.FNR, navn),
+                                         bruker = Bruker(IdType.FNR, fnr),
+                                         dokumenter = arkivdokumenter,
+                                         eksternReferanseId = MDCOperations.getCallId()
+                // sak = når vi tar over fagsak, så må dennne settes til vår. For BRUT001 behandling, så kan ikke denne settes
+        )
     }
 
-    private no.nav.familie.integrasjoner.dokarkiv.client.domene.Dokument mapTilDokument(Dokument dokument) {
-        AbstractDokumentMetadata metadata = METADATA.get(dokument.getDokumentType().name());
-        Assert.notNull(metadata, "Ukjent dokumenttype " + dokument.getDokumentType());
-
-        String variantFormat;
-        if (dokument.getFilType().equals(FilType.PDFA)) {
-            variantFormat = "ARKIV"; //ustrukturert dokumentDto
+    private fun mapTilArkivdokument(dokument: Dokument): ArkivDokument {
+        val metadata = METADATA[dokument.dokumentType.name] ?: error("Ukjent dokumenttype ${dokument.dokumentType}")
+        val variantFormat: String = if (dokument.filType == FilType.PDFA) {
+            "ARKIV" //ustrukturert dokumentDto
         } else {
-            variantFormat = "ORIGINAL"; //strukturert dokumentDto
+            "ORIGINAL" //strukturert dokumentDto
         }
-
-        return no.nav.familie.integrasjoner.dokarkiv.client.domene.Dokument.DokumentBuilder.aDokument()
-                                                                                           .medBrevkode(metadata.getBrevkode())
-                                                                                           .medDokumentKategori(metadata.getDokumentKategori())
-                                                                                           .medTittel(metadata.getTittel())
-                                                                                           .medDokumentvarianter(List.of(
-                        new DokumentVariant(dokument.getFilType().name(),
-                                variantFormat,
-                                dokument.getDokument(), dokument.getFilnavn())))
-                                                                                           .build();
+        return ArkivDokument(brevkode = metadata.brevkode,
+                             dokumentKategori = metadata.dokumentKategori,
+                             tittel = metadata.tittel,
+                             dokumentvarianter = listOf(DokumentVariant(dokument.filType.name,
+                                                                        variantFormat,
+                                                                        dokument.dokument,
+                                                                        dokument.filnavn)))
     }
 
-    private ArkiverDokumentResponse mapTilArkiverDokumentResponse(OpprettJournalpostResponse response) {
-        return new ArkiverDokumentResponse(response.getJournalpostId(), response.getJournalpostferdigstilt());
+    private fun mapTilArkiverDokumentResponse(response: OpprettJournalpostResponse): ArkiverDokumentResponse {
+        return ArkiverDokumentResponse(response.journalpostId,
+                                       response.journalpostferdigstilt)
     }
+
+    companion object {
+        private val METADATA =
+                mapOf(DokumentType.KONTANTSTØTTE_SØKNAD.name to KontanstøtteSøknadMetadata(),
+                      DokumentType.KONTANTSTØTTE_SØKNAD_VEDLEGG.name to KontanstøtteSøknadVedleggMetadata())
+    }
+
 }

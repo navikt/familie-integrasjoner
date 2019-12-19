@@ -1,37 +1,6 @@
-package no.nav.familie.integrasjoner.dokarkiv.api;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import java.util.List;
-
-public class ArkiverDokumentRequest {
-
-    @NotBlank
-    private String fnr;
-
-    private boolean forsøkFerdigstill;
-    @NotEmpty
-    private List<Dokument> dokumenter;
-
-    public ArkiverDokumentRequest() {
-    }
-
-    public ArkiverDokumentRequest(String fnr, String navn, boolean forsøkFerdigstill, List<Dokument> dokumenter) {
-        this.fnr = fnr;
-        this.forsøkFerdigstill = forsøkFerdigstill;
-        this.dokumenter = dokumenter;
-    }
-
-    public String getFnr() {
-        return fnr;
-    }
+package no.nav.familie.integrasjoner.dokarkiv.api
 
 
-    public boolean isForsøkFerdigstill() {
-        return forsøkFerdigstill;
-    }
-
-    public List<Dokument> getDokumenter() {
-        return dokumenter;
-    }
-}
+data class ArkiverDokumentRequest(val fnr: String,
+                             val isForsøkFerdigstill: Boolean,
+                             val dokumenter: List<Dokument>)

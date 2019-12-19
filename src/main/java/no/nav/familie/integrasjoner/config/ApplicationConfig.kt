@@ -62,7 +62,9 @@ class ApplicationConfig {
 
 
     @Bean
-    fun kotlinModule(): KotlinModule = KotlinModule()
+    fun kotlinModule(): KotlinModule {
+        return KotlinModule()
+    }
 
     @Bean
     fun servletWebServerFactory(): ServletWebServerFactory {

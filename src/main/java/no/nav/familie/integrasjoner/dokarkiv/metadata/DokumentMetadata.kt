@@ -1,18 +1,11 @@
-package no.nav.familie.integrasjoner.dokarkiv.metadata;
+package no.nav.familie.integrasjoner.dokarkiv.metadata
 
-public interface DokumentMetadata {
-
-    String getTema();
-
-    String getBehandlingstema();
-
-    String getKanal();
-
-    String getDokumentTypeId();
-
-    String getTittel();
-
-    String getBrevkode();
-
-    String getDokumentKategori();
+interface DokumentMetadata {
+    val tema: String
+    val behandlingstema: String?
+    val kanal: String?
+    val dokumentTypeId: String
+    val tittel: String?
+    val brevkode: String?
+    val dokumentKategori: String
 }

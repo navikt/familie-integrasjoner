@@ -1,198 +1,199 @@
-package no.nav.familie.integrasjoner.dokarkiv;
+package no.nav.familie.integrasjoner.dokarkiv
 
-import no.nav.familie.ks.kontrakter.sak.Ressurs;
-import no.nav.familie.integrasjoner.OppslagSpringRunnerTest;
-import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest;
-import no.nav.familie.integrasjoner.dokarkiv.api.Dokument;
-import no.nav.familie.integrasjoner.dokarkiv.api.DokumentType;
-import no.nav.familie.integrasjoner.dokarkiv.api.FilType;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockserver.junit.MockServerRule;
-import org.mockserver.model.HttpRequest;
-import org.mockserver.model.HttpResponse;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
+import no.nav.familie.integrasjoner.dokarkiv.api.Dokument
+import no.nav.familie.integrasjoner.dokarkiv.api.DokumentType
+import no.nav.familie.integrasjoner.dokarkiv.api.FilType
+import no.nav.familie.ks.kontrakter.objectMapper
+import no.nav.familie.ks.kontrakter.sak.Ressurs
+import org.assertj.core.api.Assertions
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.mockserver.junit.MockServerRule
+import org.mockserver.model.HttpRequest
+import org.mockserver.model.HttpResponse
+import org.springframework.core.io.ClassPathResource
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
+import org.springframework.test.context.ActiveProfiles
+import java.io.IOException
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.util.*
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.LinkedList;
-import java.util.List;
+@ActiveProfiles(profiles = ["integrasjonstest", "mock-sts", "mock-aktor", "mock-personopplysninger"])
+class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.CREATED;
+    @get:Rule
+    val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
 
-@ActiveProfiles(profiles = {"integrasjonstest", "mock-sts", "mock-aktor", "mock-personopplysninger"})
-public class DokarkivControllerTest extends OppslagSpringRunnerTest {
-    private static final int MOCK_SERVER_PORT = 18321;
-    private static final String FULLT_NAVN = "Foo Bar";
-    private static final String DOKARKIV_URL = "/api/arkiv/v1";
-    private static final Dokument HOVEDDOKUMENT = new Dokument("foo".getBytes(), FilType.PDFA, "filnavn", DokumentType.KONTANTSTØTTE_SØKNAD);
-    private static final Dokument VEDLEGG = new Dokument("foo".getBytes(), FilType.PDFA, "filnavn", DokumentType.KONTANTSTØTTE_SØKNAD_VEDLEGG);
-    @Rule
-    public MockServerRule mockServerRule = new MockServerRule(this, MOCK_SERVER_PORT);
+    @Before fun setUp() {
+        headers.setBearerAuth(lokalTestToken)
+        headers.set("Content-Type", "application/json")
 
-    @Before
-    public void setUp() {
-        headers.setBearerAuth(getLokalTestToken());
+        objectMapper.registerModule(KotlinModule())
+
     }
 
     @Test
-    public void skal_returnere_Bad_Request_hvis_fNr_mangler() {
-        ArkiverDokumentRequest body = new ArkiverDokumentRequest(null, FULLT_NAVN, false, List.of(new Dokument("foo".getBytes(), FilType.PDFA, null, DokumentType.KONTANTSTØTTE_SØKNAD)));
+    fun skal_returnere_Bad_Request_hvis_fNr_mangler() {
+        val body = ArkiverDokumentRequest("",
+                                          false,
+                                          listOf(Dokument("foo".toByteArray(),
+                                                          FilType.PDFA,
+                                                          null,
+                                                          DokumentType.KONTANTSTØTTE_SØKNAD)))
 
-        ResponseEntity<Ressurs> response = restTemplate.exchange(
-                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), Ressurs.class
-        );
+        val response = restTemplate.exchange(localhost(DOKARKIV_URL),
+                                             HttpMethod.POST,
+                                             HttpEntity(body, headers),
+                                             Ressurs::class.java)
 
-        assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
-        assertThat(response.getBody().getMelding()).contains("fnr=must not be blank");
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        Assertions.assertThat(response.body?.melding).contains("fnr=must not be blank")
     }
 
     @Test
-    public void skal_returnere_Bad_Request_hvis_ingen_dokumenter() {
-        ArkiverDokumentRequest body = new ArkiverDokumentRequest("fnr", "Foobar", false, new LinkedList<>());
+    fun skal_returnere_Bad_Request_hvis_ingen_dokumenter() {
+        val body = ArkiverDokumentRequest("fnr", false, LinkedList())
 
-        ResponseEntity<Ressurs> response = restTemplate.exchange(
-                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), Ressurs.class
-        );
+        val response = restTemplate.exchange(localhost(DOKARKIV_URL),
+                                             HttpMethod.POST,
+                                             HttpEntity(body, headers),
+                                             Ressurs::class.java)
 
-        assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
-        assertThat(response.getBody().getMelding()).contains("dokumenter=must not be empty");
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        Assertions.assertThat(response.body?.melding).contains("dokumenter=must not be empty")
     }
 
-    @Test
-    public void skal_midlertidig_journalføre_dokument() throws IOException {
-        mockServerRule.getClient()
-                .when(
-                        HttpRequest
+    @Test @Throws(IOException::class)
+    fun skal_midlertidig_journalføre_dokument() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withPath("/rest/journalpostapi/v1/journalpost")
+                                .withQueryStringParameter("foersoekFerdigstill", "false"))
+                .respond(HttpResponse.response().withBody(gyldigDokarkivResponse()))
+        val body = ArkiverDokumentRequest("FNR",
+                                          false,
+                                          listOf(HOVEDDOKUMENT))
+
+        val response =
+                restTemplate.exchange(localhost(DOKARKIV_URL),
+                                      HttpMethod.POST,
+                                      HttpEntity(body, headers),
+                                      Ressurs::class.java)
+
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        Assertions.assertThat(response.body?.data!!["journalpostId"].textValue()).isEqualTo("12345678")
+        Assertions.assertThat(response.body?.data!!["ferdigstilt"].booleanValue()).isFalse()
+    }
+
+    @Test @Throws(IOException::class) fun skal_midlertidig_journalføre_dokument_med_vedlegg() {
+        mockServerRule.client
+                .`when`(HttpRequest
                                 .request()
                                 .withMethod("POST")
                                 .withPath("/rest/journalpostapi/v1/journalpost")
-                                .withQueryStringParameter("foersoekFerdigstill", "false")
-                )
-                .respond(
-                        HttpResponse.response().withBody(gyldigDokarkivResponse())
-                );
+                                .withQueryStringParameter("foersoekFerdigstill", "false"))
+                .respond(HttpResponse.response().withBody(gyldigDokarkivResponse()))
+        val body = ArkiverDokumentRequest("FNR",
+                                          false,
+                                          listOf(HOVEDDOKUMENT, VEDLEGG))
 
+        val response =
+                restTemplate.exchange(localhost(DOKARKIV_URL),
+                                      HttpMethod.POST,
+                                      HttpEntity(body, headers),
+                                      Ressurs::class.java)
 
-        ArkiverDokumentRequest body = new ArkiverDokumentRequest("FNR", FULLT_NAVN, false, List.of(HOVEDDOKUMENT));
-        ResponseEntity<Ressurs> response = restTemplate.exchange(
-                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), Ressurs.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(CREATED);
-        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.SUKSESS);
-        assertThat(response.getBody().getData().get("journalpostId").textValue()).isEqualTo("12345678");
-        assertThat(response.getBody().getData().get("ferdigstilt").booleanValue()).isFalse();
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        Assertions.assertThat(response.body?.data!!["journalpostId"].textValue()).isEqualTo("12345678")
+        Assertions.assertThat(response.body?.data!!["ferdigstilt"].booleanValue()).isFalse()
     }
 
-    @Test
-    public void skal_midlertidig_journalføre_dokument_med_vedlegg() throws IOException {
-        mockServerRule.getClient()
-                .when(
-                        HttpRequest
-                                .request()
+    @Test @Throws(IOException::class) fun dokarkiv_returnerer_401() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/journalpostapi/v1/journalpost")
-                                .withQueryStringParameter("foersoekFerdigstill", "false")
-                )
-                .respond(
-                        HttpResponse.response().withBody(gyldigDokarkivResponse())
-                );
+                                .withQueryStringParameter("foersoekFerdigstill", "false"))
+                .respond(HttpResponse.response().withStatusCode(401).withBody("Tekst fra body"))
+        val body = ArkiverDokumentRequest("FNR",
+                                          false,
+                                          listOf(Dokument("foo".toByteArray(),
+                                                          FilType.PDFA,
+                                                          null,
+                                                          DokumentType.KONTANTSTØTTE_SØKNAD)))
 
+        val response = restTemplate.exchange(localhost(DOKARKIV_URL),
+                                             HttpMethod.POST,
+                                             HttpEntity(body, headers),
+                                             Ressurs::class.java)
 
-        ArkiverDokumentRequest body = new ArkiverDokumentRequest("FNR", FULLT_NAVN, false, List.of(HOVEDDOKUMENT, VEDLEGG));
-        ResponseEntity<Ressurs> response = restTemplate.exchange(
-                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), Ressurs.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(CREATED);
-        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.SUKSESS);
-        assertThat(response.getBody().getData().get("journalpostId").textValue()).isEqualTo("12345678");
-        assertThat(response.getBody().getData().get("ferdigstilt").booleanValue()).isFalse();
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        Assertions.assertThat(response.body?.melding).contains("Feilresponse fra dokarkiv-tjenesten 401 Tekst fra body")
     }
 
-    @Test
-    public void dokarkiv_returnerer_401() throws IOException {
-        mockServerRule.getClient()
-                .when(
-                        HttpRequest
-                                .request()
-                                .withMethod("POST")
-                                .withPath("/rest/journalpostapi/v1/journalpost")
-                                .withQueryStringParameter("foersoekFerdigstill", "false")
-                )
-                .respond(
-                        HttpResponse.response().withStatusCode(401).withBody("Tekst fra body")
-                );
-
-
-        ArkiverDokumentRequest body = new ArkiverDokumentRequest("FNR", "Foobar", false, List.of(new Dokument("foo".getBytes(), FilType.PDFA, null, DokumentType.KONTANTSTØTTE_SØKNAD)));
-        ResponseEntity<Ressurs> response = restTemplate.exchange(
-                localhost(DOKARKIV_URL), HttpMethod.POST, new HttpEntity<>(body, headers), Ressurs.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
-        assertThat(response.getBody().getMelding()).contains("Feilresponse fra dokarkiv-tjenesten 401 Tekst fra body");
-    }
-
-    @Test
-    public void ferdigstill_returnerer_OK() throws IOException {
-        mockServerRule.getClient()
-                .when(
-                        HttpRequest
-                                .request()
+    @Test @Throws(IOException::class) fun ferdigstill_returnerer_OK() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
                                 .withMethod("PATCH")
-                                .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill")
-                )
-                .respond(
-                        HttpResponse.response().withStatusCode(200)
-                );
+                                .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill"))
+                .respond(HttpResponse.response().withStatusCode(200))
 
+        val response =
+                restTemplate.exchange(localhost("$DOKARKIV_URL/123/ferdigstill?journalfoerendeEnhet=9999"),
+                                      HttpMethod.PUT,
+                                      HttpEntity<Any?>(null, headers),
+                                      Ressurs::class.java)
 
-        ResponseEntity<Ressurs> response = restTemplate.exchange(
-                localhost(DOKARKIV_URL + "/123/ferdigstill?journalfoerendeEnhet=9999"), HttpMethod.PUT, new HttpEntity<>(null, headers), Ressurs.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.SUKSESS);
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
     }
 
-    @Test
-    public void ferdigstill_returnerer_400_hvis_ikke_mulig_ferdigstill() throws IOException {
-        mockServerRule.getClient()
-                .when(
-                        HttpRequest
-                                .request()
+    @Test @Throws(IOException::class) fun ferdigstill_returnerer_400_hvis_ikke_mulig_ferdigstill() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
                                 .withMethod("PATCH")
-                                .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill")
-                )
-                .respond(
-                        HttpResponse.response().withStatusCode(400)
-                );
+                                .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill"))
+                .respond(HttpResponse.response().withStatusCode(400))
 
+        val response =
+                restTemplate.exchange(localhost("$DOKARKIV_URL/123/ferdigstill?journalfoerendeEnhet=9999"),
+                                      HttpMethod.PUT,
+                                      HttpEntity<Any?>(null, headers),
+                                      Ressurs::class.java)
 
-        ResponseEntity<Ressurs> response = restTemplate.exchange(
-                localhost(DOKARKIV_URL + "/123/ferdigstill?journalfoerendeEnhet=9999"), HttpMethod.PUT, new HttpEntity<>(null, headers), Ressurs.class
-        );
-
-        assertThat(response.getStatusCode()).isEqualTo(BAD_REQUEST);
-        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
-        assertThat(response.getBody().getMelding()).contains("Kan ikke ferdigstille journalpost 123");
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        Assertions.assertThat(response.body?.melding).contains("Kan ikke ferdigstille journalpost 123")
     }
 
-    private String gyldigDokarkivResponse() throws IOException {
-        return Files.readString(new ClassPathResource("dokarkiv/gyldigresponse.json").getFile().toPath(), StandardCharsets.UTF_8);
+    @Throws(IOException::class) private fun gyldigDokarkivResponse(): String {
+        return Files.readString(ClassPathResource("dokarkiv/gyldigresponse.json").file.toPath(),
+                                StandardCharsets.UTF_8)
+    }
+
+    companion object {
+        private const val MOCK_SERVER_PORT = 18321
+        private const val DOKARKIV_URL = "/api/arkiv/v1"
+        private val HOVEDDOKUMENT = Dokument("foo".toByteArray(),
+                                             FilType.PDFA,
+                                             "filnavn",
+                                             DokumentType.KONTANTSTØTTE_SØKNAD)
+        private val VEDLEGG = Dokument("foo".toByteArray(),
+                                       FilType.PDFA,
+                                       "filnavn",
+                                       DokumentType.KONTANTSTØTTE_SØKNAD_VEDLEGG)
     }
 }

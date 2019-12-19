@@ -1,6 +1,5 @@
-package no.nav.familie.integrasjoner.dokarkiv.api;
+package no.nav.familie.integrasjoner.dokarkiv.api
 
-public enum FilType {
-    PDFA,
-    JSON
+enum class FilType {
+    PDFA, JSON
 }

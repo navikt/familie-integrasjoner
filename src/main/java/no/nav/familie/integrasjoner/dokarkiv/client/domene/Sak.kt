@@ -1,11 +1,10 @@
-package no.nav.familie.integrasjoner.dokarkiv.client.domene;
+package no.nav.familie.integrasjoner.dokarkiv.client.domene
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotNull
 
-public class Sak {
-    @NotNull(message = "Sak mangler arkivsaksnummer")
-    private String arkivsaksnummer;
-
-    @NotNull(message = "Sak mangler arkivsaksystem")
-    private String arkivsaksystem;
+class Sak {
+    private val arkivsaksnummer: @NotNull(message = "Sak mangler arkivsaksnummer") String? =
+            null
+    private val arkivsaksystem: @NotNull(message = "Sak mangler arkivsaksystem") String? =
+            null
 }

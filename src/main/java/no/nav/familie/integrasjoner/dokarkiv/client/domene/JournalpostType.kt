@@ -1,7 +1,5 @@
-package no.nav.familie.integrasjoner.dokarkiv.client.domene;
+package no.nav.familie.integrasjoner.dokarkiv.client.domene
 
-public enum JournalpostType {
-	INNGAAENDE,
-	UTGAAENDE,
-	NOTAT
+enum class JournalpostType {
+    INNGAAENDE, UTGAAENDE, NOTAT
 }
