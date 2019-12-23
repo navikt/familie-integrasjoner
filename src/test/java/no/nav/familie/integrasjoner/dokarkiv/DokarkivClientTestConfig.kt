@@ -24,8 +24,7 @@ class DokarkivClientTestConfig {
         val response = OpprettJournalpostResponse(journalpostId = LocalDateTime.now().format(pattern),
                                                   journalpostferdigstilt = false)
         Mockito.`when`(klient.lagJournalpost(ArgumentMatchers.any<OpprettJournalpostRequest>(),
-                                             ArgumentMatchers.anyBoolean(),
-                                             ArgumentMatchers.anyString())).thenReturn(response)
+                                             ArgumentMatchers.anyBoolean())).thenReturn(response)
         Mockito.doNothing().`when`(klient).ping()
         return klient
     }

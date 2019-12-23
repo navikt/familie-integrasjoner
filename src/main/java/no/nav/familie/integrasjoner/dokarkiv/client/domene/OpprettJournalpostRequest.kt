@@ -4,14 +4,14 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import java.util.*
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class OpprettJournalpostRequest(var journalpostType: JournalpostType? = null,
-                                var avsenderMottaker: AvsenderMottaker? = null,
-                                var bruker: Bruker? = null,
-                                var tema: String? = null,
-                                var behandlingstema: String? = null,
-                                var tittel: String? = null,
-                                var kanal: String? = null,
-                                var journalfoerendeEnhet: String? = null,
-                                var eksternReferanseId: String? = null,
-                                var sak: Sak? = null,
-                                var dokumenter: List<ArkivDokument> = ArrayList())
+class OpprettJournalpostRequest(val journalpostType: JournalpostType? = null,
+                                val avsenderMottaker: AvsenderMottaker? = null,
+                                val bruker: Bruker? = null,
+                                val tema: String? = null,
+                                val behandlingstema: String? = null,
+                                val tittel: String? = null,
+                                val kanal: String? = null,
+                                val journalfoerendeEnhet: String? = null,
+                                val eksternReferanseId: String? = null,
+                                val sak: Sak? = null,
+                                val dokumenter: List<ArkivDokument> = ArrayList())
