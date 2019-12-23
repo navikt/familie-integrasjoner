@@ -10,7 +10,9 @@ import no.nav.familie.integrasjoner.dokarkiv.client.domene.IdType
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.JournalpostType
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
+import no.nav.familie.integrasjoner.dokarkiv.metadata.DokarkivMetadata
 import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadMetadata
+import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadVedleggMetadata
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
@@ -31,7 +33,9 @@ class DokarkivServiceTest {
     private val aktørService = Mockito.mock(AktørService::class.java)
 
     @Before fun setUp() {
-        dokarkivService = DokarkivService(dokarkivClient, personopplysningerService)
+        dokarkivService = DokarkivService(dokarkivClient,
+                                          personopplysningerService,
+                                          DokarkivMetadata(KontanstøtteSøknadMetadata(), KontanstøtteSøknadVedleggMetadata()))
     }
 
     @Test fun skal_mappe_request_til_oppretttJournalpostRequest_av_type_ARKIV_PDFA() {
