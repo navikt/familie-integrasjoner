@@ -1,9 +1,11 @@
 package no.nav.familie.integrasjoner.dokarkiv
 
+import no.nav.familie.integrasjoner.config.DokarkivConfig
 import no.nav.familie.integrasjoner.dokarkiv.api.*
 import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
 import no.nav.familie.integrasjoner.dokarkiv.metadata.AbstractDokumentMetadata
+import no.nav.familie.integrasjoner.dokarkiv.metadata.DokarkivMetadata
 import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadMetadata
 import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadVedleggMetadata
 import no.nav.familie.integrasjoner.felles.MDCOperations
@@ -12,7 +14,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class DokarkivService(private val dokarkivClient: DokarkivClient,
-                      private val personopplysningerService: PersonopplysningerService) {
+                      private val personopplysningerService: PersonopplysningerService,
+                      private val dokarkivMetadata: DokarkivMetadata) {
 
     fun lagInngåendeJournalpost(arkiverDokumentRequest: ArkiverDokumentRequest): ArkiverDokumentResponse {
         val request = mapTilOpprettJournalpostRequest(arkiverDokumentRequest)
@@ -33,7 +36,7 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
         val fnr = arkiverDokumentRequest.fnr
         val navn = hentNavnForFnr(arkiverDokumentRequest.fnr)
 
-        val metadataHoveddokument = getMetadata(arkiverDokumentRequest.dokumenter[0])
+        val metadataHoveddokument = dokarkivMetadata.getMetadata(arkiverDokumentRequest.dokumenter[0])
         val arkivdokumenter = arkiverDokumentRequest.dokumenter.map(this::mapTilArkivdokument)
 
         return OpprettJournalpostRequest(journalpostType = JournalpostType.INNGAAENDE,
@@ -49,12 +52,9 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
         )
     }
 
-    private fun getMetadata(dokument: Dokument): AbstractDokumentMetadata {
-        return METADATA[dokument.dokumentType.name] ?: error("Ukjent dokumenttype ${dokument.dokumentType}")
-    }
 
     private fun mapTilArkivdokument(dokument: Dokument): ArkivDokument {
-        val metadata = getMetadata(dokument)
+        val metadata = dokarkivMetadata.getMetadata(dokument)
         val variantFormat: String = if (dokument.filType == FilType.PDFA) {
             "ARKIV" //ustrukturert dokumentDto
         } else {
@@ -72,12 +72,6 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
     private fun mapTilArkiverDokumentResponse(response: OpprettJournalpostResponse): ArkiverDokumentResponse {
         return ArkiverDokumentResponse(response.journalpostId,
                                        response.journalpostferdigstilt)
-    }
-
-    companion object {
-        private val METADATA =
-                mapOf(DokumentType.KONTANTSTØTTE_SØKNAD.name to KontanstøtteSøknadMetadata(),
-                      DokumentType.KONTANTSTØTTE_SØKNAD_VEDLEGG.name to KontanstøtteSøknadVedleggMetadata())
     }
 
 }
