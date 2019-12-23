@@ -1,6 +1,9 @@
 package no.nav.familie.integrasjoner.dokarkiv.api
 
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotEmpty
 
-data class ArkiverDokumentRequest(val fnr: String,
-                             val isForsøkFerdigstill: Boolean,
-                             val dokumenter: List<Dokument>)
+
+data class ArkiverDokumentRequest(@field:NotBlank val fnr: String,
+                                  val isForsøkFerdigstill: Boolean,
+                                  @field:NotEmpty val dokumenter: List<Dokument>)

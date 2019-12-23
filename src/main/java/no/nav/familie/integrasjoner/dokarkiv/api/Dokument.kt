@@ -1,6 +1,8 @@
 package no.nav.familie.integrasjoner.dokarkiv.api
 
-class Dokument(val dokument: ByteArray,
-               val filType: FilType,
+import javax.validation.constraints.NotEmpty
+
+class Dokument(@field:NotEmpty val dokument: ByteArray,
+               @field:NotEmpty val filType: FilType,
                val filnavn: String?,
-               val dokumentType: DokumentType)
+               @field:NotEmpty val dokumentType: DokumentType)

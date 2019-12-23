@@ -94,7 +94,7 @@ class DokarkivServiceTest {
         val arkiverDokumentResponse = dokarkivService.lagInngåendeJournalpost(dto)
 
         Assertions.assertThat(arkiverDokumentResponse.journalpostId).isEqualTo(JOURNALPOST_ID)
-        Assertions.assertThat(arkiverDokumentResponse.isFerdigstilt).isTrue()
+        Assertions.assertThat(arkiverDokumentResponse.ferdigstilt).isTrue()
     }
 
     @Test fun skal_kaste_exception_hvis_navn_er_null() {
