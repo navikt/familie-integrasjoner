@@ -45,7 +45,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     }
 
     @PostMapping(path = ["v1"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun arkiverDokument(@RequestBody arkiverDokumentRequest: @Valid ArkiverDokumentRequest): ResponseEntity<Ressurs> {
+    fun arkiverDokument(@RequestBody @Valid arkiverDokumentRequest: ArkiverDokumentRequest): ResponseEntity<Ressurs> {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(success(journalføringService.lagInngåendeJournalpost(arkiverDokumentRequest),
                               "Arkivert journalpost OK"))

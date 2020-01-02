@@ -10,7 +10,9 @@ import no.nav.familie.integrasjoner.dokarkiv.client.domene.IdType
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.JournalpostType
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
+import no.nav.familie.integrasjoner.dokarkiv.metadata.DokarkivMetadata
 import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadMetadata
+import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadVedleggMetadata
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
@@ -31,12 +33,14 @@ class DokarkivServiceTest {
     private val aktørService = Mockito.mock(AktørService::class.java)
 
     @Before fun setUp() {
-        dokarkivService = DokarkivService(dokarkivClient, personopplysningerService, aktørService)
+        dokarkivService = DokarkivService(dokarkivClient,
+                                          personopplysningerService,
+                                          DokarkivMetadata(KontanstøtteSøknadMetadata(), KontanstøtteSøknadVedleggMetadata()))
     }
 
     @Test fun skal_mappe_request_til_oppretttJournalpostRequest_av_type_ARKIV_PDFA() {
         val captor = ArgumentCaptor.forClass(OpprettJournalpostRequest::class.java)
-        Mockito.`when`(dokarkivClient.lagJournalpost(any<OpprettJournalpostRequest>(), anyBoolean(), anyString()))
+        Mockito.`when`(dokarkivClient.lagJournalpost(any<OpprettJournalpostRequest>(), anyBoolean()))
                 .thenReturn(OpprettJournalpostResponse())
         Mockito.`when`(personopplysningerService.hentPersoninfoFor(FNR))
                 .thenReturn(Personinfo.Builder().medPersonIdent(PERSON_IDENT)
@@ -49,14 +53,14 @@ class DokarkivServiceTest {
 
         dokarkivService.lagInngåendeJournalpost(dto)
 
-        Mockito.verify(dokarkivClient).lagJournalpost(captor.capture(), eq(false), eq(FNR))
+        Mockito.verify(dokarkivClient).lagJournalpost(captor.capture(), eq(false))
         val request = captor.value
         assertOpprettJournalpostRequest(request, "PDFA", PDF_DOK, ARKIV_VARIANTFORMAT)
     }
 
     @Test fun skal_mappe_request_til_oppretttJournalpostRequest_av_type_ORIGINAL_JSON() {
         val captor = ArgumentCaptor.forClass(OpprettJournalpostRequest::class.java)
-        Mockito.`when`(dokarkivClient.lagJournalpost(any<OpprettJournalpostRequest>(), anyBoolean(), anyString()))
+        Mockito.`when`(dokarkivClient.lagJournalpost(any<OpprettJournalpostRequest>(), anyBoolean()))
                 .thenReturn(OpprettJournalpostResponse())
         Mockito.`when`(personopplysningerService.hentPersoninfoFor(FNR))
                 .thenReturn(Personinfo.Builder()
@@ -70,7 +74,7 @@ class DokarkivServiceTest {
 
         dokarkivService.lagInngåendeJournalpost(dto)
 
-        Mockito.verify(dokarkivClient).lagJournalpost(captor.capture(), eq(false), eq(FNR))
+        Mockito.verify(dokarkivClient).lagJournalpost(captor.capture(), eq(false))
         val request = captor.value
         assertOpprettJournalpostRequest(request,
                                         "JSON",
@@ -79,7 +83,7 @@ class DokarkivServiceTest {
     }
 
     @Test fun response_fra_klient_skal_returnere_ArkiverDokumentResponse() {
-        Mockito.`when`(dokarkivClient.lagJournalpost(any(OpprettJournalpostRequest::class.java), anyBoolean(), anyString()))
+        Mockito.`when`(dokarkivClient.lagJournalpost(any(OpprettJournalpostRequest::class.java), anyBoolean()))
                 .thenReturn(OpprettJournalpostResponse(journalpostId = JOURNALPOST_ID, journalpostferdigstilt = true))
         Mockito.`when`(personopplysningerService.hentPersoninfoFor(FNR))
                 .thenReturn(Personinfo.Builder()
@@ -94,7 +98,7 @@ class DokarkivServiceTest {
         val arkiverDokumentResponse = dokarkivService.lagInngåendeJournalpost(dto)
 
         Assertions.assertThat(arkiverDokumentResponse.journalpostId).isEqualTo(JOURNALPOST_ID)
-        Assertions.assertThat(arkiverDokumentResponse.isFerdigstilt).isTrue()
+        Assertions.assertThat(arkiverDokumentResponse.ferdigstilt).isTrue()
     }
 
     @Test fun skal_kaste_exception_hvis_navn_er_null() {

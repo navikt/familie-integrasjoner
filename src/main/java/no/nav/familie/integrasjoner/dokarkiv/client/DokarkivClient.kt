@@ -46,8 +46,7 @@ class DokarkivClient @Autowired constructor(@param:Value("\${DOKARKIV_V1_URL}")
     private val httpClient: HttpClient
     private val objectMapper: ObjectMapper
     fun lagJournalpost(jp: OpprettJournalpostRequest?,
-                       ferdigstill: Boolean,
-                       personIdent: String?): OpprettJournalpostResponse {
+                       ferdigstill: Boolean): OpprettJournalpostResponse {
         val uri =
                 URI.create(String.format("%s/rest/journalpostapi/v1/journalpost?foersoekFerdigstill=%b",
                                          dokarkivUrl,
@@ -63,7 +62,6 @@ class DokarkivClient @Autowired constructor(@param:Value("\${DOKARKIV_V1_URL}")
                     .uri(uri)
                     .header(HttpHeaders.ACCEPT, "application/json")
                     .header("Content-Type", "application/json")
-                    .header(NavHttpHeaders.NAV_PERSONIDENT.asString(), personIdent)
                     .header(NavHttpHeaders.NAV_CONSUMER_ID.asString(), consumer)
                     .header(NavHttpHeaders.NAV_CALL_ID.asString(), MDCOperations.getCallId())
                     .header(HttpHeaders.AUTHORIZATION, "Bearer $systembrukerToken")

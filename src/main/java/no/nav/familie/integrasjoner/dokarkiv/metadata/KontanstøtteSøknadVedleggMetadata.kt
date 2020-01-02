@@ -1,5 +1,8 @@
 package no.nav.familie.integrasjoner.dokarkiv.metadata
 
+import org.springframework.stereotype.Component
+
+@Component
 class KontanstøtteSøknadVedleggMetadata : AbstractDokumentMetadata() {
 
     override val tema: String = "KON"
