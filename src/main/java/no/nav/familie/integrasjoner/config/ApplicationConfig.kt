@@ -35,6 +35,7 @@ class ApplicationConfig {
     @Bean("azure")
     fun restTemplateAzureAd(interceptorAzure: AzureBearerTokenClientInterceptor): RestOperations {
         return RestTemplateBuilder()
+                .additionalCustomizers(NaisProxyCustomizer())
                 .interceptors(interceptorAzure)
                 .requestFactory(this::requestFactory)
                 .build()

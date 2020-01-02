@@ -55,7 +55,7 @@ abstract class AbstractRestClient(protected val operations: RestOperations,
         if (!respons.statusCode.is2xxSuccessful) {
             log.info(confidential, "Kall mot $uri feilet:  ${respons.body}")
             log.info("Kall mot $uri feilet: ${respons.statusCode}")
-            throw HttpServerErrorException(respons.statusCode)
+            throw HttpServerErrorException(respons.statusCode, "",  respons.body?.toString()?.toByteArray(), Charsets.UTF_8)
         }
         return respons.body
     }
@@ -69,7 +69,7 @@ abstract class AbstractRestClient(protected val operations: RestOperations,
             return validerOgPakkUt(responseEntity, uri)
         } catch (e: RestClientResponseException) {
             responsFailure.increment()
-            throw RuntimeException("Feil ved kall mot uri=$uri. Http responskode ${e.rawStatusCode}.", e)
+            throw e
         } catch (e: Exception) {
             responsFailure.increment()
             throw RuntimeException("Feil ved kall mot uri=$uri", e)
