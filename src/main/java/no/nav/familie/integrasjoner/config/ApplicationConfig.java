@@ -12,25 +12,17 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootConfiguration
 @ComponentScan({"no.nav.familie"})
 @ConfigurationPropertiesScan
-@EnableJwtTokenValidation
+@EnableSwagger2
+@EnableJwtTokenValidation(ignore = {"org.springframework", "springfox.documentation.swagger.web.ApiResourceController"})
 @EnableOAuth2Client(cacheEnabled = true)
 public class ApplicationConfig {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApplicationConfig.class);
-
-    @Bean
-    ServletWebServerFactory servletWebServerFactory() {
-
-        JettyServletWebServerFactory serverFactory = new JettyServletWebServerFactory();
-
-        serverFactory.setPort(8085);
-
-        return serverFactory;
-    }
 
     @Bean
     public FilterRegistrationBean<LogFilter> logFilter() {
