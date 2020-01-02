@@ -1,6 +1,5 @@
 package no.nav.familie.integrasjoner.dokarkiv
 
-import no.nav.familie.integrasjoner.aktør.AktørService
 import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
 import no.nav.familie.integrasjoner.dokarkiv.api.Dokument
 import no.nav.familie.integrasjoner.dokarkiv.api.DokumentType
@@ -30,7 +29,6 @@ class DokarkivServiceTest {
     private val dokarkivClient = Mockito.mock(DokarkivClient::class.java)
     private lateinit var dokarkivService: DokarkivService
     private val personopplysningerService = Mockito.mock(PersonopplysningerService::class.java)
-    private val aktørService = Mockito.mock(AktørService::class.java)
 
     @Before fun setUp() {
         dokarkivService = DokarkivService(dokarkivClient,
@@ -38,7 +36,7 @@ class DokarkivServiceTest {
                                           DokarkivMetadata(KontanstøtteSøknadMetadata(), KontanstøtteSøknadVedleggMetadata()))
     }
 
-    @Test fun skal_mappe_request_til_oppretttJournalpostRequest_av_type_ARKIV_PDFA() {
+    @Test fun `skal mappe request til opprettJournalpostRequest av type arkiv pdfa`() {
         val captor = ArgumentCaptor.forClass(OpprettJournalpostRequest::class.java)
         Mockito.`when`(dokarkivClient.lagJournalpost(any<OpprettJournalpostRequest>(), anyBoolean()))
                 .thenReturn(OpprettJournalpostResponse())
@@ -49,7 +47,7 @@ class DokarkivServiceTest {
                                     .build())
         val dto = ArkiverDokumentRequest(FNR,
                                          false,
-                                         listOf(Dokument(PDF_DOK, FilType.PDFA, FILnavn, DokumentType.KONTANTSTØTTE_SØKNAD)))
+                                         listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, DokumentType.KONTANTSTØTTE_SØKNAD)))
 
         dokarkivService.lagInngåendeJournalpost(dto)
 
@@ -58,7 +56,7 @@ class DokarkivServiceTest {
         assertOpprettJournalpostRequest(request, "PDFA", PDF_DOK, ARKIV_VARIANTFORMAT)
     }
 
-    @Test fun skal_mappe_request_til_oppretttJournalpostRequest_av_type_ORIGINAL_JSON() {
+    @Test fun `skal mappe request til opprettJournalpostRequest av type ORIGINAL JSON`() {
         val captor = ArgumentCaptor.forClass(OpprettJournalpostRequest::class.java)
         Mockito.`when`(dokarkivClient.lagJournalpost(any<OpprettJournalpostRequest>(), anyBoolean()))
                 .thenReturn(OpprettJournalpostResponse())
@@ -70,7 +68,7 @@ class DokarkivServiceTest {
                                     .build())
         val dto = ArkiverDokumentRequest(FNR,
                                          false,
-                                         listOf(Dokument(JSON_DOK, FilType.JSON, FILnavn, DokumentType.KONTANTSTØTTE_SØKNAD)))
+                                         listOf(Dokument(JSON_DOK, FilType.JSON, FILNAVN, DokumentType.KONTANTSTØTTE_SØKNAD)))
 
         dokarkivService.lagInngåendeJournalpost(dto)
 
@@ -82,7 +80,7 @@ class DokarkivServiceTest {
                                         STRUKTURERT_VARIANTFORMAT)
     }
 
-    @Test fun response_fra_klient_skal_returnere_ArkiverDokumentResponse() {
+    @Test fun `response fra klient skal returnere arkiverDokumentResponse`() {
         Mockito.`when`(dokarkivClient.lagJournalpost(any(OpprettJournalpostRequest::class.java), anyBoolean()))
                 .thenReturn(OpprettJournalpostResponse(journalpostId = JOURNALPOST_ID, journalpostferdigstilt = true))
         Mockito.`when`(personopplysningerService.hentPersoninfoFor(FNR))
@@ -93,7 +91,7 @@ class DokarkivServiceTest {
                                     .build())
         val dto = ArkiverDokumentRequest(FNR,
                                          false,
-                                         listOf(Dokument(JSON_DOK, FilType.JSON, FILnavn, DokumentType.KONTANTSTØTTE_SØKNAD)))
+                                         listOf(Dokument(JSON_DOK, FilType.JSON, FILNAVN, DokumentType.KONTANTSTØTTE_SØKNAD)))
 
         val arkiverDokumentResponse = dokarkivService.lagInngåendeJournalpost(dto)
 
@@ -101,11 +99,11 @@ class DokarkivServiceTest {
         Assertions.assertThat(arkiverDokumentResponse.ferdigstilt).isTrue()
     }
 
-    @Test fun skal_kaste_exception_hvis_navn_er_null() {
+    @Test fun `skal kaste exception hvis navn er null`() {
         Mockito.`when`(personopplysningerService.hentPersoninfoFor(FNR)).thenReturn(null)
         val dto = ArkiverDokumentRequest(FNR,
                                          false,
-                                         listOf(Dokument(PDF_DOK, FilType.PDFA, FILnavn, DokumentType.KONTANTSTØTTE_SØKNAD)))
+                                         listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, DokumentType.KONTANTSTØTTE_SØKNAD)))
 
         val thrown = Assertions.catchThrowable { dokarkivService.lagInngåendeJournalpost(dto) }
 
@@ -132,7 +130,7 @@ class DokarkivServiceTest {
         Assertions.assertThat(request.dokumenter[0].dokumentvarianter[0].filtype).isEqualTo(pdfa)
         Assertions.assertThat(request.dokumenter[0].dokumentvarianter[0].fysiskDokument).isEqualTo(pdfDok)
         Assertions.assertThat(request.dokumenter[0].dokumentvarianter[0].variantformat).isEqualTo(arkivVariantformat)
-        Assertions.assertThat(request.dokumenter[0].dokumentvarianter[0].filnavn).isEqualTo(FILnavn)
+        Assertions.assertThat(request.dokumenter[0].dokumentvarianter[0].filnavn).isEqualTo(FILNAVN)
     }
 
     companion object {
@@ -142,7 +140,7 @@ class DokarkivServiceTest {
         private val JSON_DOK = "{}".toByteArray()
         private const val STRUKTURERT_VARIANTFORMAT = "ORIGINAL"
         private const val JOURNALPOST_ID = "123"
-        private const val FILnavn = "filnavn"
+        private const val FILNAVN = "filnavn"
         private val PERSON_IDENT = PersonIdent(FNR)
     }
 }
