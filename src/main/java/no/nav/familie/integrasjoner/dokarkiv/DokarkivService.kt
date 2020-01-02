@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.dokarkiv
 
+import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
 import no.nav.familie.integrasjoner.config.DokarkivConfig
 import no.nav.familie.integrasjoner.dokarkiv.api.*
 import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class DokarkivService(private val dokarkivClient: DokarkivClient,
+                      private val dokarkivRestClient: DokarkivRestClient,
                       private val personopplysningerService: PersonopplysningerService,
                       private val dokarkivMetadata: DokarkivMetadata) {
 
@@ -23,8 +25,15 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
         return mapTilArkiverDokumentResponse(response)
     }
 
-    fun ferdistillJournalpost(journalpost: String, journalførendeEnhet: String?) {
-        dokarkivClient.ferdigstillJournalpost(journalpost, journalførendeEnhet)
+    fun ferdistillJournalpost(journalpost: String, journalførendeEnhet: String) {
+        dokarkivRestClient.ferdigstillJournalpost(journalpost, journalførendeEnhet)
+    }
+
+    fun lagInngåendeJournalpostV2(arkiverDokumentRequest: ArkiverDokumentRequest): ArkiverDokumentResponse {
+        val request = mapTilOpprettJournalpostRequest(arkiverDokumentRequest)
+        val response =
+                dokarkivRestClient.lagJournalpost(request, arkiverDokumentRequest.isForsøkFerdigstill)
+        return mapTilArkiverDokumentResponse(response)
     }
 
     private fun hentNavnForFnr(fnr: String?): String {
@@ -51,7 +60,6 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
                 // sak = når vi tar over fagsak, så må dennne settes til vår. For BRUT001 behandling, så kan ikke denne settes
         )
     }
-
 
     private fun mapTilArkivdokument(dokument: Dokument): ArkivDokument {
         val metadata = dokarkivMetadata.getMetadata(dokument)

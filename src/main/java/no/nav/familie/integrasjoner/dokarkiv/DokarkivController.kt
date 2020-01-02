@@ -51,11 +51,18 @@ class DokarkivController(private val journalføringService: DokarkivService) {
                               "Arkivert journalpost OK"))
     }
 
+    @PostMapping(path = ["v2"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun arkiverDokumentV2(@RequestBody arkiverDokumentRequest: @Valid ArkiverDokumentRequest): ResponseEntity<Ressurs> {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(success(journalføringService.lagInngåendeJournalpostV2(arkiverDokumentRequest),
+                              "Arkivert journalpost OK"))
+    }
+
     @PutMapping("v1/{journalpostId}/ferdigstill")
     @ResponseStatus(HttpStatus.OK)
     fun ferdigstillJournalpost(@PathVariable(name = "journalpostId") journalpostId: String?,
                                @RequestParam(name = "journalfoerendeEnhet")
-                               journalførendeEnhet: String?): ResponseEntity<Ressurs> {
+                               journalførendeEnhet: String): ResponseEntity<Ressurs> {
         if (journalpostId == null) {
             return ResponseEntity.badRequest().body(failure("journalpostId er null", null))
         }

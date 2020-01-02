@@ -25,10 +25,9 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
             UriUtil.uri(dokarkivUrl, PATH_JOURNALPOST, String.format(QUERY_FERDIGSTILL, ferdigstill))
 
     fun lagJournalpost(jp: OpprettJournalpostRequest,
-                       ferdigstill: Boolean,
-                       personIdent: String?): OpprettJournalpostResponse? {
+                       ferdigstill: Boolean): OpprettJournalpostResponse {
         val uri = lagJournalpostUri(ferdigstill)
-        return postForEntity(uri, jp)
+        return postForEntity(uri, jp) ?: error("Feil ved opprettelse av journalpost for sak ${jp.sak} ")
     }
 
     fun ferdigstillJournalpost(journalpostId: String, journalførendeEnhet: String) {

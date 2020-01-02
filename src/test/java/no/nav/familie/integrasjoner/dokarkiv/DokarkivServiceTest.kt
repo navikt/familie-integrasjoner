@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.dokarkiv
 
+import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
 import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
 import no.nav.familie.integrasjoner.dokarkiv.api.Dokument
 import no.nav.familie.integrasjoner.dokarkiv.api.DokumentType
@@ -27,11 +28,13 @@ class DokarkivServiceTest {
 
     private val navn = "Navn Navnesen"
     private val dokarkivClient = Mockito.mock(DokarkivClient::class.java)
+    private val dokarkivRestClient = Mockito.mock(DokarkivRestClient::class.java)
     private lateinit var dokarkivService: DokarkivService
     private val personopplysningerService = Mockito.mock(PersonopplysningerService::class.java)
 
     @Before fun setUp() {
         dokarkivService = DokarkivService(dokarkivClient,
+                                          dokarkivRestClient,
                                           personopplysningerService,
                                           DokarkivMetadata(KontanstøtteSøknadMetadata(), KontanstøtteSøknadVedleggMetadata()))
     }
