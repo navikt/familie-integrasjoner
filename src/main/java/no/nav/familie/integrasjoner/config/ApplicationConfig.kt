@@ -60,17 +60,9 @@ class ApplicationConfig {
                 setConnectTimeout(20 * 1000)
             }
 
-
     @Bean
     fun kotlinModule(): KotlinModule {
         return KotlinModule()
-    }
-
-    @Bean
-    fun servletWebServerFactory(): ServletWebServerFactory {
-        val serverFactory = JettyServletWebServerFactory()
-        serverFactory.port = 8085
-        return serverFactory
     }
 
     @Bean

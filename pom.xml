@@ -20,6 +20,7 @@
         <sha1></sha1>
         <changelist>-SNAPSHOT</changelist>
         <java.version>11</java.version>
+        <springfox.version>2.9.2</springfox.version>
         <common-java-modules.version>1.2019.11.06-15.14-6ca860e6cead</common-java-modules.version>
         <felles.version>1.0_20191218103445_c01f1ac</felles.version>
         <kontrakt.version>1.0_20191115092849_f8fbb14</kontrakt.version>
@@ -65,6 +66,17 @@
                     <artifactId>android-json</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${springfox.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${springfox.version}</version>
         </dependency>
 
         <!-- SOAP/CXF -->
