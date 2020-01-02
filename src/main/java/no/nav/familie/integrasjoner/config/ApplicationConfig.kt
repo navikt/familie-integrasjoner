@@ -66,13 +66,6 @@ class ApplicationConfig {
     fun kotlinModule(): KotlinModule = KotlinModule()
 
     @Bean
-    fun servletWebServerFactory(): ServletWebServerFactory {
-        val serverFactory = JettyServletWebServerFactory()
-        serverFactory.port = 8085
-        return serverFactory
-    }
-
-    @Bean
     fun logFilter(): FilterRegistrationBean<LogFilter> {
         logger.info("Registering LogFilter filter")
         val filterRegistration = FilterRegistrationBean<LogFilter>()
