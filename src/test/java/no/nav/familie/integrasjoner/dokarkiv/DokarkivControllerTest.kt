@@ -4,7 +4,6 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
 import no.nav.familie.integrasjoner.dokarkiv.api.Dokument
-import no.nav.familie.integrasjoner.dokarkiv.api.DokumentType
 import no.nav.familie.integrasjoner.dokarkiv.api.FilType
 import no.nav.familie.ks.kontrakter.objectMapper
 import no.nav.familie.ks.kontrakter.sak.Ressurs
@@ -20,7 +19,6 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
-import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.*
@@ -40,13 +38,13 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun skal_returnere_Bad_Request_hvis_fNr_mangler() {
+    fun `skal returnere bad request hvis fNr mangler`() {
         val body = ArkiverDokumentRequest("",
                                           false,
                                           listOf(Dokument("foo".toByteArray(),
                                                           FilType.PDFA,
                                                           null,
-                                                          DokumentType.KONTANTSTØTTE_SØKNAD)))
+                                                          "KONTANTSTØTTE_SØKNAD")))
 
         val response = restTemplate.exchange(localhost(DOKARKIV_URL),
                                              HttpMethod.POST,
@@ -59,7 +57,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun skal_returnere_Bad_Request_hvis_ingen_dokumenter() {
+    fun `skal returnere bad request hvis ingen dokumenter`() {
         val body = ArkiverDokumentRequest("fnr", false, LinkedList())
 
         val response = restTemplate.exchange(localhost(DOKARKIV_URL),
@@ -72,8 +70,8 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
         Assertions.assertThat(response.body?.melding).contains("dokumenter=must not be empty")
     }
 
-    @Test @Throws(IOException::class)
-    fun skal_midlertidig_journalføre_dokument() {
+    @Test
+    fun `skal midlertidig journalføre dokument`() {
         mockServerRule.client
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
@@ -96,7 +94,8 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
         Assertions.assertThat(response.body?.data!!["ferdigstilt"].booleanValue()).isFalse()
     }
 
-    @Test @Throws(IOException::class) fun skal_midlertidig_journalføre_dokument_med_vedlegg() {
+    @Test
+    fun `skal midlertidig journalføre dokument med vedlegg`() {
         mockServerRule.client
                 .`when`(HttpRequest
                                 .request()
@@ -120,7 +119,8 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
         Assertions.assertThat(response.body?.data!!["ferdigstilt"].booleanValue()).isFalse()
     }
 
-    @Test @Throws(IOException::class) fun dokarkiv_returnerer_401() {
+    @Test
+    fun `dokarkiv returnerer 401`() {
         mockServerRule.client
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
@@ -132,7 +132,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                           listOf(Dokument("foo".toByteArray(),
                                                           FilType.PDFA,
                                                           null,
-                                                          DokumentType.KONTANTSTØTTE_SØKNAD)))
+                                                          "KONTANTSTØTTE_SØKNAD")))
 
         val response = restTemplate.exchange(localhost(DOKARKIV_URL),
                                              HttpMethod.POST,
@@ -144,7 +144,8 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
         Assertions.assertThat(response.body?.melding).contains("Feilresponse fra dokarkiv-tjenesten 401 Tekst fra body")
     }
 
-    @Test @Throws(IOException::class) fun ferdigstill_returnerer_OK() {
+    @Test
+    fun `ferdigstill returnerer ok`() {
         mockServerRule.client
                 .`when`(HttpRequest.request()
                                 .withMethod("PATCH")
@@ -161,7 +162,8 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
     }
 
-    @Test @Throws(IOException::class) fun ferdigstill_returnerer_400_hvis_ikke_mulig_ferdigstill() {
+    @Test
+    fun `ferdigstill returnerer 400 hvis ikke mulig ferdigstill`() {
         mockServerRule.client
                 .`when`(HttpRequest.request()
                                 .withMethod("PATCH")
@@ -179,7 +181,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
         Assertions.assertThat(response.body?.melding).contains("Kan ikke ferdigstille journalpost 123")
     }
 
-    @Throws(IOException::class) private fun gyldigDokarkivResponse(): String {
+    private fun gyldigDokarkivResponse(): String {
         return Files.readString(ClassPathResource("dokarkiv/gyldigresponse.json").file.toPath(),
                                 StandardCharsets.UTF_8)
     }
@@ -190,10 +192,10 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
         private val HOVEDDOKUMENT = Dokument("foo".toByteArray(),
                                              FilType.PDFA,
                                              "filnavn",
-                                             DokumentType.KONTANTSTØTTE_SØKNAD)
+                                             "KONTANTSTØTTE_SØKNAD")
         private val VEDLEGG = Dokument("foo".toByteArray(),
                                        FilType.PDFA,
                                        "filnavn",
-                                       DokumentType.KONTANTSTØTTE_SØKNAD_VEDLEGG)
+                                       "KONTANTSTØTTE_SØKNAD_VEDLEGG")
     }
 }

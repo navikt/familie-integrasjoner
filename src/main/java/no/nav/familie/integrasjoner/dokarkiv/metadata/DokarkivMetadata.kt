@@ -9,8 +9,6 @@ class DokarkivMetadata(vararg dokumentMetadata: AbstractDokumentMetadata) {
     val metadata: Map<String, AbstractDokumentMetadata> = dokumentMetadata.associateBy { it.dokumentTypeId }
 
     fun getMetadata(dokument: Dokument): AbstractDokumentMetadata {
-        return metadata[dokument.dokumentType.name] ?: error("Ukjent dokumenttype ${dokument.dokumentType}")
+        return metadata[dokument.dokumentType] ?: error("Ukjent dokumenttype ${dokument.dokumentType}")
     }
-
-
 }
