@@ -35,7 +35,7 @@ class DokarkivServiceTest {
         dokarkivService = DokarkivService(dokarkivClient,
                                           dokarkivRestClient,
                                           personopplysningerService,
-                                          DokarkivMetadata(KontanstøtteSøknadMetadata(), KontanstøtteSøknadVedleggMetadata()))
+                                          DokarkivMetadata(KontanstøtteSøknadMetadata, KontanstøtteSøknadVedleggMetadata))
     }
 
     @Test fun `skal mappe request til opprettJournalpostRequest av type arkiv pdfa`() {
@@ -121,14 +121,14 @@ class DokarkivServiceTest {
         Assertions.assertThat(request.avsenderMottaker!!.idType).isEqualTo(IdType.FNR)
         Assertions.assertThat(request.bruker!!.id).isEqualTo(FNR)
         Assertions.assertThat(request.bruker!!.idType).isEqualTo(IdType.FNR)
-        Assertions.assertThat(request.behandlingstema).isEqualTo(KontanstøtteSøknadMetadata().behandlingstema)
+        Assertions.assertThat(request.behandlingstema).isEqualTo(KontanstøtteSøknadMetadata.behandlingstema)
         Assertions.assertThat(request.journalpostType).isEqualTo(JournalpostType.INNGAAENDE)
-        Assertions.assertThat(request.kanal).isEqualTo(KontanstøtteSøknadMetadata().kanal)
-        Assertions.assertThat(request.tema).isEqualTo(KontanstøtteSøknadMetadata().tema)
+        Assertions.assertThat(request.kanal).isEqualTo(KontanstøtteSøknadMetadata.kanal)
+        Assertions.assertThat(request.tema).isEqualTo(KontanstøtteSøknadMetadata.tema)
         Assertions.assertThat(request.sak).isNull()
-        Assertions.assertThat(request.dokumenter[0].tittel).isEqualTo(KontanstøtteSøknadMetadata().tittel)
-        Assertions.assertThat(request.dokumenter[0].brevkode).isEqualTo(KontanstøtteSøknadMetadata().brevkode)
-        Assertions.assertThat(request.dokumenter[0].dokumentKategori).isEqualTo(KontanstøtteSøknadMetadata().dokumentKategori)
+        Assertions.assertThat(request.dokumenter[0].tittel).isEqualTo(KontanstøtteSøknadMetadata.tittel)
+        Assertions.assertThat(request.dokumenter[0].brevkode).isEqualTo(KontanstøtteSøknadMetadata.brevkode)
+        Assertions.assertThat(request.dokumenter[0].dokumentKategori).isEqualTo(KontanstøtteSøknadMetadata.dokumentKategori)
         Assertions.assertThat(request.dokumenter[0].dokumentvarianter[0].filtype).isEqualTo(pdfa)
         Assertions.assertThat(request.dokumenter[0].dokumentvarianter[0].fysiskDokument).isEqualTo(pdfDok)
         Assertions.assertThat(request.dokumenter[0].dokumentvarianter[0].variantformat).isEqualTo(arkivVariantformat)

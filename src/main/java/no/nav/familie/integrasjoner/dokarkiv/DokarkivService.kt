@@ -1,14 +1,10 @@
 package no.nav.familie.integrasjoner.dokarkiv
 
 import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
-import no.nav.familie.integrasjoner.config.DokarkivConfig
 import no.nav.familie.integrasjoner.dokarkiv.api.*
 import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
-import no.nav.familie.integrasjoner.dokarkiv.metadata.AbstractDokumentMetadata
 import no.nav.familie.integrasjoner.dokarkiv.metadata.DokarkivMetadata
-import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadMetadata
-import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadVedleggMetadata
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import org.springframework.stereotype.Service
@@ -45,14 +41,14 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
         val fnr = arkiverDokumentRequest.fnr
         val navn = hentNavnForFnr(fnr)
 
-        val metadataHoveddokument = dokarkivMetadata.getMetadata(arkiverDokumentRequest.dokumenter[0])
+        val metadata = dokarkivMetadata.getMetadata(arkiverDokumentRequest.dokumenter[0])
         val arkivdokumenter = arkiverDokumentRequest.dokumenter.map(this::mapTilArkivdokument)
 
         return OpprettJournalpostRequest(journalpostType = JournalpostType.INNGAAENDE,
-                                         behandlingstema = metadataHoveddokument.behandlingstema,
-                                         kanal = metadataHoveddokument.kanal,
-                                         tittel = metadataHoveddokument.tittel,
-                                         tema = metadataHoveddokument.tema,
+                                         behandlingstema = metadata.behandlingstema,
+                                         kanal = metadata.kanal,
+                                         tittel = metadata.tittel,
+                                         tema = metadata.tema,
                                          avsenderMottaker = AvsenderMottaker(fnr, IdType.FNR, navn),
                                          bruker = Bruker(IdType.FNR, fnr),
                                          dokumenter = arkivdokumenter,
