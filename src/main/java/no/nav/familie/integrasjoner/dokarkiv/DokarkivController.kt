@@ -1,10 +1,11 @@
 package no.nav.familie.integrasjoner.dokarkiv
 
 import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
+import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentResponse
 import no.nav.familie.integrasjoner.dokarkiv.client.KanIkkeFerdigstilleJournalpostException
-import no.nav.familie.ks.kontrakter.sak.Ressurs
-import no.nav.familie.ks.kontrakter.sak.Ressurs.Companion.failure
-import no.nav.familie.ks.kontrakter.sak.Ressurs.Companion.success
+import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
+import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -21,7 +22,7 @@ import javax.validation.Valid
 class DokarkivController(private val journalføringService: DokarkivService) {
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleValidationExceptions(ex: MethodArgumentNotValidException): ResponseEntity<Ressurs> {
+    fun handleValidationExceptions(ex: MethodArgumentNotValidException): ResponseEntity<Ressurs<Any>> {
         val errors: MutableMap<String, String> = HashMap()
         ex.bindingResult.allErrors.forEach(Consumer { error: ObjectError ->
             val fieldName = (error as FieldError).field
@@ -33,26 +34,23 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     }
 
     @ExceptionHandler(KotlinNullPointerException::class)
-    fun handleKotlinNull(ex: KotlinNullPointerException): ResponseEntity<Ressurs> {
+    fun handleKotlinNull(ex: KotlinNullPointerException): ResponseEntity<Ressurs<Any>> {
         LOG.warn("Nullpointer på input ved arkivering: ${ex.message}")
         return ResponseEntity.badRequest().body(failure("Valideringsfeil av input ved arkivering ${ex.message}", ex))
     }
 
-    @ExceptionHandler(KanIkkeFerdigstilleJournalpostException::class)
-    fun handleKanIkkeFerdigstilleException(ex: KanIkkeFerdigstilleJournalpostException): ResponseEntity<Ressurs> {
-        LOG.warn("Feil ved ferdigstilling {}", ex.message)
-        return ResponseEntity.badRequest().body(failure(null, ex))
-    }
 
     @PostMapping(path = ["v1"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun arkiverDokument(@RequestBody @Valid arkiverDokumentRequest: ArkiverDokumentRequest): ResponseEntity<Ressurs> {
+    fun arkiverDokument(@RequestBody @Valid arkiverDokumentRequest: ArkiverDokumentRequest)
+            : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(success(journalføringService.lagInngåendeJournalpost(arkiverDokumentRequest),
                               "Arkivert journalpost OK"))
     }
 
     @PostMapping(path = ["v2"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun arkiverDokumentV2(@RequestBody arkiverDokumentRequest: @Valid ArkiverDokumentRequest): ResponseEntity<Ressurs> {
+    fun arkiverDokumentV2(@RequestBody arkiverDokumentRequest: @Valid ArkiverDokumentRequest)
+            : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(success(journalføringService.lagInngåendeJournalpostV2(arkiverDokumentRequest),
                               "Arkivert journalpost OK"))
@@ -62,7 +60,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     @ResponseStatus(HttpStatus.OK)
     fun ferdigstillJournalpost(@PathVariable(name = "journalpostId") journalpostId: String?,
                                @RequestParam(name = "journalfoerendeEnhet")
-                               journalførendeEnhet: String): ResponseEntity<Ressurs> {
+                               journalførendeEnhet: String): ResponseEntity<Ressurs<Map<String, String>>> {
         if (journalpostId == null) {
             return ResponseEntity.badRequest().body(failure("journalpostId er null", null))
         }

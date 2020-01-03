@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.aktør.config;
 
-import no.nav.familie.ks.kontrakter.søknad.testdata.SøknadTestdata;
+import no.nav.familie.kontrakter.ks.søknad.testdata.SøknadTestdata;
 import no.nav.familie.integrasjoner.aktør.domene.Aktør;
 import no.nav.familie.integrasjoner.aktør.domene.Ident;
 import no.nav.familie.integrasjoner.aktør.internal.AktørResponse;

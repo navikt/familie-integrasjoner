@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import no.nav.familie.http.sts.StsRestClient;
-import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
+import no.nav.familie.kontrakter.ks.oppgave.Oppgave;
 import no.nav.familie.integrasjoner.felles.OppslagException;
 import no.nav.familie.log.mdc.MDCConstants;
 import no.nav.oppgave.v1.FinnOppgaveResponseDto;

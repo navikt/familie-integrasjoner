@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.oppgave;
 
 import no.nav.familie.integrasjoner.oppgave.internal.OppgaveClient;
-import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
+import no.nav.familie.kontrakter.ks.oppgave.Oppgave;
 import no.nav.oppgave.v1.OppgaveJsonDto;
 import no.nav.sbl.util.StringUtils;
 import org.slf4j.Logger;
@@ -29,7 +29,11 @@ public class OppgaveService {
         } else {
             oppgaveJsonDto = oppgaveClient.finnOppgave(request.getEksisterendeOppgaveId());
         }
-        oppgaveClient.oppdaterOppgave(oppgaveJsonDto, request.getBeskrivelse());
+        if (oppgaveJsonDto.getStatus() == OppgaveJsonDto.StatusEnum.FERDIGSTILT) {
+            LOG.info("Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId={} journalpostId={} oppgaveId={}", oppgaveJsonDto.getAktoerId(), oppgaveJsonDto.getJournalpostId(), oppgaveJsonDto.getId());
+        } else {
+            oppgaveClient.oppdaterOppgave(oppgaveJsonDto, request.getBeskrivelse());
+        }
         return oppgaveJsonDto.getId();
     }
 }

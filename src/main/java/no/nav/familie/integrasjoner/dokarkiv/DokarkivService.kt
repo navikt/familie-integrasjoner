@@ -43,7 +43,7 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
     private fun mapTilOpprettJournalpostRequest(arkiverDokumentRequest: ArkiverDokumentRequest): OpprettJournalpostRequest {
 
         val fnr = arkiverDokumentRequest.fnr
-        val navn = hentNavnForFnr(arkiverDokumentRequest.fnr)
+        val navn = hentNavnForFnr(fnr)
 
         val metadataHoveddokument = dokarkivMetadata.getMetadata(arkiverDokumentRequest.dokumenter[0])
         val arkivdokumenter = arkiverDokumentRequest.dokumenter.map(this::mapTilArkivdokument)

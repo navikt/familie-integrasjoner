@@ -5,7 +5,7 @@ import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.oppgave.domene.FinnOppgaveResponseDto
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto
-import no.nav.familie.ks.kontrakter.oppgave.Oppgave
+import no.nav.familie.kontrakter.ks.oppgave.Oppgave
 import no.nav.familie.log.mdc.MDCConstants
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Qualifier
