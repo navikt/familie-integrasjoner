@@ -33,12 +33,11 @@ class DokarkivController(private val journalføringService: DokarkivService) {
         return ResponseEntity.badRequest().body(failure("Valideringsfeil av input ved arkivering $errors", ex))
     }
 
-    @ExceptionHandler(KotlinNullPointerException::class)
-    fun handleKotlinNull(ex: KotlinNullPointerException): ResponseEntity<Ressurs<Any>> {
-        LOG.warn("Nullpointer på input ved arkivering: ${ex.message}")
-        return ResponseEntity.badRequest().body(failure("Valideringsfeil av input ved arkivering ${ex.message}", ex))
+    @ExceptionHandler(KanIkkeFerdigstilleJournalpostException::class)
+    fun handleKanIkkeFerdigstilleException(ex: KanIkkeFerdigstilleJournalpostException): ResponseEntity<Ressurs<Any>> {
+        LOG.warn("Feil ved ferdigstilling {}", ex.message)
+        return ResponseEntity.badRequest().body(failure(null, ex))
     }
-
 
     @PostMapping(path = ["v1"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun arkiverDokument(@RequestBody @Valid arkiverDokumentRequest: ArkiverDokumentRequest)
