@@ -1,96 +1,95 @@
-package no.nav.familie.integrasjoner.config;
+package no.nav.familie.integrasjoner.config
 
-import no.nav.familie.http.azure.AzureAccessTokenException;
-import no.nav.familie.kontrakter.felles.Ressurs;
-import no.nav.familie.integrasjoner.felles.OppslagException;
-import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MissingRequestHeaderException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.client.RestClientResponseException;
-
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import no.nav.familie.http.azure.AzureAccessTokenException
+import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
+import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
+import org.apache.commons.lang3.exception.ExceptionUtils
+import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.MissingRequestHeaderException
+import org.springframework.web.bind.annotation.ControllerAdvice
+import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.client.RestClientResponseException
 
 @ControllerAdvice
-public class ApiExceptionHandler {
+class ApiExceptionHandler {
 
-    private static final Logger secureLogger = LoggerFactory.getLogger("secureLogger");
-    private final Logger logger = LoggerFactory.getLogger(ApiExceptionHandler.class);
+    private val logger = LoggerFactory.getLogger(ApiExceptionHandler::class.java)
 
-    public ApiExceptionHandler() {
-    }
-
-    @ExceptionHandler({JwtTokenUnauthorizedException.class})
-    public ResponseEntity<Ressurs> handleUnauthorizedException(JwtTokenUnauthorizedException e) {
-        logger.warn("Kan ikke logget inn.", e);
+    @ExceptionHandler(JwtTokenUnauthorizedException::class)
+    fun handleUnauthorizedException(e: JwtTokenUnauthorizedException?): ResponseEntity<Ressurs<Any>> {
+        logger.warn("Kan ikke logget inn.", e)
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(Ressurs.Companion.failure("Du er ikke logget inn.", e));
+                .body(failure("Du er ikke logget inn.", e))
     }
 
-    @ExceptionHandler({RestClientResponseException.class})
-    public ResponseEntity<Ressurs> handleRestClientResponseException(RestClientResponseException e) {
-        secureLogger.error("RestClientResponseException : {} {}", e.getResponseBodyAsString(), e);
-        logger.error("RestClientResponseException : {} {} {}", e.getRawStatusCode(), e.getStatusText(), ExceptionUtils.getStackTrace(e));
+    @ExceptionHandler(RestClientResponseException::class)
+    fun handleRestClientResponseException(e: RestClientResponseException): ResponseEntity<Ressurs<Any>> {
+        secureLogger.error("RestClientResponseException : {} {}", e.responseBodyAsString, e)
+        logger.error("RestClientResponseException : {} {} {}",
+                     e.rawStatusCode,
+                     e.statusText,
+                     ExceptionUtils.getStackTrace(e))
         return ResponseEntity
-                .status(INTERNAL_SERVER_ERROR)
-                .body(Ressurs.Companion.failure("Feil mot ekstern tjeneste. " + e.getRawStatusCode() + " " + e.getResponseBodyAsString() + " Message=" + e.getMessage(), e));
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(failure("Feil mot ekstern tjeneste. ${e.rawStatusCode} ${e.responseBodyAsString} Message=${e.message}",
+                              e))
     }
 
-    @ExceptionHandler({MissingRequestHeaderException.class})
-    public ResponseEntity<Ressurs> handleMissingRequestHeaderException(MissingRequestHeaderException e) {
-        logger.warn("Mangler påkrevd request header. {}", e.getMessage());
+    @ExceptionHandler(MissingRequestHeaderException::class)
+    fun handleMissingRequestHeaderException(e: MissingRequestHeaderException): ResponseEntity<Ressurs<Any>> {
+        logger.warn("Mangler påkrevd request header. {}", e.message)
         return ResponseEntity
-                .status(BAD_REQUEST)
-                .body(Ressurs.Companion.failure("Mangler påkrevd request header", e));
+                .status(HttpStatus.BAD_REQUEST)
+                .body(failure("Mangler påkrevd request header", e))
     }
 
-    @ExceptionHandler({AzureAccessTokenException.class})
-    public ResponseEntity<Ressurs> handleRestClientResponseException(AzureAccessTokenException e) {
-        logger.error("AzureAccessTokenException : {} ", ExceptionUtils.getStackTrace(e));
+    @ExceptionHandler(AzureAccessTokenException::class)
+    fun handleRestClientResponseException(e: AzureAccessTokenException): ResponseEntity<Ressurs<Any>> {
+        logger.error("AzureAccessTokenException : {} ", ExceptionUtils.getStackTrace(e))
         return ResponseEntity
-                .status(INTERNAL_SERVER_ERROR)
-                .body(Ressurs.Companion.failure("Feil mot azure. Message=" + e.getMessage(), e));
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(failure("Feil mot azure. Message=${e.message}", e))
     }
 
-    @ExceptionHandler({Exception.class})
-    public ResponseEntity<Ressurs> handleException(Exception e) {
-        secureLogger.error("Exception : ", e);
-        logger.error("Exception : {} {}", e.getClass().getName(), e.getMessage(), e);
+    @ExceptionHandler(Exception::class)
+    fun handleException(e: Exception): ResponseEntity<Ressurs<Any>> {
+        secureLogger.error("Exception : ", e)
+        logger.error("Exception : {} {}", e.javaClass.name, e.message, e)
         return ResponseEntity
-                .status(INTERNAL_SERVER_ERROR)
-                .body(Ressurs.Companion.failure("Det oppstod en feil. " + e.getMessage(), e));
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(failure("""Det oppstod en feil. ${e.message}""", e))
     }
 
-    @ExceptionHandler({OppslagException.class})
-    public ResponseEntity<Ressurs> handAktørOppslagException(OppslagException e) {
-        String feilmelding = String.format("[%s][%s]", e.getKilde(), e.getMessage());
-        if (e.getError() != null) {
-            feilmelding += String.format("[%s]", e.getError().getClass().getName());
+    @ExceptionHandler(OppslagException::class)
+    fun handAktørOppslagException(e: OppslagException): ResponseEntity<Ressurs<Any>> {
+        var feilmelding = "[${e.kilde}][${e.message}]"
+        if (e.error != null) {
+            feilmelding += "[${e.error.javaClass.name}]"
         }
-        switch (e.getLevel()) {
-            case KRITISK:
-                secureLogger.error("OppslagException : {} [{}]", feilmelding, e.getError());
-                logger.error("OppslagException : {}", feilmelding);
-                break;
-            case MEDIUM:
-                secureLogger.warn("OppslagException : {} [{}]", feilmelding, e.getError());
-                logger.warn("OppslagException : {}", feilmelding);
-                break;
-            default:
-                logger.info("OppslagException : {} {}", feilmelding);
-        }
+        when (e.level) {
+            OppslagException.Level.KRITISK -> {
+                secureLogger.error("OppslagException : {} [{}]", feilmelding, e.error)
+                logger.error("OppslagException : {}", feilmelding)
+            }
 
+            OppslagException.Level.MEDIUM -> {
+                secureLogger.warn("OppslagException : {} [{}]", feilmelding, e.error)
+                logger.warn("OppslagException : {}", feilmelding)
+            }
+
+            else -> logger.info("OppslagException : {} {}", feilmelding)
+        }
         return ResponseEntity
-                .status(e.getHttpStatus())
-                .body(Ressurs.Companion.failure(feilmelding, e));
+                .status(e.httpStatus)
+                .body(failure(feilmelding, e))
     }
 
-
+    companion object {
+        private val secureLogger = LoggerFactory.getLogger("secureLogger")
+    }
 }

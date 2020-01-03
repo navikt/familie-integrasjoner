@@ -1,50 +1,51 @@
-package no.nav.familie.integrasjoner.personopplysning;
+package no.nav.familie.integrasjoner.personopplysning
 
-import no.nav.familie.kontrakter.felles.Ressurs;
-import no.nav.security.token.support.core.api.ProtectedWithClaims;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
-
-import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
+import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo
+import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
+import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
+import no.nav.familie.kontrakter.felles.Ressurs.Companion.ikkeTilgang
+import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
+import no.nav.security.token.support.core.api.ProtectedWithClaims
+import org.springframework.format.annotation.DateTimeFormat
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.HttpClientErrorException.Forbidden
+import java.time.LocalDate
+import javax.validation.constraints.NotNull
 
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/personopplysning")
-public class PersonopplysningerController {
+class PersonopplysningerController(private val personopplysningerService: PersonopplysningerService) {
 
-    private PersonopplysningerService personopplysningerService;
-
-    public PersonopplysningerController(PersonopplysningerService personopplysningerService) {
-        this.personopplysningerService = personopplysningerService;
+    @ExceptionHandler(HttpClientErrorException.NotFound::class)
+    fun handleRestClientResponseException(e: HttpClientErrorException.NotFound): ResponseEntity<Ressurs<Any>> {
+        return ResponseEntity.status(e.rawStatusCode)
+                .body(failure("Feil mot personopplysning. ${e.rawStatusCode} Message=${e.message}", null))
     }
 
-    @ExceptionHandler({HttpClientErrorException.NotFound.class})
-    public ResponseEntity<Ressurs> handleRestClientResponseException(HttpClientErrorException.NotFound e) {
-        return ResponseEntity
-                .status(e.getRawStatusCode())
-                .body(Ressurs.Companion.failure("Feil mot personopplysning. " + e.getRawStatusCode() + " Message=" + e.getMessage(), null));
+    @ExceptionHandler(Forbidden::class)
+    fun handleRestClientResponseException(e: Forbidden): ResponseEntity<Ressurs<Any>> {
+        return ResponseEntity.status(e.rawStatusCode)
+                .body(ikkeTilgang("Ikke tilgang mot personopplysning ${e.message}"))
     }
 
-    @ExceptionHandler({HttpClientErrorException.Forbidden.class})
-    public ResponseEntity<Ressurs> handleRestClientResponseException(HttpClientErrorException.Forbidden e) {
-        return ResponseEntity
-                .status(e.getRawStatusCode())
-                .body(Ressurs.Companion.ikkeTilgang("Ikke tilgang mot personopplysning " + e.getMessage()));
+    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/historikk"])
+    fun historikk(@RequestHeader(name = "Nav-Personident") @NotNull personIdent: String?,
+                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @NotNull fomDato: LocalDate?,
+                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @NotNull tomDato: LocalDate?)
+            : ResponseEntity<Ressurs<PersonhistorikkInfo>> {
+        return ResponseEntity.ok().body(success(personopplysningerService.hentHistorikkFor(personIdent, fomDato, tomDato),
+                                                "Hent personhistorikk OK"))
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "v1/historikk")
-    public ResponseEntity<Ressurs> historikk(@NotNull @RequestHeader(name = "Nav-Personident") String personIdent,
-                                             @NotNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fomDato,
-                                             @NotNull @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate tomDato) {
-        return ResponseEntity.ok().body(Ressurs.Companion.success(personopplysningerService.hentHistorikkFor(personIdent, fomDato, tomDato), "Hent personhistorikk OK"));
+    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/info"])
+    fun personInfo(@RequestHeader(name = "Nav-Personident") @NotNull personIdent: String?): ResponseEntity<Ressurs<Personinfo>> {
+        return ResponseEntity.ok().body(success(personopplysningerService.hentPersoninfoFor(personIdent),
+                                                "Hent personinfo OK"))
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, path = "v1/info")
-    public ResponseEntity<Ressurs> personInfo(@NotNull @RequestHeader(name = "Nav-Personident") String personIdent) {
-        return ResponseEntity.ok().body(Ressurs.Companion.success(personopplysningerService.hentPersoninfoFor(personIdent), "Hent personinfo OK"));
-    }
 }

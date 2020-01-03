@@ -1,36 +1,27 @@
-package no.nav.familie.integrasjoner.oppgave;
+package no.nav.familie.integrasjoner.oppgave
 
-import no.nav.familie.kontrakter.ks.oppgave.Oppgave;
-import no.nav.familie.kontrakter.ks.oppgave.OppgaveKt;
-import no.nav.familie.kontrakter.felles.Ressurs;
-import no.nav.security.token.support.core.api.ProtectedWithClaims;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
+import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
+import no.nav.familie.kontrakter.ks.oppgave.toOppgave
+import no.nav.security.token.support.core.api.ProtectedWithClaims
+import org.slf4j.LoggerFactory
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/oppgave")
-public class OppgaveController {
-    private static final Logger LOG = LoggerFactory.getLogger(OppgaveController.class);
+class OppgaveController(private val oppgaveService: OppgaveService) {
 
-    private OppgaveService oppgaveService;
-
-    OppgaveController(OppgaveService oppgaveService) {
-        this.oppgaveService = oppgaveService;
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdater"])
+    fun oppdaterOppgave(@RequestBody oppgaveJson: String): ResponseEntity<Ressurs<Map<String, Long>>> {
+        val request = oppgaveJson.toOppgave()
+        val oppgaveId = oppgaveService.oppdaterOppgave(request)
+        return ResponseEntity.ok().body(success(mapOf("oppgaveId" to oppgaveId), "Oppslag mot oppgave OK"))
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, path = "/oppdater")
-    public ResponseEntity<Ressurs> oppdaterOppgave(@RequestBody String oppgaveJson) {
-        Oppgave request = OppgaveKt.toOppgave(oppgaveJson);
-        Long oppgaveId = oppgaveService.oppdaterOppgave(request);
-        return ResponseEntity.ok().body(Ressurs.Companion.success(Map.of("oppgaveId", oppgaveId), "Oppslag mot oppgave OK"));
-    }
 }
