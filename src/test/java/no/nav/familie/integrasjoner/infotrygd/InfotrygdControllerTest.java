@@ -3,7 +3,7 @@ package no.nav.familie.integrasjoner.infotrygd;
 import no.nav.familie.http.azure.AccessTokenClient;
 import no.nav.familie.http.azure.AccessTokenDto;
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest;
-import no.nav.familie.kontrakt.Ressurs;
+import no.nav.familie.kontrakter.felles.Ressurs;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Rule;

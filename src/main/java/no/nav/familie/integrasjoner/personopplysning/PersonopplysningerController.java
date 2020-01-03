@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.personopplysning;
 
-import no.nav.familie.kontrakt.Ressurs;
+import no.nav.familie.kontrakter.felles.Ressurs;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
