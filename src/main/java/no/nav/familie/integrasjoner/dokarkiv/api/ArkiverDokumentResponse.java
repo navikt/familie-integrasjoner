@@ -5,6 +5,9 @@ public class ArkiverDokumentResponse {
     private String journalpostId;
     private Boolean ferdigstilt;
 
+    public ArkiverDokumentResponse() {
+    }
+
     public String getJournalpostId() {
         return journalpostId;
     }

@@ -1,235 +1,203 @@
-package no.nav.familie.integrasjoner.journalpost;
+package no.nav.familie.integrasjoner.journalpost
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import com.fasterxml.jackson.databind.JsonNode;
-import no.nav.familie.integrasjoner.OppslagSpringRunnerTest;
-import no.nav.familie.kontrakter.felles.Ressurs;
-import no.nav.security.token.support.test.JwtTokenGenerator;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockserver.junit.MockServerRule;
-import org.mockserver.model.Header;
-import org.mockserver.model.HttpRequest;
-import org.mockserver.model.HttpResponse;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.Logger
+import ch.qos.logback.classic.spi.ILoggingEvent
+import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.security.token.support.test.JwtTokenGenerator
+import org.assertj.core.api.Assertions
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.mockserver.junit.MockServerRule
+import org.mockserver.model.Header
+import org.mockserver.model.HttpRequest
+import org.mockserver.model.HttpResponse
+import org.slf4j.LoggerFactory
+import org.springframework.boot.test.web.client.exchange
+import org.springframework.core.io.ClassPathResource
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.web.util.UriComponentsBuilder
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.LinkedHashMap;
+@ActiveProfiles("integrasjonstest", "mock-sts", "mock-innsyn")
+class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
 
-import static no.nav.familie.integrasjoner.journalpost.HentJournalpostTestConfig.GENERISK_ERROR_CALLID;
-import static no.nav.familie.integrasjoner.journalpost.HentJournalpostTestConfig.NOT_FOUND_CALLID;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.*;
-import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
-
-@ActiveProfiles({"integrasjonstest", "mock-sts", "mock-innsyn"})
-public class HentJournalpostControllerTest extends OppslagSpringRunnerTest {
-
-    Logger testLogger = (Logger) LoggerFactory.getLogger(HentJournalpostController.class);
-
-    public static final int MOCK_SERVER_PORT = 18321;
-    public static final String JOURNALPOST_ID = "12345678";
-    public static final String SAKSNUMMER = "87654321";
-    public static final String JOURNALPOST_BASE_URL = "/api/journalpost/";
-
-
-    @Rule
-    public MockServerRule mockServerRule = new MockServerRule(this, MOCK_SERVER_PORT);
-    private String uriHentSaksnummer;
-
+    private val testLogger = LoggerFactory.getLogger(HentJournalpostController::class.java) as Logger
+    @get:Rule
+    val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
+    private lateinit var uriHentSaksnummer: String
 
     @Before
-    public void setUp() {
-        testLogger.addAppender(listAppender);
-        headers.setBearerAuth(JwtTokenGenerator.signedJWTAsString("testbruker"));
-        uriHentSaksnummer = fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/sak")
-                .queryParam("journalpostId", JOURNALPOST_ID).toUriString();
+    fun setUp() {
+        testLogger.addAppender(listAppender)
+        headers.setBearerAuth(JwtTokenGenerator.signedJWTAsString("testbruker"))
+        uriHentSaksnummer = UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/sak")
+                .queryParam("journalpostId", JOURNALPOST_ID).toUriString()
     }
 
     @Test
-    public void hent_saksnummer_skal_returnere_saksnummer_og_status_OK() throws IOException {
-        mockServerRule.getClient()
-                      .when(
-                              HttpRequest
-                                      .request()
-                                      .withMethod("POST")
-                                      .withPath("/rest/saf/graphql")
-                                      .withBody(testdata("gyldigrequest.json"))
-                      )
-                      .respond(
-                              HttpResponse.response().withBody(testdata("gyldigresponse.json")).withHeaders(
-                                      new Header("Content-Type", "application/json"))
-                      );
+    fun `hent saksnummer skal returnere saksnummer og status ok`() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withPath("/rest/saf/graphql")
+                                .withBody(testdata("gyldigrequest.json")))
+                .respond(HttpResponse.response().withBody(testdata("gyldigresponse.json"))
+                                 .withHeaders(Header("Content-Type", "application/json")))
 
-        ResponseEntity<Ressurs> response =
-                restTemplate.exchange(uriHentSaksnummer, HttpMethod.GET, new HttpEntity<String>(headers), Ressurs.class
-                );
+        val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
+                                                                                           HttpMethod.GET,
+                                                                                           HttpEntity<String>(headers))
 
-        assertThat(response.getStatusCode()).isEqualTo(OK);
-        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.SUKSESS);
-        assertThat(((LinkedHashMap<Object, String>) response.getBody().getData()).get("saksnummer")).isEqualTo(SAKSNUMMER);
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        Assertions.assertThat(response.body?.data?.get("saksnummer")).isEqualTo(SAKSNUMMER)
     }
 
     @Test
-    public void hent_saksnummer_skal_returnere_status_404_hvis_sak_mangler() throws IOException {
-        mockServerRule.getClient()
-                      .when(
-                              HttpRequest
-                                      .request()
-                                      .withMethod("POST")
-                                      .withHeader(new Header("Content-Type", "application/json"))
-                                      .withPath("/rest/saf/graphql")
-                      )
-                      .respond(
-                              HttpResponse.response().withBody(testdata("mangler_sak.json")).withHeaders(
-                                      new Header("Content-Type", "application/json"))
-                      );
+    fun `hent saksnummer skal returnere status 404 hvis sak mangler`() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withHeader(Header("Content-Type", "application/json"))
+                                .withPath("/rest/saf/graphql"))
+                .respond(HttpResponse.response().withBody(testdata("mangler_sak.json"))
+                                 .withHeaders(Header("Content-Type", "application/json")))
 
+        val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
+                                                                                           HttpMethod.GET,
+                                                                                           HttpEntity<String>(headers))
 
-        ResponseEntity<Ressurs> response =
-                restTemplate.exchange(uriHentSaksnummer, HttpMethod.GET, new HttpEntity<String>(headers), Ressurs.class);
-
-
-        assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
-        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
-        assertThat(response.getBody().getMelding()).isEqualTo("Sak mangler for journalpostId=" + JOURNALPOST_ID);
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        Assertions.assertThat(response.body?.melding).isEqualTo("Sak mangler for journalpostId=$JOURNALPOST_ID")
     }
 
     @Test
-    public void hent_saksnummer_skal_returnere_status_404_hvis_sak_ikke_er_GSAK() throws IOException {
-        mockServerRule.getClient()
-                      .when(
-                              HttpRequest
-                                      .request()
-                                      .withMethod("POST")
-                                      .withHeader(new Header("Content-Type", "application/json"))
-                                      .withPath("/rest/saf/graphql")
-                      )
-                      .respond(
-                              HttpResponse.response().withBody(testdata("feil_arkivsaksystem.json")).withHeaders(
-                                      new Header("Content-Type", "application/json"))
-                      );
+    fun `hent saksnummer skal returnere status 404 hvis sak ikke er gsak`() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withHeader(Header("Content-Type", "application/json"))
+                                .withPath("/rest/saf/graphql"))
+                .respond(HttpResponse.response().withBody(testdata("feil_arkivsaksystem.json"))
+                                 .withHeaders(Header("Content-Type", "application/json")))
 
+        val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
+                                                                                           HttpMethod.GET,
+                                                                                           HttpEntity<String>(headers))
 
-        ResponseEntity<Ressurs> response =
-                restTemplate.exchange(uriHentSaksnummer, HttpMethod.GET, new HttpEntity<String>(headers), Ressurs.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
-        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
-        assertThat(response.getBody().getMelding()).isEqualTo("Sak mangler for journalpostId=" + JOURNALPOST_ID);
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        Assertions.assertThat(response.body?.melding).isEqualTo("Sak mangler for journalpostId=$JOURNALPOST_ID")
     }
 
     @Test
-    public void hent_saksnummer_skal_returnerer_500_hvis_klient_returnerer_200_med_errorfeilmeldinger() throws IOException {
-        mockServerRule.getClient()
-                      .when(
-                              HttpRequest
-                                      .request()
-                                      .withMethod("POST")
-                                      .withHeader(new Header("Content-Type", "application/json"))
-                                      .withPath("/rest/saf/graphql")
-                      )
+    fun `hent saksnummer skal returnerer 500 hvis klient returnerer 200 med feilmeldinger`() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withHeader(Header("Content-Type", "application/json"))
+                                .withPath("/rest/saf/graphql"))
+                .respond(HttpResponse.response().withBody(testdata("error_fra_saf.json"))
+                                 .withHeaders(Header("Content-Type", "application/json")))
 
-                      .respond(
-                              HttpResponse.response().withBody(testdata("error_fra_saf.json")).withHeaders(
-                                      new Header("Content-Type", "application/json"))
-                      );
+        val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
+                                                                                           HttpMethod.GET,
+                                                                                           HttpEntity<String>(headers))
 
-
-        ResponseEntity<Ressurs> response =
-                restTemplate.exchange(uriHentSaksnummer, HttpMethod.GET, new HttpEntity<String>(headers), Ressurs.class
-                );
-
-        assertThat(response.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
-        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
-        assertThat(response.getBody().getMelding()).contains(
-                "Feil ved henting av journalpost=12345678 klientfeilmelding=Kan ikke hente journalpost [SafError{message='Feilet ved henting av data (/journalpost) : null', exceptionType='TECHNICAL', exception='NullPointerException'}]");
-        assertThat(loggingEvents).extracting(ILoggingEvent::getLevel).containsExactly(Level.WARN);
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        Assertions.assertThat(response.body?.melding)
+                .contains("Feil ved henting av journalpost=12345678 klientfeilmelding=Kan ikke hente journalpost " +
+                          "[SafError{message='Feilet ved henting av data (/journalpost) : null', " +
+                          "exceptionType='TECHNICAL', exception='NullPointerException'}]")
+        Assertions.assertThat(loggingEvents)
+                .extracting<Level, RuntimeException> { obj: ILoggingEvent -> obj.level }
+                .containsExactly(Level.WARN)
     }
 
     @Test
-    public void hent_saksnummer_skal_returnere_500_ved_ukjent_feil() {
-        mockServerRule.getClient()
-                      .when(
-                              HttpRequest
-                                      .request()
-                                      .withMethod("POST")
-                                      .withHeader(new Header("Content-Type", "application/json"))
-                                      .withPath("/rest/saf/graphql")
-                      )
+    fun `hent saksnummer skal returnere 500 ved ukjent feil`() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withHeader(Header("Content-Type", "application/json"))
+                                .withPath("/rest/saf/graphql"))
+                .respond(HttpResponse.response().withStatusCode(500).withBody("feilmelding"))
 
-                      .respond(
-                              HttpResponse.response().withStatusCode(500).withBody("feilmelding")
-                      );
+        val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
+                                                                                           HttpMethod.GET,
+                                                                                           HttpEntity<String>(headers))
 
-
-        ResponseEntity<Ressurs> response =
-                restTemplate.exchange(uriHentSaksnummer, HttpMethod.GET, new HttpEntity<String>(headers), Ressurs.class
-                );
-
-        assertThat(response.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
-        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
-        assertThat(response.getBody().getMelding()).contains(
-                "Feil ved henting av journalpost=12345678 statuscode=500 INTERNAL_SERVER_ERROR body=feilmelding");
-        assertThat(loggingEvents).extracting(ILoggingEvent::getLevel).containsExactly(Level.WARN);
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        Assertions.assertThat(response.body?.melding)
+                .contains("Feil ved henting av journalpost=12345678 statuscode=500 INTERNAL_SERVER_ERROR body=feilmelding")
+        Assertions.assertThat(loggingEvents)
+                .extracting<Level, RuntimeException> { obj: ILoggingEvent -> obj.level }
+                .containsExactly(Level.WARN)
     }
 
     @Test
-    public void hente_journalpost_basert_på_kanalreferanseId_skal_returnere_journalpost() {
-        ResponseEntity<Ressurs> response = restTemplate.exchange(
-                fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
-                        .queryParam("kanalReferanseId", JOURNALPOST_ID).toUriString(),
-                HttpMethod.GET,
-                new HttpEntity<String>(headers),
-                Ressurs.class
-        );
+    fun `hente journalpost basert på kanalreferanseId skal returnere journalpost`() {
+        val response: ResponseEntity<Ressurs<Map<String, String>>> =
+                restTemplate.exchange(UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
+                                              .queryParam("kanalReferanseId", JOURNALPOST_ID).toUriString(),
+                                      HttpMethod.GET,
+                                      HttpEntity<String>(headers))
 
-        assertThat(response.getStatusCode()).isEqualTo(OK);
-        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.SUKSESS);
-        assertThat(((LinkedHashMap<Object, String>) response.getBody().getData()).get("journalpostId")).isEqualTo(JOURNALPOST_ID);
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        Assertions.assertThat(response.body?.data?.get("journalpostId")).isEqualTo(JOURNALPOST_ID)
     }
 
     @Test
-    public void hente_journalpost_basert_på_kanalreferanseId_skal_returnere_not_found_hvis_ingen_journalpost() {
-        ResponseEntity<Ressurs> response = restTemplate.exchange(fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
-                                                                         .queryParam("kanalReferanseId", NOT_FOUND_CALLID)
-                                                                         .toUriString(),
-                                                                 HttpMethod.GET,
-                                                                 new HttpEntity<String>(headers),
-                                                                 Ressurs.class
-        );
+    fun `hente journalpost basert på kanalreferanseId skal returnere not found hvis ingen journalpost`() {
+        val response: ResponseEntity<Ressurs<Map<String, String>>> =
+                restTemplate.exchange(UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
+                                              .queryParam("kanalReferanseId",
+                                                          HentJournalpostTestConfig.NOT_FOUND_CALLID)
+                                              .toUriString(),
+                                      HttpMethod.GET,
+                                      HttpEntity<String>(headers))
 
-        assertThat(response.getStatusCode()).isEqualTo(NOT_FOUND);
-        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
     @Test
-    public void hente_journalpost_basert_på_kanalreferanseId_skal_returnere_internal_error_ved_ukjent_feil() {
-        ResponseEntity<Ressurs> response = restTemplate.exchange(fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
-                                                                         .queryParam("kanalReferanseId", GENERISK_ERROR_CALLID)
-                                                                         .toUriString(),
-                                                                 HttpMethod.GET,
-                                                                 new HttpEntity<String>(headers),
-                                                                 Ressurs.class
-        );
+    fun `hente journalpost basert på kanalreferanseId skal returnere internal error ved ukjent feil`() {
+        val response: ResponseEntity<Ressurs<Map<String, String>>> =
+                restTemplate.exchange(UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
+                                              .queryParam("kanalReferanseId",
+                                                          HentJournalpostTestConfig.GENERISK_ERROR_CALLID)
+                                              .toUriString(),
+                                      HttpMethod.GET,
+                                      HttpEntity<String>(headers))
 
-        assertThat(response.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
-        assertThat(loggingEvents).extracting(ILoggingEvent::getLevel).containsExactly(Level.WARN);
-        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        Assertions.assertThat(loggingEvents)
+                .extracting<Level, RuntimeException> { obj: ILoggingEvent -> obj.level }
+                .containsExactly(Level.WARN)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
-    private String testdata(String filnavn) throws IOException {
-        return Files.readString(new ClassPathResource("saf/" + filnavn).getFile().toPath(), StandardCharsets.UTF_8);
+    private fun testdata(filnavn: String): String {
+        return Files.readString(ClassPathResource("saf/$filnavn").file.toPath(), StandardCharsets.UTF_8)
     }
 
+    companion object {
+        const val MOCK_SERVER_PORT = 18321
+        const val JOURNALPOST_ID = "12345678"
+        const val SAKSNUMMER = "87654321"
+        const val JOURNALPOST_BASE_URL = "/api/journalpost/"
+    }
 }

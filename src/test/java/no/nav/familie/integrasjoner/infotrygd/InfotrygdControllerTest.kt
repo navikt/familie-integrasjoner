@@ -1,112 +1,118 @@
-package no.nav.familie.integrasjoner.infotrygd;
+package no.nav.familie.integrasjoner.infotrygd
 
-import no.nav.familie.http.azure.AccessTokenClient;
-import no.nav.familie.http.azure.AccessTokenDto;
-import no.nav.familie.integrasjoner.OppslagSpringRunnerTest;
-import no.nav.familie.kontrakter.felles.Ressurs;
-import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockserver.junit.MockServerRule;
-import org.mockserver.model.HttpRequest;
-import org.mockserver.model.HttpResponse;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.client.HttpServerErrorException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import no.nav.familie.http.azure.AccessTokenClient
+import no.nav.familie.http.azure.AccessTokenDto
+import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.integrasjoner.infotrygd.domene.AktivKontantstøtteInfo
+import no.nav.familie.kontrakter.felles.Ressurs
+import org.assertj.core.api.Assertions
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import org.mockito.Mockito
+import org.mockserver.junit.MockServerRule
+import org.mockserver.model.HttpRequest
+import org.mockserver.model.HttpResponse
+import org.springframework.boot.test.web.client.exchange
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.web.client.HttpServerErrorException
 
 @ActiveProfiles("integrasjonstest")
-public class InfotrygdControllerTest extends OppslagSpringRunnerTest {
-    public static final int MOCK_SERVER_PORT = 18321;
-    public static final String HAR_BARN_AKTIV_KONTANTSTØTTE = "/api/infotrygd/v1/harBarnAktivKontantstotte";
-    AccessTokenClient accessTokenClient = mock(AccessTokenClient.class);
-    InfotrygdService infotrygdService = new InfotrygdService(accessTokenClient, "", "http://localhost:" + MOCK_SERVER_PORT);
+class InfotrygdControllerTest : OppslagSpringRunnerTest() {
 
-    @Rule
-    public MockServerRule mockServerRule = new MockServerRule(this, MOCK_SERVER_PORT);
+    private val accessTokenClient: AccessTokenClient = Mockito.mock(AccessTokenClient::class.java)
+    private val infotrygdService = InfotrygdService(accessTokenClient, "", "http://localhost:$MOCK_SERVER_PORT")
 
-    @Before
-    public void setUp() {
-        headers.setBearerAuth(getLokalTestToken());
-        when(accessTokenClient.getAccessToken("")).thenReturn(new AccessTokenDto("", "", 0));
+    @get:Rule
+    val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
+
+    @Before fun setUp() {
+        headers.setBearerAuth(lokalTestToken)
+        Mockito.`when`(accessTokenClient.getAccessToken("")).thenReturn(AccessTokenDto("", "", 0))
     }
 
     @Test
-    public void skal_gi_bad_request_hvis_fnr_mangler() {
-        var response = restTemplate.exchange(
-                localhost(HAR_BARN_AKTIV_KONTANTSTØTTE), HttpMethod.GET, new HttpEntity<>(headers), Ressurs.class
-        );
+    fun `skal gi bad request hvis fnr mangler`() {
+        val response: ResponseEntity<Ressurs<AktivKontantstøtteInfo>> =
+                restTemplate.exchange(localhost(HAR_BARN_AKTIV_KONTANTSTØTTE),
+                                      HttpMethod.GET,
+                                      HttpEntity<Any>(headers))
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
-        assertThat(response.getBody().getMelding()).isEqualTo("Mangler påkrevd request header");
-        assertThat(response.getBody().getStacktrace()).contains("Missing request header 'Nav-Personident' for method parameter of type String");
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        Assertions.assertThat(response.body?.melding).isEqualTo("Mangler påkrevd request header")
+        Assertions.assertThat(response.body?.stacktrace)
+                .contains("Missing request header 'Nav-Personident' for method parameter of type String")
     }
 
     @Test
-    public void skal_feile_når_fnr_ikke_er_et_tall() {
-        headers.add("Nav-Personident", "foo");
+    fun `skal feile når fnr ikke er et tall`() {
+        headers.add("Nav-Personident", "foo")
 
-        var response = restTemplate.exchange(
-                localhost(HAR_BARN_AKTIV_KONTANTSTØTTE), HttpMethod.GET, new HttpEntity<>(headers), Ressurs.class
-        );
+        val response: ResponseEntity<Ressurs<AktivKontantstøtteInfo>> =
+                restTemplate.exchange(localhost(HAR_BARN_AKTIV_KONTANTSTØTTE),
+                                      HttpMethod.GET,
+                                      HttpEntity<Any>(headers))
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.FEILET);
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
     @Test
-    public void skal_korrekt_behandle_returobjekt() {
-        spesifiserResponsFraInfotrygd("{ \"harAktivKontantstotte\": true }");
-        var aktivKontantstøtteInfo = infotrygdService.hentAktivKontantstøtteFor("12345678901");
-        Assertions.assertThat(aktivKontantstøtteInfo.getHarAktivKontantstotte()).isEqualTo(true);
+    fun `skal korrekt behandle returobjekt`() {
+        spesifiserResponsFraInfotrygd("{ \"harAktivKontantstotte\": true }")
+
+        val aktivKontantstøtteInfo = infotrygdService.hentAktivKontantstøtteFor("12345678901")
+
+        Assertions.assertThat(aktivKontantstøtteInfo.harAktivKontantstotte).isEqualTo(true)
     }
 
     @Test
-    public void skal_tolerere_returobjekt_med_flere_verdier() {
-        spesifiserResponsFraInfotrygd("{ \"harAktivKontantstotte\": true, \"foo\": 42 }");
-        var aktivKontantstøtteInfo = infotrygdService.hentAktivKontantstøtteFor("12345678901");
-        Assertions.assertThat(aktivKontantstøtteInfo.getHarAktivKontantstotte()).isEqualTo(true);
+    fun `skal tolerere returobjekt med flere verdier`() {
+        spesifiserResponsFraInfotrygd("{ \"harAktivKontantstotte\": true, \"foo\": 42 }")
+
+        val aktivKontantstøtteInfo = infotrygdService.hentAktivKontantstøtteFor("12345678901")
+
+        Assertions.assertThat(aktivKontantstøtteInfo.harAktivKontantstotte).isEqualTo(true)
     }
 
     @Test
-    public void skal_feile_når_respons_mangler() {
-        spesifiserResponsFraInfotrygd("");
+    fun `skal feile når respons mangler`() {
+        spesifiserResponsFraInfotrygd("")
 
-        assertThatThrownBy(() -> infotrygdService.hentAktivKontantstøtteFor("12345678901")).isInstanceOf(HttpServerErrorException.class);
+        Assertions.assertThatThrownBy { infotrygdService.hentAktivKontantstøtteFor("12345678901") }
+                .isInstanceOf(HttpServerErrorException::class.java)
     }
 
     @Test
-    public void skal_feile_når_returobjekt_er_tomt() {
-        spesifiserResponsFraInfotrygd("{}");
+    fun `skal feile når returobjekt er tomt`() {
+        spesifiserResponsFraInfotrygd("{}")
 
-        assertThatThrownBy(() -> infotrygdService.hentAktivKontantstøtteFor("12345678901")).isInstanceOf(HttpServerErrorException.class);
+        Assertions.assertThatThrownBy { infotrygdService.hentAktivKontantstøtteFor("12345678901") }
+                .isInstanceOf(HttpServerErrorException::class.java)
     }
 
-    @Test
-    public void skal_feile_når_returobjekt_har_feil_type() {
-        spesifiserResponsFraInfotrygd("{ \"harAKtivKontantstotte\": 42 }");
+    @Test fun `skal feile når returobjekt har feil type`() {
+        spesifiserResponsFraInfotrygd("{ \"harAKtivKontantstotte\": 42 }")
 
-        assertThatThrownBy(() -> infotrygdService.hentAktivKontantstøtteFor("12345678901")).isInstanceOf(HttpServerErrorException.class);
+        Assertions.assertThatThrownBy { infotrygdService.hentAktivKontantstøtteFor("12345678901") }
+                .isInstanceOf(HttpServerErrorException::class.java)
     }
 
-    private void spesifiserResponsFraInfotrygd(String respons) {
-        mockServerRule.getClient()
-                .when(
-                        HttpRequest
-                                .request()
+    private fun spesifiserResponsFraInfotrygd(respons: String) {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
                                 .withMethod("GET")
-                                .withPath("/v1/harBarnAktivKontantstotte")
-                )
-                .respond(
-                        HttpResponse.response().withHeader("Content-Type", "application/json").withBody(respons)
-                );
+                                .withPath("/v1/harBarnAktivKontantstotte"))
+                .respond(HttpResponse.response().withHeader("Content-Type", "application/json").withBody(respons))
+    }
+
+    companion object {
+        const val MOCK_SERVER_PORT = 18321
+        const val HAR_BARN_AKTIV_KONTANTSTØTTE = "/api/infotrygd/v1/harBarnAktivKontantstotte"
     }
 }
