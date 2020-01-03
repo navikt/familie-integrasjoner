@@ -1,11 +1,9 @@
 package no.nav.familie.integrasjoner.dokarkiv;
 
-import no.nav.familie.ks.kontrakter.sak.Ressurs;
+import com.fasterxml.jackson.databind.JsonNode;
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest;
-import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest;
-import no.nav.familie.integrasjoner.dokarkiv.api.Dokument;
-import no.nav.familie.integrasjoner.dokarkiv.api.DokumentType;
-import no.nav.familie.integrasjoner.dokarkiv.api.FilType;
+import no.nav.familie.integrasjoner.dokarkiv.api.*;
+import no.nav.familie.kontrakter.felles.Ressurs;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,6 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -92,8 +91,8 @@ public class DokarkivControllerTest extends OppslagSpringRunnerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(CREATED);
         assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.SUKSESS);
-        assertThat(response.getBody().getData().get("journalpostId").textValue()).isEqualTo("12345678");
-        assertThat(response.getBody().getData().get("ferdigstilt").booleanValue()).isFalse();
+        assertThat(((LinkedHashMap<Object, String>) response.getBody().getData()).get("journalpostId")).isEqualTo("12345678");
+        assertThat(((LinkedHashMap<Object, Boolean>) response.getBody().getData()).get("ferdigstilt")).isFalse();
     }
 
     @Test
@@ -118,8 +117,8 @@ public class DokarkivControllerTest extends OppslagSpringRunnerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(CREATED);
         assertThat(response.getBody().getStatus()).isEqualTo(Ressurs.Status.SUKSESS);
-        assertThat(response.getBody().getData().get("journalpostId").textValue()).isEqualTo("12345678");
-        assertThat(response.getBody().getData().get("ferdigstilt").booleanValue()).isFalse();
+        assertThat(((LinkedHashMap<Object, String>) response.getBody().getData()).get("journalpostId")).isEqualTo("12345678");
+        assertThat(((LinkedHashMap<Object, Boolean>) response.getBody().getData()).get("ferdigstilt")).isFalse();
     }
 
     @Test

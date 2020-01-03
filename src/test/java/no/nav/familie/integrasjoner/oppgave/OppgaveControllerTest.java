@@ -4,7 +4,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest;
 import no.nav.familie.integrasjoner.config.ApiExceptionHandler;
-import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
+import no.nav.familie.kontrakter.ks.oppgave.Oppgave;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -2,7 +2,7 @@ package no.nav.familie.integrasjoner.dokarkiv;
 
 import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest;
 import no.nav.familie.integrasjoner.dokarkiv.client.KanIkkeFerdigstilleJournalpostException;
-import no.nav.familie.ks.kontrakter.sak.Ressurs;
+import no.nav.familie.kontrakter.felles.Ressurs;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

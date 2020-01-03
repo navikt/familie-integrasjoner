@@ -22,8 +22,8 @@
         <java.version>11</java.version>
         <springfox.version>2.9.2</springfox.version>
         <common-java-modules.version>1.2019.11.06-15.14-6ca860e6cead</common-java-modules.version>
-        <felles.version>1.0_20191209150153_79be54b</felles.version>
-        <kontrakt.version>1.0_20191115092849_f8fbb14</kontrakt.version>
+        <felles.version>1.0_20191230205149_509e1c9</felles.version>
+        <kontrakt.version>2.0_20191217102701_8d60148</kontrakt.version>
         <cxf.version>3.3.4</cxf.version>
         <token-validation-spring.version>1.1.2</token-validation-spring.version>
         <tjenestespesifikasjoner.version>1.2019.09.25-00.21-49b69f0625e0</tjenestespesifikasjoner.version>
@@ -151,15 +151,14 @@
             <version>${felles.version}</version>
         </dependency>
         <dependency>
-            <groupId>no.nav.familie.felles</groupId>
-            <artifactId>kontrakt</artifactId>
-            <version>${felles.version}</version>
+            <groupId>no.nav.familie.kontrakter</groupId>
+            <artifactId>kontantstotte</artifactId>
+            <version>2.0_20191217102701_8d60148</version>
         </dependency>
-
         <dependency>
-            <groupId>no.nav.familie.ks</groupId>
-            <artifactId>kontrakt</artifactId>
-            <version>${kontrakt.version}</version>
+            <groupId>no.nav.familie.kontrakter</groupId>
+            <artifactId>felles</artifactId>
+            <version>2.0_20191217102701_8d60148</version>
         </dependency>
 
         <!-- WSDL -->
