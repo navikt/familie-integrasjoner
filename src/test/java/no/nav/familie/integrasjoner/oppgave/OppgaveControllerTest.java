@@ -2,9 +2,9 @@ package no.nav.familie.integrasjoner.oppgave;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest;
 import no.nav.familie.integrasjoner.config.ApiExceptionHandler;
+import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,15 +31,17 @@ public class OppgaveControllerTest extends OppslagSpringRunnerTest {
     private static final String OPPDATER_OPPGAVE_URL = "/api/oppgave/oppdater";
     private static final Integer MOCK_SERVER_PORT = 18321;
 
-    private Logger oppgaveControllerLogger = (Logger) LoggerFactory.getLogger(OppgaveController.class);
-    private Logger exceptionHandler = (Logger) LoggerFactory.getLogger(ApiExceptionHandler.class);
 
     @Rule
     public MockServerRule mockServerRule = new MockServerRule(this, MOCK_SERVER_PORT);
 
     @Before
     public void setup() {
+        Logger oppgaveControllerLogger = (Logger) LoggerFactory.getLogger(OppgaveController.class);
+        Logger oppgaveServiceLogger = (Logger) LoggerFactory.getLogger(OppgaveService.class);
+        Logger exceptionHandler = (Logger) LoggerFactory.getLogger(ApiExceptionHandler.class);
         oppgaveControllerLogger.addAppender(listAppender);
+        oppgaveServiceLogger.addAppender(listAppender);
         exceptionHandler.addAppender(listAppender);
 
         headers.setBearerAuth(getLokalTestToken());
@@ -99,7 +101,7 @@ public class OppgaveControllerTest extends OppslagSpringRunnerTest {
                                 .withPath("/api/v1/oppgaver")
                 )
                 .respond(
-                        HttpResponse.response().withBody(gyldigOppgaveResponse()).withHeaders(
+                        HttpResponse.response().withBody(gyldigOppgaveResponse("tom_response.json")).withHeaders(
                                 new Header("Content-Type", "application/json"))
                 );
 
@@ -114,7 +116,33 @@ public class OppgaveControllerTest extends OppslagSpringRunnerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
-    private String gyldigOppgaveResponse() throws IOException {
-        return Files.readString(new ClassPathResource("oppgave/tom_response.json").getFile().toPath(), StandardCharsets.UTF_8);
+
+    @Test
+    public void skal_ignorere_oppdatering_hvis_oppgave_er_ferdigstilt() throws IOException {
+        mockServerRule.getClient()
+                .when(
+                        HttpRequest
+                                .request()
+                                .withMethod("GET")
+                                .withPath("/api/v1/oppgaver")
+                )
+                .respond(
+                        HttpResponse.response().withBody(gyldigOppgaveResponse("ferdigstilt_oppgave.json")).withHeaders(
+                                new Header("Content-Type", "application/json"))
+                );
+
+        Oppgave test = new Oppgave("1234567891011", "1", null, "test oppgave ikke funnet");
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                localhost(OPPDATER_OPPGAVE_URL), HttpMethod.POST, new HttpEntity<>(test, headers), String.class
+        );
+        assertThat(loggingEvents).extracting(ILoggingEvent::getFormattedMessage).anyMatch(s ->
+                s.contains("Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId=1234567891011 journalpostId=123456789 oppgaveId=315488374")
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    private String gyldigOppgaveResponse(String filnavn) throws IOException {
+        return Files.readString(new ClassPathResource("oppgave/" + filnavn).getFile().toPath(), StandardCharsets.UTF_8);
     }
 }
