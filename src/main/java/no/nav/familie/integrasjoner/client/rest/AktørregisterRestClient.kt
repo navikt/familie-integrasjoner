@@ -39,7 +39,7 @@ class AktørregisterRestClient(@Value("\${AKTOERID_URL}")
         private const val NAV_PERSONIDENTER = "Nav-Personidenter"
         private const val AKTOERID_IDENTGRUPPE = "AktoerId"
         private const val PERSONIDENT_IDENTGRUPPE = "NorskIdent"
-        private const val PATH_PING = "client/isAlive"
+        private const val PATH_PING = "internal/isAlive"
         private const val PATH_HENT_AKTØR_ID = "api/v1/identer?gjeldende=true&identgruppe=%s"
         private const val PATH_HENT_PERSONIDENT = "api/v1/identer?gjeldende=true&identgruppe=%s"
     }

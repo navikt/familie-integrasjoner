@@ -2,7 +2,6 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.azure.domene.Saksbehandler
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
