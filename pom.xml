@@ -319,6 +319,7 @@
                         <configuration>
                             <sourceDirs>
                                 <source>src/main/java</source>
+                                <source>target/generated-sources/swagger/oppgave</source>
                             </sourceDirs>
                         </configuration>
                     </execution>

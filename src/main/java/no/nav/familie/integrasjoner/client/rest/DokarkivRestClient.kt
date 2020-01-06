@@ -8,6 +8,7 @@ import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRes
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.RestOperations
 import java.net.URI
@@ -51,7 +52,7 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
             try {
                 patchForEntity<Any>(uri, FerdigstillJournalPost(journalførendeEnhet))
             } catch (e: RuntimeException) {
-                if (e.cause is RestClientResponseException && (e.cause as RestClientResponseException).rawStatusCode == 400) {
+                if (e.cause is HttpClientErrorException.BadRequest) {
                     throw KanIkkeFerdigstilleJournalpostException("Kan ikke ferdigstille journalpost $journalpostId")
                 }
                 throw e

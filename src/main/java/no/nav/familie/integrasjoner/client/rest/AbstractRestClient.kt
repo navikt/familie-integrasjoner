@@ -15,35 +15,35 @@ import java.util.concurrent.TimeUnit
 abstract class AbstractRestClient(protected val operations: RestOperations,
                                   metricsPrefix: String) {
 
-    protected val responstid: Timer = Metrics.timer("$metricsPrefix.tid")
-    protected val responsSuccess: Counter = Metrics.counter("$metricsPrefix.response", "status", "success")
+    private val responstid: Timer = Metrics.timer("$metricsPrefix.tid")
+    private val responsSuccess: Counter = Metrics.counter("$metricsPrefix.response", "status", "success")
     protected val responsFailure: Counter = Metrics.counter("$metricsPrefix.response", "status", "failure")
 
     private val confidential: Marker = MarkerFactory.getMarker("CONFIDENTIAL")
     protected val log: Logger = LoggerFactory.getLogger(this::class.java)
 
     protected inline fun <reified T : Any> getForEntity(uri: URI): T {
-        return executeMedMetrics(uri) { operations.getForEntity<T>(uri) } ?: error("Get feilet ved kall til $uri")
+        return getForEntity(uri, null)
     }
 
-    protected inline fun <reified T : Any> getForEntity(uri: URI, httpHeaders: HttpHeaders): T {
+    protected inline fun <reified T : Any> getForEntity(uri: URI, httpHeaders: HttpHeaders?): T {
         return executeMedMetrics(uri) { operations.exchange<T>(uri, HttpMethod.GET, HttpEntity(null, httpHeaders)) }
                ?: error("Get feilet ved kall til $uri")
     }
 
     protected inline fun <reified T : Any> postForEntity(uri: URI, payload: Any): T? {
-        return executeMedMetrics(uri) { operations.postForEntity<T>(uri, payload) }
+        return postForEntity(uri, payload, null)
     }
 
-    protected inline fun <reified T : Any> postForEntity(uri: URI, payload: Any, httpHeaders: HttpHeaders): T? {
+    protected inline fun <reified T : Any> postForEntity(uri: URI, payload: Any, httpHeaders: HttpHeaders?): T? {
         return executeMedMetrics(uri) { operations.exchange<T>(uri, HttpMethod.POST, HttpEntity(payload, httpHeaders)) }
     }
 
     protected inline fun <reified T : Any> putForEntity(uri: URI, payload: Any): T? {
-        return executeMedMetrics(uri) { operations.exchange<T>(RequestEntity.put(uri).body(payload)) }
+        return putForEntity(uri, payload, null)
     }
 
-    protected inline fun <reified T : Any> putForEntity(uri: URI, payload: Any, httpHeaders: HttpHeaders): T? {
+    protected inline fun <reified T : Any> putForEntity(uri: URI, payload: Any, httpHeaders: HttpHeaders?): T? {
         return executeMedMetrics(uri) { operations.exchange<T>(uri, HttpMethod.PUT, HttpEntity(payload, httpHeaders)) }
     }
 
