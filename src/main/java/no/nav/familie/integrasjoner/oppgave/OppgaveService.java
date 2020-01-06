@@ -29,7 +29,11 @@ public class OppgaveService {
         } else {
             oppgaveJsonDto = oppgaveClient.finnOppgave(request.getEksisterendeOppgaveId());
         }
-        oppgaveClient.oppdaterOppgave(oppgaveJsonDto, request.getBeskrivelse());
+        if (oppgaveJsonDto.getStatus() == OppgaveJsonDto.StatusEnum.FERDIGSTILT) {
+            LOG.info("Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId={} journalpostId={} oppgaveId={}", oppgaveJsonDto.getAktoerId(), oppgaveJsonDto.getJournalpostId(), oppgaveJsonDto.getId());
+        } else {
+            oppgaveClient.oppdaterOppgave(oppgaveJsonDto, request.getBeskrivelse());
+        }
         return oppgaveJsonDto.getId();
     }
 }
