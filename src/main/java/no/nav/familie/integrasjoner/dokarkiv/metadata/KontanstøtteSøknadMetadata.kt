@@ -3,7 +3,7 @@ package no.nav.familie.integrasjoner.dokarkiv.metadata
 import org.springframework.stereotype.Component
 
 @Component
-object KontanstøtteSøknadMetadata : AbstractDokumentMetadata() {
+object KontanstøtteSøknadMetadata : DokumentMetadata {
 
     override val tema: String = "KON"
     override val behandlingstema: String? = "ab0084" // https://confluence.adeo.no/display/BOA/Behandlingstema

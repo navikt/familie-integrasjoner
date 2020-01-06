@@ -4,11 +4,11 @@ import no.nav.familie.integrasjoner.dokarkiv.api.Dokument
 import org.springframework.stereotype.Component
 
 @Component
-class DokarkivMetadata(vararg dokumentMetadata: AbstractDokumentMetadata) {
+class DokarkivMetadata(vararg dokumentMetadata: DokumentMetadata) {
 
-    val metadata: Map<String, AbstractDokumentMetadata> = dokumentMetadata.associateBy { it.dokumentTypeId }
+    val metadata: Map<String, DokumentMetadata> = dokumentMetadata.associateBy { it.dokumentTypeId }
 
-    fun getMetadata(dokument: Dokument): AbstractDokumentMetadata {
+    fun getMetadata(dokument: Dokument): DokumentMetadata {
         return metadata[dokument.dokumentType] ?: error("Ukjent dokumenttype ${dokument.dokumentType}")
     }
 }
