@@ -66,7 +66,7 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
         }
         return ArkivDokument(brevkode = metadata.brevkode,
                              dokumentKategori = metadata.dokumentKategori,
-                             tittel = metadata.tittel,
+                             tittel = metadata.tittel ?: dokument.tittel,
                              dokumentvarianter = listOf(DokumentVariant(dokument.filType.name,
                                                                         variantFormat,
                                                                         dokument.dokument,

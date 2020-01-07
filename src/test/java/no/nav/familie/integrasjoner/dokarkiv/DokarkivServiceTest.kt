@@ -49,7 +49,7 @@ class DokarkivServiceTest {
                                     .build())
         val dto = ArkiverDokumentRequest(FNR,
                                          false,
-                                         listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, "KONTANTSTØTTE_SØKNAD")))
+                                         listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
 
         dokarkivService.lagInngåendeJournalpost(dto)
 
@@ -70,7 +70,7 @@ class DokarkivServiceTest {
                                     .build())
         val dto = ArkiverDokumentRequest(FNR,
                                          false,
-                                         listOf(Dokument(JSON_DOK, FilType.JSON, FILNAVN, "KONTANTSTØTTE_SØKNAD")))
+                                         listOf(Dokument(JSON_DOK, FilType.JSON, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
 
         dokarkivService.lagInngåendeJournalpost(dto)
 
@@ -93,7 +93,7 @@ class DokarkivServiceTest {
                                     .build())
         val dto = ArkiverDokumentRequest(FNR,
                                          false,
-                                         listOf(Dokument(JSON_DOK, FilType.JSON, FILNAVN, "KONTANTSTØTTE_SØKNAD")))
+                                         listOf(Dokument(JSON_DOK, FilType.JSON, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
 
         val arkiverDokumentResponse = dokarkivService.lagInngåendeJournalpost(dto)
 
@@ -105,7 +105,7 @@ class DokarkivServiceTest {
         Mockito.`when`(personopplysningerService.hentPersoninfoFor(FNR)).thenReturn(null)
         val dto = ArkiverDokumentRequest(FNR,
                                          false,
-                                         listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, "KONTANTSTØTTE_SØKNAD")))
+                                         listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
 
         val thrown = Assertions.catchThrowable { dokarkivService.lagInngåendeJournalpost(dto) }
 

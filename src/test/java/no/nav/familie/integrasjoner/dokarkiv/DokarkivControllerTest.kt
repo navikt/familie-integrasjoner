@@ -111,6 +111,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                           listOf(Dokument("foo".toByteArray(),
                                                           FilType.PDFA,
                                                           null,
+                                                          null,
                                                           "KONTANTSTØTTE_SØKNAD")))
 
         val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL),
@@ -170,10 +171,12 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
         private val HOVEDDOKUMENT = Dokument("foo".toByteArray(),
                                              FilType.PDFA,
                                              "filnavn",
+                                             null,
                                              "KONTANTSTØTTE_SØKNAD")
         private val VEDLEGG = Dokument("foo".toByteArray(),
                                        FilType.PDFA,
                                        "filnavn",
+                                       "Vedlegg",
                                        "KONTANTSTØTTE_SØKNAD_VEDLEGG")
     }
 }
