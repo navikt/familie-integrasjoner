@@ -77,4 +77,5 @@ abstract class AbstractRestClient(protected val operations: RestOperations,
     }
 
     override fun toString(): String = this::class.simpleName + " [operations=" + operations + "]"
+
 }
