@@ -1,5 +1,7 @@
 package no.nav.familie.integrasjoner.arbeidsfordeling
 
+import no.nav.familie.integrasjoner.client.Pingable
+import no.nav.familie.integrasjoner.client.soap.AbstractSoapClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.ArbeidsfordelingKriterier
@@ -12,11 +14,11 @@ import org.springframework.stereotype.Service
 
 
 @Service
-class ArbeidsfordelingClient(
-        private val arbeidsfordelingV1: ArbeidsfordelingV1
-) {
+class ArbeidsfordelingClient(private val arbeidsfordelingV1: ArbeidsfordelingV1)
+    : AbstractSoapClient("arbeidsfordeling"), Pingable {
 
-    fun ping() {
+
+    override fun ping() {
         arbeidsfordelingV1.ping()
     }
 
@@ -44,13 +46,12 @@ class ArbeidsfordelingClient(
         return Result.runCatching { arbeidsfordelingV1.finnBehandlendeEnhetListe(request) }
                 .map { it.behandlendeEnhetListe.map { enhet -> Enhet(enhet.enhetId, enhet.enhetNavn) } }
                 .onFailure {
-                    throw OppslagException("Ugyldig input tema=%s geografiskOmråde=%s melding=%s".format(gjeldendeTema,
-                                                                                                         gjeldendeGeografiskOmråde,
-                                                                                                         it.message),
-                                           "ArbeidsfordelingV1.finnBehandlendeEnhet",
-                                           OppslagException.Level.MEDIUM,
-                                           HttpStatus.INTERNAL_SERVER_ERROR,
-                                           it)
+                    throw OppslagException(
+                            "Ugyldig input tema=$gjeldendeTema geografiskOmråde=$gjeldendeGeografiskOmråde melding=${it.message}",
+                            "ArbeidsfordelingV1.finnBehandlendeEnhet",
+                            OppslagException.Level.MEDIUM,
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            it)
                 }
                 .getOrThrow()
 
