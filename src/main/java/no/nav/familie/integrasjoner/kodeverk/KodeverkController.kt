@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @Unprotected
-@RequestMapping(path = ["/api/kodeverk/poststed"], produces = [MediaType.APPLICATION_JSON_VALUE])
-class PostnummerController(val kodeverkService: KodeverkService) {
+@RequestMapping(path = ["/api/kodeverk"], produces = [MediaType.APPLICATION_JSON_VALUE])
+class KodeverkController(val kodeverkService: KodeverkService) {
 
-    @GetMapping("/{postnummer}")
+    @GetMapping("/poststed/{postnummer}")
     fun hentPoststedFor(@PathVariable postnummer: String): ResponseEntity<Ressurs<String>> {
         return ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentPoststedFor(postnummer)))
     }
