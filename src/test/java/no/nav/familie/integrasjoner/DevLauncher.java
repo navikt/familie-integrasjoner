@@ -25,7 +25,8 @@ public class DevLauncher {
                         "mock-personopplysninger",
                         "mock-saf",
                         "mock-sts",
-                        "mock-kodeverk"
+                        "mock-kodeverk",
+                        "mock-arbeidsfordeling"
                 ).build();
         app.run(args);
     }

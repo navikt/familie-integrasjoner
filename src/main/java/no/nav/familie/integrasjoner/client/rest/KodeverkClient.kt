@@ -23,7 +23,7 @@ class KodeverkClient(@Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
 
     companion object {
 
-        private const val PATH_PING = "client/isAlive"
+        private const val PATH_PING = "internal/isAlive"
         private const val PATH_POSTNUMMER = "api/v1/kodeverk/Postnummer/koder/betydninger?ekskluderUgyldige=true&spraak=nb"
     }
 }

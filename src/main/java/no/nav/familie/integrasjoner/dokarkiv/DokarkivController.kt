@@ -15,10 +15,13 @@ import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.*
+import java.util.*
 import java.util.function.Consumer
 import javax.validation.Valid
 
-@RestController @ProtectedWithClaims(issuer = "azuread") @RequestMapping("/api/arkiv")
+@RestController
+@ProtectedWithClaims(issuer = "azuread")
+@RequestMapping("/api/arkiv")
 class DokarkivController(private val journalføringService: DokarkivService) {
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
@@ -57,12 +60,10 @@ class DokarkivController(private val journalføringService: DokarkivService) {
 
     @PutMapping("v1/{journalpostId}/ferdigstill")
     @ResponseStatus(HttpStatus.OK)
-    fun ferdigstillJournalpost(@PathVariable(name = "journalpostId") journalpostId: String?,
+    fun ferdigstillJournalpost(@PathVariable(name = "journalpostId") journalpostId: String,
                                @RequestParam(name = "journalfoerendeEnhet")
                                journalførendeEnhet: String): ResponseEntity<Ressurs<Map<String, String>>> {
-        if (journalpostId == null) {
-            return ResponseEntity.badRequest().body(failure("journalpostId er null", null))
-        }
+
         journalføringService.ferdistillJournalpost(journalpostId, journalførendeEnhet)
         return ResponseEntity.ok(success(mapOf("journalpostId" to journalpostId),
                                          "Ferdigstilt journalpost $journalpostId"))

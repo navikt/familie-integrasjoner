@@ -72,7 +72,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
 
     companion object {
 
-        private const val PATH_PING = "client/alive"
+        private const val PATH_PING = "internal/alive"
         private const val PATH_OPPGAVE = "api/v1/oppgaver"
         private const val QUERY_OPPGAVESØK = "aktoerId=%s&tema=%s&oppgavetype=%s&journalpostId=%s"
         private const val TEMA = "KON"

@@ -19,10 +19,7 @@ abstract class AbstractPingableRestClient(operations: RestOperations,
     abstract val pingUri: URI
 
     override fun ping() {
-        val response: ResponseEntity<String> = operations.getForEntity(pingUri)
-        if (!response.statusCode.is2xxSuccessful) {
-            throw HttpServerErrorException(response.statusCode)
-        }
+        operations.getForEntity<String>(pingUri)
     }
 
     override fun toString(): String = this::class.simpleName + " [operations=" + operations + "]"

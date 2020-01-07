@@ -15,7 +15,9 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.web.client.RestTemplateBuilder
+import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory
 import org.springframework.boot.web.servlet.FilterRegistrationBean
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
@@ -25,9 +27,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2
 @SpringBootConfiguration
 @ComponentScan("no.nav.familie")
 @ConfigurationPropertiesScan
+@EnableSwagger2
 @EnableJwtTokenValidation(ignore = ["org.springframework", "springfox.documentation.swagger.web.ApiResourceController"])
 @EnableOAuth2Client(cacheEnabled = true)
-@EnableSwagger2
 class ApplicationConfig {
 
     private val logger = LoggerFactory.getLogger(ApplicationConfig::class.java)
@@ -35,6 +37,7 @@ class ApplicationConfig {
     @Bean("azure")
     fun restTemplateAzureAd(interceptorAzure: AzureBearerTokenClientInterceptor): RestOperations {
         return RestTemplateBuilder()
+                .additionalCustomizers(NaisProxyCustomizer())
                 .interceptors(interceptorAzure)
                 .requestFactory(this::requestFactory)
                 .build()
@@ -60,10 +63,9 @@ class ApplicationConfig {
                 setConnectTimeout(20 * 1000)
             }
 
+
     @Bean
-    fun kotlinModule(): KotlinModule {
-        return KotlinModule()
-    }
+    fun kotlinModule(): KotlinModule = KotlinModule()
 
     @Bean
     fun logFilter(): FilterRegistrationBean<LogFilter> {
