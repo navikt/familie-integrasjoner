@@ -22,11 +22,13 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.RestOperations
+import springfox.documentation.swagger2.annotations.EnableSwagger2
 
 @SpringBootConfiguration
 @ComponentScan("no.nav.familie")
 @ConfigurationPropertiesScan
-@EnableJwtTokenValidation
+@EnableSwagger2
+@EnableJwtTokenValidation(ignore = ["org.springframework", "springfox.documentation.swagger.web.ApiResourceController"])
 @EnableOAuth2Client(cacheEnabled = true)
 class ApplicationConfig {
 
