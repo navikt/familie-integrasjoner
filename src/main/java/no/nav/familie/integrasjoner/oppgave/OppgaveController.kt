@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.oppgave
 
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
+import no.nav.familie.kontrakter.ks.oppgave.Oppgave
 import no.nav.familie.kontrakter.ks.oppgave.toOppgave
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
@@ -18,9 +19,8 @@ import org.springframework.web.bind.annotation.RestController
 class OppgaveController(private val oppgaveService: OppgaveService) {
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdater"])
-    fun oppdaterOppgave(@RequestBody oppgaveJson: String): ResponseEntity<Ressurs<Map<String, Long>>> {
-        val request = oppgaveJson.toOppgave()
-        val oppgaveId = oppgaveService.oppdaterOppgave(request)
+    fun oppdaterOppgave(@RequestBody oppgave: Oppgave): ResponseEntity<Ressurs<Map<String, Long>>> {
+        val oppgaveId = oppgaveService.oppdaterOppgave(oppgave)
         return ResponseEntity.ok().body(success(mapOf("oppgaveId" to oppgaveId), "Oppslag mot oppgave OK"))
     }
 
