@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.kodeverk
 
+import no.nav.familie.integrasjoner.client.rest.KodeverkClient
 import no.nav.familie.integrasjoner.kodeverk.domene.Språk
 import org.springframework.stereotype.Service
 

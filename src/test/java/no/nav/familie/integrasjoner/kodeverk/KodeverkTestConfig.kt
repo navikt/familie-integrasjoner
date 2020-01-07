@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.kodeverk
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import no.nav.familie.integrasjoner.client.rest.KodeverkClient
 import no.nav.familie.integrasjoner.kodeverk.domene.PostnummerDto
 import org.mockito.Mockito
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -38,7 +39,7 @@ class KodeverkTestConfig {
         }
     }
 
-    private fun getFile(): String? {
-        return javaClass.classLoader.getResource("kodeverk/postnummerrespons.json").file
+    private fun getFile(): String {
+        return javaClass.classLoader?.getResource("kodeverk/postnummerrespons.json")?.file ?: error("Testkonfigurasjon feil")
     }
 }

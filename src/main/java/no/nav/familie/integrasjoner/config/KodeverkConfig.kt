@@ -6,12 +6,4 @@ import java.net.URI
 
 @ConfigurationProperties
 @ConstructorBinding
-data class KodeverkConfig(val KODEVERK_URL: String, val CREDENTIAL_USERNAME: String) {
-
-    val postnummerUri= URI(KODEVERK_URL + PATH_POSTNUMMER)
-    val consumer = CREDENTIAL_USERNAME
-
-    companion object {
-        private const val PATH_POSTNUMMER = "/api/v1/kodeverk/Postnummer/koder/betydninger?ekskluderUgyldige=true&spraak=nb"
-    }
-}
+data class KodeverkConfig(val KODEVERK_URL: String) 
