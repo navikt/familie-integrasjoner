@@ -2,6 +2,8 @@ package no.nav.familie.integrasjoner.config
 
 import no.nav.sbl.dialogarena.common.cxf.CXFClient
 import no.nav.tjeneste.pip.egen.ansatt.v1.EgenAnsattV1
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1_Service
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.InnsynJournalV2
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import org.springframework.beans.factory.annotation.Value
@@ -14,6 +16,7 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
                     @Value("\${CREDENTIAL_PASSWORD}") systemuserPwd: String,
                     @Value("\${PERSON_V3_URL}") private val personV3Url: String,
                     @Value("\${INNSYN_JOURNAL_V2_URL}") private val innsynJournalUrl: String,
+                    @Value("\${ARBEIDSFORDELING_V1_URL}") private val arbeidsfordelingUrl: String,
                     @Value("\${EGEN_ANSATT_V1_URL}") private val egenAnsattUrl: String) {
 
     init {
@@ -42,4 +45,12 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
                     .address(egenAnsattUrl)
                     .configureStsForSystemUser()
                     .build()
+
+    @Bean
+    fun arbeidsfordelingV1(): ArbeidsfordelingV1 =
+            CXFClient(ArbeidsfordelingV1::class.java)
+                    .address(arbeidsfordelingUrl)
+                    .configureStsForSystemUser()
+                    .build()
+
 }
