@@ -22,13 +22,6 @@ class ClientMocks {
 
     @Bean
     @Primary
-    @Profile("mock-dokarkiv")
-    fun mockDokarkivRestClient(): DokarkivRestClient {
-        return mockk()
-    }
-
-    @Bean
-    @Primary
     @Profile("mock-infotrygd")
     fun mockInfotrygdRestClient(): InfotrygdRestClient {
         return mockk()
