@@ -15,7 +15,7 @@ class KodeverkClient(@Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
 
     override val pingUri: URI = UriUtil.uri(kodeverkUri, PATH_PING)
 
-    val postnummerUri = UriUtil.uri(kodeverkUri, PATH_POSTNUMMER)
+    val postnummerUri = UriUtil.uri(kodeverkUri, PATH_POSTNUMMER, QUERY_POSTNUMMER)
 
     fun hentPostnummerBetydninger(): PostnummerDto {
         return getForEntity(postnummerUri)
@@ -24,6 +24,7 @@ class KodeverkClient(@Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
     companion object {
 
         private const val PATH_PING = "internal/isAlive"
-        private const val PATH_POSTNUMMER = "api/v1/kodeverk/Postnummer/koder/betydninger?ekskluderUgyldige=true&spraak=nb"
+        private const val PATH_POSTNUMMER = "api/v1/kodeverk/Postnummer/koder/betydninger"
+        private const val QUERY_POSTNUMMER = "ekskluderUgyldige=true&spraak=nb"
     }
 }
