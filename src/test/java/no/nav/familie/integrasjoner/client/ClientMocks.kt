@@ -17,62 +17,62 @@ class ClientMocks {
     @Primary
     @Profile("mock-aktor")
     fun mockAktørregisterRestClient(): AktørregisterRestClient {
-        return mockk()
+        return mockk(relaxed = true)
     }
 
     @Bean
     @Primary
     @Profile("mock-dokarkiv")
     fun mockDokarkivRestClient(): DokarkivRestClient {
-        return mockk()
+        return mockk(relaxed = true)
     }
 
     @Bean
     @Primary
     @Profile("mock-infotrygd")
     fun mockInfotrygdRestClient(): InfotrygdRestClient {
-        return mockk()
+        return mockk(relaxed = true)
     }
 
     @Bean
     @Primary
     @Profile("mock-medlemskap")
     fun mockMedlRestClient(): MedlRestClient {
-        return mockk()
+        return mockk(relaxed = true)
     }
 
     @Bean
     @Primary
     @Profile("mock-oppgave")
     fun mockOppgaveRestClient(): OppgaveRestClient {
-        return mockk()
+        return mockk(relaxed = true)
     }
 
     @Bean
     @Primary
     @Profile("mock-saf")
     fun mockSafRestClient(): SafRestClient {
-        return mockk()
+        return mockk(relaxed = true)
     }
 
     @Bean
     @Primary
     @Profile("mock-egenansatt")
     fun mockEgenAnsattSoapClient(): EgenAnsattSoapClient {
-        return mockk()
+        return mockk(relaxed = true)
     }
 
     @Bean
     @Primary
     @Profile("mock-innsyn")
     fun mockInnsynJournalSoapClient(): InnsynJournalSoapClient {
-        return mockk()
+        return mockk(relaxed = true)
     }
 
     @Bean
     @Primary
     @Profile("mock-personopplysninger")
     fun mockPersonSoapClient(): PersonSoapClient {
-        return mockk()
+        return mockk(relaxed = true)
     }
 }
