@@ -19,7 +19,7 @@ class ArbeidsfordelingTestConfig {
     @Primary
     @Throws(FinnBehandlendeEnhetListeUgyldigInput::class)
     fun arbeidsfordelingMock(): ArbeidsfordelingV1? {
-        val arbeidsfordelingV1 = mockk<ArbeidsfordelingV1>()
+        val arbeidsfordelingV1 = mockk<ArbeidsfordelingV1>(relaxed = true)
 
         every {
             arbeidsfordelingV1.finnBehandlendeEnhetListe(any())

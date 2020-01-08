@@ -19,7 +19,7 @@ abstract class AbstractRestClient(protected val operations: RestOperations,
     private val responsSuccess: Counter = Metrics.counter("$metricsPrefix.response", "status", "success")
     protected val responsFailure: Counter = Metrics.counter("$metricsPrefix.response", "status", "failure")
 
-    private val confidential: Marker = MarkerFactory.getMarker("CONFIDENTIAL")
+    private val secureLogger = LoggerFactory.getLogger("secureLogger")
     protected val log: Logger = LoggerFactory.getLogger(this::class.java)
 
     protected inline fun <reified T : Any> getForEntity(uri: URI): T {
@@ -53,7 +53,7 @@ abstract class AbstractRestClient(protected val operations: RestOperations,
 
     private fun <T> validerOgPakkUt(respons: ResponseEntity<T>, uri: URI): T? {
         if (!respons.statusCode.is2xxSuccessful) {
-            log.info(confidential, "Kall mot $uri feilet:  ${respons.body}")
+            secureLogger.info("Kall mot $uri feilet:  ${respons.body}")
             log.info("Kall mot $uri feilet: ${respons.statusCode}")
             throw HttpServerErrorException(respons.statusCode, "",  respons.body?.toString()?.toByteArray(), Charsets.UTF_8)
         }
