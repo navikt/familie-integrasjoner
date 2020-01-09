@@ -21,7 +21,6 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-import static no.nav.familie.log.NavHttpHeaders.NAV_CALL_ID;
 import static no.nav.familie.log.NavHttpHeaders.NAV_CONSUMER_ID;
 
 @Service
@@ -82,10 +81,10 @@ public class SafKlient {
             if (response.getBody() != null && !response.getBody().harFeil()) {
                 hentJournalpostResponsSuccess.increment();
                 return response.getBody().getData().getJournalpost();
-            } else {
-                //noinspection ConstantConditions
-                throw new JournalpostRestClientException("Kan ikke hente journalpost " + response.getBody().getErrors().toString(), null, journalpostId);
             }
+            //noinspection ConstantConditions
+            throw new JournalpostRestClientException(
+                    "Kan ikke hente journalpost " + response.getBody().getErrors().toString(), null, journalpostId);
         } catch (RestClientException e) {
             hentJournalpostResponsFailure.increment();
             throw new JournalpostRestClientException(e.getMessage(), e, journalpostId);
@@ -98,9 +97,9 @@ public class SafKlient {
         var entity = new HttpEntity(headers);
 
         restTemplate.exchange(String.format("%s/isAlive", safBaseUrl),
-                HttpMethod.GET,
-                entity,
-                String.class);
+                              HttpMethod.GET,
+                              entity,
+                              String.class);
     }
 
     private String convertRequestToJsonString(String journalpostId, SafJournalpostRequest safJournalpostRequest) {

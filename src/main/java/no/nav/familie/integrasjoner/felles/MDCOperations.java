@@ -54,6 +54,7 @@ public final class MDCOperations {
     public static String getConsumerId() {
         return get(MDC_CONSUMER_ID);
     }
+
     public static void removeConsumerId() {
         remove(MDC_CONSUMER_ID);
     }
@@ -75,17 +76,11 @@ public final class MDCOperations {
         int randomNr = RANDOM.nextInt(Integer.MAX_VALUE);
         long systemTime = System.currentTimeMillis();
 
-        StringBuilder callId = new StringBuilder("CallId_")
-                .append(systemTime)
-                .append('_')
-                .append(randomNr);
-
-        return callId.toString();
+        return "CallId_" + systemTime + '_' + randomNr;
     }
 
     public static String getFromMDC(String key) {
-        String value = MDC.get(key);
-        return value;
+        return MDC.get(key);
     }
 
     public static void putToMDC(String key, String value) {

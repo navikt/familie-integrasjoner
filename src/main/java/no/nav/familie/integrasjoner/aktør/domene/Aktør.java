@@ -28,7 +28,7 @@ public class Aktør {
     @Override
     public String toString() {
         return "Aktør{" + "identer=" + identer +
-                ", feilmelding=" + feilmelding +
-                '}';
+               ", feilmelding=" + feilmelding +
+               '}';
     }
 }

@@ -7,8 +7,8 @@ import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostReq
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
-import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.RestOperations
 import java.net.URI
@@ -26,10 +26,14 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
             UriUtil.uri(dokarkivUrl, PATH_JOURNALPOST, String.format(QUERY_FERDIGSTILL, ferdigstill))
 
     fun lagJournalpost(jp: OpprettJournalpostRequest,
-                       ferdigstill: Boolean,
-                       personIdent: String?): OpprettJournalpostResponse? {
+                       ferdigstill: Boolean): OpprettJournalpostResponse {
         val uri = lagJournalpostUri(ferdigstill)
-        return postForEntity(uri, jp)
+        try {
+            return postForEntity(uri, jp)!!
+        } catch (e: RuntimeException) {
+            secureLogger.error("Feil ved opprettelse av journalpost for bruker ${jp.bruker} ")
+            throw e
+        }
     }
 
     fun ferdigstillJournalpost(journalpostId: String, journalførendeEnhet: String) {
@@ -51,8 +55,8 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
             val uri = ferdigstillJournalpostUri(journalpostId)
             try {
                 patchForEntity<Any>(uri, FerdigstillJournalPost(journalførendeEnhet))
-            } catch (e: RuntimeException) {
-                if (e.cause is HttpClientErrorException.BadRequest) {
+            } catch (e: RestClientResponseException) {
+                if (e.rawStatusCode == HttpStatus.BAD_REQUEST.value()) {
                     throw KanIkkeFerdigstilleJournalpostException("Kan ikke ferdigstille journalpost $journalpostId")
                 }
                 throw e

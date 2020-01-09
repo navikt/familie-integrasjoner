@@ -26,15 +26,14 @@ class DokarkivController(private val journalføringService: DokarkivService) {
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidationExceptions(ex: MethodArgumentNotValidException): ResponseEntity<Ressurs<Any>> {
-        val errors: MutableMap<String, String?> = HashMap()
+        val errors: MutableMap<String, String> = HashMap()
         ex.bindingResult.allErrors.forEach(Consumer { error: ObjectError ->
             val fieldName = (error as FieldError).field
-            val errorMessage = error.getDefaultMessage()
+            val errorMessage = error.getDefaultMessage() ?: ""
             errors[fieldName] = errorMessage
         })
         LOG.warn("Valideringsfeil av input ved arkivering: $errors")
-        return ResponseEntity.badRequest()
-                .body(failure("Valideringsfeil av input ved arkivering $errors", ex))
+        return ResponseEntity.badRequest().body(failure("Valideringsfeil av input ved arkivering $errors", ex))
     }
 
     @ExceptionHandler(KanIkkeFerdigstilleJournalpostException::class)
@@ -44,10 +43,18 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     }
 
     @PostMapping(path = ["v1"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun arkiverDokument(@RequestBody @Valid arkiverDokumentRequest: ArkiverDokumentRequest?)
+    fun arkiverDokument(@RequestBody @Valid arkiverDokumentRequest: ArkiverDokumentRequest)
             : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(success(journalføringService.lagInngåendeJournalpost(arkiverDokumentRequest),
+                              "Arkivert journalpost OK"))
+    }
+
+    @PostMapping(path = ["v2"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun arkiverDokumentV2(@RequestBody arkiverDokumentRequest: @Valid ArkiverDokumentRequest)
+            : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(success(journalføringService.lagInngåendeJournalpostV2(arkiverDokumentRequest),
                               "Arkivert journalpost OK"))
     }
 
@@ -55,7 +62,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     @ResponseStatus(HttpStatus.OK)
     fun ferdigstillJournalpost(@PathVariable(name = "journalpostId") journalpostId: String,
                                @RequestParam(name = "journalfoerendeEnhet")
-                               journalførendeEnhet: String?): ResponseEntity<Ressurs<Map<String, String>>> {
+                               journalførendeEnhet: String): ResponseEntity<Ressurs<Map<String, String>>> {
 
         journalføringService.ferdistillJournalpost(journalpostId, journalførendeEnhet)
         return ResponseEntity.ok(success(mapOf("journalpostId" to journalpostId),

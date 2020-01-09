@@ -1,10 +1,10 @@
 package no.nav.familie.integrasjoner.tilgangskontroll;
 
+import no.nav.familie.integrasjoner.azure.AzureGraphService;
+import no.nav.familie.integrasjoner.azure.domene.Saksbehandler;
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService;
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo;
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.Tilgang;
-import no.nav.familie.integrasjoner.azure.AzureGraphService;
-import no.nav.familie.integrasjoner.azure.domene.Saksbehandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,9 @@ public class TilgangsKontrollService {
         this.egenAnsattService = egenAnsattService;
     }
 
-    @Cacheable(cacheNames = TILGANGTILBRUKER, key = "#saksbehandler.onPremisesSamAccountName.concat(#personFnr)", condition = "#personFnr != null && #saksbehandler.onPremisesSamAccountName != null")
+    @Cacheable(cacheNames = TILGANGTILBRUKER,
+               key = "#saksbehandler.onPremisesSamAccountName.concat(#personFnr)",
+               condition = "#personFnr != null && #saksbehandler.onPremisesSamAccountName != null")
     public Tilgang sjekkTilgang(String personFnr, Saksbehandler saksbehandler, Personinfo personInfo) {
         String NAVident = saksbehandler.getOnPremisesSamAccountName();
         String diskresjonskode = personInfo.getDiskresjonskode();
@@ -49,7 +51,8 @@ public class TilgangsKontrollService {
         if (DISKRESJONSKODE_KODE6.equals(diskresjonskode) && !harTilgangTilKode6(NAVident)) {
             secureLogger.info(NAVident + " har ikke tilgang til " + personFnr);
             return new Tilgang().withHarTilgang(false).withBegrunnelse(KODE6.name());
-        } else if (DISKRESJONSKODE_KODE7.equals(diskresjonskode) && !harTilgangTilKode7(NAVident)) {
+        }
+        if (DISKRESJONSKODE_KODE7.equals(diskresjonskode) && !harTilgangTilKode7(NAVident)) {
             secureLogger.info(NAVident + " har ikke tilgang til " + personFnr);
             return new Tilgang().withHarTilgang(false).withBegrunnelse(KODE7.name());
         }

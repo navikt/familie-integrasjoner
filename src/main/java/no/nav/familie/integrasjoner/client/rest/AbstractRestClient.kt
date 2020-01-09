@@ -5,10 +5,11 @@ import io.micrometer.core.instrument.Metrics
 import io.micrometer.core.instrument.Timer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.slf4j.Marker
-import org.slf4j.MarkerFactory
 import org.springframework.http.*
-import org.springframework.web.client.*
+import org.springframework.web.client.HttpServerErrorException
+import org.springframework.web.client.RestClientResponseException
+import org.springframework.web.client.RestOperations
+import org.springframework.web.client.exchange
 import java.net.URI
 import java.util.concurrent.TimeUnit
 
@@ -19,7 +20,7 @@ abstract class AbstractRestClient(protected val operations: RestOperations,
     private val responsSuccess: Counter = Metrics.counter("$metricsPrefix.response", "status", "success")
     protected val responsFailure: Counter = Metrics.counter("$metricsPrefix.response", "status", "failure")
 
-    private val secureLogger = LoggerFactory.getLogger("secureLogger")
+    protected val secureLogger = LoggerFactory.getLogger("secureLogger")
     protected val log: Logger = LoggerFactory.getLogger(this::class.java)
 
     protected inline fun <reified T : Any> getForEntity(uri: URI): T {
@@ -55,7 +56,7 @@ abstract class AbstractRestClient(protected val operations: RestOperations,
         if (!respons.statusCode.is2xxSuccessful) {
             secureLogger.info("Kall mot $uri feilet:  ${respons.body}")
             log.info("Kall mot $uri feilet: ${respons.statusCode}")
-            throw HttpServerErrorException(respons.statusCode, "",  respons.body?.toString()?.toByteArray(), Charsets.UTF_8)
+            throw HttpServerErrorException(respons.statusCode, "", respons.body?.toString()?.toByteArray(), Charsets.UTF_8)
         }
         return respons.body
     }

@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.personopplysning.domene;
 
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Person;
 
 public final class TpsUtil {
 

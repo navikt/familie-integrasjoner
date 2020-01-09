@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpStatusCodeException
-import javax.validation.constraints.NotNull
 
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
@@ -36,7 +35,7 @@ class InfotrygdController(private val infotrygdService: InfotrygdService) {
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/harBarnAktivKontantstotte"])
     fun aktivKontantstøtte(@RequestHeader(name = "Nav-Personident")
-                            fnr: String): ResponseEntity<Ressurs<AktivKontantstøtteInfo>> {
+                           fnr: String): ResponseEntity<Ressurs<AktivKontantstøtteInfo>> {
         return ResponseEntity.ok(success(infotrygdService.hentAktivKontantstøtteFor(fnr),
                                          "Oppslag mot Infotrygd OK"))
     }

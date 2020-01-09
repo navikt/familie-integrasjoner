@@ -1,10 +1,10 @@
 package no.nav.familie.integrasjoner.aktør;
 
 import no.nav.familie.integrasjoner.aktør.domene.Aktør;
-import no.nav.familie.integrasjoner.felles.OppslagException;
-import no.nav.familie.integrasjoner.personopplysning.domene.AktørId;
 import no.nav.familie.integrasjoner.aktør.domene.Ident;
 import no.nav.familie.integrasjoner.aktør.internal.AktørregisterClient;
+import no.nav.familie.integrasjoner.felles.OppslagException;
+import no.nav.familie.integrasjoner.personopplysning.domene.AktørId;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
 import org.slf4j.Logger;
@@ -79,18 +79,28 @@ public class AktørService {
                 aktørregisterClient.hentPersonIdent(id).get(id) :
                 aktørregisterClient.hentAktørId(id).get(id);
 
-        secureLogger.info(erAktørId ? "Hentet fnr for aktørId: {}: {} fra aktørregisteret" : "Hentet aktør id'er for fnr: {}: {} fra aktørregisteret", id, response);
+        secureLogger.info(erAktørId ?
+                                  "Hentet fnr for aktørId: {}: {} fra aktørregisteret" :
+                                  "Hentet aktør id'er for fnr: {}: {} fra aktørregisteret", id, response);
 
         if (response.getFeilmelding() == null) {
             final var identer = response.getIdenter().stream().filter(Ident::getGjeldende).collect(Collectors.toList());
             if (identer.size() == 1) {
                 return identer.get(0).getIdent();
-            } else {
-                String melding = String.format("%s gjeldene %s", identer.isEmpty() ? "Ingen" : "Flere", erAktørId ? "aktørIder" : "norske identer");
-                throw new OppslagException(melding, "aktør", OppslagException.Level.LAV, identer.isEmpty() ? NOT_FOUND : CONFLICT, null);
             }
-        } else {
-            throw new OppslagException(String.format("Funksjonell feil med følgende feilmelding: %s", response.getFeilmelding()), "aktør", OppslagException.Level.LAV, BAD_REQUEST, null);
+            String melding = String.format("%s gjeldene %s",
+                                           identer.isEmpty() ? "Ingen" : "Flere",
+                                           erAktørId ? "aktørIder" : "norske identer");
+            throw new OppslagException(melding,
+                                       "aktør",
+                                       OppslagException.Level.LAV,
+                                       identer.isEmpty() ? NOT_FOUND : CONFLICT,
+                                       null);
         }
+        throw new OppslagException(String.format("Funksjonell feil med følgende feilmelding: %s", response.getFeilmelding()),
+                                   "aktør",
+                                   OppslagException.Level.LAV,
+                                   BAD_REQUEST,
+                                   null);
     }
 }

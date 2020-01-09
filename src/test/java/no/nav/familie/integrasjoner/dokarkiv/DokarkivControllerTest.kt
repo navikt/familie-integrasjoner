@@ -2,7 +2,10 @@ package no.nav.familie.integrasjoner.dokarkiv
 
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
-import no.nav.familie.integrasjoner.dokarkiv.api.*
+import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
+import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentResponse
+import no.nav.familie.integrasjoner.dokarkiv.api.Dokument
+import no.nav.familie.integrasjoner.dokarkiv.api.FilType
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions
@@ -36,28 +39,8 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `skal returnere bad request hvis fNr mangler`() {
-        val body = ArkiverDokumentRequest(null,
-                                          FULLT_NAVN,
-                                          false,
-                                          listOf(Dokument("foo".toByteArray(),
-                                                          FilType.PDFA,
-                                                          null,
-                                                          DokumentType.KONTANTSTØTTE_SØKNAD)))
-
-        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL),
-                                                                                               HttpMethod.POST,
-                                                                                               HttpEntity(body, headers))
-
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        Assertions.assertThat(response.body?.melding).contains("fnr=must not be blank")
-    }
-
-    @Test
     fun `skal returnere bad request hvis ingen dokumenter`() {
         val body = ArkiverDokumentRequest("fnr",
-                                          "Foobar",
                                           false,
                                           LinkedList())
 
@@ -80,7 +63,6 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                 .withQueryStringParameter("foersoekFerdigstill", "false"))
                 .respond(HttpResponse.response().withBody(gyldigDokarkivResponse()))
         val body = ArkiverDokumentRequest("FNR",
-                                          FULLT_NAVN,
                                           false,
                                           listOf(HOVEDDOKUMENT))
 
@@ -91,7 +73,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         Assertions.assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
-        Assertions.assertThat(response.body?.data?.isFerdigstilt).isFalse()
+        Assertions.assertThat(response.body?.data?.ferdigstilt).isFalse()
     }
 
     @Test
@@ -103,7 +85,6 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                 .withQueryStringParameter("foersoekFerdigstill", "false"))
                 .respond(HttpResponse.response().withBody(gyldigDokarkivResponse()))
         val body = ArkiverDokumentRequest("FNR",
-                                          FULLT_NAVN,
                                           false,
                                           listOf(HOVEDDOKUMENT, VEDLEGG))
 
@@ -114,7 +95,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         Assertions.assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
-        Assertions.assertThat(response.body?.data?.isFerdigstilt).isFalse()
+        Assertions.assertThat(response.body?.data?.ferdigstilt).isFalse()
     }
 
     @Test
@@ -126,12 +107,12 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                 .withQueryStringParameter("foersoekFerdigstill", "false"))
                 .respond(HttpResponse.response().withStatusCode(401).withBody("Tekst fra body"))
         val body = ArkiverDokumentRequest("FNR",
-                                          "Foobar",
                                           false,
                                           listOf(Dokument("foo".toByteArray(),
                                                           FilType.PDFA,
                                                           null,
-                                                          DokumentType.KONTANTSTØTTE_SØKNAD)))
+                                                          null,
+                                                          "KONTANTSTØTTE_SØKNAD")))
 
         val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL),
                                                                                                HttpMethod.POST,
@@ -186,15 +167,16 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
     companion object {
         private const val MOCK_SERVER_PORT = 18321
-        private const val FULLT_NAVN = "Foo Bar"
         private const val DOKARKIV_URL = "/api/arkiv/v1"
         private val HOVEDDOKUMENT = Dokument("foo".toByteArray(),
                                              FilType.PDFA,
                                              "filnavn",
-                                             DokumentType.KONTANTSTØTTE_SØKNAD)
+                                             null,
+                                             "KONTANTSTØTTE_SØKNAD")
         private val VEDLEGG = Dokument("foo".toByteArray(),
                                        FilType.PDFA,
                                        "filnavn",
-                                       DokumentType.KONTANTSTØTTE_SØKNAD_VEDLEGG)
+                                       "Vedlegg",
+                                       "KONTANTSTØTTE_SØKNAD_VEDLEGG")
     }
 }

@@ -24,11 +24,21 @@ public class CacheConfig {
         ExpiryPolicy<Object, Object> expiryPolicy = ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofHours(1));
         final CacheManager cacheManager =
                 CacheManagerBuilder.newCacheManagerBuilder()
-                                   .withCache("aktørIdCache", newCacheConfigurationBuilder(String.class, String.class, pools).withExpiry(expiryPolicy))
-                                   .withCache("personIdentCache", newCacheConfigurationBuilder(String.class, String.class, pools).withExpiry(expiryPolicy))
-                                   .withCache("tilgangtilbruker", newCacheConfigurationBuilder(String.class, String.class, pools).withExpiry(expiryPolicy))
-                                   .withCache("tilgangtiltjenesten", newCacheConfigurationBuilder(String.class, String.class, pools).withExpiry(expiryPolicy))
-                                   .withCache("tilgangtilenhet", newCacheConfigurationBuilder(String.class, String.class, pools).withExpiry(expiryPolicy))
+                                   .withCache("aktørIdCache",
+                                              newCacheConfigurationBuilder(String.class, String.class, pools).withExpiry(
+                                                      expiryPolicy))
+                                   .withCache("personIdentCache",
+                                              newCacheConfigurationBuilder(String.class, String.class, pools).withExpiry(
+                                                      expiryPolicy))
+                                   .withCache("tilgangtilbruker",
+                                              newCacheConfigurationBuilder(String.class, String.class, pools).withExpiry(
+                                                      expiryPolicy))
+                                   .withCache("tilgangtiltjenesten",
+                                              newCacheConfigurationBuilder(String.class, String.class, pools).withExpiry(
+                                                      expiryPolicy))
+                                   .withCache("tilgangtilenhet",
+                                              newCacheConfigurationBuilder(String.class, String.class, pools).withExpiry(
+                                                      expiryPolicy))
                                    .build();
         cacheManager.init();
         return cacheManager;

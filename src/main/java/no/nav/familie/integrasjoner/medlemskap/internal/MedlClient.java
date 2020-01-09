@@ -18,12 +18,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import static javax.ws.rs.core.HttpHeaders.ACCEPT;
-import static no.nav.familie.log.NavHttpHeaders.NAV_PERSONIDENT;
 import static no.nav.familie.log.NavHttpHeaders.NAV_CONSUMER_ID;
+import static no.nav.familie.log.NavHttpHeaders.NAV_PERSONIDENT;
 
 public class MedlClient {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MedlemskapService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MedlClient.class);
 
     private String medl2BaseUrl;
     private URI medl2Uri;
@@ -43,11 +43,11 @@ public class MedlClient {
 
     public List<MedlemskapsUnntakResponse> hentMedlemskapsUnntakResponse(String aktørId) {
         HttpRequest request = HttpRequestUtil.createRequest("Bearer " + stsRestClient.getSystemOIDCToken())
-                .uri(medl2Uri)
-                .header(ACCEPT, "application/json")
-                .header(NAV_PERSONIDENT.asString(), aktørId)
-                .header(NAV_CONSUMER_ID.asString(), srvBruker)
-                .build();
+                                             .uri(medl2Uri)
+                                             .header(ACCEPT, "application/json")
+                                             .header(NAV_PERSONIDENT.asString(), aktørId)
+                                             .header(NAV_CONSUMER_ID.asString(), srvBruker)
+                                             .build();
 
         try {
             var httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -65,8 +65,8 @@ public class MedlClient {
         URI pingURI = URI.create(String.format("%s/internal/isAlive", medl2BaseUrl));
 
         HttpRequest request = HttpRequestUtil.createRequest("Bearer " + stsRestClient.getSystemOIDCToken())
-                .uri(pingURI)
-                .build();
+                                             .uri(pingURI)
+                                             .build();
 
         var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 

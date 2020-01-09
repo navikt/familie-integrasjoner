@@ -3,7 +3,6 @@ package no.nav.familie.integrasjoner.config
 import no.nav.sbl.dialogarena.common.cxf.CXFClient
 import no.nav.tjeneste.pip.egen.ansatt.v1.EgenAnsattV1
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1_Service
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.binding.InnsynJournalV2
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import org.springframework.beans.factory.annotation.Value
