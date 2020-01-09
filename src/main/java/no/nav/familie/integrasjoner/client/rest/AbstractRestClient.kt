@@ -19,7 +19,7 @@ abstract class AbstractRestClient(protected val operations: RestOperations,
     private val responsSuccess: Counter = Metrics.counter("$metricsPrefix.response", "status", "success")
     protected val responsFailure: Counter = Metrics.counter("$metricsPrefix.response", "status", "failure")
 
-    private val secureLogger = LoggerFactory.getLogger("secureLogger")
+    protected val secureLogger = LoggerFactory.getLogger("secureLogger")
     protected val log: Logger = LoggerFactory.getLogger(this::class.java)
 
     protected inline fun <reified T : Any> getForEntity(uri: URI): T {

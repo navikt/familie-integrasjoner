@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
-import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.RestOperations
 import java.net.URI
@@ -29,7 +28,12 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
     fun lagJournalpost(jp: OpprettJournalpostRequest,
                        ferdigstill: Boolean): OpprettJournalpostResponse {
         val uri = lagJournalpostUri(ferdigstill)
-        return postForEntity(uri, jp) ?: error("Feil ved opprettelse av journalpost for sak ${jp.sak} ")
+        try {
+            return postForEntity(uri, jp)!!
+        } catch (e: RuntimeException) {
+            secureLogger.error("Feil ved opprettelse av journalpost for bruker ${jp.bruker} ")
+            throw e
+        }
     }
 
     fun ferdigstillJournalpost(journalpostId: String, journalførendeEnhet: String) {
