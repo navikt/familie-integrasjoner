@@ -15,6 +15,15 @@ no.nav.security.jwt:
           client-id: ${INTEGRASJONER_CLIENT_ID}
           client-secret: ${CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      infotrygd:
+        resource-url: ${INFOTRYGD_URL}
+        token-endpoint-url: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: ${INFOTRYGD_KS_SCOPE}
+        authentication:
+          client-id: ${INTEGRASJONER_CLIENT_ID}
+          client-secret: ${CLIENT_SECRET}
+          client-auth-method: client_secret_basic
 
 AAD_URL: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/v2.0/token
 INTEGRASJONER_CLIENT_ID: ${INTEGRASJONER_CLIENT_ID}
@@ -30,7 +39,7 @@ DOKARKIV_V1_URL: https://dokarkiv.nais.adeo.no
 MEDL2_URL: https://app.adeo.no/medl2
 SAF_URL: http://saf
 INNSYN_JOURNAL_V2_URL: https://wasapp.adeo.no/joark/InnsynJournal/v2
-KODEVERK_URL: https://kodeverk.nais.orea.no
+KODEVERK_URL: https://kodeverk.nais.adeo.no
 ARBEIDSFORDELING_V1_URL: https://app.adeo.no/norg2/ws/Arbeidsfordeling/v1
 
 # Appdynamics
