@@ -1,8 +1,8 @@
 package no.nav.familie.integrasjoner.journalpost;
 
 import no.nav.familie.integrasjoner.journalpost.internal.InnsynJournalConsumer;
-import no.nav.familie.integrasjoner.journalpost.internal.SafKlient;
 import no.nav.familie.integrasjoner.journalpost.internal.Journalpost;
+import no.nav.familie.integrasjoner.journalpost.internal.SafKlient;
 import no.nav.tjeneste.virksomhet.innsynjournal.v2.meldinger.IdentifiserJournalpostResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

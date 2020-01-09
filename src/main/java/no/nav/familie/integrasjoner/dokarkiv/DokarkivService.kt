@@ -1,7 +1,10 @@
 package no.nav.familie.integrasjoner.dokarkiv
 
 import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
-import no.nav.familie.integrasjoner.dokarkiv.api.*
+import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
+import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentResponse
+import no.nav.familie.integrasjoner.dokarkiv.api.Dokument
+import no.nav.familie.integrasjoner.dokarkiv.api.FilType
 import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
 import no.nav.familie.integrasjoner.dokarkiv.metadata.DokarkivMetadata

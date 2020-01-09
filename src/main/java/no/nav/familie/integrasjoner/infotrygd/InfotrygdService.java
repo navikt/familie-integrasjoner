@@ -41,15 +41,14 @@ public class InfotrygdService {
         var entity = new HttpEntity(headers);
 
         var response = restTemplate.exchange(String.format("%s/v1/harBarnAktivKontantstotte", infotrygdURL),
-                HttpMethod.GET,
-                entity,
-                AktivKontantstøtteInfo.class);
+                                             HttpMethod.GET,
+                                             entity,
+                                             AktivKontantstøtteInfo.class);
 
         if (response.getBody() != null && response.getBody().getHarAktivKontantstotte() != null) {
             return response.getBody();
-        } else {
-            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Ufullstendig eller tom respons.");
         }
+        throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Ufullstendig eller tom respons.");
     }
 
     public void ping() {

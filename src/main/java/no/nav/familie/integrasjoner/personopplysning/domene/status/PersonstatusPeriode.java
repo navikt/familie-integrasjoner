@@ -25,18 +25,22 @@ public class PersonstatusPeriode {
 
     @Override
     public String toString() {
-        return "PersonstatusPeriode(periode=" + this.getPeriode()
-            + ", personstatus=" + this.getPersonstatus()
-            + ")";
+        return "PersonstatusPeriode(periode=" + this.periode
+               + ", personstatus=" + this.personstatus
+               + ")";
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         PersonstatusPeriode that = (PersonstatusPeriode) o;
         return Objects.equals(periode, that.periode) &&
-            Objects.equals(personstatus, that.personstatus);
+               personstatus == that.personstatus;
     }
 
     @Override

@@ -24,14 +24,18 @@ public class Landkode {
     @Override
     public String toString() {
         return "Landkode{" +
-                "kode='" + kode + '\'' +
-                '}';
+               "kode='" + kode + '\'' +
+               '}';
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Landkode landkode = (Landkode) o;
         return Objects.equals(kode, landkode.kode);
     }

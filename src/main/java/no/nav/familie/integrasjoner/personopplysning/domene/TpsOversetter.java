@@ -1,12 +1,12 @@
 package no.nav.familie.integrasjoner.personopplysning.domene;
 
-import no.nav.familie.integrasjoner.personopplysning.domene.adresse.TpsAdresseOversetter;
-import no.nav.familie.integrasjoner.personopplysning.domene.status.PersonstatusPeriode;
-import no.nav.familie.integrasjoner.personopplysning.domene.status.PersonstatusType;
 import no.nav.familie.integrasjoner.felles.ws.DateUtil;
+import no.nav.familie.integrasjoner.personopplysning.domene.adresse.TpsAdresseOversetter;
 import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.Familierelasjon;
 import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.RelasjonsRolleType;
 import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.SivilstandType;
+import no.nav.familie.integrasjoner.personopplysning.domene.status.PersonstatusPeriode;
+import no.nav.familie.integrasjoner.personopplysning.domene.status.PersonstatusType;
 import no.nav.familie.integrasjoner.personopplysning.domene.tilhørighet.Landkode;
 import no.nav.familie.integrasjoner.personopplysning.domene.tilhørighet.StatsborgerskapPeriode;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.*;
@@ -29,7 +29,7 @@ public class TpsOversetter {
         this.tpsAdresseOversetter = tpsAdresseOversetter;
     }
 
-    private Landkode utledLandkode(Statsborgerskap statsborgerskap) {
+    private static Landkode utledLandkode(Statsborgerskap statsborgerskap) {
         Landkode landkode = Landkode.UDEFINERT;
         if (Optional.ofNullable(statsborgerskap).isPresent()) {
             landkode = new Landkode(statsborgerskap.getLand().getValue());
@@ -37,20 +37,24 @@ public class TpsOversetter {
         return landkode;
     }
 
-    public Personinfo tilPersoninfo(no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent personIdent, HentPersonResponse response) {
+    public Personinfo tilPersoninfo(PersonIdent personIdent,
+                                    HentPersonResponse response) {
         Bruker person = (Bruker) response.getPerson();
 
-        no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent identFraTps = null;
+        PersonIdent identFraTps = null;
         if (person.getAktoer() instanceof no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent) {
-            identFraTps = new no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent(((no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent) person.getAktoer()).getIdent().getIdent());
+            identFraTps =
+                    new PersonIdent(((no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent) person
+                            .getAktoer()).getIdent().getIdent());
         }
 
         Set<Familierelasjon> familierelasjoner = person.getHarFraRolleI().stream()
-                .map(this::tilRelasjon)
-                .collect(toSet());
+                                                       .map(this::tilRelasjon)
+                                                       .collect(toSet());
 
         String diskresjonskode = person.getDiskresjonskode() != null ? person.getDiskresjonskode().getValue() : null;
-        String geografiskTilknytning = person.getGeografiskTilknytning() != null ? person.getGeografiskTilknytning().getGeografiskTilknytning() : null;
+        String geografiskTilknytning =
+                person.getGeografiskTilknytning() != null ? person.getGeografiskTilknytning().getGeografiskTilknytning() : null;
 
         return new Personinfo.Builder()
                 .medPersonIdent(identFraTps != null ? identFraTps : personIdent)
@@ -71,7 +75,8 @@ public class TpsOversetter {
                 .build();
     }
 
-    public PersonhistorikkInfo tilPersonhistorikkInfo(no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent personIdent, HentPersonhistorikkResponse response) {
+    public PersonhistorikkInfo tilPersonhistorikkInfo(PersonIdent personIdent,
+                                                      HentPersonhistorikkResponse response) {
 
         PersonhistorikkInfo.Builder builder = PersonhistorikkInfo
                 .builder()
@@ -89,20 +94,26 @@ public class TpsOversetter {
     }
 
     private void konverterPersonstatusPerioder(HentPersonhistorikkResponse response, PersonhistorikkInfo.Builder builder) {
-        Optional.ofNullable(response.getPersonstatusListe()).ifPresent(list ->
-                list.forEach(e -> {
-                    Personstatus personstatus = new Personstatus();
-                    personstatus.setPersonstatus(e.getPersonstatus());
-                    PersonstatusType personstatusType = tilPersonstatusType(personstatus);
+        Optional.ofNullable(response.getPersonstatusListe())
+                .ifPresent(list ->
+                                   list.forEach(e -> {
+                                       Personstatus personstatus = new Personstatus();
+                                       personstatus.setPersonstatus(e.getPersonstatus());
+                                       PersonstatusType personstatusType =
+                                               tilPersonstatusType(personstatus);
 
-                    Periode gyldighetsperiode = Periode.innenfor(
-                            DateUtil.convertToLocalDate(e.getPeriode().getFom()),
-                            DateUtil.convertToLocalDate(e.getPeriode().getTom()));
+                                       Periode gyldighetsperiode = Periode.innenfor(
+                                               DateUtil.convertToLocalDate(e.getPeriode()
+                                                                            .getFom()),
+                                               DateUtil.convertToLocalDate(e.getPeriode()
+                                                                            .getTom()));
 
-                    no.nav.familie.integrasjoner.personopplysning.domene.status.PersonstatusPeriode
-                            periode = new PersonstatusPeriode(gyldighetsperiode, personstatusType);
-                    builder.leggTil(periode);
-                }));
+                                       no.nav.familie.integrasjoner.personopplysning.domene.status.PersonstatusPeriode
+                                               periode = new PersonstatusPeriode(
+                                               gyldighetsperiode,
+                                               personstatusType);
+                                       builder.leggTil(periode);
+                                   }));
     }
 
     private void konverterStatsborgerskapPerioder(HentPersonhistorikkResponse response, PersonhistorikkInfo.Builder builder) {
@@ -146,18 +157,18 @@ public class TpsOversetter {
     private Familierelasjon tilRelasjon(no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon familierelasjon) {
         String rollekode = familierelasjon.getTilRolle().getValue();
         RelasjonsRolleType relasjonsrolle = RelasjonsRolleType.valueOf(rollekode);
-        no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent personIdent = utledPersonIdent(familierelasjon);
+        PersonIdent personIdent = utledPersonIdent(familierelasjon);
         Boolean harSammeBosted = familierelasjon.isHarSammeBosted();
 
         return new Familierelasjon(personIdent, relasjonsrolle,
-                tilLocalDate(familierelasjon.getTilPerson().getFoedselsdato()), harSammeBosted);
+                                   tilLocalDate(familierelasjon.getTilPerson().getFoedselsdato()), harSammeBosted);
     }
 
-    private no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent utledPersonIdent(no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon familierelasjon) {
+    private PersonIdent utledPersonIdent(no.nav.tjeneste.virksomhet.person.v3.informasjon.Familierelasjon familierelasjon) {
         final var aktoer = familierelasjon.getTilPerson().getAktoer();
         if (aktoer instanceof no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent) {
             final var personIdent = ((no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent) aktoer).getIdent().getIdent();
-            return new no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent(personIdent);
+            return new PersonIdent(personIdent);
         }
 
         throw new IllegalStateException("TPS returnerte noe annet enn PersonIdent for familierelasjon");

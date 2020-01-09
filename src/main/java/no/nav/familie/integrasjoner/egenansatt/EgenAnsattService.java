@@ -10,7 +10,7 @@ public class EgenAnsattService {
     private EgenAnsattConsumer egenAnsattConsumer;
 
     @Autowired
-    EgenAnsattService (EgenAnsattConsumer egenAnsattConsumer) {
+    EgenAnsattService(EgenAnsattConsumer egenAnsattConsumer) {
         this.egenAnsattConsumer = egenAnsattConsumer;
     }
 

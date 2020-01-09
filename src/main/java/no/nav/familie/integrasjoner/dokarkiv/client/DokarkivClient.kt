@@ -30,7 +30,7 @@ class DokarkivClient @Autowired constructor(@param:Value("\${DOKARKIV_V1_URL}")
                                             @param:Value("\${CREDENTIAL_USERNAME}")
                                             private val consumer: String,
                                             @param:Autowired private val stsRestClient: StsRestClient,
-                                            objectMapper: ObjectMapper) {
+                                            private val objectMapper: ObjectMapper) {
     private val opprettJournalpostResponstid =
             Metrics.timer("dokarkiv.opprett.respons.tid")
     private val opprettJournalpostSuccess =
@@ -43,8 +43,7 @@ class DokarkivClient @Autowired constructor(@param:Value("\${DOKARKIV_V1_URL}")
             Metrics.counter("dokarkiv.ferdigstill.response", "status", "success")
     private val ferdigstillJournalpostFailure =
             Metrics.counter("dokarkiv.ferdigstill.response", "status", "failure")
-    private val httpClient: HttpClient
-    private val objectMapper: ObjectMapper
+    private val httpClient: HttpClient = HttpClient.newHttpClient()
     fun lagJournalpost(jp: OpprettJournalpostRequest?,
                        ferdigstill: Boolean): OpprettJournalpostResponse {
         val uri =
@@ -149,8 +148,4 @@ class DokarkivClient @Autowired constructor(@param:Value("\${DOKARKIV_V1_URL}")
         const val FERDIGSTILL_JOURNALPOST_JSON = "{\"journalfoerendeEnhet\":%s}"
     }
 
-    init {
-        httpClient = HttpClient.newHttpClient()
-        this.objectMapper = objectMapper
-    }
 }

@@ -30,7 +30,10 @@ public class OppgaveService {
             oppgaveJsonDto = oppgaveClient.finnOppgave(request.getEksisterendeOppgaveId());
         }
         if (oppgaveJsonDto.getStatus() == OppgaveJsonDto.StatusEnum.FERDIGSTILT) {
-            LOG.info("Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId={} journalpostId={} oppgaveId={}", oppgaveJsonDto.getAktoerId(), oppgaveJsonDto.getJournalpostId(), oppgaveJsonDto.getId());
+            LOG.info("Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId={} journalpostId={} oppgaveId={}",
+                     oppgaveJsonDto.getAktoerId(),
+                     oppgaveJsonDto.getJournalpostId(),
+                     oppgaveJsonDto.getId());
         } else {
             oppgaveClient.oppdaterOppgave(oppgaveJsonDto, request.getBeskrivelse());
         }

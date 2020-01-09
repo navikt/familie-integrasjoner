@@ -31,8 +31,8 @@ public class Ident {
     @Override
     public String toString() {
         return "Ident{" + "ident=" + ident +
-                ", identgruppe=" + identgruppe +
-                ", gjeldende=" + gjeldende +
-                '}';
+               ", identgruppe=" + identgruppe +
+               ", gjeldende=" + gjeldende +
+               '}';
     }
 }

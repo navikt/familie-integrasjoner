@@ -13,15 +13,17 @@ public class Periode {
     private Periode(LocalDate fom, LocalDate tom) {
         // Fom er null om perioden for en opplysning gjelder fra personen ble født
         // Setter da fom til tidenes begynnelse for å slippe et ekstra kall for å hente fødselsdato
-        if (fom == null) {
-            fom = Tid.TIDENES_BEGYNNELSE;
+        LocalDate til = tom;
+        LocalDate fra = fom;
+        if (fra == null) {
+            fra = Tid.TIDENES_BEGYNNELSE;
         }
-        if (tom == null) {
-            tom = Tid.TIDENES_ENDE;
+        if (til == null) {
+            til = Tid.TIDENES_ENDE;
         }
 
-        this.fom = fom;
-        this.tom = tom;
+        this.fom = fra;
+        this.tom = til;
     }
 
     public static Periode innenfor(LocalDate fom, LocalDate tom) {
@@ -42,11 +44,15 @@ public class Periode {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Periode that = (Periode) o;
         return Objects.equals(fom, that.fom) &&
-                Objects.equals(tom, that.tom);
+               Objects.equals(tom, that.tom);
     }
 
     @Override
@@ -56,10 +62,6 @@ public class Periode {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Periode{");
-        sb.append("fom=").append(fom);
-        sb.append(", tom=").append(tom);
-        sb.append('}');
-        return sb.toString();
+        return "Periode{" + "fom=" + fom + ", tom=" + tom + '}';
     }
 }

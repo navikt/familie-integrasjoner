@@ -24,7 +24,9 @@ public class PersonConsumer {
         this.port = port;
     }
 
-    public HentPersonResponse hentPersonResponse(HentPersonRequest request) throws HentPersonPersonIkkeFunnet, HentPersonSikkerhetsbegrensning {
+    public HentPersonResponse hentPersonResponse(HentPersonRequest request) throws
+                                                                            HentPersonPersonIkkeFunnet,
+                                                                            HentPersonSikkerhetsbegrensning {
         try {
             return port.hentPerson(request);
         } catch (SOAPFaultException e) { // NOSONAR
@@ -40,7 +42,8 @@ public class PersonConsumer {
      * @throws HentPersonhistorikkSikkerhetsbegrensning når bruker ikke har tilgang
      * @throws HentPersonhistorikkPersonIkkeFunnet      når bruker ikke finnes
      */
-    public HentPersonhistorikkResponse hentPersonhistorikkResponse(HentPersonhistorikkRequest request) throws HentPersonhistorikkSikkerhetsbegrensning, HentPersonhistorikkPersonIkkeFunnet {
+    public HentPersonhistorikkResponse hentPersonhistorikkResponse(HentPersonhistorikkRequest request)
+            throws HentPersonhistorikkSikkerhetsbegrensning, HentPersonhistorikkPersonIkkeFunnet {
         try {
             long startTime = System.nanoTime();
             HentPersonhistorikkResponse response = port.hentPersonhistorikk(request);

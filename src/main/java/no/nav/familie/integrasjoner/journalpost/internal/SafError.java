@@ -5,9 +5,6 @@ public class SafError {
     private String exceptionType;
     private String exception;
 
-    public SafError() {
-    }
-
     public String getMessage() {
         return message;
     }
@@ -23,9 +20,9 @@ public class SafError {
     @Override
     public String toString() {
         return "SafError{" +
-                "message='" + message + '\'' +
-                ", exceptionType='" + exceptionType + '\'' +
-                ", exception='" + exception + '\'' +
-                '}';
+               "message='" + message + '\'' +
+               ", exceptionType='" + exceptionType + '\'' +
+               ", exception='" + exception + '\'' +
+               '}';
     }
 }

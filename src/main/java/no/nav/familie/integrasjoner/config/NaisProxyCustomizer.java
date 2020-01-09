@@ -17,18 +17,18 @@ public class NaisProxyCustomizer implements RestTemplateCustomizer {
     public void customize(RestTemplate restTemplate) {
         final HttpHost proxy = new HttpHost("webproxy-nais.nav.no", 8088);
         final HttpClient client = HttpClientBuilder.create()
-                .setRoutePlanner(new DefaultProxyRoutePlanner(proxy) {
-                    @Override
-                    public HttpHost determineProxy(HttpHost target,
-                                                   HttpRequest request, HttpContext context)
-                            throws HttpException {
-                        if (target.getHostName().contains("microsoft")) {
-                            return super.determineProxy(target, request, context);
-                        }
-                        return null;
-                    }
-                })
-                .build();
+                                                   .setRoutePlanner(new DefaultProxyRoutePlanner(proxy) {
+                                                       @Override
+                                                       public HttpHost determineProxy(HttpHost target,
+                                                                                      HttpRequest request, HttpContext context)
+                                                               throws HttpException {
+                                                           if (target.getHostName().contains("microsoft")) {
+                                                               return super.determineProxy(target, request, context);
+                                                           }
+                                                           return null;
+                                                       }
+                                                   })
+                                                   .build();
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(client));
     }
 }
