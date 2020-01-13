@@ -31,6 +31,7 @@ SECURITYTOKENSERVICE_URL: http://vtp:8060/soap/SecurityTokenServiceProvider/
 AKTOERID_URL: http://vtp:8060/rest/aktoerregister
 PERSON_V3_URL: http://vtp:8060/soap/tpsws/ws/Person/v3
 DOKARKIV_V1_URL: http://vtp:8060/rest/dokarkiv/rest/journalpostapi/v1
+DOKDIST_URL: http://nowhere
 INFOTRYGD_URL: http://vtp:8060/rest/infotrygd-kontantstotte
 EGEN_ANSATT_V1_URL: http://vtp:8060/soap/tpsws/EgenAnsatt_v1
 MEDL2_URL: http://vtp:8060/rest/medl2
