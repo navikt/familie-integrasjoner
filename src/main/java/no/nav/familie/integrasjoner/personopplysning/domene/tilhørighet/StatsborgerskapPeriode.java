@@ -25,11 +25,15 @@ public class StatsborgerskapPeriode {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        StatsborgerskapPeriode periode = (StatsborgerskapPeriode) o;
-        return Objects.equals(this.periode, periode.periode) &&
-                Objects.equals(tilhørendeLand, periode.tilhørendeLand);
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        StatsborgerskapPeriode statsborgerskapPeriode = (StatsborgerskapPeriode) o;
+        return Objects.equals(this.periode, statsborgerskapPeriode.periode) &&
+               Objects.equals(tilhørendeLand, statsborgerskapPeriode.tilhørendeLand);
     }
 
     @Override
@@ -39,10 +43,8 @@ public class StatsborgerskapPeriode {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("StatsborgerskapPeriode{");
-        sb.append("periode=").append(periode);
-        sb.append(", tilhørendeLand=").append(tilhørendeLand);
-        sb.append('}');
-        return sb.toString();
+        return "StatsborgerskapPeriode{" + "periode=" + periode +
+               ", tilhørendeLand=" + tilhørendeLand +
+               '}';
     }
 }

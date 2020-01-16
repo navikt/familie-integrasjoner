@@ -2,9 +2,9 @@ package no.nav.familie.integrasjoner.personopplysning.domene;
 
 
 import no.nav.familie.integrasjoner.personopplysning.domene.adresse.Adresseinfo;
-import no.nav.familie.integrasjoner.personopplysning.domene.status.PersonstatusType;
 import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.Familierelasjon;
 import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.SivilstandType;
+import no.nav.familie.integrasjoner.personopplysning.domene.status.PersonstatusType;
 import no.nav.familie.integrasjoner.personopplysning.domene.tilhørighet.Landkode;
 
 import java.time.LocalDate;
@@ -54,7 +54,9 @@ public class Personinfo {
         return personstatus;
     }
 
-    public SivilstandType getSivilstand() { return sivilstand; }
+    public SivilstandType getSivilstand() {
+        return sivilstand;
+    }
 
     public LocalDate getFødselsdato() {
         return fødselsdato;

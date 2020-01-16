@@ -13,9 +13,9 @@ public class OppgaveConfig {
 
     @Bean
     public OppgaveClient oppgaveClient(@Value("${OPPGAVE_URL}") String url,
-                                 @Autowired RestTemplate restTemplate,
-                                 @Autowired StsRestClient stsRestClient,
-                                 @Autowired ObjectMapper objectMapper) {
+                                       @Autowired RestTemplate restTemplate,
+                                       @Autowired StsRestClient stsRestClient,
+                                       @Autowired ObjectMapper objectMapper) {
         return new OppgaveClient(url, restTemplate, stsRestClient, objectMapper);
     }
 }

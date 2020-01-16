@@ -23,9 +23,11 @@ import static javax.ws.rs.core.HttpHeaders.ACCEPT;
 import static javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
 import static no.nav.familie.log.NavHttpHeaders.NAV_CALL_ID;
 import static no.nav.familie.log.NavHttpHeaders.NAV_CONSUMER_ID;
-import static no.nav.familie.log.NavHttpHeaders.NAV_PERSONIDENT;
 
 public class AktørregisterClient {
+
+    private static final String NAV_PERSONIDENTER = "Nav-Personidenter";
+
     private static final String AKTOERID_IDENTGRUPPE = "AktoerId";
     private static final String PERSONIDENT_IDENTGRUPPE = "NorskIdent";
     private final Timer aktoerResponstid = Metrics.timer("aktoer.respons.tid");
@@ -49,7 +51,9 @@ public class AktørregisterClient {
     }
 
     public AktørResponse hentAktørId(String personIdent) {
-        URI uri = URI.create(String.format("%s/api/v1/identer?gjeldende=true&identgruppe=%s", aktørRegisterUrl, AKTOERID_IDENTGRUPPE));
+        URI uri = URI.create(String.format("%s/api/v1/identer?gjeldende=true&identgruppe=%s",
+                                           aktørRegisterUrl,
+                                           AKTOERID_IDENTGRUPPE));
         return hentRespons(personIdent, uri);
     }
 
@@ -57,14 +61,14 @@ public class AktørregisterClient {
         String systembrukerToken = stsRestClient.getSystemOIDCToken();
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(uri)
-                .header(ACCEPT, "application/json")
-                .header(NAV_PERSONIDENT.asString(), personIdent)
-                .header(NAV_CONSUMER_ID.asString(), consumer)
-                .header(NAV_CALL_ID.asString(), MDCOperations.getCallId())
-                .header(AUTHORIZATION, "Bearer " + systembrukerToken)
-                .timeout(Duration.ofSeconds(5))
-                .build();
+                                         .uri(uri)
+                                         .header(ACCEPT, "application/json")
+                                         .header(NAV_PERSONIDENTER, personIdent)
+                                         .header(NAV_CONSUMER_ID.asString(), consumer)
+                                         .header(NAV_CALL_ID.asString(), MDCOperations.getCallId())
+                                         .header(AUTHORIZATION, "Bearer " + systembrukerToken)
+                                         .timeout(Duration.ofSeconds(5))
+                                         .build();
         try {
             long startTime = System.nanoTime();
             HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -79,15 +83,17 @@ public class AktørregisterClient {
 
 
     public AktørResponse hentPersonIdent(String personIdent) {
-        URI uri = URI.create(String.format("%s/api/v1/identer?gjeldende=true&identgruppe=%s", aktørRegisterUrl, PERSONIDENT_IDENTGRUPPE));
+        URI uri = URI.create(String.format("%s/api/v1/identer?gjeldende=true&identgruppe=%s",
+                                           aktørRegisterUrl,
+                                           PERSONIDENT_IDENTGRUPPE));
         return hentRespons(personIdent, uri);
     }
 
     public void ping() throws Exception {
         URI pingURI = URI.create(String.format("%s/internal/isAlive", aktørRegisterUrl));
         HttpRequest request = HttpRequestUtil.createRequest("Bearer " + stsRestClient.getSystemOIDCToken())
-                .uri(pingURI)
-                .build();
+                                             .uri(pingURI)
+                                             .build();
 
         var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 

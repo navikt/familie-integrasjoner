@@ -19,18 +19,19 @@ public class BaseService {
                        ClientConfigurationProperties clientConfigurationProperties,
                        OAuth2AccessTokenService oAuth2AccessTokenService) {
         this.clientProperties = Optional.ofNullable(
-            clientConfigurationProperties.getRegistration().get(clientConfigKey))
-                                        .orElseThrow(() -> new RuntimeException("could not find oauth2 client config for key="+ clientConfigKey));
+                clientConfigurationProperties.getRegistration().get(clientConfigKey))
+                                        .orElseThrow(() -> new RuntimeException(
+                                                "could not find oauth2 client config for key=" + clientConfigKey));
         this.restTemplate = restTemplateBuilder
-            .interceptors(bearerTokenInterceptor())
-            .build();
+                .interceptors(bearerTokenInterceptor())
+                .build();
         this.oAuth2AccessTokenService = oAuth2AccessTokenService;
     }
 
-    private ClientHttpRequestInterceptor bearerTokenInterceptor(){
+    private ClientHttpRequestInterceptor bearerTokenInterceptor() {
         return (request, body, execution) -> {
             OAuth2AccessTokenResponse response =
-                oAuth2AccessTokenService.getAccessToken(clientProperties);
+                    oAuth2AccessTokenService.getAccessToken(clientProperties);
             request.getHeaders().setBearerAuth(response.getAccessToken());
             return execution.execute(request, body);
         };

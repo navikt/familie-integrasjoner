@@ -13,6 +13,7 @@ import java.util.GregorianCalendar;
 public class DateUtil {
 
     private static final DatatypeFactory DATATYPE_FACTORY;
+
     static {
         try {
             DATATYPE_FACTORY = DatatypeFactory.newInstance();
@@ -46,14 +47,14 @@ public class DateUtil {
             return null;
         }
         return DATATYPE_FACTORY.newXMLGregorianCalendar(
-            localDate.getYear(),
-            localDate.getMonthValue(),
-            localDate.getDayOfMonth(),
-            DatatypeConstants.FIELD_UNDEFINED,
-            DatatypeConstants.FIELD_UNDEFINED,
-            DatatypeConstants.FIELD_UNDEFINED,
-            DatatypeConstants.FIELD_UNDEFINED,
-            DatatypeConstants.FIELD_UNDEFINED);
+                localDate.getYear(),
+                localDate.getMonthValue(),
+                localDate.getDayOfMonth(),
+                DatatypeConstants.FIELD_UNDEFINED,
+                DatatypeConstants.FIELD_UNDEFINED,
+                DatatypeConstants.FIELD_UNDEFINED,
+                DatatypeConstants.FIELD_UNDEFINED,
+                DatatypeConstants.FIELD_UNDEFINED);
     }
 
     public static LocalDateTime convertToLocalDateTime(XMLGregorianCalendar xmlGregorianCalendar) {

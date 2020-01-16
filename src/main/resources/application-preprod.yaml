@@ -15,6 +15,15 @@ no.nav.security.jwt:
           client-id: ${INTEGRASJONER_CLIENT_ID}
           client-secret: ${CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      infotrygd:
+        resource-url: ${INFOTRYGD_URL}
+        token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: ${INFOTRYGD_KS_SCOPE}
+        authentication:
+          client-id: ${INTEGRASJONER_CLIENT_ID}
+          client-secret: ${CLIENT_SECRET}
+          client-auth-method: client_secret_basic
 
 AAD_URL: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
 INTEGRASJONER_CLIENT_ID: ${INTEGRASJONER_CLIENT_ID}
@@ -22,13 +31,14 @@ CLIENT_SECRET: ${CLIENT_SECRET}
 INFOTRYGD_KS_SCOPE: ${INFOTRYGD_KS_SCOPE}
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
-SECURITYTOKENSERVICE_URL: https://sts-q1.preprod.local/SecurityTokenServiceProvider/
-AKTOERID_URL: https://app-q0.adeo.no/aktoerregister
-PERSON_V3_URL: https://wasapp-q0.adeo.no/tpsws/ws/Person/v3
-DOKARKIV_V1_URL: https://dokarkiv-q0.nais.preprod.local
-MEDL2_URL: https://app-q0.adeo.no/medl2
-SAF_URL: http://saf.q0
-INNSYN_JOURNAL_V2_URL: https://wasapp-q0.adeo.no/joark/InnsynJournal/v2
-OPPGAVE_URL: http://oppgave.q0
-EGEN_ANSATT_V1_URL: https://wasapp-q0.adeo.no/tpsws/EgenAnsatt_v1
+SECURITYTOKENSERVICE_URL: https://sts-q2.preprod.local/SecurityTokenServiceProvider/
+AKTOERID_URL: https://app-q2.adeo.no/aktoerregister
+PERSON_V3_URL: https://wasapp-q2.adeo.no/tpsws/ws/Person/v3
+DOKARKIV_V1_URL: https://dokarkiv-q2.nais.preprod.local
+MEDL2_URL: https://app-q2.adeo.no/medl2
+SAF_URL: http://saf.q2
+INNSYN_JOURNAL_V2_URL: https://wasapp-q2.adeo.no/joark/InnsynJournal/v2
+OPPGAVE_URL: http://oppgave.q2
+EGEN_ANSATT_V1_URL: https://wasapp-q2.adeo.no/tpsws/EgenAnsatt_v1
 KODEVERK_URL: https://kodeverk.nais.preprod.local
+ARBEIDSFORDELING_V1_URL: https://app-q2.adeo.no/norg2/ws/Arbeidsfordeling/v1

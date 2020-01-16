@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.kodeverk
 
+import no.nav.familie.integrasjoner.client.rest.KodeverkClient
 import no.nav.familie.integrasjoner.kodeverk.domene.BetydningerDto
 import no.nav.familie.integrasjoner.kodeverk.domene.PostnummerDto
 import no.nav.familie.integrasjoner.kodeverk.domene.PoststedDto

@@ -38,8 +38,12 @@ public class Tilgang implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Tilgang tilgang = (Tilgang) o;
         return harTilgang == tilgang.harTilgang &&
                Objects.equals(begrunnelse, tilgang.begrunnelse);

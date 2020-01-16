@@ -45,13 +45,17 @@ public class PersonhistorikkInfo {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         PersonhistorikkInfo that = (PersonhistorikkInfo) o;
         return Objects.equals(personIdent, that.personIdent) &&
-            Objects.equals(personstatushistorikk, that.personstatushistorikk) &&
-            Objects.equals(statsborgerskaphistorikk, that.statsborgerskaphistorikk) &&
-            Objects.equals(adressehistorikk, that.adressehistorikk);
+               Objects.equals(personstatushistorikk, that.personstatushistorikk) &&
+               Objects.equals(statsborgerskaphistorikk, that.statsborgerskaphistorikk) &&
+               Objects.equals(adressehistorikk, that.adressehistorikk);
     }
 
     public static Builder builder() {

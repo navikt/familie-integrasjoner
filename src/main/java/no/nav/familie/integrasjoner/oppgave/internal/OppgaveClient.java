@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Metrics;
 import no.nav.familie.http.sts.StsRestClient;
-import no.nav.familie.ks.kontrakter.oppgave.Oppgave;
 import no.nav.familie.integrasjoner.felles.OppslagException;
+import no.nav.familie.kontrakter.ks.oppgave.Oppgave;
 import no.nav.familie.log.mdc.MDCConstants;
 import no.nav.oppgave.v1.FinnOppgaveResponseDto;
 import no.nav.oppgave.v1.OppgaveJsonDto;
@@ -65,17 +65,24 @@ public class OppgaveClient {
         getRequest(URI.create(String.format("%s/internal/alive", oppgaveBaseUrl)), String.class);
     }
 
-    private URI lagRequestUrlMed(URI oppgaveUri, String aktoerId, String journalpostId) {
-        return URI.create(oppgaveUri + String.format("?aktoerId=%s&tema=%s&oppgavetype=%s&journalpostId=%s", aktoerId, TEMA, OPPGAVE_TYPE, journalpostId));
+    private static URI lagRequestUrlMed(URI oppgaveUri, String aktoerId, String journalpostId) {
+        return URI.create(oppgaveUri + String.format("?aktoerId=%s&tema=%s&oppgavetype=%s&journalpostId=%s",
+                                                     aktoerId,
+                                                     TEMA,
+                                                     OPPGAVE_TYPE,
+                                                     journalpostId));
     }
 
     private OppgaveJsonDto requestOppgaveJson(URI requestUrl) {
         var response = getRequest(requestUrl, FinnOppgaveResponseDto.class);
         if (Objects.requireNonNull(response.getBody()).getOppgaver().isEmpty()) {
             returnerteIngenOppgaver.increment();
-            throw new OppslagException("Ingen oppgaver funnet for " + requestUrl, "oppgave", OppslagException.Level.MEDIUM, HttpStatus.NOT_FOUND);
+            throw new OppslagException("Ingen oppgaver funnet for " + requestUrl,
+                                       "oppgave",
+                                       OppslagException.Level.MEDIUM,
+                                       HttpStatus.NOT_FOUND);
         }
-        if (response.getBody().getOppgaver().size()>1) {
+        if (response.getBody().getOppgaver().size() > 1) {
             returnerteMerEnnEnOppgave.increment();
         }
         return response.getBody().getOppgaver().get(0);

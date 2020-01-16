@@ -14,7 +14,7 @@ public enum AdRoller {
     public String rolle;
 
 
-    AdRoller (String rolle) {
+    AdRoller(String rolle) {
         this.rolle = rolle;
     }
 

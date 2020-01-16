@@ -29,11 +29,15 @@ public class AdressePeriode {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         AdressePeriode that = (AdressePeriode) o;
         return Objects.equals(periode, that.periode) &&
-                Objects.equals(adresse, that.adresse);
+               Objects.equals(adresse, that.adresse);
     }
 
     @Override
@@ -44,8 +48,8 @@ public class AdressePeriode {
     @Override
     public String toString() {
         return "AdressePeriode{" + "periode=" + periode +
-                ", adresse=" + adresse +
-                '}';
+               ", adresse=" + adresse +
+               '}';
     }
 
     public static class Adresse {
@@ -96,34 +100,45 @@ public class AdressePeriode {
         @Override
         public String toString() {
             return "Adresse{" + "adresseType=" + adresseType +
-                    ", adresselinje1='" + adresselinje1 + '\'' +
-                    ", adresselinje2='" + adresselinje2 + '\'' +
-                    ", adresselinje3='" + adresselinje3 + '\'' +
-                    ", adresselinje4='" + adresselinje4 + '\'' +
-                    ", postnummer='" + postnummer + '\'' +
-                    ", poststed='" + poststed + '\'' +
-                    ", land='" + land + '\'' +
-                    '}';
+                   ", adresselinje1='" + adresselinje1 + '\'' +
+                   ", adresselinje2='" + adresselinje2 + '\'' +
+                   ", adresselinje3='" + adresselinje3 + '\'' +
+                   ", adresselinje4='" + adresselinje4 + '\'' +
+                   ", postnummer='" + postnummer + '\'' +
+                   ", poststed='" + poststed + '\'' +
+                   ", land='" + land + '\'' +
+                   '}';
         }
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             Adresse adresse = (Adresse) o;
-            return Objects.equals(adresseType, adresse.adresseType) &&
-                    Objects.equals(adresselinje1, adresse.adresselinje1) &&
-                    Objects.equals(adresselinje2, adresse.adresselinje2) &&
-                    Objects.equals(adresselinje3, adresse.adresselinje3) &&
-                    Objects.equals(adresselinje4, adresse.adresselinje4) &&
-                    Objects.equals(postnummer, adresse.postnummer) &&
-                    Objects.equals(poststed, adresse.poststed) &&
-                    Objects.equals(land, adresse.land);
+            return adresseType == adresse.adresseType &&
+                   Objects.equals(adresselinje1, adresse.adresselinje1) &&
+                   Objects.equals(adresselinje2, adresse.adresselinje2) &&
+                   Objects.equals(adresselinje3, adresse.adresselinje3) &&
+                   Objects.equals(adresselinje4, adresse.adresselinje4) &&
+                   Objects.equals(postnummer, adresse.postnummer) &&
+                   Objects.equals(poststed, adresse.poststed) &&
+                   Objects.equals(land, adresse.land);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(adresseType, adresselinje1, adresselinje2, adresselinje3, adresselinje4, postnummer, poststed, land);
+            return Objects.hash(adresseType,
+                                adresselinje1,
+                                adresselinje2,
+                                adresselinje3,
+                                adresselinje4,
+                                postnummer,
+                                poststed,
+                                land);
         }
     }
 
