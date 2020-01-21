@@ -1,7 +1,5 @@
 package no.nav.familie.integrasjoner.infotrygd
 
-import no.nav.familie.http.azure.AccessTokenClient
-import no.nav.familie.http.azure.AccessTokenDto
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.infotrygd.domene.AktivKontantstøtteInfo
 import no.nav.familie.kontrakter.felles.Ressurs
@@ -13,6 +11,7 @@ import org.mockito.Mockito
 import org.mockserver.junit.MockServerRule
 import org.mockserver.model.HttpRequest
 import org.mockserver.model.HttpResponse
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -21,18 +20,18 @@ import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.HttpServerErrorException
 
-@ActiveProfiles("integrasjonstest")
+@ActiveProfiles("integrasjonstest", "mock-oauth")
 class InfotrygdControllerTest : OppslagSpringRunnerTest() {
 
-    private val accessTokenClient: AccessTokenClient = Mockito.mock(AccessTokenClient::class.java)
-    private val infotrygdService = InfotrygdService(accessTokenClient, "", "http://localhost:$MOCK_SERVER_PORT")
+    @Autowired
+    lateinit var infotrygdService: InfotrygdService
 
     @get:Rule
     val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
 
-    @Before fun setUp() {
+    @Before
+    fun setUp() {
         headers.setBearerAuth(lokalTestToken)
-        Mockito.`when`(accessTokenClient.getAccessToken("")).thenReturn(AccessTokenDto("", "", 0))
     }
 
     @Test

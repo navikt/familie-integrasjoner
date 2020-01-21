@@ -14,11 +14,17 @@ no.nav.security.jwt:
           client-id: ${INTEGRASJONER_CLIENT_ID}
           client-secret: ${CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      infotrygd:
+        resource-url: ${INFOTRYGD_URL}
+        token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: ${INFOTRYGD_KS_SCOPE}
+        authentication:
+          client-id: ${INTEGRASJONER_CLIENT_ID}
+          client-secret: ${CLIENT_SECRET}
+          client-auth-method: client_secret_basic
 
 AAD_URL: http://vtp:8060/rest/isso/oauth2/access_token
-INTEGRASJONER_CLIENT_ID: ""
-CLIENT_SECRET: ""
-INFOTRYGD_KS_SCOPE: ""
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 SECURITYTOKENSERVICE_URL: http://vtp:8060/soap/SecurityTokenServiceProvider/
