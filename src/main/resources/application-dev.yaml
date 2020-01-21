@@ -1,8 +1,8 @@
 no.nav.security.jwt:
   issuer.azuread:
-    discoveryurl: http://metadata
-    accepted_audience: aud-localhost
-    cookie_name: localhost-idtoken
+    discoveryurl: https://login.microsoftonline.com/navq.onmicrosoft.com/v2.0/.well-known/openid-configuration
+    accepted_audience: ${INTEGRASJONER_CLIENT_ID}
+    cookie_name: azure_token
   client:
     registration:
       aad-graph-onbehalfof:
@@ -25,9 +25,6 @@ no.nav.security.jwt:
           client-auth-method: client_secret_basic
 
 AAD_URL: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
-INTEGRASJONER_CLIENT_ID: "dummy-klient-id"
-CLIENT_SECRET: ""
-INFOTRYGD_KS_SCOPE: "dummy-scope"
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 SECURITYTOKENSERVICE_URL: https://localhost:8063/soap/SecurityTokenServiceProvider/

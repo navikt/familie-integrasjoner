@@ -1,9 +1,12 @@
 package no.nav.familie.integrasjoner.infotrygd;
 
-import no.nav.familie.http.azure.AccessTokenClient;
+import no.nav.familie.integrasjoner.config.BaseService;
 import no.nav.familie.integrasjoner.infotrygd.domene.AktivKontantstøtteInfo;
+import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService;
+import no.nav.security.token.support.client.spring.ClientConfigurationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -11,21 +14,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
 
 @Service
-public class InfotrygdService {
-    private RestTemplate restTemplate = new RestTemplate();
-    private AccessTokenClient accessTokenClient;
-    private String scope;
+public class InfotrygdService extends BaseService {
+    private static final String OAUTH2_CLIENT_CONFIG_KEY = "infotrygd";
+
     private String infotrygdURL;
 
     @Autowired
-    public InfotrygdService(AccessTokenClient accessTokenClient,
-                            @Value("${INFOTRYGD_KS_SCOPE}") String scope,
+    public InfotrygdService(RestTemplateBuilder restTemplateBuilderMedProxy,
+                            ClientConfigurationProperties clientConfigurationProperties,
+                            OAuth2AccessTokenService oAuth2AccessTokenService,
                             @Value("${INFOTRYGD_URL}") String infotrygdURL) {
-        this.accessTokenClient = accessTokenClient;
-        this.scope = scope;
+        super(OAUTH2_CLIENT_CONFIG_KEY, restTemplateBuilderMedProxy, clientConfigurationProperties, oAuth2AccessTokenService);
+
         this.infotrygdURL = infotrygdURL;
     }
 
@@ -35,7 +37,6 @@ public class InfotrygdService {
         }
 
         var headers = new HttpHeaders();
-        headers.setBearerAuth(accessTokenClient.getAccessToken(scope).getAccess_token());
         headers.add("Accept", "application/json");
         headers.add("fnr", fnr);
         var entity = new HttpEntity(headers);
