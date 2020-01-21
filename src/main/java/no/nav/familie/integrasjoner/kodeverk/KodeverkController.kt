@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @Unprotected
-@RequestMapping(path = ["/api/kodeverk"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(path = ["/api/selvbetjening/kodeverk"], produces = [MediaType.APPLICATION_JSON_VALUE])
 class KodeverkController(val kodeverkService: KodeverkService) {
 
     @GetMapping("/poststed/{postnummer}")
