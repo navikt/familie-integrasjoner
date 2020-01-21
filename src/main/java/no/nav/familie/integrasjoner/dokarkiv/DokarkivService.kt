@@ -52,7 +52,7 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
                 fagsaksystem = metadata.fagsakSystem
         ) else null
 
-        return OpprettJournalpostRequest(journalpostType = JournalpostType.INNGAAENDE,
+        return OpprettJournalpostRequest(journalpostType = metadata.journalpostType,
                                          behandlingstema = metadata.behandlingstema,
                                          kanal = metadata.kanal,
                                          tittel = metadata.tittel,
