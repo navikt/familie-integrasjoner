@@ -1,8 +1,9 @@
 package no.nav.familie.integrasjoner.dokarkiv
 
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.doAnswer
-import com.nhaarman.mockitokotlin2.whenever
+import io.mockk.MockKAnnotations
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.slot
 import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
 import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
 import no.nav.familie.integrasjoner.dokarkiv.api.Dokument
@@ -23,19 +24,20 @@ import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.*
 import org.mockito.Mockito
 import java.time.LocalDate
-import com.nhaarman.mockitokotlin2.any as kotlinAny
-import com.nhaarman.mockitokotlin2.mock as kotlinMock
-import com.nhaarman.mockitokotlin2.verify as kotlinVerify
 
 class DokarkivServiceTest {
 
     private val navn = "Navn Navnesen"
     private val dokarkivClient = Mockito.mock(DokarkivClient::class.java)
-    private val dokarkivRestClient = kotlinMock<DokarkivRestClient>()
+
+    @MockK
+    lateinit var dokarkivRestClient: DokarkivRestClient
+
     private lateinit var dokarkivService: DokarkivService
     private val personopplysningerService = Mockito.mock(PersonopplysningerService::class.java)
 
     @Before fun setUp() {
+        MockKAnnotations.init(this)
         dokarkivService = DokarkivService(dokarkivClient,
                                           dokarkivRestClient,
                                           personopplysningerService,
@@ -44,7 +46,7 @@ class DokarkivServiceTest {
 
     @Test fun `skal mappe request til opprettJournalpostRequest av type arkiv pdfa`() {
         val captor = ArgumentCaptor.forClass(OpprettJournalpostRequest::class.java)
-        Mockito.`when`(dokarkivClient.lagJournalpost(kotlinAny(), anyBoolean()))
+        Mockito.`when`(dokarkivClient.lagJournalpost(any<OpprettJournalpostRequest>(), anyBoolean()))
                 .thenReturn(OpprettJournalpostResponse())
         Mockito.`when`(personopplysningerService.hentPersoninfoFor(FNR))
                 .thenReturn(Personinfo.Builder().medPersonIdent(PERSON_IDENT)
@@ -63,14 +65,17 @@ class DokarkivServiceTest {
     }
 
     @Test fun `skal mappe request til opprettJournalpostRequest for barnetrygd vedtak`() {
-        doAnswer { OpprettJournalpostResponse() }
-                .whenever(dokarkivRestClient)
-                .lagJournalpost(kotlinAny(), anyBoolean())
+        val slot= slot<OpprettJournalpostRequest>()
+
+        every{dokarkivRestClient.lagJournalpost(capture(slot), any())}
+                .answers{OpprettJournalpostResponse()}
+
         Mockito.`when`(personopplysningerService.hentPersoninfoFor(FNR))
                 .thenReturn(Personinfo.Builder().medPersonIdent(PERSON_IDENT)
                         .medFødselsdato(LocalDate.now())
                         .medNavn(navn)
                         .build())
+
         val dto = ArkiverDokumentRequest(FNR,
                 false,
                 listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "BARNETRYGD_VEDTAK")),
@@ -78,9 +83,7 @@ class DokarkivServiceTest {
 
         dokarkivService.lagJournalpostV2(dto)
 
-        val captor= argumentCaptor<OpprettJournalpostRequest>()
-        kotlinVerify(dokarkivRestClient).lagJournalpost(captor.capture(), kotlinAny())
-        val request = captor.lastValue
+        val request = slot.captured
         assertOpprettBarnetrygdVedtakJournalpostRequest(request, PDF_DOK, Sak(fagsakId = FAGSAK_ID, fagsaksystem = "FS36", sakstype = "FAGSAK"))
     }
 
