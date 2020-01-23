@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.kodeverk
 
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.security.token.support.core.api.Unprotected
+import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
-@RequestMapping(path = ["/api/kodeverk"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(path = ["/api/selvbetjening/kodeverk"], produces = [MediaType.APPLICATION_JSON_VALUE])
 class KodeverkController(val kodeverkService: KodeverkService) {
 
     @GetMapping("/poststed/{postnummer}")
