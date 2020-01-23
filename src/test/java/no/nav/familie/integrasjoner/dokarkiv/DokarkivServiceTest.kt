@@ -81,7 +81,7 @@ class DokarkivServiceTest {
         val captor= argumentCaptor<OpprettJournalpostRequest>()
         kotlinVerify(dokarkivRestClient).lagJournalpost(captor.capture(), kotlinAny())
         val request = captor.lastValue
-        assertOpprettBarnetrygdVedtakJournalpostRequest(request, PDF_DOK, Sak(fagsakId = FAGSAK_ID, fagsaksystem = "FS22", sakstype = "FAGSAK"))
+        assertOpprettBarnetrygdVedtakJournalpostRequest(request, PDF_DOK, Sak(fagsakId = FAGSAK_ID, fagsaksystem = "FS36", sakstype = "FAGSAK"))
     }
 
     @Test fun `skal mappe request til opprettJournalpostRequest av type ORIGINAL JSON`() {
