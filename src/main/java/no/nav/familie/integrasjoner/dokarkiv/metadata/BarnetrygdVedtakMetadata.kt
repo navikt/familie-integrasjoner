@@ -13,7 +13,7 @@ object BarnetrygdVedtakMetadata : DokumentMetadata {
     override val kanal: String? = ""
     override val dokumentTypeId: String = "BARNETRYGD_VEDTAK"
     override val tittel: String? = "Vedtak om innvilgelse av barnetrygd"
-    override val brevkode: String? = "NAV xxxx" //TODO: order a brevkode
+    override val brevkode: String? = "" //TODO: order a brevkode
     override val dokumentKategori: String = "VB"
 
 }
