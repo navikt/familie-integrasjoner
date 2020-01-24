@@ -1,10 +1,10 @@
 package no.nav.familie.integrasjoner.aktør.config;
 
+import no.nav.familie.integrasjoner.client.rest.AktørregisterRestClient;
 import no.nav.familie.kontrakter.ks.søknad.testdata.SøknadTestdata;
 import no.nav.familie.integrasjoner.aktør.domene.Aktør;
 import no.nav.familie.integrasjoner.aktør.domene.Ident;
 import no.nav.familie.integrasjoner.aktør.internal.AktørResponse;
-import no.nav.familie.integrasjoner.aktør.internal.AktørregisterClient;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +21,8 @@ public class AktørClientTestConfig {
     @Bean
     @Profile("mock-aktor")
     @Primary
-    public AktørregisterClient aktørregisterClientMock() throws Exception {
-        AktørregisterClient aktørregisterClient = mock(AktørregisterClient.class);
+    public static AktørregisterRestClient aktørregisterClientMock()  {
+        AktørregisterRestClient aktørregisterClient = mock(AktørregisterRestClient.class);
         ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
 
         when(aktørregisterClient.hentAktørId(stringCaptor.capture())).thenAnswer(invocation -> {
@@ -43,7 +43,7 @@ public class AktørClientTestConfig {
         return aktørregisterClient;
     }
 
-    private Ident finnRiktigAktørId(String personIdent) {
+    private static Ident finnRiktigAktørId(String personIdent) {
         switch (personIdent) {
             case SøknadTestdata.morPersonident:
                 return new Ident().withIdent(SøknadTestdata.morAktørId).withGjeldende(true);
@@ -62,7 +62,7 @@ public class AktørClientTestConfig {
         }
     }
 
-    private Ident finnRiktigPersonIdent(String aktørId) {
+    private static Ident finnRiktigPersonIdent(String aktørId) {
         switch (aktørId) {
             case SøknadTestdata.morAktørId:
                 return new Ident().withIdent(SøknadTestdata.morPersonident).withGjeldende(true);

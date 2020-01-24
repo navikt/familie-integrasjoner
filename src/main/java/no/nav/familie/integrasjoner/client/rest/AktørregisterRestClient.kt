@@ -13,8 +13,7 @@ import java.net.URI
 @Component
 class AktørregisterRestClient(@Value("\${AKTOERID_URL}")
                               private val aktørRegisterUrl: URI,
-                              @Qualifier("sts") restOperations: RestOperations,
-                              private val stsRestClient: StsRestClient)
+                              @Qualifier("sts") restOperations: RestOperations)
     : AbstractPingableRestClient(restOperations, "aktoer") {
 
     override val pingUri: URI = UriUtil.uri(aktørRegisterUrl, PATH_PING)

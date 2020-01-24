@@ -1,3 +1,6 @@
+application:
+  name: familie-integrasjoner
+
 server:
   servlet:
     context-path: /

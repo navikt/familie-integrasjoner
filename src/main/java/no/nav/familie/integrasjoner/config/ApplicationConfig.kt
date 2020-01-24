@@ -11,13 +11,13 @@ import no.nav.familie.log.filter.LogFilter
 import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.Import
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.RestOperations
 import springfox.documentation.swagger2.annotations.EnableSwagger2
@@ -28,6 +28,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2
 @EnableSwagger2
 @EnableJwtTokenValidation(ignore = ["org.springframework", "springfox.documentation.swagger.web.ApiResourceController"])
 @EnableOAuth2Client(cacheEnabled = true)
+@Import(ConsumerIdClientInterceptor::class)
 class ApplicationConfig {
 
     private val logger = LoggerFactory.getLogger(ApplicationConfig::class.java)
@@ -42,12 +43,11 @@ class ApplicationConfig {
     }
 
     @Bean("sts")
-    fun restTemplateSts(@Value("\${CREDENTIAL_USERNAME}") consumer: String,
-                        stsRestClient: StsRestClient): RestOperations {
+    fun restTemplateSts(stsRestClient: StsRestClient,
+                        consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations {
 
         return RestTemplateBuilder()
-                .interceptors(ConsumerIdClientInterceptor(consumer),
-                              StsBearerTokenClientInterceptor(stsRestClient),
+                .interceptors(                              StsBearerTokenClientInterceptor(stsRestClient),
                               MdcValuesPropagatingClientInterceptor(),
                               TimingAndLoggingClientHttpRequestInterceptor())
                 .requestFactory(this::requestFactory)
