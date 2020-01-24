@@ -1,9 +1,9 @@
 package no.nav.familie.integrasjoner.config
 
-import no.nav.familie.http.azure.AzureAccessTokenException
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
+import no.nav.security.token.support.client.core.OAuth2ClientException
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.LoggerFactory
@@ -48,9 +48,9 @@ class ApiExceptionHandler {
                 .body(failure("Mangler påkrevd request header", e))
     }
 
-    @ExceptionHandler(AzureAccessTokenException::class)
-    fun handleRestClientResponseException(e: AzureAccessTokenException): ResponseEntity<Ressurs<Any>> {
-        logger.error("AzureAccessTokenException : {} ", ExceptionUtils.getStackTrace(e))
+    @ExceptionHandler(OAuth2ClientException::class)
+    fun handleRestClientResponseException(e: OAuth2ClientException): ResponseEntity<Ressurs<Any>> {
+        logger.error("OAuth2ClientException : {} ", ExceptionUtils.getStackTrace(e))
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(failure("Feil mot azure. Message=${e.message}", e))

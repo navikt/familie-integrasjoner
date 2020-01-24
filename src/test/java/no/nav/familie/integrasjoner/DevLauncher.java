@@ -9,7 +9,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Import;
 
 @SpringBootApplication(exclude = ErrorMvcAutoConfiguration.class)
-@Import({ApplicationConfig.class, TokenGeneratorConfiguration.class})
+@Import({ApplicationConfig.class})
 public class DevLauncher {
 
     public static void main(String... args) {
