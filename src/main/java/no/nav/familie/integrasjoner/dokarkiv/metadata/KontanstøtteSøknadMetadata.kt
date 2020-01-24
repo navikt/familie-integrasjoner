@@ -5,8 +5,9 @@ import org.springframework.stereotype.Component
 
 @Component
 object KontanstøtteSøknadMetadata : DokumentMetadata {
-    override val journalpostType: JournalpostType= JournalpostType.INNGAAENDE
-    override val fagsakSystem: String?= null
+
+    override val journalpostType: JournalpostType = JournalpostType.INNGAAENDE
+    override val fagsakSystem: String? = null
     override val tema: String = "KON"
     override val behandlingstema: String? = "ab0084" // https://confluence.adeo.no/display/BOA/Behandlingstema
     override val kanal: String? = "NAV_NO"

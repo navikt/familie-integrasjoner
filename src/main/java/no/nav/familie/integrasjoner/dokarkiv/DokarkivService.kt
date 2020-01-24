@@ -46,7 +46,7 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
 
         val metadata = dokarkivMetadata.getMetadata(arkiverDokumentRequest.dokumenter[0])
         val arkivdokumenter = arkiverDokumentRequest.dokumenter.map(this::mapTilArkivdokument)
-        val jpsak: Sak?= if(arkiverDokumentRequest.fagsakId!= null) Sak(
+        val jpsak: Sak? = if (arkiverDokumentRequest.fagsakId != null) Sak(
                 fagsakId = arkiverDokumentRequest.fagsakId,
                 sakstype = "FAGSAK",
                 fagsaksystem = metadata.fagsakSystem
@@ -62,7 +62,7 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
                                          dokumenter = arkivdokumenter,
                                          eksternReferanseId = MDCOperations.getCallId(),
                 // sak = når vi tar over fagsak, så må dennne settes til vår. For BRUT001 behandling, så kan ikke denne settes
-                                         sak= jpsak
+                                         sak = jpsak
         )
     }
 

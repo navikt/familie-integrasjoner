@@ -5,8 +5,9 @@ import org.springframework.stereotype.Component
 
 @Component
 object OvergangsstønadVedleggMetadata : DokumentMetadata {
+
     override val journalpostType: JournalpostType = JournalpostType.INNGAAENDE
-    override val fagsakSystem: String?= null
+    override val fagsakSystem: String? = null
     override val tema: String = "ENF"
     override val behandlingstema: String? = null // https://confluence.adeo.no/display/BOA/Behandlingstema
     override val kanal: String? = null

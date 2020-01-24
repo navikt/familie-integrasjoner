@@ -41,7 +41,9 @@ class DokarkivServiceTest {
         dokarkivService = DokarkivService(dokarkivClient,
                                           dokarkivRestClient,
                                           personopplysningerService,
-                                          DokarkivMetadata(KontanstøtteSøknadMetadata, KontanstøtteSøknadVedleggMetadata, BarnetrygdVedtakMetadata))
+                                          DokarkivMetadata(KontanstøtteSøknadMetadata,
+                                                           KontanstøtteSøknadVedleggMetadata,
+                                                           BarnetrygdVedtakMetadata))
     }
 
     @Test fun `skal mappe request til opprettJournalpostRequest av type arkiv pdfa`() {
@@ -65,26 +67,28 @@ class DokarkivServiceTest {
     }
 
     @Test fun `skal mappe request til opprettJournalpostRequest for barnetrygd vedtak`() {
-        val slot= slot<OpprettJournalpostRequest>()
+        val slot = slot<OpprettJournalpostRequest>()
 
-        every{dokarkivRestClient.lagJournalpost(capture(slot), any())}
-                .answers{OpprettJournalpostResponse()}
+        every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
+                .answers { OpprettJournalpostResponse() }
 
         Mockito.`when`(personopplysningerService.hentPersoninfoFor(FNR))
                 .thenReturn(Personinfo.Builder().medPersonIdent(PERSON_IDENT)
-                        .medFødselsdato(LocalDate.now())
-                        .medNavn(navn)
-                        .build())
+                                    .medFødselsdato(LocalDate.now())
+                                    .medNavn(navn)
+                                    .build())
 
         val dto = ArkiverDokumentRequest(FNR,
-                false,
-                listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "BARNETRYGD_VEDTAK")),
-                fagsakId = FAGSAK_ID)
+                                         false,
+                                         listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "BARNETRYGD_VEDTAK")),
+                                         fagsakId = FAGSAK_ID)
 
         dokarkivService.lagJournalpostV2(dto)
 
         val request = slot.captured
-        assertOpprettBarnetrygdVedtakJournalpostRequest(request, PDF_DOK, Sak(fagsakId = FAGSAK_ID, fagsaksystem = "FS36", sakstype = "FAGSAK"))
+        assertOpprettBarnetrygdVedtakJournalpostRequest(request,
+                                                        PDF_DOK,
+                                                        Sak(fagsakId = FAGSAK_ID, fagsaksystem = "FS36", sakstype = "FAGSAK"))
     }
 
     @Test fun `skal mappe request til opprettJournalpostRequest av type ORIGINAL JSON`() {
@@ -146,7 +150,7 @@ class DokarkivServiceTest {
                                                 pdfa: String,
                                                 pdfDok: ByteArray,
                                                 arkivVariantformat: String,
-                                                sak: Sak?= null) {
+                                                sak: Sak? = null) {
         Assertions.assertThat(request.avsenderMottaker!!.id).isEqualTo(FNR)
         Assertions.assertThat(request.avsenderMottaker!!.idType).isEqualTo(IdType.FNR)
         Assertions.assertThat(request.bruker!!.id).isEqualTo(FNR)
@@ -163,7 +167,7 @@ class DokarkivServiceTest {
         Assertions.assertThat(request.dokumenter[0].dokumentvarianter[0].fysiskDokument).isEqualTo(pdfDok)
         Assertions.assertThat(request.dokumenter[0].dokumentvarianter[0].variantformat).isEqualTo(arkivVariantformat)
         Assertions.assertThat(request.dokumenter[0].dokumentvarianter[0].filnavn).isEqualTo(FILNAVN)
-        if(sak!= null){
+        if (sak != null) {
             Assertions.assertThat(request.sak!!.fagsakId).isEqualTo(sak.fagsakId)
             Assertions.assertThat(request.sak!!.fagsaksystem).isEqualTo(sak.fagsaksystem)
             Assertions.assertThat(request.sak!!.fagsaksystem).isEqualTo(sak.sakstype)
@@ -171,8 +175,8 @@ class DokarkivServiceTest {
     }
 
     private fun assertOpprettBarnetrygdVedtakJournalpostRequest(request: OpprettJournalpostRequest,
-                                                pdfDok: ByteArray,
-                                                sak: Sak) {
+                                                                pdfDok: ByteArray,
+                                                                sak: Sak) {
         Assertions.assertThat(request.avsenderMottaker!!.id).isEqualTo(FNR)
         Assertions.assertThat(request.avsenderMottaker!!.idType).isEqualTo(IdType.FNR)
         Assertions.assertThat(request.bruker!!.id).isEqualTo(FNR)
@@ -202,6 +206,6 @@ class DokarkivServiceTest {
         private const val JOURNALPOST_ID = "123"
         private const val FILNAVN = "filnavn"
         private val PERSON_IDENT = PersonIdent(FNR)
-        private val FAGSAK_ID= "s200"
+        private val FAGSAK_ID = "s200"
     }
 }
