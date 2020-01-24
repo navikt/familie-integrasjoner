@@ -88,7 +88,7 @@ class DokarkivServiceTest {
         val request = slot.captured
         assertOpprettBarnetrygdVedtakJournalpostRequest(request,
                                                         PDF_DOK,
-                                                        Sak(fagsakId = FAGSAK_ID, fagsaksystem = "FS36", sakstype = "FAGSAK"))
+                                                        Sak(fagsakId = FAGSAK_ID, fagsaksystem = "IT01", sakstype = "FAGSAK"))
     }
 
     @Test fun `skal mappe request til opprettJournalpostRequest av type ORIGINAL JSON`() {
