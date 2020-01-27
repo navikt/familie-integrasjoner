@@ -75,5 +75,4 @@ class ApplicationConfig {
         filterRegistration.order = 1
         return filterRegistration
     }
-
 }
