@@ -47,9 +47,11 @@ class ApplicationConfig {
                         consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations {
 
         return RestTemplateBuilder()
-                .interceptors(                              StsBearerTokenClientInterceptor(stsRestClient),
-                              MdcValuesPropagatingClientInterceptor(),
-                              TimingAndLoggingClientHttpRequestInterceptor())
+                .interceptors(
+                        consumerIdClientInterceptor,
+                        StsBearerTokenClientInterceptor(stsRestClient),
+                        MdcValuesPropagatingClientInterceptor(),
+                        TimingAndLoggingClientHttpRequestInterceptor())
                 .requestFactory(this::requestFactory)
                 .build()
     }
