@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 object BarnetrygdVedtakMetadata : DokumentMetadata {
 
     override val journalpostType: JournalpostType = JournalpostType.UTGAAENDE
-    override val fagsakSystem: String? = "IT01" //TODO: find out a real id
+    override val fagsakSystem: String? = "FS22" //TODO: find out a real id
     override val tema: String = "BAR"
     override val behandlingstema: String? = "ab0270" // https://confluence.adeo.no/display/BOA/Behandlingstema
     override val kanal: String? = ""
