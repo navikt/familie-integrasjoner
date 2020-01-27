@@ -20,7 +20,7 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
 
     fun lagInngåendeJournalpost(arkiverDokumentRequest: ArkiverDokumentRequest): ArkiverDokumentResponse {
         val request = mapTilOpprettJournalpostRequest(arkiverDokumentRequest)
-        val response = dokarkivClient.lagJournalpost(request, arkiverDokumentRequest.isForsøkFerdigstill)
+        val response = dokarkivClient.lagJournalpost(request, arkiverDokumentRequest.forsøkFerdigstill)
         return mapTilArkiverDokumentResponse(response)
     }
 
@@ -31,7 +31,7 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
     fun lagJournalpostV2(arkiverDokumentRequest: ArkiverDokumentRequest): ArkiverDokumentResponse {
         val request = mapTilOpprettJournalpostRequest(arkiverDokumentRequest)
         val response =
-                dokarkivRestClient.lagJournalpost(request, arkiverDokumentRequest.isForsøkFerdigstill)
+                dokarkivRestClient.lagJournalpost(request, arkiverDokumentRequest.forsøkFerdigstill)
         return mapTilArkiverDokumentResponse(response)
     }
 
@@ -61,7 +61,7 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
                                          bruker = Bruker(IdType.FNR, fnr),
                                          dokumenter = arkivdokumenter,
                                          eksternReferanseId = MDCOperations.getCallId(),
-                // sak = når vi tar over fagsak, så må dennne settes til vår. For BRUT001 behandling, så kan ikke denne settes
+                                         journalfoerendeEnhet = arkiverDokumentRequest.journalførendeEnhet,
                                          sak = jpsak
         )
     }
