@@ -42,5 +42,4 @@ class AktørregisterRestClient(@Value("\${AKTOERID_URL}")
         private const val PATH_HENT_AKTØR_ID = "api/v1/identer?gjeldende=true&identgruppe=%s"
         private const val PATH_HENT_PERSONIDENT = "api/v1/identer?gjeldende=true&identgruppe=%s"
     }
-
 }
