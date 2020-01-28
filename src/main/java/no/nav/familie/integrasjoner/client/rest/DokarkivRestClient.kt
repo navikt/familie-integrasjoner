@@ -22,7 +22,7 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
 
     override val pingUri: URI = UriUtil.uri(dokarkivUrl, PATH_PING)
 
-    private val ferdigstillJournalPostClient = FerdigstillJourrnalPostClient(restOperations, dokarkivUrl)
+    private val ferdigstillJournalPostClient = FerdigstillJournalPostClient(restOperations, dokarkivUrl)
 
     fun lagJournalpostUri(ferdigstill: Boolean): URI =
             UriUtil.uri(dokarkivUrl, PATH_JOURNALPOST, String.format(QUERY_FERDIGSTILL, ferdigstill))
@@ -43,10 +43,10 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
     }
 
     /**
-     * Privat klasse for å gi egne metrics for ferdigstilling av jpurnalpost.
+     * Privat klasse for å gi egne metrics for ferdigstilling av journalpost.
      *
      */
-    private class FerdigstillJourrnalPostClient(restOperations: RestOperations, private val dokarkivUrl: URI)
+    private class FerdigstillJournalPostClient(restOperations: RestOperations, private val dokarkivUrl: URI)
         : AbstractRestClient(restOperations, "dokarkiv.ferdigstill") {
 
         private fun ferdigstillJournalpostUri(journalpostId: String): URI {
