@@ -50,8 +50,7 @@ class ApplicationConfig {
                 .interceptors(
                         consumerIdClientInterceptor,
                         StsBearerTokenClientInterceptor(stsRestClient),
-                        MdcValuesPropagatingClientInterceptor(),
-                        TimingAndLoggingClientHttpRequestInterceptor())
+                        MdcValuesPropagatingClientInterceptor())
                 .requestFactory(this::requestFactory)
                 .build()
     }
