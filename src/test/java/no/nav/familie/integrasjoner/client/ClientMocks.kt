@@ -15,13 +15,6 @@ class ClientMocks {
 
     @Bean
     @Primary
-    @Profile("mock-aktor")
-    fun mockAktørregisterRestClient(): AktørregisterRestClient {
-        return mockk(relaxed = true)
-    }
-
-    @Bean
-    @Primary
     @Profile("mock-infotrygd")
     fun mockInfotrygdRestClient(): InfotrygdRestClient {
         return mockk(relaxed = true)
