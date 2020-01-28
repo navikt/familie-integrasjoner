@@ -45,16 +45,6 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
         return ResponseEntity.ok(success(mapOf("saksnummer" to saksnummer), "OK"))
     }
 
-    @GetMapping
-    fun hentJournalpostId(@RequestParam(name = "kanalReferanseId") kanalReferanseId: String)
-            : ResponseEntity<Ressurs<Map<String, String>>> {
-        val journalpostId = journalpostService.hentJournalpostId(kanalReferanseId)
-                            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                    .body(failure("journalpost ikke funnet",
-                                                  null))
-        return ResponseEntity.ok(success(mapOf("journalpostId" to journalpostId), "OK"))
-    }
-
     companion object {
         private val LOG = LoggerFactory.getLogger(HentJournalpostController::class.java)
     }

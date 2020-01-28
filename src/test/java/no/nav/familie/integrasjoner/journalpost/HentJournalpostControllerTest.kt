@@ -26,7 +26,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
-@ActiveProfiles("integrasjonstest", "mock-sts", "mock-innsyn")
+@ActiveProfiles("integrasjonstest", "mock-sts")
 class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
 
     private val testLogger = LoggerFactory.getLogger(HentJournalpostController::class.java) as Logger
@@ -144,50 +144,6 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
         Assertions.assertThat(loggingEvents)
                 .extracting<Level, RuntimeException> { obj: ILoggingEvent -> obj.level }
                 .containsExactly(Level.WARN)
-    }
-
-    @Test
-    fun `hente journalpost basert på kanalreferanseId skal returnere journalpost`() {
-        val response: ResponseEntity<Ressurs<Map<String, String>>> =
-                restTemplate.exchange(UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
-                                              .queryParam("kanalReferanseId", JOURNALPOST_ID).toUriString(),
-                                      HttpMethod.GET,
-                                      HttpEntity<String>(headers))
-
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
-        Assertions.assertThat(response.body?.data?.get("journalpostId")).isEqualTo(JOURNALPOST_ID)
-    }
-
-    @Test
-    fun `hente journalpost basert på kanalreferanseId skal returnere not found hvis ingen journalpost`() {
-        val response: ResponseEntity<Ressurs<Map<String, String>>> =
-                restTemplate.exchange(UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
-                                              .queryParam("kanalReferanseId",
-                                                          HentJournalpostTestConfig.NOT_FOUND_CALLID)
-                                              .toUriString(),
-                                      HttpMethod.GET,
-                                      HttpEntity<String>(headers))
-
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-    }
-
-    @Test
-    fun `hente journalpost basert på kanalreferanseId skal returnere internal error ved ukjent feil`() {
-        val response: ResponseEntity<Ressurs<Map<String, String>>> =
-                restTemplate.exchange(UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
-                                              .queryParam("kanalReferanseId",
-                                                          HentJournalpostTestConfig.GENERISK_ERROR_CALLID)
-                                              .toUriString(),
-                                      HttpMethod.GET,
-                                      HttpEntity<String>(headers))
-
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-        Assertions.assertThat(loggingEvents)
-                .extracting<Level, RuntimeException> { obj: ILoggingEvent -> obj.level }
-                .containsExactly(Level.WARN)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
     private fun testdata(filnavn: String): String {
