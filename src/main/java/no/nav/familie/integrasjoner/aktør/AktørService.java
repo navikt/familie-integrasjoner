@@ -2,7 +2,7 @@ package no.nav.familie.integrasjoner.aktør;
 
 import no.nav.familie.integrasjoner.aktør.domene.Aktør;
 import no.nav.familie.integrasjoner.aktør.domene.Ident;
-import no.nav.familie.integrasjoner.aktør.internal.AktørregisterClient;
+import no.nav.familie.integrasjoner.client.rest.AktørregisterRestClient;
 import no.nav.familie.integrasjoner.felles.OppslagException;
 import no.nav.familie.integrasjoner.personopplysning.domene.AktørId;
 import org.ehcache.Cache;
@@ -23,10 +23,10 @@ public class AktørService {
 
     private static final Logger secureLogger = LoggerFactory.getLogger("secureLogger");
     private final CacheManager aktørCacheManager;
-    private AktørregisterClient aktørregisterClient;
+    private AktørregisterRestClient aktørregisterClient;
 
     @Autowired
-    public AktørService(AktørregisterClient aktørregisterClient, CacheManager aktørCacheManager) {
+    public AktørService(AktørregisterRestClient aktørregisterClient, CacheManager aktørCacheManager) {
         this.aktørCacheManager = aktørCacheManager;
         this.aktørregisterClient = aktørregisterClient;
     }

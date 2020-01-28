@@ -13,13 +13,12 @@ import java.net.URI
 @Component
 class AktørregisterRestClient(@Value("\${AKTOERID_URL}")
                               private val aktørRegisterUrl: URI,
-                              @Qualifier("sts") restOperations: RestOperations,
-                              private val stsRestClient: StsRestClient)
+                              @Qualifier("sts") restOperations: RestOperations)
     : AbstractPingableRestClient(restOperations, "aktoer") {
 
     override val pingUri: URI = UriUtil.uri(aktørRegisterUrl, PATH_PING)
-    private val hentAktørIdUrl = UriUtil.uri(aktørRegisterUrl, String.format(PATH_HENT_AKTØR_ID, AKTOERID_IDENTGRUPPE))
-    private val hentPersonIdentUrl = UriUtil.uri(aktørRegisterUrl, String.format(PATH_HENT_PERSONIDENT, PERSONIDENT_IDENTGRUPPE))
+    private val hentAktørIdUrl = UriUtil.uri(aktørRegisterUrl, PATH_HENT, String.format(QUERY_PARAMS, AKTOERID_IDENTGRUPPE))
+    private val hentPersonIdentUrl = UriUtil.uri(aktørRegisterUrl, PATH_HENT, String.format(QUERY_PARAMS, PERSONIDENT_IDENTGRUPPE))
 
     fun hentAktørId(personIdent: String): AktørResponse {
         return getForEntity(hentAktørIdUrl, httpHeaders(personIdent))
@@ -40,8 +39,7 @@ class AktørregisterRestClient(@Value("\${AKTOERID_URL}")
         private const val AKTOERID_IDENTGRUPPE = "AktoerId"
         private const val PERSONIDENT_IDENTGRUPPE = "NorskIdent"
         private const val PATH_PING = "internal/isAlive"
-        private const val PATH_HENT_AKTØR_ID = "api/v1/identer?gjeldende=true&identgruppe=%s"
-        private const val PATH_HENT_PERSONIDENT = "api/v1/identer?gjeldende=true&identgruppe=%s"
+        private const val PATH_HENT = "api/v1/identer"
+        private const val QUERY_PARAMS = "gjeldende=true&identgruppe=%s"
     }
-
 }
