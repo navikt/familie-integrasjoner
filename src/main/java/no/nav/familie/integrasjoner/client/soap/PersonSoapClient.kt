@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.client.soap
 
-import no.nav.familie.integrasjoner.client.Pingable
+import no.nav.familie.http.client.AbstractSoapClient
+import no.nav.familie.http.client.Pingable
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkPersonIkkeFunnet
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkSikkerhetsbegrensning
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3

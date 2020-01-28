@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.kodeverk.domene.PostnummerDto
 import org.springframework.beans.factory.annotation.Qualifier

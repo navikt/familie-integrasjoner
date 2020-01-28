@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.client.soap
 
-import no.nav.familie.integrasjoner.client.Pingable
+import no.nav.familie.http.client.AbstractSoapClient
+import no.nav.familie.http.client.Pingable
 import no.nav.tjeneste.pip.egen.ansatt.v1.EgenAnsattV1
 import no.nav.tjeneste.pip.egen.ansatt.v1.WSHentErEgenAnsattEllerIFamilieMedEgenAnsattRequest
 import org.springframework.stereotype.Component
