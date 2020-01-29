@@ -1,7 +1,6 @@
 package no.nav.familie.integrasjoner;
 
 import no.nav.familie.integrasjoner.config.ApplicationConfig;
-import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
@@ -19,7 +18,6 @@ public class DevLauncher {
                         "mock-dokarkiv",
                         "mock-egenansatt",
                         "mock-infotrygd",
-                        "mock-innsyn",
                         "mock-medlemskap",
                         "mock-oppgave",
                         "mock-personopplysninger",
