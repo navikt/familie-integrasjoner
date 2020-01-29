@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.journalpost;
 
+import no.nav.familie.integrasjoner.client.rest.SafRestClient;
 import no.nav.familie.integrasjoner.journalpost.internal.Journalpost;
-import no.nav.familie.integrasjoner.journalpost.internal.SafKlient;
 import no.nav.familie.integrasjoner.journalpost.internal.Sak;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.annotation.Bean;
@@ -17,8 +17,8 @@ public class HentJournalpostTestConfig {
     @Bean
     @Profile("mock-saf")
     @Primary
-    public SafKlient safKlientMock() {
-        SafKlient klient = mock(SafKlient.class);
+    public SafRestClient safRestClientMock() {
+        SafRestClient klient = mock(SafRestClient.class);
 
         ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
         when(klient.hentJournalpost(stringCaptor.capture())).thenAnswer(invocation -> {
