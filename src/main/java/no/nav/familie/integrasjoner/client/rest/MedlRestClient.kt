@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.medlemskap.MedlemskapsUnntakResponse
 import no.nav.familie.log.NavHttpHeaders

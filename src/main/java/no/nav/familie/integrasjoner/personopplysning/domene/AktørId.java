@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
  * går fra DNR til FNR i Folkeregisteret. Tilsvarende vil den kunne referere personer som har ident fra et utenlandsk system.
  */
 public class AktørId {
+
     private static final String CHARS = "a-z0-9_:-";
 
     private static final String VALID_REGEXP = "^(-?[1-9]|[a-z0])[" + CHARS + "]*$";

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.familie.http.interceptor.ConsumerIdClientInterceptor
 import no.nav.familie.http.interceptor.MdcValuesPropagatingClientInterceptor
 import no.nav.familie.http.interceptor.StsBearerTokenClientInterceptor
-import no.nav.familie.http.interceptor.TimingAndLoggingClientHttpRequestInterceptor
 import no.nav.familie.http.sts.StsRestClient
 import no.nav.familie.integrasjoner.interceptor.AzureBearerTokenClientInterceptor
 import no.nav.familie.log.filter.LogFilter

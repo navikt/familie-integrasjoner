@@ -31,6 +31,7 @@ class DokarkivClient @Autowired constructor(@param:Value("\${DOKARKIV_V1_URL}")
                                             private val consumer: String,
                                             @param:Autowired private val stsRestClient: StsRestClient,
                                             private val objectMapper: ObjectMapper) {
+
     private val opprettJournalpostResponstid =
             Metrics.timer("dokarkiv.opprett.respons.tid")
     private val opprettJournalpostSuccess =

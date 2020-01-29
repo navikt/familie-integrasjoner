@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Saksbehandler {
+
     private String userPrincipalName;
     private String onPremisesSamAccountName; //Navident
     private List<Gruppe> grupper = new LinkedList<>();

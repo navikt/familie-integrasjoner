@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.infotrygd.domene;
 
 public class AktivKontantstøtteInfo {
+
     private Boolean harAktivKontantstotte;
 
     public AktivKontantstøtteInfo() {

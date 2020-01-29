@@ -108,6 +108,7 @@ public class Personinfo {
     }
 
     public static class Builder {
+
         private Personinfo personinfoMal;
 
         public Builder() {

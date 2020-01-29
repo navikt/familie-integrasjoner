@@ -53,6 +53,7 @@ public class AdressePeriode {
     }
 
     public static class Adresse {
+
         private AdresseType adresseType;
         private String adresselinje1;
         private String adresselinje2;
@@ -144,6 +145,7 @@ public class AdressePeriode {
 
 
     public static final class Builder {
+
         private Periode periodeKladd;
         private Adresse adresseKladd;
 
