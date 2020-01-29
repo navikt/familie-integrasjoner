@@ -21,7 +21,6 @@ public class UnitTestLauncher {
                           "mock-dokarkiv",
                           "mock-egenansatt",
                           "mock-infotrygd",
-                          "mock-innsyn",
                           "mock-medlemskap",
                           "mock-oppgave",
                           "mock-personopplysninger",
