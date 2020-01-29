@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.journalpost;
 
 
 public class JournalpostRestClientException extends RuntimeException {
+
     private String journalpostId;
 
 

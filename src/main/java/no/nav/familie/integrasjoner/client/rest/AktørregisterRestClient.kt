@@ -18,7 +18,8 @@ class AktørregisterRestClient(@Value("\${AKTOERID_URL}")
 
     override val pingUri: URI = UriUtil.uri(aktørRegisterUrl, PATH_PING)
     private val hentAktørIdUrl = UriUtil.uri(aktørRegisterUrl, PATH_HENT, String.format(QUERY_PARAMS, AKTOERID_IDENTGRUPPE))
-    private val hentPersonIdentUrl = UriUtil.uri(aktørRegisterUrl, PATH_HENT, String.format(QUERY_PARAMS, PERSONIDENT_IDENTGRUPPE))
+    private val hentPersonIdentUrl =
+            UriUtil.uri(aktørRegisterUrl, PATH_HENT, String.format(QUERY_PARAMS, PERSONIDENT_IDENTGRUPPE))
 
     fun hentAktørId(personIdent: String): AktørResponse {
         return getForEntity(hentAktørIdUrl, httpHeaders(personIdent))

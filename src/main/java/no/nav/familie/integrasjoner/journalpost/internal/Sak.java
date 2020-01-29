@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.journalpost.internal;
 
 public class Sak {
+
     private String arkivsaksnummer;
     private String arkivsaksystem;
 

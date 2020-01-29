@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 
 public class InnsynJournalConsumer {
+
     private static final Logger LOG = LoggerFactory.getLogger(InnsynJournalConsumer.class);
 
     private InnsynJournalV2 port;

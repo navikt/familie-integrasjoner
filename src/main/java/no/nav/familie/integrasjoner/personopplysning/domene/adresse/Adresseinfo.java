@@ -65,6 +65,7 @@ public class Adresseinfo {
     }
 
     public static class Builder {
+
         private final AdresseType gjeldendePostadresseType;
         private final String mottakerNavn;
         private String adresselinje1;

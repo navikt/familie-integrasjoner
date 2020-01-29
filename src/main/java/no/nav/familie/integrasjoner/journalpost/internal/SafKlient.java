@@ -25,6 +25,7 @@ import static no.nav.familie.log.NavHttpHeaders.NAV_CONSUMER_ID;
 
 @Service
 public class SafKlient {
+
     private static final String NAV_CALL_ID = "Nav-Callid";
 
     private final Timer hentJournalpostResponstid = Metrics.timer("saf.journalpost.tid");

@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.journalpost.internal;
 import java.util.List;
 
 public class SafJournalpostResponse {
+
     private SafJournalpostData data;
     private List<SafError> errors;
 

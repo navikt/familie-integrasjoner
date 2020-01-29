@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.journalpost.internal;
 
 public class SafError {
+
     private String message;
     private String exceptionType;
     private String exception;

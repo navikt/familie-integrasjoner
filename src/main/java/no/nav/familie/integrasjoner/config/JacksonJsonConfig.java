@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class JacksonJsonConfig {
+
     private static final ObjectMapper OM = new ObjectMapper();
 
     static {

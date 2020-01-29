@@ -132,7 +132,7 @@ public class TpsAdresseOversetter {
                 return konverterStrukturertAdresse(bruker, bruker.getBostedsadresse().getStrukturertAdresse(), gjeldende.get());
             }
             if (AdresseType.POSTADRESSE == gjeldende.get() ||
-                       AdresseType.POSTADRESSE_UTLAND == gjeldende.get()) {
+                AdresseType.POSTADRESSE_UTLAND == gjeldende.get()) {
                 return konverterUstrukturertAdresse(bruker, bruker.getPostadresse().getUstrukturertAdresse(), gjeldende.get());
             }
             if (AdresseType.MIDLERTIDIG_POSTADRESSE_NORGE == gjeldende.get()) {
