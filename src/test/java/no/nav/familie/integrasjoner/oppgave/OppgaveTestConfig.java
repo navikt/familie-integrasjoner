@@ -12,9 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 
 import static no.nav.oppgave.v1.OppgaveJsonDto.StatusEnum.OPPRETTET;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.doNothing;
 
 @Configuration
 public class OppgaveTestConfig {

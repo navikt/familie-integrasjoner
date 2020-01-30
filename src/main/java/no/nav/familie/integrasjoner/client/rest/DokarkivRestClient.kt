@@ -69,7 +69,7 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
     companion object {
         private const val PATH_PING = "isAlive"
         private const val PATH_JOURNALPOST = "rest/journalpostapi/v1/journalpost"
-        private const val QUERY_FERDIGSTILL = "foersoekFerdigstill=%b"
+        private const val QUERY_FERDIGSTILL = "forsoekFerdigstill=%b"
         private const val PATH_FERDIGSTILL_JOURNALPOST = "rest/journalpostapi/v1/journalpost/%s/ferdigstill"
     }
 }

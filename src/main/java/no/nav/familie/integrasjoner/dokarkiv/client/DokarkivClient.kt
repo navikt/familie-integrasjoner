@@ -45,6 +45,7 @@ class DokarkivClient @Autowired constructor(@param:Value("\${DOKARKIV_V1_URL}")
     private val ferdigstillJournalpostFailure =
             Metrics.counter("dokarkiv.ferdigstill.response", "status", "failure")
     private val httpClient: HttpClient = HttpClient.newHttpClient()
+
     fun lagJournalpost(jp: OpprettJournalpostRequest?,
                        ferdigstill: Boolean): OpprettJournalpostResponse {
         val uri =
@@ -90,49 +91,6 @@ class DokarkivClient @Autowired constructor(@param:Value("\${DOKARKIV_V1_URL}")
         }
     }
 
-    fun ferdigstillJournalpost(journalpostId: String, journalførendeEnhet: String?) {
-        val uri = URI.create(String.format("%s/rest/journalpostapi/v1/journalpost/%s/ferdigstill",
-                                           dokarkivUrl,
-                                           journalpostId))
-        val systembrukerToken = stsRestClient.systemOIDCToken
-        try {
-            val request = HttpRequest.newBuilder()
-                    .uri(uri)
-                    .header(HttpHeaders.ACCEPT, "application/json")
-                    .header("Content-Type", "application/json")
-                    .header(NavHttpHeaders.NAV_CONSUMER_ID.asString(), consumer)
-                    .header(NavHttpHeaders.NAV_CALL_ID.asString(), MDCOperations.getCallId())
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer $systembrukerToken")
-                    .method("PATCH",
-                            HttpRequest.BodyPublishers.ofString(String.format(FERDIGSTILL_JOURNALPOST_JSON,
-                                                                              journalførendeEnhet)))
-                    .timeout(Duration.ofSeconds(20)) // kall tar opptil 8s i preprod.
-                    .build()
-            val startTime = System.nanoTime()
-            val httpResponse =
-                    httpClient.send(request, HttpResponse.BodyHandlers.ofString())
-            ferdigstillJournalpostResponstid.record(System.nanoTime() - startTime,
-                                                    TimeUnit.NANOSECONDS)
-            if (httpResponse.statusCode() == HttpStatus.OK.value() || httpResponse.statusCode() == HttpStatus.CREATED.value()) {
-                ferdigstillJournalpostSuccess.increment()
-            } else if (httpResponse.statusCode() == HttpStatus.BAD_REQUEST.value()) {
-                ferdigstillJournalpostFailure.increment()
-                throw KanIkkeFerdigstilleJournalpostException("Kan ikke ferdigstille journalpost " +
-                                                              "$journalpostId ${httpResponse.body()}")
-            } else {
-                ferdigstillJournalpostFailure.increment()
-                throw RuntimeException("Feilresponse ved ferdigstill av journalpost " +
-                                       "${httpResponse.statusCode()} ${httpResponse.body()}")
-            }
-        } catch (e: IOException) {
-            ferdigstillJournalpostFailure.increment()
-            throw RuntimeException("Feil ved kall mot Dokarkiv uri=$uri", e)
-        } catch (e: InterruptedException) {
-            ferdigstillJournalpostFailure.increment()
-            throw RuntimeException("Feil ved kall mot Dokarkiv uri=$uri", e)
-        }
-    }
-
     @Throws(Exception::class) fun ping() {
         val uri = URI.create(String.format("%s/isAlive", dokarkivUrl))
         val request = HttpRequestUtil.createRequest("Bearer " + stsRestClient.systemOIDCToken)
@@ -144,9 +102,4 @@ class DokarkivClient @Autowired constructor(@param:Value("\${DOKARKIV_V1_URL}")
             throw Exception("Feil ved ping til Dokarkiv")
         }
     }
-
-    companion object {
-        const val FERDIGSTILL_JOURNALPOST_JSON = "{\"journalfoerendeEnhet\":%s}"
-    }
-
 }
