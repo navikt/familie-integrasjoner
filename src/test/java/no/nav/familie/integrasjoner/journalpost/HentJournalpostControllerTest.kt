@@ -48,9 +48,12 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/saf/graphql")
-                                .withBody(testdata("gyldigrequest.json")))
+                                .withBody(testdata("gyldigrequest.json"))
+                )
                 .respond(HttpResponse.response().withBody(testdata("gyldigresponse.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
+
+
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
                                                                                            HttpMethod.GET,
@@ -117,8 +120,8 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
         Assertions.assertThat(response.body?.melding)
                 .contains("Feil ved henting av journalpost=12345678 klientfeilmelding=Kan ikke hente journalpost " +
-                          "[SafError{message='Feilet ved henting av data (/journalpost) : null', " +
-                          "exceptionType='TECHNICAL', exception='NullPointerException'}]")
+                          "[SafError(message=Feilet ved henting av data (/journalpost) : null, " +
+                          "exceptionType=TECHNICAL, exception=NullPointerException)]")
         Assertions.assertThat(loggingEvents)
                 .extracting<Level, RuntimeException> { obj: ILoggingEvent -> obj.level }
                 .containsExactly(Level.WARN)
