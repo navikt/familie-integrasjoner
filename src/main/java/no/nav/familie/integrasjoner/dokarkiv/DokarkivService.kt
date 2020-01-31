@@ -20,7 +20,7 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
 
     fun lagInngåendeJournalpost(arkiverDokumentRequest: ArkiverDokumentRequest): ArkiverDokumentResponse {
         val request = mapTilOpprettJournalpostRequest(arkiverDokumentRequest)
-        val response = dokarkivClient.lagJournalpost(request, arkiverDokumentRequest.isForsøkFerdigstill)
+        val response = dokarkivClient.lagJournalpost(request, arkiverDokumentRequest.forsøkFerdigstill)
         return mapTilArkiverDokumentResponse(response)
     }
 
@@ -28,10 +28,10 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
         dokarkivRestClient.ferdigstillJournalpost(journalpost, journalførendeEnhet)
     }
 
-    fun lagInngåendeJournalpostV2(arkiverDokumentRequest: ArkiverDokumentRequest): ArkiverDokumentResponse {
+    fun lagJournalpostV2(arkiverDokumentRequest: ArkiverDokumentRequest): ArkiverDokumentResponse {
         val request = mapTilOpprettJournalpostRequest(arkiverDokumentRequest)
         val response =
-                dokarkivRestClient.lagJournalpost(request, arkiverDokumentRequest.isForsøkFerdigstill)
+                dokarkivRestClient.lagJournalpost(request, arkiverDokumentRequest.forsøkFerdigstill)
         return mapTilArkiverDokumentResponse(response)
     }
 
@@ -46,8 +46,13 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
 
         val metadata = dokarkivMetadata.getMetadata(arkiverDokumentRequest.dokumenter[0])
         val arkivdokumenter = arkiverDokumentRequest.dokumenter.map(this::mapTilArkivdokument)
+        val jpsak: Sak? = if (arkiverDokumentRequest.fagsakId != null) Sak(
+                fagsakId = arkiverDokumentRequest.fagsakId,
+                sakstype = "FAGSAK",
+                fagsaksystem = metadata.fagsakSystem
+        ) else null
 
-        return OpprettJournalpostRequest(journalpostType = JournalpostType.INNGAAENDE,
+        return OpprettJournalpostRequest(journalpostType = metadata.journalpostType,
                                          behandlingstema = metadata.behandlingstema,
                                          kanal = metadata.kanal,
                                          tittel = metadata.tittel,
@@ -55,8 +60,9 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
                                          avsenderMottaker = AvsenderMottaker(fnr, IdType.FNR, navn),
                                          bruker = Bruker(IdType.FNR, fnr),
                                          dokumenter = arkivdokumenter,
-                                         eksternReferanseId = MDCOperations.getCallId()
-                // sak = når vi tar over fagsak, så må dennne settes til vår. For BRUT001 behandling, så kan ikke denne settes
+                                         eksternReferanseId = MDCOperations.getCallId(),
+                                         journalfoerendeEnhet = arkiverDokumentRequest.journalførendeEnhet,
+                                         sak = jpsak
         )
     }
 
