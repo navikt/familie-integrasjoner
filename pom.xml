@@ -23,7 +23,7 @@
         <springfox.version>2.9.2</springfox.version>
         <common-java-modules.version>1.2019.11.06-15.14-6ca860e6cead</common-java-modules.version>
         <felles.version>1.0_20200130121637_84272c6</felles.version>
-        <kontrakt.version>2.0_20191217102701_8d60148</kontrakt.version>
+        <kontrakt.version>2.0_20200131152303_fde9dca</kontrakt.version>
         <fasterxml.version>2.10.1</fasterxml.version>
         <cxf.version>3.3.4</cxf.version>
         <token-validation-spring.version>1.1.2</token-validation-spring.version>
@@ -175,16 +175,6 @@
             <artifactId>person-v3-tjenestespesifikasjon</artifactId>
             <version>${tjenestespesifikasjoner.version}</version>
         </dependency>
-        <dependency>
-            <groupId>no.nav.tjenestespesifikasjoner</groupId>
-            <artifactId>behandleoppgave-v1-tjenestespesifikasjon</artifactId>
-            <version>${tjenestespesifikasjoner.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>no.nav.tjenestespesifikasjoner</groupId>
-            <artifactId>nav-fim-oppgave-v3-tjenestespesifikasjon</artifactId>
-            <version>${tjenestespesifikasjoner.version}</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/no.nav.tjenestespesifikasjoner/egenansatt-v1-tjenestespesifikasjon -->
         <dependency>
             <groupId>no.nav.tjenestespesifikasjoner</groupId>
@@ -234,12 +224,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Swagger annotations in generated code by swagger code-gen -->
-        <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <version>1.6.0</version>
-        </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
@@ -325,36 +309,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-codegen-maven-plugin</artifactId>
-                <version>2.4.10</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-
-                            <inputSpec>${project.basedir}/src/main/resources/oppgave/oppgave-swagger.json</inputSpec>
-                            <language>jaxrs</language>
-                            <generateApis>false</generateApis>
-
-                            <modelPackage>no.nav.oppgave.v1</modelPackage>
-                            <modelNameSuffix>Dto</modelNameSuffix>
-
-                            <generateSupportingFiles>false</generateSupportingFiles>
-
-                            <configOptions>
-                                <java8>true</java8>
-                                <useBeanValidation>false</useBeanValidation>
-                                <sourceFolder>oppgave</sourceFolder>
-                            </configOptions>
-
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <dependencies>
