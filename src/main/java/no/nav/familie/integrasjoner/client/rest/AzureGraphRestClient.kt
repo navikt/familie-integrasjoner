@@ -17,8 +17,7 @@ class AzureGraphRestClient(@Qualifier("azure") restTemplate: RestOperations,
 
     val saksbehandler: Saksbehandler
         get() {
-            return getForEntity(UriUtil.uri(aadGrapURI, PATH, QUERY),
-                                HttpHeaders().apply { add("Content-Type", "application/json;charset=UTF-8") })
+            return getForEntity(UriUtil.uri(aadGrapURI, PATH, QUERY))
         }
 
     companion object {

@@ -39,7 +39,6 @@ class ApplicationConfig {
                 .interceptors(consumerIdClientInterceptor,
                               interceptorAzure,
                               MdcValuesPropagatingClientInterceptor())
-                .interceptors()
                 .requestFactory(this::requestFactory)
                 .build()
     }
