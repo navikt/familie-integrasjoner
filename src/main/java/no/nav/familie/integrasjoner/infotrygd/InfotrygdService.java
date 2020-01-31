@@ -17,6 +17,7 @@ import org.springframework.web.client.HttpServerErrorException;
 
 @Service
 public class InfotrygdService extends BaseService {
+
     private static final String OAUTH2_CLIENT_CONFIG_KEY = "infotrygd";
 
     private String infotrygdURL;

@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Optional;
 
 public class BaseService {
+
     public final RestTemplate restTemplate;
     private final ClientProperties clientProperties;
     private final OAuth2AccessTokenService oAuth2AccessTokenService;

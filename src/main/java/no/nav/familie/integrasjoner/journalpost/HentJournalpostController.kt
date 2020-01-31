@@ -17,7 +17,7 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
     fun handleRestClientException(ex: JournalpostRestClientException): ResponseEntity<Ressurs<Any>> {
         val errorBaseMessage = "Feil ved henting av journalpost=${ex.journalpostId}"
         val errorExtMessage = if (ex.cause is HttpStatusCodeException) {
-            val cex = ex.cause as HttpStatusCodeException
+            val cex = ex.cause
             " statuscode=${cex.statusCode} body=${cex.responseBodyAsString}"
         } else {
             " klientfeilmelding=${ex.message}"

@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
@@ -10,6 +11,7 @@ import no.nav.familie.integrasjoner.journalpost.internal.SafRequestVariable
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestOperations
 import java.net.URI
@@ -29,7 +31,8 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
                                                                  safJournalpostRequest,
                                                                  httpHeaders())
             if (response != null && !response.harFeil()) {
-                return response.data.journalpost
+                return  response?.data?.journalpost ?: throw JournalpostRestClientException("Kan ikke hente journalpost", null, journalpostId)
+
             } else {
                 responsFailure.increment()
                 throw JournalpostRestClientException("Kan ikke hente journalpost " + response?.errors?.toString(),
@@ -44,13 +47,15 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
     private fun httpHeaders(): HttpHeaders {
         return HttpHeaders().apply {
             add(NAV_CALL_ID, MDCOperations.getCallId())
+            contentType = MediaType.APPLICATION_JSON
+            accept = listOf(MediaType.APPLICATION_JSON)
         }
     }
 
     companion object {
         private const val PATH_PING = "isAlive"
         private const val PATH_GRAPHQL = "graphql"
-        private const val NAV_CALL_ID = "nav-callid"
+        private const val NAV_CALL_ID = "Nav-Callid"
     }
 
 }

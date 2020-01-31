@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.arbeidsfordeling
 
-import no.nav.familie.integrasjoner.client.Pingable
-import no.nav.familie.integrasjoner.client.soap.AbstractSoapClient
+import no.nav.familie.http.client.AbstractSoapClient
+import no.nav.familie.http.client.Pingable
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.ArbeidsfordelingKriterier

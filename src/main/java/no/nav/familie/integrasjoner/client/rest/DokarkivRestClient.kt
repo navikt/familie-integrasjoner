@@ -1,5 +1,7 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.http.client.AbstractPingableRestClient
+import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.dokarkiv.client.KanIkkeFerdigstilleJournalpostException
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.FerdigstillJournalPost
@@ -20,7 +22,7 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
 
     override val pingUri: URI = UriUtil.uri(dokarkivUrl, PATH_PING)
 
-    private val ferdigstillJournalPostClient = FerdigstillJourrnalPostClient(restOperations, dokarkivUrl)
+    private val ferdigstillJournalPostClient = FerdigstillJournalPostClient(restOperations, dokarkivUrl)
 
     fun lagJournalpostUri(ferdigstill: Boolean): URI =
             UriUtil.uri(dokarkivUrl, PATH_JOURNALPOST, String.format(QUERY_FERDIGSTILL, ferdigstill))
@@ -41,10 +43,10 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
     }
 
     /**
-     * Privat klasse for å gi egne metrics for ferdigstilling av jpurnalpost.
+     * Privat klasse for å gi egne metrics for ferdigstilling av journalpost.
      *
      */
-    private class FerdigstillJourrnalPostClient(restOperations: RestOperations, private val dokarkivUrl: URI)
+    private class FerdigstillJournalPostClient(restOperations: RestOperations, private val dokarkivUrl: URI)
         : AbstractRestClient(restOperations, "dokarkiv.ferdigstill") {
 
         private fun ferdigstillJournalpostUri(journalpostId: String): URI {
@@ -67,7 +69,7 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
     companion object {
         private const val PATH_PING = "isAlive"
         private const val PATH_JOURNALPOST = "rest/journalpostapi/v1/journalpost"
-        private const val QUERY_FERDIGSTILL = "foersoekFerdigstill=%b"
+        private const val QUERY_FERDIGSTILL = "forsoekFerdigstill=%b"
         private const val PATH_FERDIGSTILL_JOURNALPOST = "rest/journalpostapi/v1/journalpost/%s/ferdigstill"
     }
 }

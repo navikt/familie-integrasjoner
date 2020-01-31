@@ -63,6 +63,7 @@ public class PersonhistorikkInfo {
     }
 
     public static final class Builder {
+
         private PersonhistorikkInfo kladd;
 
         private Builder() {

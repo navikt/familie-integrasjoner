@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.client.rest
 
-import no.nav.familie.http.sts.StsRestClient
+import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.aktør.internal.AktørResponse
 import org.springframework.beans.factory.annotation.Qualifier
@@ -18,7 +18,8 @@ class AktørregisterRestClient(@Value("\${AKTOERID_URL}")
 
     override val pingUri: URI = UriUtil.uri(aktørRegisterUrl, PATH_PING)
     private val hentAktørIdUrl = UriUtil.uri(aktørRegisterUrl, PATH_HENT, String.format(QUERY_PARAMS, AKTOERID_IDENTGRUPPE))
-    private val hentPersonIdentUrl = UriUtil.uri(aktørRegisterUrl, PATH_HENT, String.format(QUERY_PARAMS, PERSONIDENT_IDENTGRUPPE))
+    private val hentPersonIdentUrl =
+            UriUtil.uri(aktørRegisterUrl, PATH_HENT, String.format(QUERY_PARAMS, PERSONIDENT_IDENTGRUPPE))
 
     fun hentAktørId(personIdent: String): AktørResponse {
         return getForEntity(hentAktørIdUrl, httpHeaders(personIdent))

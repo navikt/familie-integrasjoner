@@ -54,7 +54,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     fun arkiverDokumentV2(@RequestBody arkiverDokumentRequest: @Valid ArkiverDokumentRequest)
             : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(success(journalføringService.lagInngåendeJournalpostV2(arkiverDokumentRequest),
+                .body(success(journalføringService.lagJournalpostV2(arkiverDokumentRequest),
                               "Arkivert journalpost OK"))
     }
 

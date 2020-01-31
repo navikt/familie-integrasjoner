@@ -1,6 +1,1 @@
-{
-  "query" : "query Journalpost($journalpostId: String!) {journalpost(journalpostId: $journalpostId) {journalpostId sak {arkivsaksystem arkivsaksnummer datoOpprettet}}}",
-  "variables" : {
-    "journalpostId" : "12345678"
-  }
-}
+{"variables":{"journalpostId":"12345678"},"query":"query Journalpost($journalpostId: String!) {journalpost(journalpostId: $journalpostId) {journalpostId sak {arkivsaksystem arkivsaksnummer datoOpprettet}}}"}

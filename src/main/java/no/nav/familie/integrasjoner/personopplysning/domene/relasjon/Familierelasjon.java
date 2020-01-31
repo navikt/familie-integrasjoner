@@ -5,6 +5,7 @@ import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent;
 import java.time.LocalDate;
 
 public class Familierelasjon {
+
     private PersonIdent personIdent;
     private RelasjonsRolleType relasjonsrolle;
     private LocalDate fødselsdato;

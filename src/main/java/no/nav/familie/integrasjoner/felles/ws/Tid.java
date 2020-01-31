@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.Month;
 
 public class Tid {
+
     public static final LocalDate TIDENES_BEGYNNELSE;
     public static final LocalDate TIDENES_ENDE;
 

@@ -12,6 +12,7 @@ import java.net.URI;
 
 @Configuration
 public class IntegrasjonConfig {
+
     @Bean
     @Autowired
     @Profile("!mock-sts")
