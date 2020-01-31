@@ -1,33 +1,8 @@
-package no.nav.familie.integrasjoner.azure.domene;
+package no.nav.familie.integrasjoner.azure.domene
 
-public class Gruppe {
+class Gruppe {
+    var id: String? = null
+    var onPremisesSamAccountName: String? = null
+    var displayName: String? = null
 
-    private String id;
-    private String onPremisesSamAccountName;
-    private String displayName;
-
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getOnPremisesSamAccountName() {
-        return onPremisesSamAccountName;
-    }
-
-    public void setOnPremisesSamAccountName(String onPremisesSamAccountName) {
-        this.onPremisesSamAccountName = onPremisesSamAccountName;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
 }

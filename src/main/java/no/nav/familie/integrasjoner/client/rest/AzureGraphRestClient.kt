@@ -15,12 +15,12 @@ class AzureGraphRestClient(@Qualifier("azure") restTemplate: RestOperations,
 
     val saksbehandler: Saksbehandler
         get() {
-
-            return getForEntity(UriUtil.uri(aadGrapURI, PATH))
+            return getForEntity(UriUtil.uri(aadGrapURI, PATH, QUERY))
         }
 
     companion object {
-        private const val PATH = "me?\$select=displayName,onPremisesSamAccountName,userPrincipalName"
+        private const val PATH = "me"
+        private const val QUERY = "\$select=displayName,onPremisesSamAccountName,userPrincipalName"
     }
 
 }
