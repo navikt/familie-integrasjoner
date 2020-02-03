@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.tilgangskontroll;
 
-import no.nav.familie.integrasjoner.azure.AzureGraphService;
 import no.nav.familie.integrasjoner.azure.domene.Saksbehandler;
+import no.nav.familie.integrasjoner.client.rest.AzureGraphRestClient;
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService;
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo;
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.Tilgang;
@@ -22,15 +22,15 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequestMapping(value = "/api/tilgang")
 public class TilgangskontrollController {
 
-    private AzureGraphService azureGraphService;
+    private AzureGraphRestClient azureGraphRestClient;
     private TilgangsKontrollService tilgangService;
     private PersonopplysningerService personService;
 
     @Autowired
-    public TilgangskontrollController(AzureGraphService azureGraphService,
+    public TilgangskontrollController(AzureGraphRestClient azureGraphRestClient,
                                       TilgangsKontrollService tilgangsKontrollService,
                                       PersonopplysningerService personopplysningerService) {
-        this.azureGraphService = azureGraphService;
+        this.azureGraphRestClient = azureGraphRestClient;
         this.tilgangService = tilgangsKontrollService;
         this.personService = personopplysningerService;
     }
@@ -42,7 +42,7 @@ public class TilgangskontrollController {
     }
 
     private ResponseEntity<Tilgang> sjekkTilgangTilBruker(String personIdent) {
-        Saksbehandler saksbehandler = azureGraphService.getSaksbehandler();
+        Saksbehandler saksbehandler = azureGraphRestClient.getSaksbehandler();
         Personinfo personInfo = personService.hentPersoninfo(personIdent);
         Tilgang tilgang = tilgangService.sjekkTilgang(personIdent, saksbehandler, personInfo);
         return lagRespons(tilgang);

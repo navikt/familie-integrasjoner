@@ -6,7 +6,7 @@ no.nav.security.jwt:
   client:
     registration:
       aad-graph-onbehalfof:
-        resource-url: https://login.microsoftonline.com
+        resource-url: ${AAD_GRAPH_API_URI}
         token-endpoint-url: http://vtp:8060/rest/isso/oauth2/access_token
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${AAD_GRAPH_SCOPE}

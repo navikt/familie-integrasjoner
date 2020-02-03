@@ -14,17 +14,17 @@ public class DevLauncher {
     public static void main(String... args) {
         SpringApplication app = new SpringApplicationBuilder(ApplicationConfig.class)
                 .profiles("dev",
-                        "mock-aktor",
-                        "mock-dokarkiv",
-                        "mock-egenansatt",
-                        "mock-infotrygd",
-                        "mock-medlemskap",
-                        "mock-oppgave",
-                        "mock-personopplysninger",
-                        "mock-saf",
-                        "mock-sts",
-                        "mock-kodeverk",
-                        "mock-arbeidsfordeling"
+                          "mock-aktor",
+                          "mock-dokarkiv",
+                          "mock-egenansatt",
+                          "mock-infotrygd",
+                          "mock-medlemskap",
+                          "mock-oppgave",
+                          "mock-personopplysninger",
+                          "mock-saf",
+                          "mock-sts",
+                          "mock-kodeverk",
+                          "mock-arbeidsfordeling"
                 ).build();
         app.run(args);
     }
