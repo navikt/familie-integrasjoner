@@ -7,7 +7,7 @@ no.nav.security.jwt:
   client:
     registration:
       aad-graph-onbehalfof:
-        resource-url: https://login.microsoftonline.com
+        resource-url: ${AAD_GRAPH_API_URI}
         token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${AAD_GRAPH_SCOPE}
@@ -40,4 +40,5 @@ SAF_URL: http://saf.q2
 OPPGAVE_URL: http://oppgave.q2
 EGEN_ANSATT_V1_URL: https://wasapp-q2.adeo.no/tpsws/EgenAnsatt_v1
 KODEVERK_URL: https://kodeverk.nais.preprod.local
+DOKDIST_URL: https://dokdistfordeling-q2.nais.preprod.local
 ARBEIDSFORDELING_V1_URL: https://app-q2.adeo.no/norg2/ws/Arbeidsfordeling/v1
