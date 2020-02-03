@@ -23,7 +23,7 @@
         <springfox.version>2.9.2</springfox.version>
         <common-java-modules.version>1.2019.11.06-15.14-6ca860e6cead</common-java-modules.version>
         <felles.version>1.0_20200130121637_84272c6</felles.version>
-        <kontrakt.version>2.0_20200131152303_fde9dca</kontrakt.version>
+        <kontrakt.version>2.0_20200206152409_f8edbdf</kontrakt.version>
         <fasterxml.version>2.10.1</fasterxml.version>
         <cxf.version>3.3.4</cxf.version>
         <token-validation-spring.version>1.1.2</token-validation-spring.version>
@@ -221,6 +221,12 @@
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-netty</artifactId>
             <version>5.7.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock</artifactId>
+            <version>2.26.0</version>
             <scope>test</scope>
         </dependency>
 
