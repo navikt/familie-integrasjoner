@@ -43,7 +43,7 @@ class DokdistControllerTest : OppslagSpringRunnerTest() {
             .withPath("/rest/v1/distribuerjournalpost"))
             .respond(HttpResponse.response().withStatusCode(200).withBody(""))
 
-        val body = DistribuerJournalpostRequest(JOURNALPOST_ID, "IT")
+        val body = DistribuerJournalpostRequest(JOURNALPOST_ID, "IT", "ba-sak")
         val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(localhost(DOKDIST_URL),
             HttpMethod.POST,
             HttpEntity(body, headers))
@@ -61,7 +61,7 @@ class DokdistControllerTest : OppslagSpringRunnerTest() {
                 .withPath("/rest/v1/distribuerjournalpost"))
             .respond(HttpResponse.response().withStatusCode(400).withBody(badRequestResponse()))
 
-        val body = DistribuerJournalpostRequest(JOURNALPOST_ID, "IT")
+        val body = DistribuerJournalpostRequest(JOURNALPOST_ID, "IT", "ba-sak")
         val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(localhost(DOKDIST_URL),
             HttpMethod.POST,
             HttpEntity(body, headers))
