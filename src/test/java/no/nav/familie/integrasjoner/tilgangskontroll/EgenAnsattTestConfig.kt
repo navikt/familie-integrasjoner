@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.tilgangskontroll
 
+import io.mockk.mockk
 import no.nav.familie.integrasjoner.egenansatt.internal.EgenAnsattConsumer
 import org.mockito.Mockito
 import org.springframework.context.annotation.Bean
@@ -12,9 +13,8 @@ class EgenAnsattTestConfig {
 
     @Bean
     @Profile("mock-egenansatt")
-    @Primary fun egenAnsattConsumerMock(): EgenAnsattConsumer {
-        val egenAnsattConsumer = Mockito.mock(EgenAnsattConsumer::class.java)
-        Mockito.doNothing().`when`(egenAnsattConsumer).ping()
-        return egenAnsattConsumer
+    @Primary
+    fun egenAnsattConsumerMock(): EgenAnsattConsumer {
+        return mockk(relaxed = true)
     }
 }
