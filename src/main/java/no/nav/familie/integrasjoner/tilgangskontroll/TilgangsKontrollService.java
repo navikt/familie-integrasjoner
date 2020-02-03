@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.tilgangskontroll;
 
-import no.nav.familie.integrasjoner.azure.AzureGraphService;
 import no.nav.familie.integrasjoner.azure.domene.Saksbehandler;
+import no.nav.familie.integrasjoner.client.rest.AzureGraphRestClient;
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService;
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo;
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.Tilgang;
@@ -21,7 +21,7 @@ public class TilgangsKontrollService {
     public static final String TILGANGTILTJENESTEN = "tilgangtiltjenesten";
     public static final String TILGANGTILENHET = "tilgangtilenhet";
 
-    private final AzureGraphService azureGraphService;
+    private final AzureGraphRestClient azureGraphRestClient;
     private final EgenAnsattService egenAnsattService;
 
     private final static String ENHET = "ENHET";
@@ -34,10 +34,9 @@ public class TilgangsKontrollService {
 
 
     @Autowired
-    TilgangsKontrollService(
-            AzureGraphService azureGraphService,
-            EgenAnsattService egenAnsattService) {
-        this.azureGraphService = azureGraphService;
+    TilgangsKontrollService(AzureGraphRestClient azureGraphRestClient,
+                            EgenAnsattService egenAnsattService) {
+        this.azureGraphRestClient = azureGraphRestClient;
         this.egenAnsattService = egenAnsattService;
     }
 

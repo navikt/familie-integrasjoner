@@ -1,11 +1,11 @@
 package no.nav.familie.integrasjoner.tilgangskontroll;
 
 import no.nav.familie.integrasjoner.azure.domene.Saksbehandler;
+import no.nav.familie.integrasjoner.client.rest.AzureGraphRestClient;
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService;
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent;
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo;
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.Tilgang;
-import no.nav.familie.integrasjoner.azure.AzureGraphService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,13 +31,13 @@ public class TilgangskontrollServiceTest {
     private TilgangsKontrollService tilgangsKontrollService;
 
     @MockBean
-    private AzureGraphService azureGraphService;
-    private Saksbehandler saksbehandler = new Saksbehandler("", "sdfsdf");
+    private AzureGraphRestClient azureGraphRestClient;
+    private Saksbehandler saksbehandler = new Saksbehandler("", "sdfsdf", Collections.emptyList());
 
 
     @Before
     public void setUp() {
-        tilgangsKontrollService = new TilgangsKontrollService(azureGraphService, egenAnsattService);
+        tilgangsKontrollService = new TilgangsKontrollService(azureGraphRestClient, egenAnsattService);
     }
 
     @Test
