@@ -1,56 +1,39 @@
-package no.nav.familie.integrasjoner.tilgangskontroll.domene;
+package no.nav.familie.integrasjoner.tilgangskontroll.domene
 
-import java.io.Serializable;
-import java.util.Objects;
+import java.io.Serializable
+import java.util.*
 
-public class Tilgang implements Serializable {
+class Tilgang : Serializable {
+    var isHarTilgang = false
+    var begrunnelse: String? = null
 
-    private static final long serialVersionUID = 1L;
-
-    private boolean harTilgang;
-    private String begrunnelse;
-
-    public boolean isHarTilgang() {
-        return harTilgang;
+    fun withHarTilgang(harTilgang: Boolean): Tilgang {
+        isHarTilgang = harTilgang
+        return this
     }
 
-    public Tilgang withHarTilgang(boolean harTilgang) {
-        this.harTilgang = harTilgang;
-        return this;
+    fun withBegrunnelse(begrunnelse: String?): Tilgang {
+        this.begrunnelse = begrunnelse
+        return this
     }
 
-    public void setHarTilgang(boolean harTilgang) {
-        this.harTilgang = harTilgang;
-    }
-
-    public String getBegrunnelse() {
-        return begrunnelse;
-    }
-
-    public Tilgang withBegrunnelse(String begrunnelse) {
-        this.begrunnelse = begrunnelse;
-        return this;
-    }
-
-    public void setBegrunnelse(String begrunnelse) {
-        this.begrunnelse = begrunnelse;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
+    override fun equals(o: Any?): Boolean {
+        if (this === o) {
+            return true
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
+        if (o == null || javaClass != o.javaClass) {
+            return false
         }
-        Tilgang tilgang = (Tilgang) o;
-        return harTilgang == tilgang.harTilgang &&
-               Objects.equals(begrunnelse, tilgang.begrunnelse);
+        val tilgang = o as Tilgang
+        return isHarTilgang == tilgang.isHarTilgang &&
+               begrunnelse == tilgang.begrunnelse
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(harTilgang, begrunnelse);
+    override fun hashCode(): Int {
+        return Objects.hash(isHarTilgang, begrunnelse)
+    }
+
+    companion object {
+        private const val serialVersionUID = 1L
     }
 }
