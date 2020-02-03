@@ -1,0 +1,7 @@
+{
+  "timestamp": "2020-01-30T15:53:20.070+0000",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "validering av distribusjonsforespørsel for journalpostId=453492547 feilet, feilmelding=For hoveddokumentet kan feltet brevkode ikke være null eller tomt. Fikk brevkode=null, dokumentInfoId=453871413",
+  "path": "/rest/v1/distribuerjournalpost"
+}

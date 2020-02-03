@@ -31,6 +31,7 @@ SECURITYTOKENSERVICE_URL: https://localhost:8063/soap/SecurityTokenServiceProvid
 AKTOERID_URL: #Denne er ikke i bruk da Aktøregisterklienten mockes ut lokalt
 PERSON_V3_URL: #Denne er ikke i bruk da PersonV3 mockes ut lokalt
 DOKARKIV_V1_URL: http://localhost:18321
+DOKDIST_URL: http://localhost:18321
 INFOTRYGD_URL: http://localhost:18321
 EGEN_ANSATT_V1_URL: #Mockes ut lokalt
 KODEVERK_URL: #Mockes lokalt
