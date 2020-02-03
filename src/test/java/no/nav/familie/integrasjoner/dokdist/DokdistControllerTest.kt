@@ -1,10 +1,8 @@
 package no.nav.familie.integrasjoner.dokdist
 
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.dokdist.api.DistribuerJournalpostRequest
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Rule
@@ -38,33 +36,35 @@ class DokdistControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `dokdist returnerer OK`() {
         mockServerRule.client
-            .`when`(HttpRequest.request()
-                .withMethod("POST")
-                .withPath("/rest/v1/distribuerjournalpost"))
-            .respond(HttpResponse.response().withStatusCode(200).withBody("{\"bestillingsId\": \"1234567\"}"))
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withPath("/rest/v1/distribuerjournalpost"))
+                .respond(HttpResponse.response().withStatusCode(200)
+                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
+                                 .withBody("{\"bestillingsId\": \"1234567\"}"))
 
         val body = DistribuerJournalpostRequest(JOURNALPOST_ID, "IT", "ba-sak")
         val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(localhost(DOKDIST_URL),
-            HttpMethod.POST,
-            HttpEntity(body, headers))
+                                                                              HttpMethod.POST,
+                                                                              HttpEntity(body, headers))
 
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         Assertions.assertThat(response.body?.data).contains("1234567")
-}
+    }
 
     @Test
     fun `dokdist returnerer OK uten bestillingsId`() {
         mockServerRule.client
-        .`when`(HttpRequest.request()
-            .withMethod("POST")
-            .withPath("/rest/v1/distribuerjournalpost"))
-            .respond(HttpResponse.response().withStatusCode(200).withBody(""))
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withPath("/rest/v1/distribuerjournalpost"))
+                .respond(HttpResponse.response().withStatusCode(200).withBody(""))
 
         val body = DistribuerJournalpostRequest(JOURNALPOST_ID, "IT", "ba-sak")
         val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(localhost(DOKDIST_URL),
-            HttpMethod.POST,
-            HttpEntity(body, headers))
+                                                                              HttpMethod.POST,
+                                                                              HttpEntity(body, headers))
 
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -74,25 +74,25 @@ class DokdistControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `dokdist returnerer 400`() {
         mockServerRule.client
-            .`when`(HttpRequest.request()
-                .withMethod("POST")
-                .withPath("/rest/v1/distribuerjournalpost"))
-            .respond(HttpResponse.response().withStatusCode(400).withBody(badRequestResponse()))
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withPath("/rest/v1/distribuerjournalpost"))
+                .respond(HttpResponse.response().withStatusCode(400).withBody(badRequestResponse()))
 
         val body = DistribuerJournalpostRequest(JOURNALPOST_ID, "IT", "ba-sak")
         val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(localhost(DOKDIST_URL),
-            HttpMethod.POST,
-            HttpEntity(body, headers))
+                                                                              HttpMethod.POST,
+                                                                              HttpEntity(body, headers))
 
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        Assertions.assertThat(response.body?.melding).contains("Dokdist svarte med:\n" +
-            "validering av distribusjonsforespørsel for journalpostId=453492547 feilet, feilmelding=")
+        Assertions.assertThat(response.body?.melding)
+                .contains("validering av distribusjonsforespørsel for journalpostId=453492547 feilet, feilmelding=")
     }
 
     @Throws(IOException::class) private fun badRequestResponse(): String {
         return Files.readString(ClassPathResource("dokdist/badrequest.json").file.toPath(),
-            StandardCharsets.UTF_8)
+                                StandardCharsets.UTF_8)
     }
 
     companion object {
