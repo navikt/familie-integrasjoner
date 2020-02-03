@@ -27,7 +27,7 @@ class DokdistController(private val dokdistService: DokdistService) {
     fun distribuerJournalpost(@RequestBody request: @Valid DistribuerJournalpostRequest)
             : ResponseEntity<Ressurs<String>>  {
 
-        val response = dokdistService.distribuerDokumentForJournalpost(request.journalpostId, request.dokumentProdApp)
+        val response = dokdistService.distribuerDokumentForJournalpost(request)
         return ResponseEntity.ok(success(response?.bestillingsId ?: throw NullResponseException()))
     }
 
