@@ -32,11 +32,29 @@ class DokdistControllerTest : OppslagSpringRunnerTest() {
     @Before
     fun setUp() {
         headers.setBearerAuth(lokalTestToken)
-        objectMapper.registerModule(KotlinModule())
     }
 
+
     @Test
-    fun `dokdist returnerer ok uten bestillingsId`() {
+    fun `dokdist returnerer OK`() {
+        mockServerRule.client
+            .`when`(HttpRequest.request()
+                .withMethod("POST")
+                .withPath("/rest/v1/distribuerjournalpost"))
+            .respond(HttpResponse.response().withStatusCode(200).withBody("{\"bestillingsId\": \"1234567\"}"))
+
+        val body = DistribuerJournalpostRequest(JOURNALPOST_ID, "IT", "ba-sak")
+        val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(localhost(DOKDIST_URL),
+            HttpMethod.POST,
+            HttpEntity(body, headers))
+
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        Assertions.assertThat(response.body?.data).contains("1234567")
+}
+
+    @Test
+    fun `dokdist returnerer OK uten bestillingsId`() {
         mockServerRule.client
         .`when`(HttpRequest.request()
             .withMethod("POST")
