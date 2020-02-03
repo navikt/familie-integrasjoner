@@ -1,11 +1,10 @@
 package no.nav.familie.integrasjoner.config
 
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import no.nav.familie.http.interceptor.BearerTokenClientInterceptor
 import no.nav.familie.http.interceptor.ConsumerIdClientInterceptor
 import no.nav.familie.http.interceptor.MdcValuesPropagatingClientInterceptor
 import no.nav.familie.http.interceptor.StsBearerTokenClientInterceptor
-import no.nav.familie.http.sts.StsRestClient
-import no.nav.familie.integrasjoner.interceptor.AzureBearerTokenClientInterceptor
 import no.nav.familie.log.filter.LogFilter
 import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
@@ -27,29 +26,31 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2
 @EnableSwagger2
 @EnableJwtTokenValidation(ignore = ["org.springframework", "springfox.documentation.swagger.web.ApiResourceController"])
 @EnableOAuth2Client(cacheEnabled = true)
-@Import(ConsumerIdClientInterceptor::class)
+@Import(ConsumerIdClientInterceptor::class, BearerTokenClientInterceptor::class, StsBearerTokenClientInterceptor::class)
 class ApplicationConfig {
 
     private val logger = LoggerFactory.getLogger(ApplicationConfig::class.java)
 
     @Bean("azure")
-    fun restTemplateAzureAd(interceptorAzure: AzureBearerTokenClientInterceptor): RestOperations {
+    fun restTemplateAzureAd(interceptorAzure: BearerTokenClientInterceptor,
+                            consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations {
         return RestTemplateBuilder()
                 .additionalCustomizers(NaisProxyCustomizer())
-                .interceptors(interceptorAzure)
+                .interceptors(consumerIdClientInterceptor,
+                              interceptorAzure,
+                              MdcValuesPropagatingClientInterceptor())
                 .requestFactory(this::requestFactory)
                 .build()
     }
 
     @Bean("sts")
-    fun restTemplateSts(stsRestClient: StsRestClient,
+    fun restTemplateSts(stsBearerTokenClientInterceptor: StsBearerTokenClientInterceptor,
                         consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations {
 
         return RestTemplateBuilder()
-                .interceptors(
-                        consumerIdClientInterceptor,
-                        StsBearerTokenClientInterceptor(stsRestClient),
-                        MdcValuesPropagatingClientInterceptor())
+                .interceptors(consumerIdClientInterceptor,
+                              stsBearerTokenClientInterceptor,
+                              MdcValuesPropagatingClientInterceptor())
                 .requestFactory(this::requestFactory)
                 .build()
     }

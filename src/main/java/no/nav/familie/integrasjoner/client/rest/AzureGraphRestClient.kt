@@ -5,6 +5,7 @@ import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.azure.domene.Saksbehandler
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestOperations
 import java.net.URI
@@ -16,12 +17,12 @@ class AzureGraphRestClient(@Qualifier("azure") restTemplate: RestOperations,
 
     val saksbehandler: Saksbehandler
         get() {
-
-            return getForEntity(UriUtil.uri(aadGrapURI, PATH))
+            return getForEntity(UriUtil.uri(aadGrapURI, PATH, QUERY))
         }
 
     companion object {
-        private const val PATH = "me?\$select=displayName,onPremisesSamAccountName,userPrincipalName"
+        private const val PATH = "me"
+        private const val QUERY = "\$select=displayName,onPremisesSamAccountName,userPrincipalName"
     }
 
 }
