@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service
 
 @Service
 class DokdistService(val dokdistRestClient: DokdistRestClient) {
-    fun distribuerDokumentForJournalpost(journalpostId: String): DistribuerJournalpostResponseTo? {
-        val req = DistribuerJournalpostRequestTo(journalpostId = journalpostId,
-                                                 bestillendeFagsystem = "familie-distribusjon",
-                                                 dokumentProdApp = "ba-sak")
-        return dokdistRestClient.distribuerJournalpost(req)
+    fun distribuerDokumentForJournalpost(journalpostId: String, dokumentProdApp: String): DistribuerJournalpostResponseTo? {
+        val request = DistribuerJournalpostRequestTo(journalpostId = journalpostId,
+                                                 bestillendeFagsystem = "IT01",
+                                                 dokumentProdApp = dokumentProdApp)
+        return dokdistRestClient.distribuerJournalpost(request)
     }
 }
