@@ -35,10 +35,11 @@ SECURITYTOKENSERVICE_URL: https://sts.adeo.no/SecurityTokenServiceProvider/
 AKTOERID_URL: https://app.adeo.no/aktoerregister
 PERSON_V3_URL: https://wasapp.adeo.no/tpsws/ws/Person/v3
 EGEN_ANSATT_V1_URL: https://wasapp.adeo.no/tpsws/EgenAnsatt_v1
-DOKARKIV_V1_URL: https://dokarkiv.nais.adeo.no
+DOKARKIV_V1_URL: http://dokarkiv
 MEDL2_URL: https://app.adeo.no/medl2
 SAF_URL: http://saf
-KODEVERK_URL: https://kodeverk.nais.adeo.no
+KODEVERK_URL: http://kodeverk
+DOKDIST_URL: http://dokdistfordeling
 ARBEIDSFORDELING_V1_URL: https://app.adeo.no/norg2/ws/Arbeidsfordeling/v1
 
 # Appdynamics
