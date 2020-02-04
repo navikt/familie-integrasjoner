@@ -5,8 +5,8 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.config.ApiExceptionHandler
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.familie.kontrakter.ks.oppgave.Oppgave
-import org.assertj.core.api.Assertions
+import no.nav.familie.kontrakter.felles.oppgave.Oppgave
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -46,7 +46,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `skal logge stack trace og returnere internal server error ved nullPointerException`() {
+    fun `skal logge stack trace og returnere internal server error ved IllegalStateException`() {
         mockServerRule.client
                 .`when`(HttpRequest.request()
                                 .withMethod("GET")
@@ -58,10 +58,10 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                                                                                          HttpMethod.POST,
                                                                                          HttpEntity(oppgave, headers))
 
-        Assertions.assertThat(loggingEvents)
+        assertThat(loggingEvents)
                 .extracting<String, RuntimeException> { obj: ILoggingEvent -> obj.formattedMessage }
-                .anyMatch { s: String -> s.contains("Exception : java.lang.NullPointerException null") }
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+                .anyMatch { s: String -> s.contains("Exception : java.lang.IllegalStateException") }
+        assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @Test
@@ -77,10 +77,10 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                                                                                          HttpMethod.POST,
                                                                                          HttpEntity(oppgave, headers))
 
-        Assertions.assertThat(loggingEvents)
+        assertThat(loggingEvents)
                 .extracting<String, RuntimeException> { obj: ILoggingEvent -> obj.formattedMessage }
                 .anyMatch { it.contains("HttpClientErrorException") }
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     @Test
@@ -97,13 +97,13 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                                                                                          HttpMethod.POST,
                                                                                          HttpEntity(oppgave, headers))
 
-        Assertions.assertThat(loggingEvents)
+        assertThat(loggingEvents)
                 .extracting<String, RuntimeException> { obj: ILoggingEvent -> obj.formattedMessage }
                 .anyMatch {
                     it.contains("[oppgave][Ingen oppgaver funnet for http://localhost:18321/api/v1/oppgaver" +
                                 "?aktoerId=1234567891011&tema=KON&oppgavetype=BEH_SAK&journalpostId=1]")
                 }
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
     }
 
     @Test
@@ -120,12 +120,12 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                                                                                          HttpMethod.POST,
                                                                                          HttpEntity(oppgave, headers))
 
-        Assertions.assertThat(loggingEvents).extracting<String, RuntimeException> { obj: ILoggingEvent -> obj.formattedMessage }
+        assertThat(loggingEvents).extracting<String, RuntimeException> { obj: ILoggingEvent -> obj.formattedMessage }
                 .anyMatch {
                     it.contains("Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId=1234567891011 " +
                                 "journalpostId=123456789 oppgaveId=315488374")
                 }
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
     }
 
     private fun gyldigOppgaveResponse(filnavn: String): String {
