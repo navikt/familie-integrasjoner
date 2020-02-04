@@ -6,7 +6,7 @@ import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.oppgave.domene.FinnOppgaveResponseDto
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto
-import no.nav.familie.kontrakter.ks.oppgave.Oppgave
+import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.log.mdc.MDCConstants
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Qualifier
@@ -53,7 +53,12 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
     }
 
     private fun requestOppgaveJson(requestUrl: URI): OppgaveJsonDto {
-        val finnOppgaveResponseDto = getForEntity<FinnOppgaveResponseDto>(requestUrl, httpHeaders())
+        val finnOppgaveResponseDto = try {
+            getForEntity<FinnOppgaveResponseDto>(requestUrl, httpHeaders())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw e
+        }
         if (finnOppgaveResponseDto.oppgaver.isEmpty()) {
             returnerteIngenOppgaver.increment()
             throw OppslagException("Ingen oppgaver funnet for $requestUrl",

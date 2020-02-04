@@ -28,13 +28,6 @@ class ClientMocks {
 
     @Bean
     @Primary
-    @Profile("mock-oppgave")
-    fun mockOppgaveRestClient(): OppgaveRestClient {
-        return mockk(relaxed = true)
-    }
-
-    @Bean
-    @Primary
     @Profile("mock-egenansatt")
     fun mockEgenAnsattSoapClient(): EgenAnsattSoapClient {
         return mockk(relaxed = true)
