@@ -35,7 +35,7 @@ class DokdistRestClient(@Value("\${DOKDIST_URL}") private val dokdistUri: URI,
     }
 
     companion object {
-        private const val PATH_PING = "internal/isAlive"
+        private const val PATH_PING = "isAlive"
         private const val PATH_DISTRIBUERJOURNALPOST = "rest/v1/distribuerjournalpost"
     }
 }
