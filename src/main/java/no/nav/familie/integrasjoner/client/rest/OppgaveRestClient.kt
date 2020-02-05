@@ -15,6 +15,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestOperations
+import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Component
@@ -43,22 +44,22 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
     }
 
     private fun lagRequestUrlMed(aktoerId: String, journalpostId: String): URI {
-        return UriUtil.uri(oppgaveBaseUrl,
-                           PATH_OPPGAVE,
-                           String.format(QUERY_OPPGAVESØK, aktoerId, TEMA, OPPGAVE_TYPE, journalpostId))
+        return UriComponentsBuilder.fromUri(oppgaveBaseUrl)
+                .path(PATH_OPPGAVE)
+                .queryParam("aktoerId", aktoerId)
+                .queryParam("tema", TEMA)
+                .queryParam("oppgavetype", OPPGAVE_TYPE)
+                .queryParam("journalpostId", journalpostId)
+                .build()
+                .toUri()
     }
 
     private fun requestUrl(oppgaveId: Long): URI {
-        return UriUtil.uri(oppgaveBaseUrl, "$PATH_OPPGAVE/$$oppgaveId")
+        return UriComponentsBuilder.fromUri(oppgaveBaseUrl).path(PATH_OPPGAVE).path(oppgaveId.toString()).build().toUri()
     }
 
     private fun requestOppgaveJson(requestUrl: URI): OppgaveJsonDto {
-        val finnOppgaveResponseDto = try {
-            getForEntity<FinnOppgaveResponseDto>(requestUrl, httpHeaders())
-        } catch (e: Exception) {
-            e.printStackTrace()
-            throw e
-        }
+        val finnOppgaveResponseDto = getForEntity<FinnOppgaveResponseDto>(requestUrl, httpHeaders())
         if (finnOppgaveResponseDto.oppgaver.isEmpty()) {
             returnerteIngenOppgaver.increment()
             throw OppslagException("Ingen oppgaver funnet for $requestUrl",
@@ -80,7 +81,6 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
 
         private const val PATH_PING = "internal/alive"
         private const val PATH_OPPGAVE = "api/v1/oppgaver"
-        private const val QUERY_OPPGAVESØK = "aktoerId=%s&tema=%s&oppgavetype=%s&journalpostId=%s"
         private const val TEMA = "KON"
         private const val OPPGAVE_TYPE = "BEH_SAK"
         private const val X_CORRELATION_ID = "X-Correlation-ID"
