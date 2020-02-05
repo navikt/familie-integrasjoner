@@ -55,7 +55,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
     }
 
     private fun requestUrl(oppgaveId: Long): URI {
-        return UriComponentsBuilder.fromUri(oppgaveBaseUrl).path(PATH_OPPGAVE).path(oppgaveId.toString()).build().toUri()
+        return UriComponentsBuilder.fromUri(oppgaveBaseUrl).pathSegment(PATH_OPPGAVE, oppgaveId.toString()).build().toUri()
     }
 
     private fun requestOppgaveJson(requestUrl: URI): OppgaveJsonDto {
