@@ -1,5 +1,5 @@
 package no.nav.familie.integrasjoner.azure.domene
 
-class Gruppe(val id: String?,
-             val onPremisesSamAccountName: String?,
-             val displayName: String?)
+data class Gruppe(val id: String?,
+                  val onPremisesSamAccountName: String?,
+                  val displayName: String?)

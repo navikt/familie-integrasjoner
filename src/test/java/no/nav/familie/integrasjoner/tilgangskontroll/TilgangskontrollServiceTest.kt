@@ -5,6 +5,7 @@ import io.mockk.mockk
 import no.nav.familie.integrasjoner.azure.domene.Saksbehandler
 import no.nav.familie.integrasjoner.client.rest.AzureGraphRestClient
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
+import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.Tilgang
@@ -20,8 +21,11 @@ class TilgangskontrollServiceTest {
     private val azureGraphRestClient: AzureGraphRestClient = mockk(relaxed = true)
     private val saksbehandler = Saksbehandler("", "sdfsdf", emptyList())
     private val egenAnsattService: EgenAnsattService = mockk(relaxed = true)
+    private val personopplysningerService: PersonopplysningerService = mockk(relaxed = true)
+
     private var tilgangskontrollService: TilgangskontrollService = TilgangskontrollService(azureGraphRestClient,
-                                                                                           egenAnsattService)
+                                                                                           egenAnsattService,
+                                                                                           personopplysningerService)
 
     @Test fun `tilgang til egen ansatt gir ikke tilgang hvis saksbehandler mangler rollen`() {
         every { egenAnsattService.erEgenAnsatt(any()) }

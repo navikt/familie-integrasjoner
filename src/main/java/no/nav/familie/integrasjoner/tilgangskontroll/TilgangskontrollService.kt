@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.tilgangskontroll
 import no.nav.familie.integrasjoner.azure.domene.Saksbehandler
 import no.nav.familie.integrasjoner.client.rest.AzureGraphRestClient
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
+import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRoller
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.Tilgang
@@ -12,7 +13,18 @@ import org.springframework.stereotype.Service
 
 @Service
 class TilgangskontrollService(private val azureGraphRestClient: AzureGraphRestClient,
-                                                              private val egenAnsattService: EgenAnsattService) {
+                              private val egenAnsattService: EgenAnsattService,
+                              private val personopplysningerService: PersonopplysningerService) {
+
+    fun sjekkTilgangTilBrukere(personIdenter: List<String>): List<Tilgang> {
+        return personIdenter.map(this::sjekkTilgangTilBruker)
+    }
+
+    fun sjekkTilgangTilBruker(personIdent: String): Tilgang {
+        val saksbehandler = azureGraphRestClient.saksbehandler
+        val personInfo = personopplysningerService.hentPersoninfo(personIdent)
+        return sjekkTilgang(personIdent, saksbehandler, personInfo)
+    }
 
     @Cacheable(cacheNames = [TILGANGTILBRUKER],
                key = "#saksbehandler.onPremisesSamAccountName.concat(#personFnr)",
@@ -20,38 +32,39 @@ class TilgangskontrollService(private val azureGraphRestClient: AzureGraphRestCl
     fun sjekkTilgang(personFnr: String, saksbehandler: Saksbehandler, personInfo: Personinfo): Tilgang {
         val navIdent = saksbehandler.onPremisesSamAccountName
         val diskresjonskode = personInfo.diskresjonskode
+        logger.info("$navIdent har tilgang til: $saksbehandler")
 
-        if (DISKRESJONSKODE_KODE6 == diskresjonskode && !harTilgangTilKode6(navIdent)) {
-            secureLogger.info("$navIdent har ikke tilgang til $personFnr")
-            return Tilgang(false, AdRoller.KODE6.name)
+        if (DISKRESJONSKODE_KODE6 == diskresjonskode && !harTilgangTilKode6(saksbehandler)) {
+//            secureLogger.info("$navIdent har ikke tilgang til $personFnr")
+            logger.info("$navIdent har ikke tilgang til ${AdRoller.KODE6.rolle}. Saksbehandler: $saksbehandler")
+
+            return Tilgang(false, AdRoller.KODE6.rolle)
         }
-        if (DISKRESJONSKODE_KODE7 == diskresjonskode && !harTilgangTilKode7(navIdent)) {
-            secureLogger.info("$navIdent har ikke tilgang til $personFnr")
-            return Tilgang(false, AdRoller.KODE7.name)
+        if (DISKRESJONSKODE_KODE7 == diskresjonskode && !harTilgangTilKode7(saksbehandler)) {
+//            secureLogger.info("$navIdent har ikke tilgang til $personFnr")
+            logger.info("$navIdent har ikke tilgang til ${AdRoller.KODE7.rolle}. Saksbehandler: $saksbehandler")
+
+            return Tilgang(false, AdRoller.KODE7.rolle)
         }
-        if (egenAnsattService.erEgenAnsatt(personFnr) && !harTilgangTilEgenAnsatt(navIdent)) {
-            secureLogger.info("$navIdent har ikke tilgang til egen ansatt $personFnr")
-            return Tilgang(false, AdRoller.EGEN_ANSATT.name)
+        if (egenAnsattService.erEgenAnsatt(personFnr) && !harTilgangTilEgenAnsatt(saksbehandler)) {
+//            secureLogger.info("$navIdent har ikke tilgang til egen ansatt $personFnr")
+            logger.info("$navIdent har ikke tilgang til ${AdRoller.KODE7.rolle}. Saksbehandler: $saksbehandler")
+
+            return Tilgang(false, AdRoller.EGEN_ANSATT.rolle)
         }
         return Tilgang(true)
     }
 
-    private fun harTilgangTilKode7(navIdent: String?): Boolean {
-        return false
-        //TODO hent roller fra token eller hent fra graph api til azuread
-//return ldapService.harTilgang(navIdent, KODE7.rolle);
+    private fun harTilgangTilKode7(saksbehandler: Saksbehandler): Boolean {
+        return saksbehandler.grupper.any { it.onPremisesSamAccountName == AdRoller.KODE7.rolle }
     }
 
-    private fun harTilgangTilKode6(navIdent: String?): Boolean {
-        return false
-        //TODO hent roller fra token eller hent fra graph api til azuread
-//return ldapService.harTilgang(navIdent, KODE6.rolle);
+    private fun harTilgangTilKode6(saksbehandler: Saksbehandler): Boolean {
+        return saksbehandler.grupper.any { it.onPremisesSamAccountName == AdRoller.KODE6.rolle }
     }
 
-    private fun harTilgangTilEgenAnsatt(navIdent: String?): Boolean {
-        return false
-        //TODO hent roller fra token eller hent fra graph api til azuread
-//return ldapService.harTilgang(navIdent, EGEN_ANSATT.rolle);
+    private fun harTilgangTilEgenAnsatt(saksbehandler: Saksbehandler): Boolean {
+        return saksbehandler.grupper.any { it.onPremisesSamAccountName == AdRoller.EGEN_ANSATT.rolle }
     }
 
     companion object {
@@ -63,7 +76,7 @@ class TilgangskontrollService(private val azureGraphRestClient: AzureGraphRestCl
         const val DISKRESJONSKODE_KODE6 = "SPSF"
         const val DISKRESJONSKODE_KODE7 = "SPFO"
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
-        private val LOG = LoggerFactory.getLogger(TilgangskontrollService::class.java)
+        private val logger = LoggerFactory.getLogger(TilgangskontrollService::class.java)
     }
 
 }

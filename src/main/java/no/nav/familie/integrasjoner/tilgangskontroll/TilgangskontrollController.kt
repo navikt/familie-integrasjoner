@@ -1,11 +1,7 @@
 package no.nav.familie.integrasjoner.tilgangskontroll
 
-import no.nav.familie.integrasjoner.client.rest.AzureGraphRestClient
-import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.Tilgang
 import no.nav.security.token.support.core.api.ProtectedWithClaims
-import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
@@ -13,26 +9,16 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping(value = ["/api/tilgang"])
-class TilgangskontrollController(private val azureGraphRestClient: AzureGraphRestClient,
-                                 private val tilgangService: TilgangskontrollService,
-                                 private val personService: PersonopplysningerService) {
+class TilgangskontrollController(private val tilgangskontrollService: TilgangskontrollService) {
 
     @GetMapping(path = ["/person"]) @ProtectedWithClaims(issuer = "azuread")
-    fun tilgangTilPerson(@RequestHeader(name = "Nav-Personident") personIdent: String): ResponseEntity<Tilgang> {
-        return sjekkTilgangTilBruker(personIdent)
+    fun tilgangTilPerson(@RequestHeader(name = "Nav-Personident") personIdent: String): Tilgang {
+        return tilgangskontrollService.sjekkTilgangTilBruker(personIdent)
     }
 
-    private fun sjekkTilgangTilBruker(personIdent: String): ResponseEntity<Tilgang> {
-        val saksbehandler = azureGraphRestClient.saksbehandler
-        val personInfo = personService.hentPersoninfo(personIdent)
-        val tilgang = tilgangService.sjekkTilgang(personIdent, saksbehandler, personInfo)
-        return lagRespons(tilgang)
+    @GetMapping(path = ["/personer"])
+    @ProtectedWithClaims(issuer = "azuread") fun tilgangTilPersoner(@RequestHeader(name = "Nav-Personident")
+                                                                    personIdenter: List<String>): List<Tilgang> {
+        return tilgangskontrollService.sjekkTilgangTilBrukere(personIdenter)
     }
-
-    private fun lagRespons(tilgang: Tilgang): ResponseEntity<Tilgang> {
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(tilgang)
-    }
-
 }
