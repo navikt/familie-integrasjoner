@@ -78,5 +78,4 @@ class TilgangskontrollService(private val azureGraphRestClient: AzureGraphRestCl
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
         private val logger = LoggerFactory.getLogger(TilgangskontrollService::class.java)
     }
-
 }
