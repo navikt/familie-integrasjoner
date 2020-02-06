@@ -6,7 +6,6 @@ import no.nav.familie.integrasjoner.oppgave.domene.StatusEnum
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.sbl.util.StringUtils
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.web.context.annotation.ApplicationScope
 
