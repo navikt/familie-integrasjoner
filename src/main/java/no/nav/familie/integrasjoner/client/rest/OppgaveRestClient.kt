@@ -40,7 +40,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
 
     fun oppdaterOppgave(dto: OppgaveJsonDto, beskrivelse: String) {
         val copy = dto.copy(beskrivelse = dto.beskrivelse + beskrivelse)
-        putForEntity<String>(requestUrl(copy.id), dto, httpHeaders())
+        putForEntity<String>(requestUrl(copy.id), copy, httpHeaders())
     }
 
     private fun lagRequestUrlMed(aktoerId: String, journalpostId: String): URI {
