@@ -8,6 +8,7 @@ import no.nav.familie.integrasjoner.oppgave.domene.FinnOppgaveResponseDto
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.log.mdc.MDCConstants
+import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -28,6 +29,8 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
     private val returnerteIngenOppgaver = Metrics.counter("oppslag.oppgave.response", "antall.oppgaver", "ingen")
 
     private val returnerteMerEnnEnOppgave = Metrics.counter("oppslag.oppgave.response", "antall.oppgaver", "flerEnnEn")
+
+    private val LOG = LoggerFactory.getLogger(OppgaveRestClient::class.java)
 
     fun finnOppgave(request: Oppgave): OppgaveJsonDto {
         val requestUrl = lagRequestUrlMed(request.aktorId, request.journalpostId)
@@ -69,6 +72,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         }
         if (finnOppgaveResponseDto.oppgaver.size > 1) {
             returnerteMerEnnEnOppgave.increment()
+            LOG.warn("FinnOppgave returnerte mer enn 1 oppgave, antall: ${finnOppgaveResponseDto.oppgaver.size}, oppgave: $requestUrl")
         }
         return finnOppgaveResponseDto.oppgaver[0]
     }
