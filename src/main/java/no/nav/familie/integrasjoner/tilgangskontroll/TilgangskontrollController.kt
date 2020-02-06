@@ -8,13 +8,15 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping(value = ["/api/tilgang"])
 class TilgangskontrollController(private val tilgangskontrollService: TilgangskontrollService) {
 
-    @GetMapping(path = ["/person"]) @ProtectedWithClaims(issuer = "azuread")
+    @GetMapping(path = ["/person"])
+    @ProtectedWithClaims(issuer = "azuread")
     fun tilgangTilPerson(@RequestHeader(name = "Nav-Personident") personIdent: String): Tilgang {
         return tilgangskontrollService.sjekkTilgangTilBruker(personIdent)
     }
 
     @PostMapping(path = ["/personer"])
-    @ProtectedWithClaims(issuer = "azuread") fun tilgangTilPersoner(@RequestBody personIdenter: List<String>): List<Tilgang> {
+    @ProtectedWithClaims(issuer = "azuread")
+    fun tilgangTilPersoner(@RequestBody personIdenter: List<String>): List<Tilgang> {
         return tilgangskontrollService.sjekkTilgangTilBrukere(personIdenter)
     }
 }
