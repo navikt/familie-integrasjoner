@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.oppgave
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
+import no.nav.familie.kontrakter.felles.oppgave.Tema
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.*
 import org.springframework.context.annotation.Bean
@@ -30,6 +31,7 @@ class OppgaveTestConfig {
                                                            HttpHeaders(),
                                                            null,
                                                            null))
+
         `when`(klient.finnOppgave(matcherBeskrivelse("test oppgave ikke funnet")))
                 .thenThrow(OppgaveIkkeFunnetException("Mislykket finnOppgave request med url: ..."))
         `when`(klient.finnOppgave(matcherBeskrivelse("test generell feil")))
@@ -44,6 +46,6 @@ class OppgaveTestConfig {
         return ArgumentMatchers.eq(Oppgave("1234567891011",
                                            "1",
                                            null,
-                                           beskrivelse))
+                                           beskrivelse, Tema.KON))
     }
 }
