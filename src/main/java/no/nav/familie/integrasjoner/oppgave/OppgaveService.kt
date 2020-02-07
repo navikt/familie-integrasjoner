@@ -1,6 +1,8 @@
 package no.nav.familie.integrasjoner.oppgave
 
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
+import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.integrasjoner.felles.OppslagException.Level
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto
 import no.nav.familie.integrasjoner.oppgave.domene.PrioritetEnum
 import no.nav.familie.integrasjoner.oppgave.domene.StatusEnum
@@ -9,6 +11,7 @@ import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgave
 import no.nav.sbl.util.StringUtils
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.context.annotation.ApplicationScope
 import java.time.format.DateTimeFormatter
@@ -28,7 +31,12 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
                      oppgaveJsonDto.journalpostId,
                      oppgaveJsonDto.id)
         } else {
-            oppgaveRestClient.oppdaterOppgave(oppgaveJsonDto, request.beskrivelse)
+            val patchOppgaveDto = OppgaveJsonDto(
+                    id = oppgaveJsonDto.id,
+                    versjon = oppgaveJsonDto.versjon,
+                    beskrivelse = oppgaveJsonDto.beskrivelse + request.beskrivelse
+            )
+            oppgaveRestClient.oppdaterOppgave(patchOppgaveDto)
         }
         return oppgaveJsonDto.id!!
     }
@@ -50,6 +58,31 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         )
 
         return oppgaveRestClient.opprettOppgave(oppgave)
+    }
+
+    fun ferdigstill(oppgaveId: Long) {
+        val oppgave = oppgaveRestClient.finnOppgave(oppgaveId.toString())
+
+        OppgaveJsonDto(id = oppgave.id, versjon = oppgave.versjon, status = StatusEnum.FERDIGSTILT)
+
+        when (oppgave.status) {
+            StatusEnum.OPPRETTET, StatusEnum.AAPNET, StatusEnum.UNDER_BEHANDLING -> {
+                val patchOppgaveDto = OppgaveJsonDto(
+                        id = oppgave.id,
+                        versjon = oppgave.versjon,
+                        status = StatusEnum.FERDIGSTILT
+                )
+                oppgaveRestClient.oppdaterOppgave(patchOppgaveDto)
+            }
+
+            StatusEnum.FERDIGSTILT -> LOG.info("Oppgave er allerede ferdigstilt. oppgaveId=${oppgaveId}")
+            StatusEnum.FEILREGISTRERT -> throw OppslagException("Oppgave har status feilregistrert og kan ikke oppdateres. " +
+                                                                "oppgaveId=${oppgaveId}",
+                                                                "Oppgave.ferdigstill",
+                                                                Level.MEDIUM,
+                                                                HttpStatus.BAD_REQUEST)
+        }
+
     }
 
 

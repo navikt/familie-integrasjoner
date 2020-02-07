@@ -7,6 +7,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.config.ApiExceptionHandler
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto
+import no.nav.familie.integrasjoner.oppgave.domene.StatusEnum
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppgave.*
@@ -146,7 +147,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                                             .withBody(gyldigOppgaveResponse("oppgave.json"))))
 
         stubFor(
-                put(
+                patch(
                         urlEqualTo("/api/v1/oppgaver/${OPPGAVE_ID}"))
                         .withRequestBody(matchingJsonPath("$.[?(@.beskrivelse == 'Behandle sak$EKSTRA_BESKRIVELSE')]"))
                         .willReturn(aResponse()
@@ -160,15 +161,13 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 restTemplate.exchange(localhost(OPPDATER_OPPGAVE_URL),
                                       HttpMethod.POST,
                                       HttpEntity(oppgave, headers))
-        assertThat(response.body.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
+        assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
     }
 
 
     @Test
     fun `skal opprette oppgave, returnere oppgaveid og 201 Created`() {
-
-        OppgaveJsonDto(id = 42)
 
         stubFor(post(urlEqualTo("/api/v1/oppgaver"))
                         .willReturn(aResponse()
@@ -189,7 +188,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                                       HttpMethod.POST,
                                       HttpEntity(opprettOppgave, headers))
 
-        assertThat(response.body.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
+        assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
         assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
     }
 
@@ -214,8 +213,75 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 restTemplate.exchange(localhost(OPPGAVE_URL),
                                       HttpMethod.POST,
                                       HttpEntity(opprettOppgave, headers))
-        assertThat(response.body.melding).contains("Feil ved oppretting av oppgave for 123456789012. Response fra oppgave = body")
+        assertThat(response.body?.melding).contains("Feil ved oppretting av oppgave for 123456789012. Response fra oppgave = body")
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+
+    @Test
+    fun `Ferdigstilling av oppgave som er alt ferdigstillt skal logge og returnerer 200 OK`() {
+        stubFor(get(urlEqualTo("/api/v1/oppgaver/315488374"))
+                        .willReturn(aResponse()
+                                            .withStatus(200)
+                                            .withHeader("Content-Type", "application/json")
+                                            .withBody(objectMapper.writeValueAsBytes(OppgaveJsonDto(id = OPPGAVE_ID,
+                                                                                                    status = StatusEnum.FERDIGSTILT)))))
+
+        val response: ResponseEntity<Ressurs<OppgaveResponse>> =
+                restTemplate.exchange(localhost("/api/oppgave/${OPPGAVE_ID}/ferdigstill"),
+                                      HttpMethod.PATCH,
+                                      HttpEntity(null, headers))
+
+        assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(loggingEvents)
+                .extracting<String, RuntimeException> { obj: ILoggingEvent -> obj.formattedMessage }
+                .anyMatch {
+                    it.contains("Oppgave er allerede ferdigstilt")
+                }
+    }
+
+    @Test
+    fun `Ferdigstilling av oppgave som er feilregistrert skal generere en oppslagsfeil`() {
+        stubFor(get(urlEqualTo("/api/v1/oppgaver/315488374"))
+                        .willReturn(aResponse()
+                                            .withStatus(200)
+                                            .withHeader("Content-Type", "application/json")
+                                            .withBody(objectMapper.writeValueAsBytes(OppgaveJsonDto(id = OPPGAVE_ID,
+                                                                                                    status = StatusEnum.FEILREGISTRERT)))))
+
+        val response: ResponseEntity<Ressurs<OppgaveResponse>> =
+                restTemplate.exchange(localhost("/api/oppgave/${OPPGAVE_ID}/ferdigstill"),
+                                      HttpMethod.PATCH,
+                                      HttpEntity(null, headers))
+
+        assertThat(response.body?.melding).contains("Oppgave har status feilregistrert og kan ikke oppdateres")
+        assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    @Test
+    fun `Ferdigstilling av oppgave som er i status opprettet skal gjøre et patch kall mot oppgave med status FERDIGSTILL`() {
+        stubFor(get(urlEqualTo("/api/v1/oppgaver/315488374"))
+                        .willReturn(aResponse()
+                                            .withStatus(200)
+                                            .withHeader("Content-Type", "application/json")
+                                            .withBody(objectMapper.writeValueAsBytes(OppgaveJsonDto(id = OPPGAVE_ID,
+                                                                                                    status = StatusEnum.OPPRETTET)))))
+        stubFor(patch(urlEqualTo("/api/v1/oppgaver/315488374"))
+                        .withRequestBody(matchingJsonPath("$.[?(@.status == 'FERDIGSTILT')]"))
+                        .willReturn(aResponse()
+                                            .withStatus(200)
+                                            .withHeader("Content-Type", "application/json")
+                                            .withBody(objectMapper.writeValueAsBytes(OppgaveJsonDto(id = OPPGAVE_ID,
+                                                                                                    status = StatusEnum.FERDIGSTILT)))))
+
+        val response: ResponseEntity<Ressurs<OppgaveResponse>> =
+                restTemplate.exchange(localhost("/api/oppgave/${OPPGAVE_ID}/ferdigstill"),
+                                      HttpMethod.PATCH,
+                                      HttpEntity(null, headers))
+
+        assertThat(response.body?.melding).contains("ferdigstill OK")
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
     }
 
     private fun gyldigOppgaveResponse(filnavn: String): String {
