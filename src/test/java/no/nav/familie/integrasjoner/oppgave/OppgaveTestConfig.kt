@@ -5,6 +5,7 @@ import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.kontrakter.felles.oppgave.Tema
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.*
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -21,10 +22,8 @@ class OppgaveTestConfig {
     @Profile("mock-oppgave")
     @Primary fun oppgaveMockClient(): OppgaveRestClient {
         val klient = mock(OppgaveRestClient::class.java)
-        `when`(klient.finnOppgave(ArgumentMatchers.any(
-                Oppgave::class.java))).thenReturn(OppgaveJsonDto(id = 42))
-        `when`(klient.finnOppgave(ArgumentMatchers.anyString()))
-                .thenReturn(OppgaveJsonDto(id = 42))
+        `when`(klient.finnOppgave(any(Oppgave::class.java))).thenReturn(OppgaveJsonDto(id = 42))
+        `when`(klient.finnOppgave(ArgumentMatchers.anyString())).thenReturn(OppgaveJsonDto(id = 42))
         `when`(klient.finnOppgave(matcherBeskrivelse("test RestClientException")))
                 .thenThrow(HttpClientErrorException.create(HttpStatus.ACCEPTED,
                                                            "status text",
@@ -36,8 +35,7 @@ class OppgaveTestConfig {
                 .thenThrow(OppgaveIkkeFunnetException("Mislykket finnOppgave request med url: ..."))
         `when`(klient.finnOppgave(matcherBeskrivelse("test generell feil")))
                 .thenThrow(RuntimeException("Uventet feil"))
-        doNothing().`when`(klient)
-                .oppdaterOppgave(ArgumentMatchers.any(), ArgumentMatchers.anyString())
+        doNothing().`when`(klient).oppdaterOppgave(any())
         doNothing().`when`(klient).ping()
         return klient
     }

@@ -38,18 +38,36 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
     }
 
     fun finnOppgave(oppgaveId: String): OppgaveJsonDto {
-        return requestOppgaveJson(requestUrl(oppgaveId.toLong()))
+        return getForEntity(requestUrl(oppgaveId.toLong()), httpHeaders())
     }
 
-    fun oppdaterOppgave(dto: OppgaveJsonDto, beskrivelse: String) {
-        val copy = dto.copy(beskrivelse = dto.beskrivelse + beskrivelse)
-        putForEntity<String>(requestUrl(copy.id!!), copy, httpHeaders())
+    fun oppdaterOppgave(patchDto: OppgaveJsonDto) {
+        return Result.runCatching {
+            patchForEntity<OppgaveJsonDto>(requestUrl(patchDto.id ?: error("Kan ikke finne oppgaveId på oppgaven")),
+                                           patchDto,
+                                           httpHeaders())
+        }.fold(
+                onSuccess = { it },
+                onFailure = {
+                    var feilmelding = "Feil ved oppdatering av oppgave for ${patchDto.id}."
+                    if (it is HttpStatusCodeException) {
+                        feilmelding += " Response fra oppgave = ${it.responseBodyAsString}"
+                    }
+
+                    throw OppslagException(
+                            feilmelding,
+                            "Oppgave.oppdaterOppgave",
+                            OppslagException.Level.KRITISK,
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            it)
+                }
+        )
     }
 
     fun opprettOppgave(dto: OppgaveJsonDto): Long {
         val uri = UriComponentsBuilder.fromUri(oppgaveBaseUrl).path(PATH_OPPGAVE).build().toUri()
         return Result.runCatching { postForEntity<OppgaveJsonDto>(uri, dto, httpHeaders()) }
-                .map { it?.id ?: error("Kan ikke finne oppgaveId på oppgaven ${it}") }
+                .map { it?.id ?: error("Kan ikke finne oppgaveId på oppgaven $it") }
                 .onFailure {
                     var feilmelding = "Feil ved oppretting av oppgave for ${dto.aktoerId}."
                     if (it is HttpStatusCodeException) {
