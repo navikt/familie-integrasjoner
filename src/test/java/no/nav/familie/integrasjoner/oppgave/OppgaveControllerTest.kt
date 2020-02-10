@@ -212,25 +212,22 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `Ferdigstilling av oppgave som er alt ferdigstillt skal logge og returnerer 200 OK`() {
-        stubFor(get(urlEqualTo("/api/v1/oppgaver/315488374"))
+        stubFor(get(urlEqualTo("/api/v1/oppgaver/123"))
                         .willReturn(aResponse()
                                             .withStatus(200)
                                             .withHeader("Content-Type", "application/json")
-                                            .withBody(objectMapper.writeValueAsBytes(OppgaveJsonDto(id = OPPGAVE_ID,
+                                            .withBody(objectMapper.writeValueAsBytes(OppgaveJsonDto(id = 123,
                                                                                                     status = StatusEnum.FERDIGSTILT)))))
 
+        verify(exactly(0), patchRequestedFor(urlEqualTo("/api/v1/oppgaver/123")));
+
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
-                restTemplate.exchange(localhost("/api/oppgave/${OPPGAVE_ID}/ferdigstill"),
+                restTemplate.exchange(localhost("/api/oppgave/123/ferdigstill"),
                                       HttpMethod.PATCH,
                                       HttpEntity(null, headers))
 
-        assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
+        assertThat(response.body?.data?.oppgaveId).isEqualTo(123)
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(loggingEvents)
-                .extracting<String, RuntimeException> { obj: ILoggingEvent -> obj.formattedMessage }
-                .anyMatch {
-                    it.contains("Oppgave er allerede ferdigstilt")
-                }
     }
 
     @Test

@@ -63,8 +63,6 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
     fun ferdigstill(oppgaveId: Long) {
         val oppgave = oppgaveRestClient.finnOppgave(oppgaveId.toString())
 
-        OppgaveJsonDto(id = oppgave.id, versjon = oppgave.versjon, status = StatusEnum.FERDIGSTILT)
-
         when (oppgave.status) {
             StatusEnum.OPPRETTET, StatusEnum.AAPNET, StatusEnum.UNDER_BEHANDLING -> {
                 val patchOppgaveDto = OppgaveJsonDto(
