@@ -1,10 +1,10 @@
 package no.nav.familie.integrasjoner.personopplysning;
 
+import no.nav.familie.integrasjoner.client.soap.PersonSoapClient;
 import no.nav.familie.integrasjoner.felles.ws.DateUtil;
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo;
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo;
 import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter;
-import no.nav.familie.integrasjoner.personopplysning.internal.PersonConsumer;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkPersonIkkeFunnet;
@@ -39,12 +39,12 @@ public class PersonopplysningerService {
     private static final Logger LOG = LoggerFactory.getLogger(PersonopplysningerService.class);
     private static final Logger secureLogger = LoggerFactory.getLogger("secureLogger");
     public static final String PERSON = "PERSON";
-    private final PersonConsumer personConsumer;
+    private final PersonSoapClient personSoapClient;
     private TpsOversetter oversetter;
 
     @Autowired
-    public PersonopplysningerService(PersonConsumer personConsumer, TpsOversetter oversetter) {
-        this.personConsumer = personConsumer;
+    public PersonopplysningerService(PersonSoapClient personSoapClient, TpsOversetter oversetter) {
+        this.personSoapClient = personSoapClient;
         this.oversetter = oversetter;
     }
 
@@ -57,7 +57,7 @@ public class PersonopplysningerService {
             request.setAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)));
             request.setPeriode(new Periode().withFom(DateUtil.convertToXMLGregorianCalendar(fom))
                                             .withTom(DateUtil.convertToXMLGregorianCalendar(tom)));
-            var response = personConsumer.hentPersonhistorikkResponse(request);
+            var response = personSoapClient.hentPersonhistorikkResponse(request);
             return oversetter.tilPersonhistorikkInfo(new no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent(
                     personIdent), response);
         } catch (HentPersonhistorikkSikkerhetsbegrensning exception) {
@@ -83,7 +83,7 @@ public class PersonopplysningerService {
             HentPersonRequest request = new HentPersonRequest()
                     .withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)))
                     .withInformasjonsbehov(List.of(Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.ADRESSE));
-            HentPersonResponse response = personConsumer.hentPersonResponse(request);
+            HentPersonResponse response = personSoapClient.hentPersonResponse(request);
             return oversetter.tilPersoninfo(new no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent(personIdent),
                                             response);
         } catch (HentPersonSikkerhetsbegrensning exception) {
@@ -103,7 +103,7 @@ public class PersonopplysningerService {
                 .withInformasjonsbehov(List.of(Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.ADRESSE));
         HentPersonResponse response;
         try {
-            response = personConsumer.hentPersonResponse(request);
+            response = personSoapClient.hentPersonResponse(request);
         } catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
             LOG.info("Prøver å hente personinfo for person som ikke finnes i TPS");
             return null;

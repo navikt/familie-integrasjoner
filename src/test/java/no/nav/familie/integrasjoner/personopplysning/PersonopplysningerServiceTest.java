@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.personopplysning;
 
+import no.nav.familie.integrasjoner.client.soap.PersonSoapClient;
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo;
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo;
 import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter;
@@ -10,7 +11,6 @@ import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.RelasjonsRo
 import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.SivilstandType;
 import no.nav.familie.integrasjoner.personopplysning.domene.status.PersonstatusType;
 import no.nav.familie.integrasjoner.personopplysning.domene.tilhørighet.Landkode;
-import no.nav.familie.integrasjoner.personopplysning.internal.PersonConsumer;
 import no.nav.familie.kontrakter.ks.søknad.testdata.SøknadTestdata;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
@@ -39,7 +39,7 @@ public class PersonopplysningerServiceTest {
     private static final LocalDate TOM = LocalDate.now();
     private static final LocalDate FOM = TOM.minusYears(5);
 
-    private PersonConsumer personConsumer;
+    private PersonSoapClient personConsumer;
     private PersonopplysningerService personopplysningerService;
 
     @Before
