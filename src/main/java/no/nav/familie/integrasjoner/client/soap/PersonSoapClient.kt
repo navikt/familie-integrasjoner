@@ -29,15 +29,23 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
         } catch (e: Exception) {
             when (e) {
                 is HentPersonSikkerhetsbegrensning -> {
-                    throw OppslagException("Ikke tilgang til å hente personinfo for person","TPS",OppslagException.Level.MEDIUM,HttpStatus.FORBIDDEN, e)
+                    throw OppslagException("Ikke tilgang til å hente personinfo for person",
+                                           "TPS",
+                                           OppslagException.Level.LAV,
+                                           HttpStatus.FORBIDDEN,
+                                           e)
                 }
 
                 is HentPersonhistorikkPersonIkkeFunnet -> {
-                    throw OppslagException("Prøver å hente historikk for person som ikke finnes i TPS","TPS",OppslagException.Level.MEDIUM,HttpStatus.NOT_FOUND, e)
+                    throw OppslagException("Prøver å hente historikk for person som ikke finnes i TPS",
+                                           "TPS",
+                                           OppslagException.Level.LAV,
+                                           HttpStatus.NOT_FOUND,
+                                           e)
                 }
 
                 else -> {
-                    throw OppslagException("Ukjent feil fra TPS","TPS",OppslagException.Level.KRITISK,HttpStatus.INTERNAL_SERVER_ERROR, e)
+                    throw e
                 }
             }
         }
@@ -56,15 +64,23 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
         } catch (e: Exception) {
             when (e) {
                 is HentPersonSikkerhetsbegrensning -> {
-                    throw OppslagException("Ikke tilgang til å hente personinfo for person","TPS",OppslagException.Level.MEDIUM,HttpStatus.FORBIDDEN, e)
+                    throw OppslagException("Ikke tilgang til å hente personinfo for person",
+                                           "TPS",
+                                           OppslagException.Level.LAV,
+                                           HttpStatus.FORBIDDEN,
+                                           e)
                 }
 
                 is HentPersonhistorikkPersonIkkeFunnet -> {
-                    throw OppslagException("Prøver å hente historikk for person som ikke finnes i TPS","TPS",OppslagException.Level.LAV,HttpStatus.NOT_FOUND, e)
+                    throw OppslagException("Prøver å hente historikk for person som ikke finnes i TPS",
+                                           "TPS",
+                                           OppslagException.Level.LAV,
+                                           HttpStatus.NOT_FOUND,
+                                           e)
                 }
 
                 else -> {
-                    throw OppslagException("Ukjent feil fra TPS","TPS",OppslagException.Level.KRITISK,HttpStatus.INTERNAL_SERVER_ERROR, e)
+                    throw e
                 }
             }
         }
