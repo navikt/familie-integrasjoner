@@ -13,18 +13,12 @@ import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.SivilstandT
 import no.nav.familie.integrasjoner.personopplysning.domene.status.PersonstatusType;
 import no.nav.familie.integrasjoner.personopplysning.domene.tilhørighet.Landkode;
 import no.nav.familie.kontrakter.ks.søknad.testdata.SøknadTestdata;
-import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
-import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkPersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkSikkerhetsbegrensning;
-import no.nav.tjeneste.virksomhet.person.v3.feil.PersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.person.v3.feil.Sikkerhetsbegrensning;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.web.client.HttpClientErrorException;
+
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -40,19 +34,19 @@ public class PersonopplysningerServiceTest {
     private static final LocalDate TOM = LocalDate.now();
     private static final LocalDate FOM = TOM.minusYears(5);
 
-    private PersonSoapClient personConsumer;
+    private PersonSoapClient personSoapClient;
     private PersonopplysningerService personopplysningerService;
 
     @Before
     public void setUp() throws Exception {
-        personConsumer = new PersonopplysningerTestConfig().personConsumerMock();
+        personSoapClient = new PersonopplysningerTestConfig().personConsumerMock();
         personopplysningerService =
-                new PersonopplysningerService(this.personConsumer, new TpsOversetter(new TpsAdresseOversetter()));
+                new PersonopplysningerService(this.personSoapClient, new TpsOversetter(new TpsAdresseOversetter()));
     }
 
     @Test
     public void personhistorikkInfoSkalGiFeilVedUgyldigAktørId() throws Exception {
-        when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class)))
+        when(personSoapClient.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class)))
                 .thenThrow(new OppslagException("feil","feil", OppslagException.Level.MEDIUM));
 
         assertThatThrownBy(() -> personopplysningerService.hentHistorikkFor(PERSONIDENT, FOM, TOM)).isInstanceOf(
@@ -61,7 +55,7 @@ public class PersonopplysningerServiceTest {
 
     @Test
     public void personHistorikkSkalGiFeilVedSikkerhetsbegrensning() throws Exception {
-        when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class)))
+        when(personSoapClient.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class)))
                 .thenThrow(new OppslagException("feil","feil", OppslagException.Level.MEDIUM));
 
         assertThatThrownBy(() -> personopplysningerService.hentHistorikkFor(PERSONIDENT, FOM, TOM)).isInstanceOf(
@@ -70,7 +64,7 @@ public class PersonopplysningerServiceTest {
 
     @Test
     public void personinfoSkalGiFeilVedUgyldigAktørId() throws Exception {
-        when(personConsumer.hentPersonResponse(any(HentPersonRequest.class)))
+        when(personSoapClient.hentPersonResponse(any(HentPersonRequest.class)))
                 .thenThrow(new OppslagException("feil","feil", OppslagException.Level.MEDIUM));
 
         assertThatThrownBy(() -> personopplysningerService.hentPersoninfoFor(PERSONIDENT))
@@ -79,7 +73,7 @@ public class PersonopplysningerServiceTest {
 
     @Test
     public void personinfoSkalGiFeilVedSikkerhetsbegrensning() throws Exception {
-        when(personConsumer.hentPersonResponse(any(HentPersonRequest.class)))
+        when(personSoapClient.hentPersonResponse(any(HentPersonRequest.class)))
                 .thenThrow(new OppslagException("feil","feil", OppslagException.Level.MEDIUM));
 
         assertThatThrownBy(() -> personopplysningerService.hentPersoninfoFor(PERSONIDENT))
