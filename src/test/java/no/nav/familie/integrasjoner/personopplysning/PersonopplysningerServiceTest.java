@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.personopplysning;
 
 import no.nav.familie.integrasjoner.client.soap.PersonSoapClient;
+import no.nav.familie.integrasjoner.felles.OppslagException;
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo;
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo;
 import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter;
@@ -52,37 +53,37 @@ public class PersonopplysningerServiceTest {
     @Test
     public void personhistorikkInfoSkalGiFeilVedUgyldigAktørId() throws Exception {
         when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class)))
-                .thenThrow(new HentPersonhistorikkPersonIkkeFunnet("Feil", any(PersonIkkeFunnet.class)));
+                .thenThrow(new OppslagException("feil","feil", OppslagException.Level.MEDIUM));
 
         assertThatThrownBy(() -> personopplysningerService.hentHistorikkFor(PERSONIDENT, FOM, TOM)).isInstanceOf(
-                HttpClientErrorException.NotFound.class);
+                OppslagException.class);
     }
 
     @Test
     public void personHistorikkSkalGiFeilVedSikkerhetsbegrensning() throws Exception {
         when(personConsumer.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class)))
-                .thenThrow(new HentPersonhistorikkSikkerhetsbegrensning("Feil", any(Sikkerhetsbegrensning.class)));
+                .thenThrow(new OppslagException("feil","feil", OppslagException.Level.MEDIUM));
 
         assertThatThrownBy(() -> personopplysningerService.hentHistorikkFor(PERSONIDENT, FOM, TOM)).isInstanceOf(
-                HttpClientErrorException.Forbidden.class);
+                OppslagException.class);
     }
 
     @Test
     public void personinfoSkalGiFeilVedUgyldigAktørId() throws Exception {
         when(personConsumer.hentPersonResponse(any(HentPersonRequest.class)))
-                .thenThrow(new HentPersonPersonIkkeFunnet("Feil", any(PersonIkkeFunnet.class)));
+                .thenThrow(new OppslagException("feil","feil", OppslagException.Level.MEDIUM));
 
         assertThatThrownBy(() -> personopplysningerService.hentPersoninfoFor(PERSONIDENT))
-                .isInstanceOf(HttpClientErrorException.NotFound.class);
+                .isInstanceOf(OppslagException.class);
     }
 
     @Test
     public void personinfoSkalGiFeilVedSikkerhetsbegrensning() throws Exception {
         when(personConsumer.hentPersonResponse(any(HentPersonRequest.class)))
-                .thenThrow(new HentPersonSikkerhetsbegrensning("Feil", any(Sikkerhetsbegrensning.class)));
+                .thenThrow(new OppslagException("feil","feil", OppslagException.Level.MEDIUM));
 
         assertThatThrownBy(() -> personopplysningerService.hentPersoninfoFor(PERSONIDENT))
-                .isInstanceOf(HttpClientErrorException.Forbidden.class);
+                .isInstanceOf(OppslagException.class);
     }
 
     @Test

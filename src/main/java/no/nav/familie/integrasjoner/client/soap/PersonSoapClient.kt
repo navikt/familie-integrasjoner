@@ -2,12 +2,14 @@ package no.nav.familie.integrasjoner.client.soap
 
 import no.nav.familie.http.client.AbstractSoapClient
 import no.nav.familie.http.client.Pingable
+import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.tjeneste.virksomhet.person.v3.binding.*
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkResponse
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Recover
 import org.springframework.retry.annotation.Retryable
@@ -21,12 +23,23 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
     private val LOGGER = LoggerFactory.getLogger(PersonSoapClient::class.java)
 
     @Retryable(value = [SOAPFaultException::class], maxAttempts = 3, backoff = Backoff(delay = 2000))
-    @Throws(HentPersonPersonIkkeFunnet::class, HentPersonSikkerhetsbegrensning::class)
     fun hentPersonResponse(request: HentPersonRequest?): HentPersonResponse {
         return try {
             port.hentPerson(request)
-        } catch (e: SOAPFaultException) { // NOSONAR
-            throw RuntimeException(e)
+        } catch (e: Exception) {
+            when (e) {
+                is HentPersonSikkerhetsbegrensning -> {
+                    throw OppslagException("Ikke tilgang til å hente personinfo for person","TPS",OppslagException.Level.MEDIUM,HttpStatus.FORBIDDEN, e)
+                }
+
+                is HentPersonhistorikkPersonIkkeFunnet -> {
+                    throw OppslagException("Prøver å hente historikk for person som ikke finnes i TPS","TPS",OppslagException.Level.MEDIUM,HttpStatus.NOT_FOUND, e)
+                }
+
+                else -> {
+                    throw OppslagException("Ukjent feil fra TPS","TPS",OppslagException.Level.KRITISK,HttpStatus.INTERNAL_SERVER_ERROR, e)
+                }
+            }
         }
     }
 
@@ -37,12 +50,23 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
      * @throws HentPersonhistorikkPersonIkkeFunnet      når bruker ikke finnes
      */
     @Retryable(value = [SOAPFaultException::class], maxAttempts = 3, backoff = Backoff(delay = 2000))
-    @Throws(HentPersonhistorikkSikkerhetsbegrensning::class, HentPersonhistorikkPersonIkkeFunnet::class)
     fun hentPersonhistorikkResponse(request: HentPersonhistorikkRequest?): HentPersonhistorikkResponse {
         return try {
             executeMedMetrics { port.hentPersonhistorikk(request) }
-        } catch (e: SOAPFaultException) { // NOSONAR
-            throw RuntimeException(e)
+        } catch (e: Exception) {
+            when (e) {
+                is HentPersonSikkerhetsbegrensning -> {
+                    throw OppslagException("Ikke tilgang til å hente personinfo for person","TPS",OppslagException.Level.MEDIUM,HttpStatus.FORBIDDEN, e)
+                }
+
+                is HentPersonhistorikkPersonIkkeFunnet -> {
+                    throw OppslagException("Prøver å hente historikk for person som ikke finnes i TPS","TPS",OppslagException.Level.LAV,HttpStatus.NOT_FOUND, e)
+                }
+
+                else -> {
+                    throw OppslagException("Ukjent feil fra TPS","TPS",OppslagException.Level.KRITISK,HttpStatus.INTERNAL_SERVER_ERROR, e)
+                }
+            }
         }
 
     }

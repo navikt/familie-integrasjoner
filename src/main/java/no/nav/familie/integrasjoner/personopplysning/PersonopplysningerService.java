@@ -52,47 +52,23 @@ public class PersonopplysningerService {
         Objects.requireNonNull(personIdent, "personIdent");
         Objects.requireNonNull(fom, "fom");
         Objects.requireNonNull(tom, "tom");
-        try {
-            var request = new HentPersonhistorikkRequest();
-            request.setAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)));
-            request.setPeriode(new Periode().withFom(DateUtil.convertToXMLGregorianCalendar(fom))
-                                            .withTom(DateUtil.convertToXMLGregorianCalendar(tom)));
-            var response = personSoapClient.hentPersonhistorikkResponse(request);
-            return oversetter.tilPersonhistorikkInfo(new no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent(
-                    personIdent), response);
-        } catch (HentPersonhistorikkSikkerhetsbegrensning exception) {
-            LOG.info("Ikke tilgang til å hente historikk for person");
-            throw HttpClientErrorException.create(FORBIDDEN,
-                                                  "Ikke tilgang til å hente historikk for person. " + exception.getMessage(),
-                                                  null,
-                                                  null,
-                                                  null);
-        } catch (HentPersonhistorikkPersonIkkeFunnet exception) {
-            LOG.info("Prøver å hente historikk for person som ikke finnes i TPS");
-            throw HttpClientErrorException.create(NOT_FOUND,
-                                                  "Kan ikke hente historikk for person som ikke finnes i TPS" +
-                                                  exception.getMessage(),
-                                                  null,
-                                                  null,
-                                                  null);
-        }
+
+        var request = new HentPersonhistorikkRequest();
+        request.setAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)));
+        request.setPeriode(new Periode().withFom(DateUtil.convertToXMLGregorianCalendar(fom))
+                                        .withTom(DateUtil.convertToXMLGregorianCalendar(tom)));
+        var response = personSoapClient.hentPersonhistorikkResponse(request);
+        return oversetter.tilPersonhistorikkInfo(
+                new no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent(personIdent), response);
     }
 
     public Personinfo hentPersoninfoFor(String personIdent) {
-        try {
-            HentPersonRequest request = new HentPersonRequest()
-                    .withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)))
-                    .withInformasjonsbehov(List.of(Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.ADRESSE));
-            HentPersonResponse response = personSoapClient.hentPersonResponse(request);
-            return oversetter.tilPersoninfo(new no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent(personIdent),
-                                            response);
-        } catch (HentPersonSikkerhetsbegrensning exception) {
-            LOG.info("Ikke tilgang til å hente personinfo for person");
-            throw HttpClientErrorException.create(FORBIDDEN, exception.getMessage(), null, null, null);
-        } catch (HentPersonPersonIkkeFunnet exception) {
-            LOG.info("Prøver å hente personinfo for person som ikke finnes i TPS");
-            throw HttpClientErrorException.create(NOT_FOUND, exception.getMessage(), null, null, null);
-        }
+        HentPersonRequest request = new HentPersonRequest()
+                .withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)))
+                .withInformasjonsbehov(List.of(Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.ADRESSE));
+        HentPersonResponse response = personSoapClient.hentPersonResponse(request);
+        return oversetter.tilPersoninfo(new no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent(personIdent),
+                                        response);
     }
 
 
@@ -102,15 +78,9 @@ public class PersonopplysningerService {
                 .withAktoer(new PersonIdent().withIdent(new NorskIdent().withIdent(personIdent)))
                 .withInformasjonsbehov(List.of(Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.ADRESSE));
         HentPersonResponse response;
-        try {
-            response = personSoapClient.hentPersonResponse(request);
-        } catch (HentPersonPersonIkkeFunnet hentPersonPersonIkkeFunnet) {
-            LOG.info("Prøver å hente personinfo for person som ikke finnes i TPS");
-            return null;
-        } catch (HentPersonSikkerhetsbegrensning hentPersonSikkerhetsbegrensning) {
-            LOG.info("Ikke tilgang til å hente personinfo for person");
-            return null;
-        }
+
+        response = personSoapClient.hentPersonResponse(request);
+
         return oversetter.tilPersoninfo(new no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent(personIdent),
                                         response);
     }
