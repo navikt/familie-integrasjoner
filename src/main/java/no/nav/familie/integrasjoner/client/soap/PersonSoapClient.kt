@@ -74,10 +74,4 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
     override fun ping() {
         port.ping()
     }
-
-    @Recover
-    fun hentPersonFallback(e: SOAPFaultException): HentPersonhistorikkResponse {
-        LOGGER.error("kall mot TPS feilet 3 ganger, gir opp...")
-        throw e
-    }
 }
