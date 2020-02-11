@@ -23,7 +23,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         val oppgaveJsonDto: OppgaveJsonDto = if (StringUtils.nullOrEmpty(request.eksisterendeOppgaveId)) {
             oppgaveRestClient.finnOppgave(request)
         } else {
-            oppgaveRestClient.finnOppgave(request.eksisterendeOppgaveId!!)
+            oppgaveRestClient.finnOppgaveMedId(request.eksisterendeOppgaveId!!)
         }
         if (oppgaveJsonDto.status === StatusEnum.FERDIGSTILT) {
             LOG.info("Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId={} journalpostId={} oppgaveId={}",
@@ -61,7 +61,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
     }
 
     fun ferdigstill(oppgaveId: Long) {
-        val oppgave = oppgaveRestClient.finnOppgave(oppgaveId.toString())
+        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId.toString())
 
         when (oppgave.status) {
             StatusEnum.OPPRETTET, StatusEnum.AAPNET, StatusEnum.UNDER_BEHANDLING -> {
