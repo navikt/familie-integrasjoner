@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.personopplysning;
 
+import no.nav.familie.integrasjoner.client.soap.PersonSoapClient;
 import no.nav.familie.integrasjoner.felles.ws.DateUtil;
-import no.nav.familie.integrasjoner.personopplysning.internal.PersonConsumer;
 import no.nav.familie.kontrakter.ks.søknad.testdata.SøknadTestdata;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
@@ -50,12 +50,12 @@ public class PersonopplysningerTestConfig {
     @Bean
     @Profile("mock-personopplysninger")
     @Primary
-    public PersonConsumer personConsumerMock() throws
+    public PersonSoapClient personConsumerMock() throws
                                                HentPersonhistorikkSikkerhetsbegrensning,
                                                HentPersonhistorikkPersonIkkeFunnet,
                                                HentPersonSikkerhetsbegrensning,
                                                HentPersonPersonIkkeFunnet {
-        PersonConsumer personConsumer = mock(PersonConsumer.class);
+        PersonSoapClient personConsumer = mock(PersonSoapClient.class);
         ArgumentCaptor<HentPersonRequest> personRequestCaptor = ArgumentCaptor.forClass(HentPersonRequest.class);
         ArgumentCaptor<HentPersonhistorikkRequest> historikkRequestCaptor =
                 ArgumentCaptor.forClass(HentPersonhistorikkRequest.class);
