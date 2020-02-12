@@ -46,7 +46,7 @@ public class PersonopplysningerServiceTest {
     public void setUp() throws Exception {
         personConsumer = new PersonopplysningerTestConfig().personConsumerMock();
         personopplysningerService =
-                new PersonopplysningerService(this.personConsumer, new TpsOversetter(new TpsAdresseOversetter()));
+                new PersonopplysningerService(this.personConsumer, new TpsOversetter(new TpsAdresseOversetter()), null);
     }
 
     @Test

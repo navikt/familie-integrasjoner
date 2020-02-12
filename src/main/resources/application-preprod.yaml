@@ -42,3 +42,4 @@ EGEN_ANSATT_V1_URL: https://wasapp-q2.adeo.no/tpsws/EgenAnsatt_v1
 KODEVERK_URL: http://kodeverk
 DOKDIST_URL: http://dokdistfordeling.q2
 ARBEIDSFORDELING_V1_URL: https://app-q2.adeo.no/norg2/ws/Arbeidsfordeling/v1
+PDL_URL: http://pdl-api

@@ -1,9 +1,11 @@
 package no.nav.familie.integrasjoner.personopplysning;
 
+import no.nav.familie.integrasjoner.client.rest.PdlRestClient;
 import no.nav.familie.integrasjoner.felles.ws.DateUtil;
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo;
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo;
 import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter;
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlFødselsDato;
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonConsumer;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
 import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
@@ -40,12 +42,14 @@ public class PersonopplysningerService {
     private static final Logger secureLogger = LoggerFactory.getLogger("secureLogger");
     public static final String PERSON = "PERSON";
     private final PersonConsumer personConsumer;
+    private final PdlRestClient pdlRestClient;
     private TpsOversetter oversetter;
 
     @Autowired
-    public PersonopplysningerService(PersonConsumer personConsumer, TpsOversetter oversetter) {
+    public PersonopplysningerService(PersonConsumer personConsumer, TpsOversetter oversetter, PdlRestClient pdlRestClient) {
         this.personConsumer = personConsumer;
         this.oversetter = oversetter;
+        this.pdlRestClient = pdlRestClient;
     }
 
     PersonhistorikkInfo hentHistorikkFor(String personIdent, LocalDate fom, LocalDate tom) {
@@ -113,5 +117,9 @@ public class PersonopplysningerService {
         }
         return oversetter.tilPersoninfo(new no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent(personIdent),
                                         response);
+    }
+
+    public PdlFødselsDato hentPersoninfo(String personIdent, String tema) {
+        return pdlRestClient.hentFødselsdato(personIdent, tema);
     }
 }
