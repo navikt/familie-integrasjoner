@@ -1,6 +1,9 @@
 package no.nav.familie.integrasjoner.oppgave.domene
 
-data class OppgaveJsonDto(val id: Long,
+import com.fasterxml.jackson.annotation.JsonInclude
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+data class OppgaveJsonDto(val id: Long? = null,
                           val tildeltEnhetsnr: String? = null,
                           val endretAvEnhetsnr: String? = null,
                           val opprettetAvEnhetsnr: String? = null,

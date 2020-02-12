@@ -8,12 +8,14 @@ import no.nav.familie.integrasjoner.oppgave.domene.FinnOppgaveResponseDto
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.log.mdc.MDCConstants
+import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
@@ -26,28 +28,67 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
     override val pingUri = UriUtil.uri(oppgaveBaseUrl, PATH_PING)
 
     private val returnerteIngenOppgaver = Metrics.counter("oppslag.oppgave.response", "antall.oppgaver", "ingen")
-
     private val returnerteMerEnnEnOppgave = Metrics.counter("oppslag.oppgave.response", "antall.oppgaver", "flerEnnEn")
 
+    private val LOG = LoggerFactory.getLogger(OppgaveRestClient::class.java)
+
     fun finnOppgave(request: Oppgave): OppgaveJsonDto {
-        val requestUrl = lagRequestUrlMed(request.aktorId, request.journalpostId)
+        val requestUrl = lagRequestUrlMed(request.aktorId, request.journalpostId, request.tema?.name ?: KONTANTSTØTTE_TEMA)
         return requestOppgaveJson(requestUrl)
     }
 
     fun finnOppgave(oppgaveId: String): OppgaveJsonDto {
-        return requestOppgaveJson(requestUrl(oppgaveId.toLong()))
+        return getForEntity(requestUrl(oppgaveId.toLong()), httpHeaders())
     }
 
-    fun oppdaterOppgave(dto: OppgaveJsonDto, beskrivelse: String) {
-        val copy = dto.copy(beskrivelse = dto.beskrivelse + beskrivelse)
-        putForEntity<String>(requestUrl(copy.id), dto, httpHeaders())
+    fun oppdaterOppgave(patchDto: OppgaveJsonDto) {
+        return Result.runCatching {
+            patchForEntity<OppgaveJsonDto>(requestUrl(patchDto.id ?: error("Kan ikke finne oppgaveId på oppgaven")),
+                                           patchDto,
+                                           httpHeaders())
+        }.fold(
+                onSuccess = { it },
+                onFailure = {
+                    var feilmelding = "Feil ved oppdatering av oppgave for ${patchDto.id}."
+                    if (it is HttpStatusCodeException) {
+                        feilmelding += " Response fra oppgave = ${it.responseBodyAsString}"
+                    }
+
+                    throw OppslagException(
+                            feilmelding,
+                            "Oppgave.oppdaterOppgave",
+                            OppslagException.Level.KRITISK,
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            it)
+                }
+        )
     }
 
-    private fun lagRequestUrlMed(aktoerId: String, journalpostId: String): URI {
+    fun opprettOppgave(dto: OppgaveJsonDto): Long {
+        val uri = UriComponentsBuilder.fromUri(oppgaveBaseUrl).path(PATH_OPPGAVE).build().toUri()
+        return Result.runCatching { postForEntity<OppgaveJsonDto>(uri, dto, httpHeaders()) }
+                .map { it?.id ?: error("Kan ikke finne oppgaveId på oppgaven $it") }
+                .onFailure {
+                    var feilmelding = "Feil ved oppretting av oppgave for ${dto.aktoerId}."
+                    if (it is HttpStatusCodeException) {
+                        feilmelding += " Response fra oppgave = ${it.responseBodyAsString}"
+                    }
+
+                    throw OppslagException(
+                            feilmelding,
+                            "Oppgave.opprettOppgave",
+                            OppslagException.Level.MEDIUM,
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            it)
+                }
+                .getOrThrow()
+    }
+
+    private fun lagRequestUrlMed(aktoerId: String, journalpostId: String, tema: String): URI {
         return UriComponentsBuilder.fromUri(oppgaveBaseUrl)
                 .path(PATH_OPPGAVE)
                 .queryParam("aktoerId", aktoerId)
-                .queryParam("tema", TEMA)
+                .queryParam("tema", tema)
                 .queryParam("oppgavetype", OPPGAVE_TYPE)
                 .queryParam("journalpostId", journalpostId)
                 .build()
@@ -69,6 +110,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         }
         if (finnOppgaveResponseDto.oppgaver.size > 1) {
             returnerteMerEnnEnOppgave.increment()
+            LOG.warn("FinnOppgave returnerte mer enn 1 oppgave, antall: ${finnOppgaveResponseDto.oppgaver.size}, oppgave: $requestUrl")
         }
         return finnOppgaveResponseDto.oppgaver[0]
     }
@@ -81,7 +123,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
 
         private const val PATH_PING = "internal/alive"
         private const val PATH_OPPGAVE = "api/v1/oppgaver"
-        private const val TEMA = "KON"
+        private const val KONTANTSTØTTE_TEMA = "KON"
         private const val OPPGAVE_TYPE = "BEH_SAK"
         private const val X_CORRELATION_ID = "X-Correlation-ID"
     }
