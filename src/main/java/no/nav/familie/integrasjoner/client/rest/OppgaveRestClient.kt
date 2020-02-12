@@ -37,7 +37,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         return requestOppgaveJson(requestUrl)
     }
 
-    fun finnOppgave(oppgaveId: String): OppgaveJsonDto {
+    fun finnOppgaveMedId(oppgaveId: String): OppgaveJsonDto {
         return getForEntity(requestUrl(oppgaveId.toLong()), httpHeaders())
     }
 
