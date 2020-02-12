@@ -5,7 +5,7 @@ import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlFødselsDato
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.security.token.support.test.JwtTokenGenerator
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -59,9 +59,9 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                                                                                            HttpMethod.GET,
                                                                                            HttpEntity<String>(headers))
 
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
-        Assertions.assertThat(response.body?.data?.foedselsdato).isEqualTo(FØDSELSDATO)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.body?.data?.foedselsdato).isEqualTo(FØDSELSDATO)
     }
 
     @Test
@@ -79,8 +79,8 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                                                                                            HttpMethod.GET,
                                                                                            HttpEntity<String>(headers))
 
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
     private fun testdata(filnavn: String): String {
