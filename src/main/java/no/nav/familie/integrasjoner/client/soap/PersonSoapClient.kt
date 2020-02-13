@@ -22,7 +22,7 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
 
     private val LOGGER = LoggerFactory.getLogger(PersonSoapClient::class.java)
 
-    @Retryable(value = [SOAPFaultException::class], maxAttempts = 3, backoff = Backoff(delay = 2000))
+    @Retryable(value = [OppslagException::class], maxAttempts = 3, backoff = Backoff(delay = 2000))
     fun hentPersonResponse(request: HentPersonRequest?): HentPersonResponse {
         return try {
             port.hentPerson(request)
@@ -45,7 +45,11 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
                 }
 
                 else -> {
-                    throw e
+                    throw OppslagException("Ukjent feil fra TPS",
+                                           "TPS",
+                                           OppslagException.Level.KRITISK,
+                                           HttpStatus.INTERNAL_SERVER_ERROR,
+                                           e)
                 }
             }
         }
@@ -57,7 +61,7 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
      * @throws HentPersonhistorikkSikkerhetsbegrensning når bruker ikke har tilgang
      * @throws HentPersonhistorikkPersonIkkeFunnet      når bruker ikke finnes
      */
-    @Retryable(value = [SOAPFaultException::class], maxAttempts = 3, backoff = Backoff(delay = 2000))
+    @Retryable(value = [OppslagException::class], maxAttempts = 3, backoff = Backoff(delay = 2000))
     fun hentPersonhistorikkResponse(request: HentPersonhistorikkRequest?): HentPersonhistorikkResponse {
         return try {
             executeMedMetrics { port.hentPersonhistorikk(request) }
@@ -80,7 +84,11 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
                 }
 
                 else -> {
-                    throw e
+                    throw OppslagException("Ukjent feil fra TPS",
+                                           "TPS",
+                                           OppslagException.Level.KRITISK,
+                                           HttpStatus.INTERNAL_SERVER_ERROR,
+                                           e)
                 }
             }
         }
