@@ -20,15 +20,27 @@ class PersonSoapClientTest {
     lateinit var port: PersonV3
 
     @InjectMockKs
-    private lateinit var  personSoapClient: PersonSoapClient
+    private lateinit var personSoapClient: PersonSoapClient
 
     @Test
-    fun `client skal kaste OppslagException med lav info ved feil`() {
-        every { port.hentPersonhistorikk(any<HentPersonhistorikkRequest>()) } throws HentPersonhistorikkPersonIkkeFunnet("test", PersonIkkeFunnet())
+    fun `client skal kaste OppslagException med lav info ved feil hentPersonhistorikkPersonIkkeFunnet`() {
+        every { port.hentPersonhistorikk(any<HentPersonhistorikkRequest>()) } throws HentPersonhistorikkPersonIkkeFunnet("test",
+                                                                                                                         PersonIkkeFunnet())
 
         Assertions.assertThatThrownBy { personSoapClient.hentPersonhistorikkResponse(HentPersonhistorikkRequest()) }
                 .hasMessageContaining("Prøver å hente historikk for person som ikke finnes i TPS")
                 .isInstanceOf(OppslagException::class.java)
+                .hasFieldOrPropertyWithValue("level", OppslagException.Level.LAV)
+    }
+
+    @Test
+    fun `client skal kaste OppslagException med lav info ved feil annen feil`() {
+        every { port.hentPersonhistorikk(any<HentPersonhistorikkRequest>()) } throws RuntimeException("test")
+
+        Assertions.assertThatThrownBy { personSoapClient.hentPersonhistorikkResponse(HentPersonhistorikkRequest()) }
+                .hasMessageContaining("Ukjent feil fra TPS")
+                .isInstanceOf(OppslagException::class.java)
+                .hasFieldOrPropertyWithValue("level", OppslagException.Level.MEDIUM)
     }
 
 }
