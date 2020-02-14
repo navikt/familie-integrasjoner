@@ -24,8 +24,8 @@ class PersonSoapClientTest {
 
     @Test
     fun `client skal kaste OppslagException med lav info ved feil hentPersonhistorikkPersonIkkeFunnet`() {
-        every { port.hentPersonhistorikk(any<HentPersonhistorikkRequest>()) } throws HentPersonhistorikkPersonIkkeFunnet("test",
-                                                                                                                         PersonIkkeFunnet())
+        every { port.hentPersonhistorikk(any()) } throws HentPersonhistorikkPersonIkkeFunnet("test",
+                                                                                             PersonIkkeFunnet())
 
         Assertions.assertThatThrownBy { personSoapClient.hentPersonhistorikkResponse(HentPersonhistorikkRequest()) }
                 .hasMessageContaining("Prøver å hente historikk for person som ikke finnes i TPS")
@@ -35,7 +35,7 @@ class PersonSoapClientTest {
 
     @Test
     fun `client skal kaste OppslagException med lav info ved feil annen feil`() {
-        every { port.hentPersonhistorikk(any<HentPersonhistorikkRequest>()) } throws RuntimeException("test")
+        every { port.hentPersonhistorikk(any()) } throws RuntimeException("test")
 
         Assertions.assertThatThrownBy { personSoapClient.hentPersonhistorikkResponse(HentPersonhistorikkRequest()) }
                 .hasMessageContaining("Ukjent feil fra TPS")

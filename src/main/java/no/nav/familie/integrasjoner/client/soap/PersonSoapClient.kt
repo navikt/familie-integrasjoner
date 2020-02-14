@@ -3,10 +3,7 @@ package no.nav.familie.integrasjoner.client.soap
 import no.nav.familie.http.client.AbstractSoapClient
 import no.nav.familie.http.client.Pingable
 import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning
-import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkPersonIkkeFunnet
-import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkSikkerhetsbegrensning
-import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
+import no.nav.tjeneste.virksomhet.person.v3.binding.*
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest
@@ -34,7 +31,7 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
                                    OppslagException.Level.LAV,
                                    HttpStatus.FORBIDDEN,
                                    e)
-        } catch (e: HentPersonhistorikkPersonIkkeFunnet) {
+        } catch (e: HentPersonPersonIkkeFunnet) {
             throw OppslagException("Prøver å hente historikk for person som ikke finnes i TPS",
                                    "TPS.hentPerson",
                                    OppslagException.Level.LAV,
