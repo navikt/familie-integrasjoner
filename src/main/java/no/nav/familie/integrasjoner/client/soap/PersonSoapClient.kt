@@ -28,34 +28,24 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
     fun hentPersonResponse(request: HentPersonRequest?): HentPersonResponse {
         return try {
             port.hentPerson(request)
+        } catch (e: HentPersonSikkerhetsbegrensning) {
+            throw OppslagException("Ikke tilgang til å hente personinfo for person",
+                                   "TPS.hentPerson",
+                                   OppslagException.Level.LAV,
+                                   HttpStatus.FORBIDDEN,
+                                   e)
+        } catch (e: HentPersonhistorikkPersonIkkeFunnet) {
+            throw OppslagException("Prøver å hente historikk for person som ikke finnes i TPS",
+                                   "TPS.hentPerson",
+                                   OppslagException.Level.LAV,
+                                   HttpStatus.NOT_FOUND,
+                                   e)
         } catch (e: Exception) {
-            secureLogger.warn("Feil ved hentPerson", e)
-            when (e) {
-                is HentPersonSikkerhetsbegrensning -> {
-                    throw OppslagException("Ikke tilgang til å hente personinfo for person",
-                                           "TPS.hentPerson",
-                                           OppslagException.Level.LAV,
-                                           HttpStatus.FORBIDDEN,
-                                           e)
-                }
-
-                is HentPersonhistorikkPersonIkkeFunnet -> {
-                    LOGGER.info("HentPersonhistorikkPersonIkkeFunnet")
-                    throw OppslagException("Prøver å hente historikk for person som ikke finnes i TPS",
-                                           "TPS.hentPerson",
-                                           OppslagException.Level.LAV,
-                                           HttpStatus.NOT_FOUND,
-                                           e)
-                }
-
-                else -> {
-                    throw OppslagException("Ukjent feil fra TPS",
-                                           "TPS.hentPerson",
-                                           OppslagException.Level.MEDIUM,
-                                           HttpStatus.INTERNAL_SERVER_ERROR,
-                                           e)
-                }
-            }
+            throw OppslagException("Ukjent feil fra TPS",
+                                   "TPS.hentPerson",
+                                   OppslagException.Level.MEDIUM,
+                                   HttpStatus.INTERNAL_SERVER_ERROR,
+                                   e)
         }
     }
 
@@ -69,36 +59,25 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
     fun hentPersonhistorikkResponse(request: HentPersonhistorikkRequest?): HentPersonhistorikkResponse {
         return try {
             executeMedMetrics { port.hentPersonhistorikk(request) }
+        } catch (e: HentPersonSikkerhetsbegrensning) {
+            throw OppslagException("Ikke tilgang til å hente personinfo for person",
+                                   "TPS.hentPersonhistorikk",
+                                   OppslagException.Level.LAV,
+                                   HttpStatus.FORBIDDEN,
+                                   e)
+        } catch (e: HentPersonhistorikkPersonIkkeFunnet) {
+            throw OppslagException("Prøver å hente historikk for person som ikke finnes i TPS",
+                                   "TPS.hentPersonhistorikk",
+                                   OppslagException.Level.LAV,
+                                   HttpStatus.NOT_FOUND,
+                                   e)
         } catch (e: Exception) {
-            secureLogger.warn("Feil ved hentPersonhistorikk", e)
-            when (e) {
-                is HentPersonSikkerhetsbegrensning -> {
-                    throw OppslagException("Ikke tilgang til å hente personinfo for person",
-                                           "TPS.hentPersonhistorikk",
-                                           OppslagException.Level.LAV,
-                                           HttpStatus.FORBIDDEN,
-                                           e)
-                }
-
-                is HentPersonhistorikkPersonIkkeFunnet -> {
-                    LOGGER.info("HentPersonhistorikkPersonIkkeFunnet")
-                    throw OppslagException("Prøver å hente historikk for person som ikke finnes i TPS",
-                                           "TPS.hentPersonhistorikk",
-                                           OppslagException.Level.LAV,
-                                           HttpStatus.NOT_FOUND,
-                                           e)
-                }
-
-                else -> {
-                    throw OppslagException("Ukjent feil fra TPS",
-                                           "TPS.hentPersonhistorikk",
-                                           OppslagException.Level.MEDIUM,
-                                           HttpStatus.INTERNAL_SERVER_ERROR,
-                                           e)
-                }
-            }
+            throw OppslagException("Ukjent feil fra TPS",
+                                   "TPS.hentPersonhistorikk",
+                                   OppslagException.Level.MEDIUM,
+                                   HttpStatus.INTERNAL_SERVER_ERROR,
+                                   e)
         }
-
     }
 
     override fun ping() {
