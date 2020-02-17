@@ -19,6 +19,7 @@ public class UnitTestLauncher {
                 .profiles("integrasjonstest",
                           "mock-aktor",
                           "mock-dokarkiv",
+                          "mock-dokdist",
                           "mock-egenansatt",
                           "mock-infotrygd",
                           "mock-medlemskap",
