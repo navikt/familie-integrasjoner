@@ -1,60 +1,43 @@
-package no.nav.familie.integrasjoner.medlemskap.domain;
+package no.nav.familie.integrasjoner.medlemskap.domain
 
-import java.util.List;
+class MedlemskapsInfo {
+    var personIdent: String? = null
+        private set
+    var gyldigePerioder: List<PeriodeInfo>? = null
+        private set
+    var avvistePerioder: List<PeriodeInfo>? = null
+        private set
+    var uavklartePerioder: List<PeriodeInfo>? = null
+        private set
 
-public class MedlemskapsInfo {
-
-    private String personIdent;
-    private List<PeriodeInfo> gyldigePerioder;
-    private List<PeriodeInfo> avvistePerioder;
-    private List<PeriodeInfo> uavklartePerioder;
-
-    public List<PeriodeInfo> getGyldigePerioder() {
-        return gyldigePerioder;
-    }
-
-    public List<PeriodeInfo> getAvvistePerioder() {
-        return avvistePerioder;
-    }
-
-    public List<PeriodeInfo> getUavklartePerioder() {
-        return uavklartePerioder;
-    }
-
-    public String getPersonIdent() {
-        return personIdent;
-    }
-
-    public static class Builder {
-
-        private MedlemskapsInfo medlemskapsInfo;
-
-        public Builder() {
-            this.medlemskapsInfo = new MedlemskapsInfo();
+    class Builder {
+        private val medlemskapsInfo: MedlemskapsInfo
+        fun medGyldigePerioder(perioder: List<PeriodeInfo>?): Builder {
+            medlemskapsInfo.gyldigePerioder = perioder
+            return this
         }
 
-        public Builder medGyldigePerioder(List<PeriodeInfo> perioder) {
-            medlemskapsInfo.gyldigePerioder = perioder;
-            return this;
+        fun medAvvistePerioder(perioder: List<PeriodeInfo>?): Builder {
+            medlemskapsInfo.avvistePerioder = perioder
+            return this
         }
 
-        public Builder medAvvistePerioder(List<PeriodeInfo> perioder) {
-            medlemskapsInfo.avvistePerioder = perioder;
-            return this;
+        fun medUavklartePerioder(perioder: List<PeriodeInfo>?): Builder {
+            medlemskapsInfo.uavklartePerioder = perioder
+            return this
         }
 
-        public Builder medUavklartePerioder(List<PeriodeInfo> perioder) {
-            medlemskapsInfo.uavklartePerioder = perioder;
-            return this;
+        fun medPersonIdent(personIdent: String?): Builder {
+            medlemskapsInfo.personIdent = personIdent
+            return this
         }
 
-        public Builder medPersonIdent(String personIdent) {
-            medlemskapsInfo.personIdent = personIdent;
-            return this;
+        fun build(): MedlemskapsInfo {
+            return medlemskapsInfo
         }
 
-        public MedlemskapsInfo build() {
-            return medlemskapsInfo;
+        init {
+            medlemskapsInfo = MedlemskapsInfo()
         }
     }
 }

@@ -1,20 +1,19 @@
-package no.nav.familie.integrasjoner.medlemskap.internal;
+package no.nav.familie.integrasjoner.medlemskap.internal
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import no.nav.familie.http.sts.StsRestClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import com.fasterxml.jackson.databind.ObjectMapper
+import no.nav.familie.http.sts.StsRestClient
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 
 @Configuration
-public class MedlClientConfig {
-
+class MedlClientConfig {
     @Bean
-    public MedlClient medlClient(@Value("${MEDL2_URL}") String url,
-                                 @Value("${CREDENTIAL_USERNAME}") String srvBruker,
-                                 @Autowired StsRestClient stsRestClient,
-                                 @Autowired ObjectMapper objectMapper) {
-        return new MedlClient(url, srvBruker, stsRestClient, objectMapper);
+    fun medlClient(@Value("\${MEDL2_URL}") url: String,
+                   @Value("\${CREDENTIAL_USERNAME}") srvBruker: String,
+                   @Autowired stsRestClient: StsRestClient,
+                   @Autowired objectMapper: ObjectMapper): MedlClient {
+        return MedlClient(url, srvBruker, stsRestClient, objectMapper)
     }
 }

@@ -1,61 +1,55 @@
-package no.nav.familie.integrasjoner.medlemskap.domain;
+package no.nav.familie.integrasjoner.medlemskap.domain
 
-import no.nav.familie.integrasjoner.medlemskap.MedlemskapsUnntakResponse;
-import org.springframework.stereotype.Component;
+import no.nav.familie.integrasjoner.medlemskap.MedlemskapsUnntakResponse
+import java.time.ZoneId
+import java.util.stream.Collectors
 
-import java.time.ZoneId;
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
-
-@Component
-public class MedlemskapsOversetter {
-
-    public static MedlemskapsInfo tilMedlemskapsInfo(List<MedlemskapsUnntakResponse> responsListe) {
-        List<PeriodeInfo> gyldigePerioder = responsListe.stream()
-                                                        .filter(r -> PeriodeStatus.GYLD.name().equals(r.getStatus()))
-                                                        .map(MedlemskapsOversetter::tilPeriodeInfo)
-                                                        .collect(toList());
-
-        List<PeriodeInfo> avvistePerioder = responsListe.stream()
-                                                        .filter(r -> PeriodeStatus.AVST.name().equals(r.getStatus()))
-                                                        .map(MedlemskapsOversetter::tilPeriodeInfo)
-                                                        .collect(toList());
-
-        List<PeriodeInfo> uavklartePerioder = responsListe.stream()
-                                                          .filter(r -> PeriodeStatus.UAVK.name().equals(r.getStatus()))
-                                                          .map(MedlemskapsOversetter::tilPeriodeInfo)
-                                                          .collect(toList());
-
-        return new MedlemskapsInfo.Builder()
+object MedlemskapsOversetter {
+    fun tilMedlemskapsInfo(responsListe: List<MedlemskapsUnntakResponse?>?): MedlemskapsInfo? {
+        val gyldigePerioder: List<PeriodeInfo> = responsListe!!.stream()
+                .filter { r: MedlemskapsUnntakResponse? -> PeriodeStatus.GYLD.name == r.getStatus() }
+                .map { obj: MedlemskapsUnntakResponse? -> tilPeriodeInfo() }
+                .collect(Collectors.toList())
+        val avvistePerioder: List<PeriodeInfo> = responsListe.stream()
+                .filter { r: MedlemskapsUnntakResponse? -> PeriodeStatus.AVST.name == r.getStatus() }
+                .map { obj: MedlemskapsUnntakResponse? -> tilPeriodeInfo() }
+                .collect(Collectors.toList())
+        val uavklartePerioder: List<PeriodeInfo> = responsListe.stream()
+                .filter { r: MedlemskapsUnntakResponse? -> PeriodeStatus.UAVK.name == r.getStatus() }
+                .map { obj: MedlemskapsUnntakResponse? -> tilPeriodeInfo() }
+                .collect(Collectors.toList())
+        return MedlemskapsInfo.Builder()
                 .medGyldigePerioder(gyldigePerioder)
                 .medAvvistePerioder(avvistePerioder)
                 .medUavklartePerioder(uavklartePerioder)
                 .medPersonIdent(tilPersonIdent(responsListe))
-                .build();
+                .build()
     }
 
-    private static PeriodeInfo tilPeriodeInfo(MedlemskapsUnntakResponse response) {
-        PeriodeInfo.Builder builder = new PeriodeInfo.Builder()
-                .medPeriodeStatus(PeriodeStatus.valueOf(response.getStatus()))
-                .medFom(response.getFraOgMed().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
-                .medTom(response.getTilOgMed().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
-                .medDekning(response.getDekning())
-                .medGrunnlag(response.getGrunnlag())
-                .medGjelderMedlemskapIFolketrygden(response.isMedlem());
-        if (response.getStatusaarsak() != null) {
-            builder.medPeriodeStatusÅrsak(PeriodeStatusÅrsak.valueOf(response.getStatusaarsak()));
+    private fun tilPeriodeInfo(response: MedlemskapsUnntakResponse): PeriodeInfo? {
+        val builder =
+                PeriodeInfo.Builder()
+                        .medPeriodeStatus(PeriodeStatus.valueOf(response.status))
+                        .medFom(response.fraOgMed.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+                        .medTom(response.tilOgMed.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+                        .medDekning(response.dekning)
+                        .medGrunnlag(response.grunnlag)
+                        .medGjelderMedlemskapIFolketrygden(response.isMedlem!!)
+        if (response.statusaarsak != null) {
+            builder!!.medPeriodeStatusÅrsak(PeriodeStatusÅrsak.valueOf(response.statusaarsak))
         }
-
-        return builder.build();
+        return builder!!.build()
     }
 
-    private static String tilPersonIdent(List<MedlemskapsUnntakResponse> responseList) {
-        List<String> alleIdenter = responseList.stream()
-                                               .map(MedlemskapsUnntakResponse::getIdent)
-                                               .collect(toList());
-        boolean identFinnesOgErLik = !alleIdenter.isEmpty() && alleIdenter.stream().allMatch(alleIdenter.get(0)::equals);
-
-        return identFinnesOgErLik ? alleIdenter.get(0) : "";
+    private fun tilPersonIdent(responseList: List<MedlemskapsUnntakResponse?>?): String? {
+        val alleIdenter = responseList!!.stream()
+                .map { obj: MedlemskapsUnntakResponse? -> obj.getIdent() }
+                .collect(Collectors.toList())
+        val identFinnesOgErLik =
+                !alleIdenter.isEmpty() && alleIdenter.stream().allMatch { anObject: String? ->
+                    alleIdenter[0]
+                            .equals(anObject)
+                }
+        return if (identFinnesOgErLik) alleIdenter[0] else ""
     }
 }

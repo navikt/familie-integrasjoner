@@ -1,47 +1,48 @@
-package no.nav.familie.integrasjoner.medlemskap;
+package no.nav.familie.integrasjoner.medlemskap
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import no.nav.familie.integrasjoner.medlemskap.internal.MedlClient;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import no.nav.familie.integrasjoner.medlemskap.internal.MedlClient
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
+import org.springframework.context.annotation.Profile
+import java.io.File
+import java.io.IOException
+import java.util.*
 
 @Configuration
-public class MedlemskapTestConfig {
-
-    private static final ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
+class MedlemskapTestConfig {
     @Bean
     @Profile("mock-medlemskap")
     @Primary
-    public MedlClient medlClientMock() throws Exception {
-        MedlClient medlMock = mock(MedlClient.class);
-        when(medlMock.hentMedlemskapsUnntakResponse(anyString())).thenReturn(mockMedlemskapResponse());
-        doNothing().when(medlMock).ping();
-        return medlMock;
+    @Throws(
+            Exception::class) fun medlClientMock(): MedlClient {
+        val medlMock = Mockito.mock(MedlClient::class.java)
+        Mockito.`when`(medlMock.hentMedlemskapsUnntakResponse(ArgumentMatchers.anyString()))
+                .thenReturn(mockMedlemskapResponse())
+        Mockito.doNothing().`when`(medlMock).ping()
+        return medlMock
     }
 
-    private List<MedlemskapsUnntakResponse> mockMedlemskapResponse() {
-        File medlemskapsResponseBody = new File(getFile());
-
-        try {
-            return Arrays.asList(mapper.readValue(medlemskapsResponseBody, MedlemskapsUnntakResponse[].class));
-        } catch (IOException e) {
-            throw new RuntimeException("Feil ved mapping av medl2-mock", e);
+    private fun mockMedlemskapResponse(): List<MedlemskapsUnntakResponse> {
+        val medlemskapsResponseBody = File(file)
+        return try {
+            Arrays.asList(*mapper.readValue(
+                    medlemskapsResponseBody,
+                    Array<MedlemskapsUnntakResponse>::class.java))
+        } catch (e: IOException) {
+            throw RuntimeException("Feil ved mapping av medl2-mock", e)
         }
     }
 
-    private String getFile() {
-        return getClass().getClassLoader().getResource("medlemskap/medlrespons.json").getFile();
+    private val file: String
+        private get() = javaClass.classLoader.getResource("medlemskap/medlrespons.json").file
+
+    companion object {
+        private val mapper = ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     }
 }

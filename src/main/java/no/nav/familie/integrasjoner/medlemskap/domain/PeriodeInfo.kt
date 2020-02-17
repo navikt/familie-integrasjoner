@@ -1,90 +1,66 @@
-package no.nav.familie.integrasjoner.medlemskap.domain;
+package no.nav.familie.integrasjoner.medlemskap.domain
 
-import java.time.LocalDate;
+import java.time.LocalDate
 
-public class PeriodeInfo {
+class PeriodeInfo {
+    var periodeStatus: PeriodeStatus? = null
+        private set
+    var periodeStatusÅrsak: PeriodeStatusÅrsak? = null
+        private set
+    var fom: LocalDate? = null
+        private set
+    var tom: LocalDate? = null
+        private set
+    var isGjelderMedlemskapIFolketrygden = false
+        private set
+    var grunnlag: String? = null
+        private set
+    var dekning: String? = null
+        private set
 
-    private PeriodeStatus periodeStatus;
-    private PeriodeStatusÅrsak periodeStatusÅrsak;
-    private LocalDate fom;
-    private LocalDate tom;
-    private boolean gjelderMedlemskapIFolketrygden;
-    private String grunnlag;
-    private String dekning;
-
-    public PeriodeStatus getPeriodeStatus() {
-        return periodeStatus;
-    }
-
-    public PeriodeStatusÅrsak getPeriodeStatusÅrsak() {
-        return periodeStatusÅrsak;
-    }
-
-    public LocalDate getFom() {
-        return fom;
-    }
-
-    public LocalDate getTom() {
-        return tom;
-    }
-
-    public boolean isGjelderMedlemskapIFolketrygden() {
-        return gjelderMedlemskapIFolketrygden;
-    }
-
-    public String getGrunnlag() {
-        return grunnlag;
-    }
-
-    public String getDekning() {
-        return dekning;
-    }
-
-    public static class Builder {
-
-        private PeriodeInfo periodeInfo;
-
-        public Builder() {
-            periodeInfo = new PeriodeInfo();
+    class Builder {
+        private val periodeInfo: PeriodeInfo
+        fun medPeriodeStatus(periodeStatus: PeriodeStatus?): Builder {
+            periodeInfo.periodeStatus = periodeStatus
+            return this
         }
 
-        public Builder medPeriodeStatus(PeriodeStatus periodeStatus) {
-            periodeInfo.periodeStatus = periodeStatus;
-            return this;
+        fun medPeriodeStatusÅrsak(årsak: PeriodeStatusÅrsak?): Builder {
+            periodeInfo.periodeStatusÅrsak = årsak
+            return this
         }
 
-        public Builder medPeriodeStatusÅrsak(PeriodeStatusÅrsak årsak) {
-            periodeInfo.periodeStatusÅrsak = årsak;
-            return this;
+        fun medFom(fom: LocalDate?): Builder {
+            periodeInfo.fom = fom
+            return this
         }
 
-        public Builder medFom(LocalDate fom) {
-            periodeInfo.fom = fom;
-            return this;
+        fun medTom(tom: LocalDate?): Builder {
+            periodeInfo.tom = tom
+            return this
         }
 
-        public Builder medTom(LocalDate tom) {
-            periodeInfo.tom = tom;
-            return this;
+        fun medGjelderMedlemskapIFolketrygden(gjelderMedlemskap: Boolean): Builder {
+            periodeInfo.isGjelderMedlemskapIFolketrygden = gjelderMedlemskap
+            return this
         }
 
-        public Builder medGjelderMedlemskapIFolketrygden(boolean gjelderMedlemskap) {
-            periodeInfo.gjelderMedlemskapIFolketrygden = gjelderMedlemskap;
-            return this;
+        fun medGrunnlag(grunnlag: String?): Builder {
+            periodeInfo.grunnlag = grunnlag
+            return this
         }
 
-        public Builder medGrunnlag(String grunnlag) {
-            periodeInfo.grunnlag = grunnlag;
-            return this;
+        fun medDekning(dekning: String?): Builder {
+            periodeInfo.dekning = dekning
+            return this
         }
 
-        public Builder medDekning(String dekning) {
-            periodeInfo.dekning = dekning;
-            return this;
+        fun build(): PeriodeInfo {
+            return periodeInfo
         }
 
-        public PeriodeInfo build() {
-            return periodeInfo;
+        init {
+            periodeInfo = PeriodeInfo()
         }
     }
 }
