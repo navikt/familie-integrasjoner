@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 class MedlemskapController(private val medlemskapService: MedlemskapService) {
 
     @GetMapping("v1")
-    fun hentMedlemskapsunntak(@RequestParam("id") aktørId: String?): ResponseEntity<Ressurs<MedlemskapsInfo>> {
+    fun hentMedlemskapsunntak(@RequestParam("id") aktørId: String): ResponseEntity<Ressurs<MedlemskapsInfo>> {
         return ResponseEntity.ok(success(medlemskapService.hentMedlemskapsUnntak(aktørId),
                                          "Henting av medlemskapsunntak OK"))
     }

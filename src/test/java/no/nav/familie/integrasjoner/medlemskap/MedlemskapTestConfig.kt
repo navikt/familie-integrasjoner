@@ -2,7 +2,10 @@ package no.nav.familie.integrasjoner.medlemskap
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import no.nav.familie.integrasjoner.medlemskap.internal.MedlClient
+import no.nav.familie.kontrakter.ks.søknad.testdata.SøknadTestdata.Companion.mapper
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito
 import org.springframework.context.annotation.Bean
@@ -18,8 +21,7 @@ class MedlemskapTestConfig {
     @Bean
     @Profile("mock-medlemskap")
     @Primary
-    @Throws(
-            Exception::class) fun medlClientMock(): MedlClient {
+    @Throws(            Exception::class) fun medlClientMock(): MedlClient {
         val medlMock = Mockito.mock(MedlClient::class.java)
         Mockito.`when`(medlMock.hentMedlemskapsUnntakResponse(ArgumentMatchers.anyString()))
                 .thenReturn(mockMedlemskapResponse())
@@ -38,11 +40,11 @@ class MedlemskapTestConfig {
         }
     }
 
-    private val file: String
-        private get() = javaClass.classLoader.getResource("medlemskap/medlrespons.json").file
+    private val file: String = javaClass.classLoader.getResource("medlemskap/medlrespons.json").file
 
     companion object {
-        private val mapper = ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        private val mapper = ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .registerKotlinModule()
+                .registerModule(JavaTimeModule())
     }
 }

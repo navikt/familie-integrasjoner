@@ -9,9 +9,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 @Service
-class MedlemskapService @Autowired constructor(private val medlClient: MedlClient,
-                                               private val medlemskapsOversetter: MedlemskapsOversetter) {
-    fun hentMedlemskapsUnntak(aktørId: String): MedlemskapsInfo? {
+class MedlemskapService @Autowired constructor(private val medlClient: MedlClient) {
+    fun hentMedlemskapsUnntak(aktørId: String): MedlemskapsInfo {
         return try {
             MedlemskapsOversetter.tilMedlemskapsInfo(medlClient.hentMedlemskapsUnntakResponse(aktørId))
         } catch (e: Exception) {
