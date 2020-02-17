@@ -1,9 +1,8 @@
 package no.nav.familie.integrasjoner.client
 
 import io.mockk.mockk
-import no.nav.familie.integrasjoner.client.rest.*
+import no.nav.familie.integrasjoner.client.rest.InfotrygdRestClient
 import no.nav.familie.integrasjoner.client.soap.EgenAnsattSoapClient
-import no.nav.familie.integrasjoner.client.soap.PersonSoapClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
 import org.springframework.context.annotation.Profile
@@ -16,13 +15,6 @@ class ClientMocks {
     @Primary
     @Profile("mock-infotrygd")
     fun mockInfotrygdRestClient(): InfotrygdRestClient {
-        return mockk(relaxed = true)
-    }
-
-    @Bean
-    @Primary
-    @Profile("mock-medlemskap")
-    fun mockMedlRestClient(): MedlRestClient {
         return mockk(relaxed = true)
     }
 

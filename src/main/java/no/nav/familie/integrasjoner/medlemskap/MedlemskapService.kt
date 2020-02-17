@@ -1,20 +1,19 @@
 package no.nav.familie.integrasjoner.medlemskap
 
+import no.nav.familie.integrasjoner.client.rest.MedlRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.familie.integrasjoner.medlemskap.domain.MedlemskapsInfo
-import no.nav.familie.integrasjoner.medlemskap.domain.MedlemskapsOversetter
-import no.nav.familie.integrasjoner.medlemskap.internal.MedlClient
-import org.springframework.beans.factory.annotation.Autowired
+import no.nav.familie.integrasjoner.medlemskap.domain.Medlemskapsinfo
+import no.nav.familie.integrasjoner.medlemskap.domain.MedlemskapsinfoMapper
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 @Service
-class MedlemskapService @Autowired constructor(private val medlClient: MedlClient) {
-    fun hentMedlemskapsUnntak(aktørId: String): MedlemskapsInfo {
+class MedlemskapService(private val medlRestClient: MedlRestClient) {
+    fun hentMedlemskapsunntak(aktørId: String): Medlemskapsinfo {
         return try {
-            MedlemskapsOversetter.tilMedlemskapsInfo(medlClient.hentMedlemskapsUnntakResponse(aktørId))
+            MedlemskapsinfoMapper.tilMedlemskapsInfo(medlRestClient.hentMedlemskapsUnntakResponse(aktørId))
         } catch (e: Exception) {
-            throw OppslagException("Feil ved oppslag for Aktør " + aktørId + " og uri " + medlClient.medl2Uri,
+            throw OppslagException("Feil ved oppslag for Aktør " + aktørId + " og uri " + medlRestClient.medlemskapsunntakUri,
                                    "MEDL2",
                                    OppslagException.Level.MEDIUM,
                                    HttpStatus.INTERNAL_SERVER_ERROR,

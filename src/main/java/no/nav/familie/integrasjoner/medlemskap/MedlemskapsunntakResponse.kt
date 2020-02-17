@@ -2,7 +2,7 @@ package no.nav.familie.integrasjoner.medlemskap
 
 import java.time.LocalDate
 
-class MedlemskapsUnntakResponse(val dekning: String? = null,
+class MedlemskapsunntakResponse(val dekning: String? = null,
                                 val fraOgMed: LocalDate,
                                 val tilOgMed: LocalDate,
                                 val grunnlag: String,

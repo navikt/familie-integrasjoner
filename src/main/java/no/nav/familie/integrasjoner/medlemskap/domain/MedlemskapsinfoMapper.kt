@@ -1,9 +1,10 @@
 package no.nav.familie.integrasjoner.medlemskap.domain
 
-import no.nav.familie.integrasjoner.medlemskap.MedlemskapsUnntakResponse
+import no.nav.familie.integrasjoner.medlemskap.MedlemskapsunntakResponse
 
-object MedlemskapsOversetter {
-    fun tilMedlemskapsInfo(responsListe: List<MedlemskapsUnntakResponse>): MedlemskapsInfo {
+object MedlemskapsinfoMapper {
+
+    fun tilMedlemskapsInfo(responsListe: List<MedlemskapsunntakResponse>): Medlemskapsinfo {
         val gyldigePerioder: List<PeriodeInfo> = responsListe
                 .filter { PeriodeStatus.GYLD.name == it.status }
                 .map(this::tilPeriodeInfo)
@@ -13,13 +14,13 @@ object MedlemskapsOversetter {
         val uavklartePerioder: List<PeriodeInfo> = responsListe
                 .filter { PeriodeStatus.UAVK.name == it.status }
                 .map(this::tilPeriodeInfo)
-        return MedlemskapsInfo(gyldigePerioder = gyldigePerioder,
+        return Medlemskapsinfo(gyldigePerioder = gyldigePerioder,
                                avvistePerioder = avvistePerioder,
                                uavklartePerioder = uavklartePerioder,
                                personIdent = tilPersonIdent(responsListe))
     }
 
-    private fun tilPeriodeInfo(response: MedlemskapsUnntakResponse): PeriodeInfo {
+    private fun tilPeriodeInfo(response: MedlemskapsunntakResponse): PeriodeInfo {
         return PeriodeInfo(periodeStatus = PeriodeStatus.valueOf(response.status),
                            fom = response.fraOgMed,
                            tom = response.tilOgMed,
@@ -30,8 +31,8 @@ object MedlemskapsOversetter {
                            if (response.statusaarsak == null) null else PeriodeStatusÅrsak.valueOf(response.statusaarsak))
     }
 
-    private fun tilPersonIdent(responseList: List<MedlemskapsUnntakResponse>): String {
-        val alleIdenter = responseList.map(MedlemskapsUnntakResponse::ident).toSet()
+    private fun tilPersonIdent(responseList: List<MedlemskapsunntakResponse>): String {
+        val alleIdenter = responseList.map(MedlemskapsunntakResponse::ident).toSet()
         return if (alleIdenter.size == 1) alleIdenter.first() else ""
     }
 }

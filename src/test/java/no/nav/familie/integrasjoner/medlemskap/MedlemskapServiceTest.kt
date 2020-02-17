@@ -1,18 +1,17 @@
 package no.nav.familie.integrasjoner.medlemskap
 
+import io.mockk.every
+import no.nav.familie.integrasjoner.client.rest.MedlRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.medlemskap.domain.PeriodeStatus
-import no.nav.familie.integrasjoner.medlemskap.internal.MedlClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
 
 class MedlemskapServiceTest {
 
     private lateinit var medlemskapService: MedlemskapService
-    private lateinit var medlClient: MedlClient
+    private lateinit var medlClient: MedlRestClient
 
     @Before
     fun setUp() {
@@ -21,9 +20,10 @@ class MedlemskapServiceTest {
     }
 
     @Test fun skal_gi_tomt_objekt_ved_ingen_treff_i_MEDL() {
-        Mockito.`when`(medlClient.hentMedlemskapsUnntakResponse(ArgumentMatchers.any<String>())).thenReturn(emptyList())
+        every { medlClient.hentMedlemskapsUnntakResponse(any()) }
+                .returns(emptyList())
 
-        val respons = medlemskapService.hentMedlemskapsUnntak(TEST_AKTØRID)
+        val respons = medlemskapService.hentMedlemskapsunntak(TEST_AKTØRID)
 
         assertThat(respons).isNotNull
         assertThat(respons.personIdent).isEqualTo("")
@@ -33,7 +33,7 @@ class MedlemskapServiceTest {
     }
 
     @Test fun skal_gruppere_perioder_ved_treff() {
-        val respons = medlemskapService.hentMedlemskapsUnntak(TEST_AKTØRID)
+        val respons = medlemskapService.hentMedlemskapsunntak(TEST_AKTØRID)
 
         assertThat(respons).isNotNull
         assertThat(respons.uavklartePerioder.size).isEqualTo(1)
@@ -47,7 +47,7 @@ class MedlemskapServiceTest {
     }
 
     @Test fun `periodeInfo har påkrevde felter`() {
-        val respons = medlemskapService.hentMedlemskapsUnntak(TEST_AKTØRID)
+        val respons = medlemskapService.hentMedlemskapsunntak(TEST_AKTØRID)
 
         assertThat(respons).isNotNull
         val gyldigPeriode = respons.gyldigePerioder[0]
@@ -59,10 +59,10 @@ class MedlemskapServiceTest {
 
     @Test(expected = OppslagException::class)
     fun `skal kaste oppslagException ved feil`() {
-        Mockito.`when`(medlClient.hentMedlemskapsUnntakResponse(
-                ArgumentMatchers.any<String>())).thenThrow(RuntimeException("Feil ved kall til MEDL2"))
+        every { medlClient.hentMedlemskapsUnntakResponse(any()) }
+                .throws(RuntimeException("Feil ved kall til MEDL2"))
 
-        medlemskapService.hentMedlemskapsUnntak(TEST_AKTØRID)
+        medlemskapService.hentMedlemskapsunntak(TEST_AKTØRID)
     }
 
     companion object {

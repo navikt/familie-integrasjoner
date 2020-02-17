@@ -4,37 +4,34 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import no.nav.familie.integrasjoner.medlemskap.internal.MedlClient
-import no.nav.familie.kontrakter.ks.søknad.testdata.SøknadTestdata.Companion.mapper
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
+import io.mockk.every
+import io.mockk.mockk
+import no.nav.familie.integrasjoner.client.rest.MedlRestClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 import org.springframework.context.annotation.Profile
 import java.io.File
 import java.io.IOException
-import java.util.*
 
 @Configuration
 class MedlemskapTestConfig {
+
     @Bean
     @Profile("mock-medlemskap")
     @Primary
-    @Throws(            Exception::class) fun medlClientMock(): MedlClient {
-        val medlMock = Mockito.mock(MedlClient::class.java)
-        Mockito.`when`(medlMock.hentMedlemskapsUnntakResponse(ArgumentMatchers.anyString()))
-                .thenReturn(mockMedlemskapResponse())
-        Mockito.doNothing().`when`(medlMock).ping()
+    @Throws(Exception::class) fun medlClientMock(): MedlRestClient {
+        val medlMock: MedlRestClient = mockk(relaxed = true)
+        every { medlMock.hentMedlemskapsUnntakResponse(any()) }
+                .returns(medlemskapResponse())
         return medlMock
     }
 
-    private fun mockMedlemskapResponse(): List<MedlemskapsUnntakResponse> {
-        val medlemskapsResponseBody = File(file)
+    private fun medlemskapResponse(): List<MedlemskapsunntakResponse> {
+        val medlemskapResponseBody = File(file)
         return try {
-            Arrays.asList(*mapper.readValue(
-                    medlemskapsResponseBody,
-                    Array<MedlemskapsUnntakResponse>::class.java))
+            listOf(*mapper.readValue(medlemskapResponseBody,
+                                     Array<MedlemskapsunntakResponse>::class.java))
         } catch (e: IOException) {
             throw RuntimeException("Feil ved mapping av medl2-mock", e)
         }
