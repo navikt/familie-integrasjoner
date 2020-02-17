@@ -1,24 +1,19 @@
-package no.nav.familie.integrasjoner.tilgangskontroll;
+package no.nav.familie.integrasjoner.tilgangskontroll
 
-import no.nav.familie.integrasjoner.egenansatt.internal.EgenAnsattConsumer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
-
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
+import io.mockk.mockk
+import no.nav.familie.integrasjoner.client.soap.EgenAnsattSoapClient
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
+import org.springframework.context.annotation.Profile
 
 @Configuration
-public class EgenAnsattTestConfig {
+class EgenAnsattTestConfig {
 
     @Bean
-    @Profile("mock-egenansatt")
     @Primary
-    public EgenAnsattConsumer egenAnsattConsumerMock() {
-        EgenAnsattConsumer egenAnsattConsumer = mock(EgenAnsattConsumer.class);
-
-        doNothing().when(egenAnsattConsumer).ping();
-        return egenAnsattConsumer;
+    @Profile("mock-egenansatt")
+    fun mockEgenAnsattSoapClient(): EgenAnsattSoapClient {
+        return mockk(relaxed = true)
     }
 }

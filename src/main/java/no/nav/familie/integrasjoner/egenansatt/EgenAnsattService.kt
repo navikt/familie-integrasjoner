@@ -1,20 +1,13 @@
-package no.nav.familie.integrasjoner.egenansatt;
+package no.nav.familie.integrasjoner.egenansatt
 
-import no.nav.familie.integrasjoner.egenansatt.internal.EgenAnsattConsumer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import no.nav.familie.integrasjoner.client.soap.EgenAnsattSoapClient
+import org.springframework.stereotype.Service
 
 @Service
-public class EgenAnsattService {
+class EgenAnsattService(private val egenAnsattSoapClient: EgenAnsattSoapClient) {
 
-    private EgenAnsattConsumer egenAnsattConsumer;
-
-    @Autowired
-    EgenAnsattService(EgenAnsattConsumer egenAnsattConsumer) {
-        this.egenAnsattConsumer = egenAnsattConsumer;
+    fun erEgenAnsatt(fnr: String?): Boolean {
+        return egenAnsattSoapClient.erEgenAnsatt(fnr)
     }
 
-    public boolean erEgenAnsatt(String fnr) {
-        return egenAnsattConsumer.erEgenAnsatt(fnr);
-    }
 }
