@@ -30,7 +30,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                                                 httpHeaders())
 
             if (response != null && !response.harFeil()) {
-                return  Person(response?.data?.person?.foedsel?.get(0)?.foedselsdato ?:
+                return  Person(response?.data?.person?.foedsel!!.get(0).foedselsdato ?:
                         throw OppslagException("Fant ikke forespurte data på person $personIdent",
                                                "PdlRestClient",
                                                OppslagException.Level.MEDIUM,

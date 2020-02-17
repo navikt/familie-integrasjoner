@@ -9,12 +9,13 @@ data class PdlHentPersonResponse (val data: PdlPersonData?,
     }
 }
 
-data class PdlPersonData (val person: PdlFødslerData)
+data class PdlPersonData (val person: PdlFødslerData?)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlFødslerData (val foedsel: Array<PdlFødselsDato>)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class PdlFødselsDato (val foedselsdato: String)
+data class PdlFødselsDato (val foedselsdato: String?)
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlError (val message: String)

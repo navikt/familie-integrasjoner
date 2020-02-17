@@ -65,7 +65,26 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `hent personinfo returnerer med feil`() {
+    fun `hent personinfo returnerer med feil hvis fødslelsdato ikke oppgis for`() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withPath("/rest/pdl/graphql")
+                                .withBody(testdata("pdlGyldigRequest.json"))
+                )
+                .respond(HttpResponse.response().withBody(testdata("pdlManglerFoedselResponse.json"))
+                                 .withHeaders(Header("Content-Type", "application/json")))
+
+        val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentPersoninfo,
+                                                                                           HttpMethod.GET,
+                                                                                           HttpEntity<String>(headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+    }
+
+    @Test
+    fun `hent personinfo returnerer med feil hvis person ikke finnes`() {
         mockServerRule.client
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
@@ -79,9 +98,28 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                                                                                            HttpMethod.GET,
                                                                                            HttpEntity<String>(headers))
 
+        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+    }
+
+    @Test
+    fun `hent personinfo returnerer med feil hvis ikke pdl responderer med 200`() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withPath("/rest/pdl/graphql")
+                                .withBody(testdata("pdlGyldigRequest.json"))
+                )
+                .respond(HttpResponse.response().withStatusCode(500))
+
+        val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentPersoninfo,
+                                                                                           HttpMethod.GET,
+                                                                                           HttpEntity<String>(headers))
+
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
+
 
     private fun testdata(filnavn: String): String {
         return Files.readString(ClassPathResource("pdl/$filnavn").file.toPath(), StandardCharsets.UTF_8)
