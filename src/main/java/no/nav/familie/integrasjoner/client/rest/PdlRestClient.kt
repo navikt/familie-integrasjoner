@@ -4,10 +4,7 @@ import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.http.sts.StsRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.familie.integrasjoner.personopplysning.internal.PdlFødselsDato
-import no.nav.familie.integrasjoner.personopplysning.internal.PdlFødselsdatoRequest
-import no.nav.familie.integrasjoner.personopplysning.internal.PdlFødselsdatoResponse
-import no.nav.familie.integrasjoner.personopplysning.internal.PdlRequestVariable
+import no.nav.familie.integrasjoner.personopplysning.internal.*
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -25,19 +22,19 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
 
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
 
-    fun hentFødselsdato(personIdent: String, tema: String): PdlFødselsDato {
+    fun hentPerson(personIdent: String, tema: String): Person {
         val pdlFødselsdatoRequest = PdlFødselsdatoRequest(PdlRequestVariable(personIdent))
         try {
-            val response = postForEntity<PdlFødselsdatoResponse>(pdlUri,
-                                                                 pdlFødselsdatoRequest,
-                                                                 httpHeaders())
+            val response = postForEntity<PdlHentPersonResponse>(pdlUri,
+                                                                pdlFødselsdatoRequest,
+                                                                httpHeaders())
 
             if (response != null && !response.harFeil()) {
-                return  response?.data?.person?.foedsel?.get(0) ?:
+                return  Person(response?.data?.person?.foedsel?.get(0)?.foedselsdato ?:
                         throw OppslagException("Fant ikke forespurte data på person $personIdent",
                                                "PdlRestClient",
-                                               OppslagException.Level.LAV,
-                                               HttpStatus.NOT_FOUND)
+                                               OppslagException.Level.MEDIUM,
+                                               HttpStatus.NOT_FOUND))
 
             } else {
                 responsFailure.increment()

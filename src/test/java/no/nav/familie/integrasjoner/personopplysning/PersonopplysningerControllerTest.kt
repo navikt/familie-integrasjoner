@@ -2,7 +2,7 @@ package no.nav.familie.integrasjoner.personopplysning
 
 import ch.qos.logback.classic.Logger
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
-import no.nav.familie.integrasjoner.personopplysning.internal.PdlFødselsDato
+import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.security.token.support.test.JwtTokenGenerator
 import org.assertj.core.api.Assertions.assertThat
@@ -55,13 +55,13 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
 
 
 
-        val response: ResponseEntity<Ressurs<PdlFødselsDato>> = restTemplate.exchange(uriHentPersoninfo,
+        val response: ResponseEntity<Ressurs<Person>> = restTemplate.exchange(uriHentPersoninfo,
                                                                                            HttpMethod.GET,
                                                                                            HttpEntity<String>(headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
-        assertThat(response.body?.data?.foedselsdato).isEqualTo(FØDSELSDATO)
+        assertThat(response.body?.data?.fødselsdato).isEqualTo(FØDSELSDATO)
     }
 
     @Test

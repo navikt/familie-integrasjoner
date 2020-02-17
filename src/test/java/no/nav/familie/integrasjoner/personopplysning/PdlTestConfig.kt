@@ -3,7 +3,7 @@ package no.nav.familie.integrasjoner.personopplysning
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
-import no.nav.familie.integrasjoner.personopplysning.internal.PdlFødselsDato
+import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
@@ -19,8 +19,8 @@ class PdlTestConfig {
         val klient = mockk<PdlRestClient>(relaxed = true)
 
         every {
-            klient.hentFødselsdato(any(), any())
-        } returns PdlFødselsDato("1980-05-12")
+            klient.hentPerson(any(), any())
+        } returns Person("1980-05-12")
         return klient
     }
 }
