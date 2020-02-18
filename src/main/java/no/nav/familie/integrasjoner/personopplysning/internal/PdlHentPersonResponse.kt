@@ -7,6 +7,10 @@ data class PdlHentPersonResponse (val data: PdlPersonData?,
     fun harFeil(): Boolean {
         return errors != null && errors.isNotEmpty()
     }
+
+    fun errorMessages(): String {
+        return errors?.joinToString { it -> it.message } ?: ""
+    }
 }
 
 data class PdlPersonData (val person: PdlFødslerData?)

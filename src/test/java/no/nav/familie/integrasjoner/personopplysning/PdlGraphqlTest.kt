@@ -16,20 +16,22 @@ class PdlGraphqlTest {
     @Test
     fun testSerializationAndDeserialization() {
         val resp = mapper.readValue(File(getFile("pdl/pdlOkResponse.json")), PdlHentPersonResponse::class.java)
-        assertThat(resp.data!!.person!!.foedsel[0].foedselsdato).isEqualTo("1955-09-13")
-        assertThat(mapper.writeValueAsString (Person(resp.data!!.person!!.foedsel[0].foedselsdato!!))).contains("fødselsdato")
+        assertThat(resp.data!!.person!!.foedsel.first().foedselsdato).isEqualTo("1955-09-13")
+        assertThat(mapper.writeValueAsString (Person(resp.data!!.person!!.foedsel.first().foedselsdato!!))).contains("fødselsdato")
+        assertThat(resp.errorMessages()).isEqualTo("")
     }
 
     @Test
     fun testDeserializationOfResponseWithErrors() {
         val resp = mapper.readValue(File(getFile("pdl/pdlPersonIkkeFunnetResponse.json")), PdlHentPersonResponse::class.java)
         assertThat(resp.harFeil()).isTrue()
+        assertThat(resp.errorMessages()).contains("Fant ikke person", "Ikke tilgang")
     }
 
     @Test
     fun testDeserializationOfResponseWithoutFødselsdato() {
         val resp = mapper.readValue(File(getFile("pdl/pdlManglerFoedselResponse.json")), PdlHentPersonResponse::class.java)
-        assertThat(resp.data!!.person!!.foedsel[0].foedselsdato).isNull()
+        assertThat(resp.data!!.person!!.foedsel.first().foedselsdato).isNull()
     }
 
     private fun getFile(name: String): String {
