@@ -98,7 +98,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                                                                                            HttpMethod.GET,
                                                                                            HttpEntity<String>(headers))
 
-        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 

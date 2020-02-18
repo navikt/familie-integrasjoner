@@ -30,7 +30,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                                                 httpHeaders())
 
             if (response != null && !response.harFeil()) {
-                return  Person(response?.data?.person?.foedsel!!.get(0).foedselsdato ?:
+                return  Person(response?.data?.person?.foedsel!!.first().foedselsdato ?:
                         throw OppslagException("Fant ikke forespurte data på person $personIdent",
                                                "PdlRestClient",
                                                OppslagException.Level.MEDIUM,
@@ -38,10 +38,10 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
 
             } else {
                 responsFailure.increment()
-                throw OppslagException("Feil ved oppslag på personinfo ${response?.errors?.toString()}",
+                throw OppslagException("Feil ved oppslag på personinfo: ${response?.errorMessages()}",
                                        "PdlRestClient",
                                        OppslagException.Level.MEDIUM,
-                                       HttpStatus.NOT_FOUND)
+                                       HttpStatus.INTERNAL_SERVER_ERROR)
             }
         } catch (e: Exception) {
             when (e) {
