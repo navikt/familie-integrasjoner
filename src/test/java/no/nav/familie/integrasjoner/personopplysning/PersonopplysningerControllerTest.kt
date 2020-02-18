@@ -39,7 +39,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         headers.apply {
             add("Nav-Personident", "12345678901")
         }.setBearerAuth(JwtTokenGenerator.signedJWTAsString("testbruker"))
-        uriHentPersoninfo = UriComponentsBuilder.fromHttpUrl(localhost(PDL_BASE_URL) + "v1/info/BAR").toUriString()
+        uriHentPersoninfo = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}v1/info/$TEMA").toUriString()
     }
 
     @Test
@@ -48,6 +48,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/pdl/graphql")
+                                .withHeader("Tema", TEMA)
                                 .withBody(testdata("pdlGyldigRequest.json"))
                 )
                 .respond(HttpResponse.response().withBody(testdata("pdlOkResponse.json"))
@@ -129,5 +130,6 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         const val MOCK_SERVER_PORT = 18321
         const val FØDSELSDATO = "1955-09-13"
         const val PDL_BASE_URL = "/api/personopplysning/"
+        const val TEMA = "BAR"
     }
 }
