@@ -27,7 +27,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         try {
             val response = postForEntity<PdlHentPersonResponse>(pdlUri,
                                                                 pdlFødselsdatoRequest,
-                                                                httpHeaders())
+                                                                httpHeaders(tema))
 
             if (response != null && !response.harFeil()) {
                 return  Person(response?.data?.person?.foedsel!!.first().foedselsdato ?:
@@ -54,11 +54,12 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         }
     }
 
-    private fun httpHeaders(): HttpHeaders {
+    private fun httpHeaders(tema: String): HttpHeaders {
         return HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
             accept = listOf(MediaType.APPLICATION_JSON)
             add("Nav-Consumer-Token", "Bearer ${stsRestClient.systemOIDCToken}")
+            add("Tema", tema)
         }
     }
 
