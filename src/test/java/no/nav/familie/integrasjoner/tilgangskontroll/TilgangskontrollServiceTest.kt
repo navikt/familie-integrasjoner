@@ -2,6 +2,8 @@ package no.nav.familie.integrasjoner.tilgangskontroll
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.familie.integrasjoner.azure.domene.Gruppe
+import no.nav.familie.integrasjoner.azure.domene.Grupper
 import no.nav.familie.integrasjoner.azure.domene.Saksbehandler
 import no.nav.familie.integrasjoner.client.rest.AzureGraphRestClient
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
@@ -19,7 +21,7 @@ import java.time.LocalDate
 class TilgangskontrollServiceTest {
 
     private val azureGraphRestClient: AzureGraphRestClient = mockk(relaxed = true)
-    private val saksbehandler = Saksbehandler("", "sdfsdf", emptyList())
+    private val saksbehandler = Saksbehandler("", "sdfsdf")
     private val egenAnsattService: EgenAnsattService = mockk(relaxed = true)
     private val personopplysningerService: PersonopplysningerService = mockk(relaxed = true)
 
@@ -27,7 +29,8 @@ class TilgangskontrollServiceTest {
                                                                                            egenAnsattService,
                                                                                            personopplysningerService)
 
-    @Test fun `tilgang til egen ansatt gir ikke tilgang hvis saksbehandler mangler rollen`() {
+    @Test
+    fun `tilgang til egen ansatt gir ikke tilgang hvis saksbehandler mangler rollen`() {
         every { egenAnsattService.erEgenAnsatt(any()) }
                 .returns(true)
 
@@ -37,7 +40,21 @@ class TilgangskontrollServiceTest {
                 .isEqualTo(Tilgang(false).harTilgang)
     }
 
-    @Test fun `tilgang til egen ansatt gir ok hvis søker ikke er egen ansatt`() {
+    @Test
+    fun `tilgang til egen ansatt gir tilgang hvis saksbehandler har rollen`() {
+        every { egenAnsattService.erEgenAnsatt(any()) }
+                .returns(true)
+        every { azureGraphRestClient.hentGrupper() }
+                .returns(Grupper(listOf(Gruppe("1", "0000-GA-GOSYS_UTVIDET"))))
+
+        assertThat(tilgangskontrollService.sjekkTilgang("123",
+                                                        saksbehandler,
+                                                        personinfoUtenKode6og7()).harTilgang)
+                .isEqualTo(Tilgang(true).harTilgang)
+    }
+
+    @Test
+    fun `tilgang til egen ansatt gir ok hvis søker ikke er egen ansatt`() {
         every { egenAnsattService.erEgenAnsatt(any()) }
                 .returns(false)
 
@@ -47,7 +64,8 @@ class TilgangskontrollServiceTest {
                 .isEqualTo(Tilgang(true).harTilgang)
     }
 
-    @Test fun `hvis kode6 har ikke saksbehandler tilgang`() {
+    @Test
+    fun `hvis kode6 har ikke saksbehandler uten rollen tilgang`() {
         every { egenAnsattService.erEgenAnsatt(any()) }
                 .returns(false)
 
@@ -57,7 +75,8 @@ class TilgangskontrollServiceTest {
                 .isEqualTo(Tilgang(false).harTilgang)
     }
 
-    @Test fun `hvis kode7 har ikke saksbehandler tilgang`() {
+    @Test
+    fun `hvis kode7 har ikke saksbehandler uten rollen tilgang`() {
         every { egenAnsattService.erEgenAnsatt(any()) }
                 .returns(false)
 
@@ -65,6 +84,33 @@ class TilgangskontrollServiceTest {
                                                         saksbehandler,
                                                         personinfoMedKode7()).harTilgang)
                 .isEqualTo(Tilgang(false).harTilgang)
+    }
+
+    @Test
+    fun `hvis kode6 har saksbehandler med rollen tilgang`() {
+        every { egenAnsattService.erEgenAnsatt(any()) }
+                .returns(false)
+        every { azureGraphRestClient.hentGrupper() }
+                .returns(Grupper(listOf(Gruppe("1", "0000-GA-GOSYS_KODE6"))))
+
+
+        assertThat(tilgangskontrollService.sjekkTilgang("123",
+                                                        saksbehandler,
+                                                        personinfoMedKode6()).harTilgang)
+                .isEqualTo(Tilgang(true).harTilgang)
+    }
+
+    @Test
+    fun `hvis kode7 har saksbehandler med rollen tilgang`() {
+        every { egenAnsattService.erEgenAnsatt(any()) }
+                .returns(false)
+        every { azureGraphRestClient.hentGrupper() }
+                .returns(Grupper(listOf(Gruppe("1", "0000-GA-GOSYS_KODE7"))))
+
+        assertThat(tilgangskontrollService.sjekkTilgang("123",
+                                                        saksbehandler,
+                                                        personinfoMedKode7()).harTilgang)
+                .isEqualTo(Tilgang(true).harTilgang)
     }
 
     private fun personinfoUtenKode6og7(): Personinfo {
