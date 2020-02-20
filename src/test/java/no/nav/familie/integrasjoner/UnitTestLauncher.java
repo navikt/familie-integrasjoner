@@ -19,13 +19,15 @@ public class UnitTestLauncher {
                 .profiles("integrasjonstest",
                           "mock-aktor",
                           "mock-dokarkiv",
+                          "mock-dokdist",
                           "mock-egenansatt",
                           "mock-infotrygd",
                           "mock-medlemskap",
                           "mock-oppgave",
                           "mock-personopplysninger",
                           "mock-saf",
-                          "mock-sts"
+                          "mock-sts",
+                          "mock-pdl"
                 ).build();
         app.run(args);
     }

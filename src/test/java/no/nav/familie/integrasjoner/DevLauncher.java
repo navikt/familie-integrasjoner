@@ -16,6 +16,7 @@ public class DevLauncher {
                 .profiles("dev",
                           "mock-aktor",
                           "mock-dokarkiv",
+                          "mock-dokdist",
                           "mock-egenansatt",
                           "mock-infotrygd",
                           "mock-medlemskap",
@@ -24,7 +25,8 @@ public class DevLauncher {
                           "mock-saf",
                           "mock-sts",
                           "mock-kodeverk",
-                          "mock-arbeidsfordeling"
+                          "mock-arbeidsfordeling",
+                          "mock-pdl"
                 ).build();
         app.run(args);
     }
