@@ -1,14 +1,12 @@
 package no.nav.familie.integrasjoner.personopplysning;
 
+import no.nav.familie.integrasjoner.client.rest.PdlRestClient;
 import no.nav.familie.integrasjoner.client.soap.PersonSoapClient;
 import no.nav.familie.integrasjoner.felles.ws.DateUtil;
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo;
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo;
 import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter;
-import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning;
-import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkPersonIkkeFunnet;
-import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkSikkerhetsbegrensning;
+import no.nav.familie.integrasjoner.personopplysning.internal.Person;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent;
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Periode;
@@ -21,15 +19,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.annotation.ApplicationScope;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 
 @Service
@@ -39,13 +33,15 @@ public class PersonopplysningerService {
     private static final Logger LOG = LoggerFactory.getLogger(PersonopplysningerService.class);
     private static final Logger secureLogger = LoggerFactory.getLogger("secureLogger");
     public static final String PERSON = "PERSON";
+    private final PdlRestClient pdlRestClient;
     private final PersonSoapClient personSoapClient;
     private TpsOversetter oversetter;
 
     @Autowired
-    public PersonopplysningerService(PersonSoapClient personSoapClient, TpsOversetter oversetter) {
+    public PersonopplysningerService(PersonSoapClient personSoapClient, TpsOversetter oversetter, PdlRestClient pdlRestClient) {
         this.personSoapClient = personSoapClient;
         this.oversetter = oversetter;
+        this.pdlRestClient = pdlRestClient;
     }
 
     PersonhistorikkInfo hentHistorikkFor(String personIdent, LocalDate fom, LocalDate tom) {
@@ -83,5 +79,9 @@ public class PersonopplysningerService {
 
         return oversetter.tilPersoninfo(new no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent(personIdent),
                                         response);
+    }
+
+    public Person hentPersoninfo(String personIdent, String tema) {
+        return pdlRestClient.hentPerson(personIdent, tema);
     }
 }
