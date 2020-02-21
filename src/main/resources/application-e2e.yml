@@ -38,6 +38,7 @@ MEDL2_URL: http://vtp:8060/rest/medl2
 SAF_URL: http://vtp:8060/rest/api/saf
 OPPGAVE_URL: http://vtp:8060/rest/dokarkiv/rest/oppgave-kontantstotte
 ARBEIDSFORDELING_V1_URL: http://vtp:8060/soap/norg2/ws/Arbeidsfordeling/v1
+PDL_URL: http://vtp:8060/rest/api/pdl
 
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw

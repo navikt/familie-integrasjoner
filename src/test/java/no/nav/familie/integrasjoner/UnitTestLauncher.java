@@ -26,7 +26,8 @@ public class UnitTestLauncher {
                           "mock-oppgave",
                           "mock-personopplysninger",
                           "mock-saf",
-                          "mock-sts"
+                          "mock-sts",
+                          "mock-pdl"
                 ).build();
         app.run(args);
     }
