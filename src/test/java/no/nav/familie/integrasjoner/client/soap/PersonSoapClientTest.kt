@@ -40,7 +40,7 @@ class PersonSoapClientTest {
         Assertions.assertThatThrownBy { personSoapClient.hentPersonhistorikkResponse(HentPersonhistorikkRequest()) }
                 .hasMessageContaining("Ukjent feil fra TPS")
                 .isInstanceOf(OppslagException::class.java)
-                .hasFieldOrPropertyWithValue("level", OppslagException.Level.MEDIUM)
+                .hasFieldOrPropertyWithValue("level", OppslagException.Level.KRITISK)
     }
 
 }

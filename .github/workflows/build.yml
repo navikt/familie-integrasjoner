@@ -26,7 +26,7 @@ jobs:
         env:
           GITHUB_USERNAME: x-access-token
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn package --settings .m2/maven-settings.xml --file pom.xml
+        run: mvn -B --no-transfer-progress package --settings .m2/maven-settings.xml --file pom.xml
       - name: Lag Docker tag
         env:
           NAME: familie-integrasjoner
