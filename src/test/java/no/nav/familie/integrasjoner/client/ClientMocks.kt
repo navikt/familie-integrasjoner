@@ -26,10 +26,4 @@ class ClientMocks {
         return mockk(relaxed = true)
     }
 
-    @Bean
-    @Primary
-    @Profile("mock-egenansatt")
-    fun mockEgenAnsattSoapClient(): EgenAnsattSoapClient {
-        return mockk(relaxed = true)
-    }
 }
