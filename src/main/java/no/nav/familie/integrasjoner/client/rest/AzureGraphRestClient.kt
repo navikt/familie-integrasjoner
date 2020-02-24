@@ -1,13 +1,13 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractRestClient
-import no.nav.familie.http.util.UriUtil
+import no.nav.familie.integrasjoner.azure.domene.Grupper
 import no.nav.familie.integrasjoner.azure.domene.Saksbehandler
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestOperations
+import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Service
@@ -15,14 +15,22 @@ class AzureGraphRestClient(@Qualifier("azure") restTemplate: RestOperations,
                            @Value("\${AAD_GRAPH_API_URI}") private val aadGrapURI: URI)
     : AbstractRestClient(restTemplate, "AzureGraph") {
 
-    val saksbehandler: Saksbehandler
-        get() {
-            return getForEntity(UriUtil.uri(aadGrapURI, PATH, QUERY))
-        }
+    val saksbehandlerUri: URI = UriComponentsBuilder.fromUri(aadGrapURI).path(ME).build().toUri()
+
+    val grupperUri: URI = UriComponentsBuilder.fromUri(aadGrapURI).pathSegment(ME, GRUPPER).build().toUri()
+
+
+    fun hentSaksbehandler(): Saksbehandler {
+        return getForEntity(saksbehandlerUri)
+    }
+
+    fun hentGrupper(): Grupper {
+        return getForEntity(grupperUri)
+    }
 
     companion object {
-        private const val PATH = "me"
-        private const val QUERY = "\$select=displayName,onPremisesSamAccountName,userPrincipalName"
+        private const val ME = "me"
+        private const val GRUPPER = "memberOf"
     }
 
 }

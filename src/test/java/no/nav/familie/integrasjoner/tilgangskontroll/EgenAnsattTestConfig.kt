@@ -1,21 +1,19 @@
-package no.nav.familie.integrasjoner.client
+package no.nav.familie.integrasjoner.tilgangskontroll
 
 import io.mockk.mockk
-import no.nav.familie.integrasjoner.client.rest.MedlRestClient
 import no.nav.familie.integrasjoner.client.soap.EgenAnsattSoapClient
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 import org.springframework.context.annotation.Profile
-import org.springframework.stereotype.Component
 
-@Component
-class ClientMocks {
+@Configuration
+class EgenAnsattTestConfig {
 
     @Bean
     @Primary
-    @Profile("mock-medlemskap")
-    fun mockMedlRestClient(): MedlRestClient {
+    @Profile("mock-egenansatt")
+    fun mockEgenAnsattSoapClient(): EgenAnsattSoapClient {
         return mockk(relaxed = true)
     }
-
 }
