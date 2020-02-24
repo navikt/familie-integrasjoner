@@ -16,7 +16,7 @@ class InfotrygdRestClient(@Qualifier("azure") private val restTemplate: RestOper
     : AbstractPingableRestClient(restTemplate, "infotrygd") {
 
     override val pingUri: URI = UriUtil.uri(infotrygdURL, PATH_PING)
-    private val harKontantstøtteUri = UriComponentsBuilder.fromUri(infotrygdURL).path(PATH_ATIV_KONTANTSTØTTE).build().toUri()
+    private val harKontantstøtteUri = UriComponentsBuilder.fromUri(infotrygdURL).path(PATH_AKTIV_KONTANTSTØTTE).build().toUri()
 
     fun hentAktivKontantstøtteFor(fnr: String): AktivKontantstøtteInfo {
         val httpHeaders = org.springframework.http.HttpHeaders().apply {
@@ -27,7 +27,7 @@ class InfotrygdRestClient(@Qualifier("azure") private val restTemplate: RestOper
 
     companion object {
         private const val PATH_PING = "actuator/health"
-        private const val PATH_ATIV_KONTANTSTØTTE = "v1/harBarnAktivKontantstotte"
+        private const val PATH_AKTIV_KONTANTSTØTTE = "v1/harBarnAktivKontantstotte"
     }
 
 
