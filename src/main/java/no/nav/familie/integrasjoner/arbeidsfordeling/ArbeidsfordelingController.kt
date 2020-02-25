@@ -14,7 +14,7 @@ class ArbeidsfordelingController(
         private val service: ArbeidsfordelingService
 ) {
 
-    @GetMapping("/enhet/")
+    @GetMapping("/enhet")
     fun hentBehandlendeEnhet(@RequestParam(name = "tema") tema: Tema,
                              @RequestParam(name = "geografi", required = false) geografi: String?,
                              @RequestParam(name = "diskresjonskode", required = false) diskresjonskode: String?)
