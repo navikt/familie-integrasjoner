@@ -15,7 +15,7 @@ class AzureGraphRestClient(@Qualifier("azure") restTemplate: RestOperations,
                            @Value("\${AAD_GRAPH_API_URI}") private val aadGrapURI: URI)
     : AbstractRestClient(restTemplate, "AzureGraph") {
 
-    val saksbehandlerUri: URI = UriComponentsBuilder.fromUri(aadGrapURI).path(ME).build().toUri()
+    val saksbehandlerUri: URI = UriComponentsBuilder.fromUri(aadGrapURI).pathSegment(ME).build().toUri()
 
     val grupperUri: URI = UriComponentsBuilder.fromUri(aadGrapURI).pathSegment(ME, GRUPPER).build().toUri()
 
