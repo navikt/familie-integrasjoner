@@ -4,11 +4,11 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
+import io.mockk.verify
 import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
 import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
 import no.nav.familie.integrasjoner.dokarkiv.api.Dokument
 import no.nav.familie.integrasjoner.dokarkiv.api.FilType
-import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
 import no.nav.familie.integrasjoner.dokarkiv.metadata.BarnetrygdVedtakMetadata
 import no.nav.familie.integrasjoner.dokarkiv.metadata.DokarkivMetadata
@@ -20,26 +20,23 @@ import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentCaptor
-import org.mockito.ArgumentMatchers.*
-import org.mockito.Mockito
 import java.time.LocalDate
 
 class DokarkivServiceTest {
 
     private val navn = "Navn Navnesen"
-    private val dokarkivClient = Mockito.mock(DokarkivClient::class.java)
 
     @MockK
     lateinit var dokarkivRestClient: DokarkivRestClient
 
+    @MockK
+    lateinit var personopplysningerService: PersonopplysningerService
+
     private lateinit var dokarkivService: DokarkivService
-    private val personopplysningerService = Mockito.mock(PersonopplysningerService::class.java)
 
     @Before fun setUp() {
         MockKAnnotations.init(this)
-        dokarkivService = DokarkivService(dokarkivClient,
-                                          dokarkivRestClient,
+        dokarkivService = DokarkivService(dokarkivRestClient,
                                           personopplysningerService,
                                           DokarkivMetadata(KontanstøtteSøknadMetadata,
                                                            KontanstøtteSøknadVedleggMetadata,
@@ -47,22 +44,25 @@ class DokarkivServiceTest {
     }
 
     @Test fun `skal mappe request til opprettJournalpostRequest av type arkiv pdfa`() {
-        val captor = ArgumentCaptor.forClass(OpprettJournalpostRequest::class.java)
-        Mockito.`when`(dokarkivClient.lagJournalpost(any<OpprettJournalpostRequest>(), anyBoolean()))
-                .thenReturn(OpprettJournalpostResponse())
-        Mockito.`when`(personopplysningerService.hentPersoninfoFor(FNR))
-                .thenReturn(Personinfo.Builder().medPersonIdent(PERSON_IDENT)
+        val slot = slot<OpprettJournalpostRequest>()
+        every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
+            .answers { OpprettJournalpostResponse() }
+
+        every { personopplysningerService.hentPersoninfoFor(FNR) }
+                .answers { Personinfo.Builder().medPersonIdent(PERSON_IDENT)
                                     .medFødselsdato(LocalDate.now())
                                     .medNavn(navn)
-                                    .build())
+                                    .build() }
         val dto = ArkiverDokumentRequest(FNR,
                                          false,
                                          listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
 
-        dokarkivService.lagInngåendeJournalpost(dto)
+        dokarkivService.lagJournalpostV2(dto)
 
-        Mockito.verify(dokarkivClient).lagJournalpost(captor.capture(), eq(false))
-        val request = captor.value
+        val request = slot.captured
+        verify {
+            dokarkivRestClient.lagJournalpost(slot.captured, false)
+        }
         assertOpprettJournalpostRequest(request, "PDFA", PDF_DOK, ARKIV_VARIANTFORMAT)
     }
 
@@ -72,11 +72,11 @@ class DokarkivServiceTest {
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
                 .answers { OpprettJournalpostResponse() }
 
-        Mockito.`when`(personopplysningerService.hentPersoninfoFor(FNR))
-                .thenReturn(Personinfo.Builder().medPersonIdent(PERSON_IDENT)
-                                    .medFødselsdato(LocalDate.now())
-                                    .medNavn(navn)
-                                    .build())
+        every { personopplysningerService.hentPersoninfoFor(FNR) }
+                .answers { Personinfo.Builder().medPersonIdent(PERSON_IDENT)
+                .medFødselsdato(LocalDate.now())
+                .medNavn(navn)
+                .build() }
 
         val dto = ArkiverDokumentRequest(FNR,
                                          false,
@@ -92,23 +92,27 @@ class DokarkivServiceTest {
     }
 
     @Test fun `skal mappe request til opprettJournalpostRequest av type ORIGINAL JSON`() {
-        val captor = ArgumentCaptor.forClass(OpprettJournalpostRequest::class.java)
-        Mockito.`when`(dokarkivClient.lagJournalpost(any<OpprettJournalpostRequest>(), anyBoolean()))
-                .thenReturn(OpprettJournalpostResponse())
-        Mockito.`when`(personopplysningerService.hentPersoninfoFor(FNR))
-                .thenReturn(Personinfo.Builder()
-                                    .medPersonIdent(PERSON_IDENT)
-                                    .medFødselsdato(LocalDate.now())
-                                    .medNavn(navn)
-                                    .build())
+        val slot = slot<OpprettJournalpostRequest>()
+        every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
+            .answers { OpprettJournalpostResponse() }
+        every { personopplysningerService.hentPersoninfoFor(FNR) }
+            .answers { Personinfo.Builder().medPersonIdent(PERSON_IDENT)
+                .medFødselsdato(LocalDate.now())
+                .medNavn(navn)
+                .build() }
+
         val dto = ArkiverDokumentRequest(FNR,
                                          false,
                                          listOf(Dokument(JSON_DOK, FilType.JSON, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
 
-        dokarkivService.lagInngåendeJournalpost(dto)
+        dokarkivService.lagJournalpostV2(dto)
 
-        Mockito.verify(dokarkivClient).lagJournalpost(captor.capture(), eq(false))
-        val request = captor.value
+        val request = slot.captured
+
+        verify {
+            dokarkivRestClient.lagJournalpost(request, false)
+        }
+
         assertOpprettJournalpostRequest(request,
                                         "JSON",
                                         JSON_DOK,
@@ -116,31 +120,33 @@ class DokarkivServiceTest {
     }
 
     @Test fun `response fra klient skal returnere arkiverDokumentResponse`() {
-        Mockito.`when`(dokarkivClient.lagJournalpost(any(OpprettJournalpostRequest::class.java), anyBoolean()))
-                .thenReturn(OpprettJournalpostResponse(journalpostId = JOURNALPOST_ID, journalpostferdigstilt = true))
-        Mockito.`when`(personopplysningerService.hentPersoninfoFor(FNR))
-                .thenReturn(Personinfo.Builder()
-                                    .medPersonIdent(PERSON_IDENT)
-                                    .medFødselsdato(LocalDate.now())
-                                    .medNavn(navn)
-                                    .build())
+        every { dokarkivRestClient.lagJournalpost(any(), any()) }
+            .answers { OpprettJournalpostResponse(journalpostId = JOURNALPOST_ID, journalpostferdigstilt = true) }
+        every { personopplysningerService.hentPersoninfoFor(FNR) }
+            .answers { Personinfo.Builder().medPersonIdent(PERSON_IDENT)
+                .medFødselsdato(LocalDate.now())
+                .medNavn(navn)
+                .build() }
+
         val dto = ArkiverDokumentRequest(FNR,
                                          false,
                                          listOf(Dokument(JSON_DOK, FilType.JSON, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
 
-        val arkiverDokumentResponse = dokarkivService.lagInngåendeJournalpost(dto)
+        val arkiverDokumentResponse = dokarkivService.lagJournalpostV2(dto)
 
         Assertions.assertThat(arkiverDokumentResponse.journalpostId).isEqualTo(JOURNALPOST_ID)
         Assertions.assertThat(arkiverDokumentResponse.ferdigstilt).isTrue()
     }
 
     @Test fun `skal kaste exception hvis navn er null`() {
-        Mockito.`when`(personopplysningerService.hentPersoninfoFor(FNR)).thenReturn(null)
+        every { personopplysningerService.hentPersoninfoFor(FNR) }
+            .answers { null }
+
         val dto = ArkiverDokumentRequest(FNR,
                                          false,
                                          listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
 
-        val thrown = Assertions.catchThrowable { dokarkivService.lagInngåendeJournalpost(dto) }
+        val thrown = Assertions.catchThrowable { dokarkivService.lagJournalpostV2(dto) }
 
         Assertions.assertThat(thrown).isInstanceOf(RuntimeException::class.java)
                 .withFailMessage("Kan ikke hente navn")

@@ -5,7 +5,6 @@ import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
 import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentResponse
 import no.nav.familie.integrasjoner.dokarkiv.api.Dokument
 import no.nav.familie.integrasjoner.dokarkiv.api.FilType
-import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
 import no.nav.familie.integrasjoner.dokarkiv.metadata.DokarkivMetadata
 import no.nav.familie.integrasjoner.felles.MDCOperations
@@ -13,26 +12,19 @@ import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import org.springframework.stereotype.Service
 
 @Service
-class DokarkivService(private val dokarkivClient: DokarkivClient,
-                      private val dokarkivRestClient: DokarkivRestClient,
+class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
                       private val personopplysningerService: PersonopplysningerService,
                       private val dokarkivMetadata: DokarkivMetadata) {
-
-    fun lagInngåendeJournalpost(arkiverDokumentRequest: ArkiverDokumentRequest): ArkiverDokumentResponse {
-        val request = mapTilOpprettJournalpostRequest(arkiverDokumentRequest)
-        val response = dokarkivClient.lagJournalpost(request, arkiverDokumentRequest.forsøkFerdigstill)
-        return mapTilArkiverDokumentResponse(response)
-    }
-
-    fun ferdistillJournalpost(journalpost: String, journalførendeEnhet: String) {
-        dokarkivRestClient.ferdigstillJournalpost(journalpost, journalførendeEnhet)
-    }
 
     fun lagJournalpostV2(arkiverDokumentRequest: ArkiverDokumentRequest): ArkiverDokumentResponse {
         val request = mapTilOpprettJournalpostRequest(arkiverDokumentRequest)
         val response =
                 dokarkivRestClient.lagJournalpost(request, arkiverDokumentRequest.forsøkFerdigstill)
         return mapTilArkiverDokumentResponse(response)
+    }
+
+    fun ferdistillJournalpost(journalpost: String, journalførendeEnhet: String) {
+        dokarkivRestClient.ferdigstillJournalpost(journalpost, journalførendeEnhet)
     }
 
     private fun hentNavnForFnr(fnr: String?): String {
