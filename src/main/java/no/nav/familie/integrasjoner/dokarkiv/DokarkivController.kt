@@ -51,7 +51,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     }
 
     @PostMapping(path = ["v2"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun arkiverDokumentV2(@RequestBody arkiverDokumentRequest: @Valid ArkiverDokumentRequest)
+    fun arkiverDokumentV2(@RequestBody @Valid arkiverDokumentRequest: ArkiverDokumentRequest)
             : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(success(journalføringService.lagJournalpostV2(arkiverDokumentRequest),
@@ -61,6 +61,17 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     @PutMapping("v1/{journalpostId}/ferdigstill")
     @ResponseStatus(HttpStatus.OK)
     fun ferdigstillJournalpost(@PathVariable(name = "journalpostId") journalpostId: String,
+                               @RequestParam(name = "journalfoerendeEnhet")
+                               journalførendeEnhet: String): ResponseEntity<Ressurs<Map<String, String>>> {
+
+        journalføringService.ferdistillJournalpost(journalpostId, journalførendeEnhet)
+        return ResponseEntity.ok(success(mapOf("journalpostId" to journalpostId),
+                                         "Ferdigstilt journalpost $journalpostId"))
+    }
+
+    @PutMapping("v2/{journalpostId}/ferdigstill")
+    @ResponseStatus(HttpStatus.OK)
+    fun ferdigstillJournalpostV2(@PathVariable(name = "journalpostId") journalpostId: String,
                                @RequestParam(name = "journalfoerendeEnhet")
                                journalførendeEnhet: String): ResponseEntity<Ressurs<Map<String, String>>> {
 

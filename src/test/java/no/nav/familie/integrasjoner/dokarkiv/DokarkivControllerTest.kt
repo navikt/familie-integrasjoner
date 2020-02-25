@@ -60,8 +60,10 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                 .request()
                                 .withMethod("POST")
                                 .withPath("/rest/journalpostapi/v1/journalpost")
-                                .withQueryStringParameter("foersoekFerdigstill", "false"))
-                .respond(HttpResponse.response().withBody(gyldigDokarkivResponse()))
+                                .withQueryStringParameter("forsoekFerdigstill", "false"))
+                .respond(HttpResponse.response()
+                    .withHeader("Content-Type", "application/json;charset=UTF-8")
+                    .withBody(gyldigDokarkivResponse()))
         val body = ArkiverDokumentRequest("FNR",
                                           false,
                                           listOf(HOVEDDOKUMENT))
@@ -82,8 +84,10 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/journalpostapi/v1/journalpost")
-                                .withQueryStringParameter("foersoekFerdigstill", "false"))
-                .respond(HttpResponse.response().withBody(gyldigDokarkivResponse()))
+                                .withQueryStringParameter("forsoekFerdigstill", "false"))
+                .respond(HttpResponse.response()
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(gyldigDokarkivResponse()))
         val body = ArkiverDokumentRequest("FNR",
                                           false,
                                           listOf(HOVEDDOKUMENT, VEDLEGG))
@@ -104,8 +108,11 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/journalpostapi/v1/journalpost")
-                                .withQueryStringParameter("foersoekFerdigstill", "false"))
-                .respond(HttpResponse.response().withStatusCode(401).withBody("Tekst fra body"))
+                                .withQueryStringParameter("forsoekFerdigstill", "false"))
+                .respond(HttpResponse.response()
+                    .withStatusCode(401)
+                    .withHeader("Content-Type", "application/json;charset=UTF-8")
+                    .withBody("Tekst fra body"))
         val body = ArkiverDokumentRequest("FNR",
                                           false,
                                           listOf(Dokument("foo".toByteArray(),
@@ -120,7 +127,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        Assertions.assertThat(response.body?.melding).contains("Feilresponse fra dokarkiv-tjenesten 401 Tekst fra body")
+        Assertions.assertThat(response.body?.melding).contains("Feil mot ekstern tjeneste. 401 Tekst fra body Message=401 Unauthorized")
     }
 
     @Test
@@ -167,7 +174,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
     companion object {
         private const val MOCK_SERVER_PORT = 18321
-        private const val DOKARKIV_URL = "/api/arkiv/v1"
+        private const val DOKARKIV_URL = "/api/arkiv/v2"
         private val HOVEDDOKUMENT = Dokument("foo".toByteArray(),
                                              FilType.PDFA,
                                              "filnavn",
