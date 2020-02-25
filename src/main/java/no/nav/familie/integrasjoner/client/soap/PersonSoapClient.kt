@@ -40,7 +40,7 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
         } catch (e: Exception) {
             throw OppslagException("Ukjent feil fra TPS",
                                    "TPS.hentPerson",
-                                   OppslagException.Level.MEDIUM,
+                                   OppslagException.Level.KRITISK,
                                    HttpStatus.INTERNAL_SERVER_ERROR,
                                    e)
         }
@@ -71,7 +71,7 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
         } catch (e: Exception) {
             throw OppslagException("Ukjent feil fra TPS",
                                    "TPS.hentPersonhistorikk",
-                                   OppslagException.Level.MEDIUM,
+                                   OppslagException.Level.KRITISK,
                                    HttpStatus.INTERNAL_SERVER_ERROR,
                                    e)
         }
