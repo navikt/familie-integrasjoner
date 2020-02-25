@@ -1,13 +1,14 @@
 package no.nav.familie.integrasjoner.infotrygd
 
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.integrasjoner.client.rest.InfotrygdRestClient
 import no.nav.familie.integrasjoner.infotrygd.domene.AktivKontantstøtteInfo
 import no.nav.familie.kontrakter.felles.Ressurs
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito
 import org.mockserver.junit.MockServerRule
 import org.mockserver.model.HttpRequest
 import org.mockserver.model.HttpResponse
@@ -18,13 +19,12 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.web.client.HttpServerErrorException
 
 @ActiveProfiles("integrasjonstest", "mock-oauth")
 class InfotrygdControllerTest : OppslagSpringRunnerTest() {
 
     @Autowired
-    lateinit var infotrygdService: InfotrygdService
+    lateinit var infotrygdRestClient: InfotrygdRestClient
 
     @get:Rule
     val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
@@ -41,10 +41,10 @@ class InfotrygdControllerTest : OppslagSpringRunnerTest() {
                                       HttpMethod.GET,
                                       HttpEntity<Any>(headers))
 
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        Assertions.assertThat(response.body?.melding).isEqualTo("Mangler påkrevd request header")
-        Assertions.assertThat(response.body?.stacktrace)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.body?.melding).isEqualTo("Mangler påkrevd request header")
+        assertThat(response.body?.stacktrace)
                 .contains("Missing request header 'Nav-Personident' for method parameter of type String")
     }
 
@@ -57,49 +57,43 @@ class InfotrygdControllerTest : OppslagSpringRunnerTest() {
                                       HttpMethod.GET,
                                       HttpEntity<Any>(headers))
 
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
     @Test
     fun `skal korrekt behandle returobjekt`() {
         spesifiserResponsFraInfotrygd("{ \"harAktivKontantstotte\": true }")
 
-        val aktivKontantstøtteInfo = infotrygdService.hentAktivKontantstøtteFor("12345678901")
+        val aktivKontantstøtteInfo = infotrygdRestClient.hentAktivKontantstøtteFor("12345678901")
 
-        Assertions.assertThat(aktivKontantstøtteInfo.harAktivKontantstotte).isEqualTo(true)
+        assertThat(aktivKontantstøtteInfo.harAktivKontantstotte).isEqualTo(true)
     }
 
     @Test
     fun `skal tolerere returobjekt med flere verdier`() {
         spesifiserResponsFraInfotrygd("{ \"harAktivKontantstotte\": true, \"foo\": 42 }")
 
-        val aktivKontantstøtteInfo = infotrygdService.hentAktivKontantstøtteFor("12345678901")
+        val aktivKontantstøtteInfo = infotrygdRestClient.hentAktivKontantstøtteFor("12345678901")
 
-        Assertions.assertThat(aktivKontantstøtteInfo.harAktivKontantstotte).isEqualTo(true)
+        assertThat(aktivKontantstøtteInfo.harAktivKontantstotte).isEqualTo(true)
     }
 
     @Test
     fun `skal feile når respons mangler`() {
         spesifiserResponsFraInfotrygd("")
 
-        Assertions.assertThatThrownBy { infotrygdService.hentAktivKontantstøtteFor("12345678901") }
-                .isInstanceOf(HttpServerErrorException::class.java)
+        assertThatThrownBy { infotrygdRestClient.hentAktivKontantstøtteFor("12345678901") }
+                .isInstanceOf(IllegalStateException::class.java)
     }
 
     @Test
-    fun `skal feile når returobjekt er tomt`() {
+    fun `skal returnere false når returobjekt er tomt`() {
         spesifiserResponsFraInfotrygd("{}")
 
-        Assertions.assertThatThrownBy { infotrygdService.hentAktivKontantstøtteFor("12345678901") }
-                .isInstanceOf(HttpServerErrorException::class.java)
-    }
+        val aktivKontantstøtteInfo = infotrygdRestClient.hentAktivKontantstøtteFor("12345678901")
 
-    @Test fun `skal feile når returobjekt har feil type`() {
-        spesifiserResponsFraInfotrygd("{ \"harAKtivKontantstotte\": 42 }")
-
-        Assertions.assertThatThrownBy { infotrygdService.hentAktivKontantstøtteFor("12345678901") }
-                .isInstanceOf(HttpServerErrorException::class.java)
+        assertThat(aktivKontantstøtteInfo.harAktivKontantstotte).isEqualTo(false)
     }
 
     private fun spesifiserResponsFraInfotrygd(respons: String) {
