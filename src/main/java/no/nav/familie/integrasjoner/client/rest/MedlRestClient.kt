@@ -15,9 +15,9 @@ class MedlRestClient(@Value("\${MEDL2_URL}") private val medl2BaseUrl: URI,
                      @Qualifier("sts") private val restTemplate: RestOperations)
     : AbstractPingableRestClient(restTemplate, "medlemskap") {
 
-    override val pingUri: URI = UriComponentsBuilder.fromUri(medl2BaseUrl).path(PATH_PING).build().toUri()
+    override val pingUri: URI = UriComponentsBuilder.fromUri(medl2BaseUrl).pathSegment(PATH_PING).build().toUri()
 
-    val medlemskapsunntakUri: URI = UriComponentsBuilder.fromUri(medl2BaseUrl).path(PATH_MEDLEMSKAPSUNNTAK).build().toUri()
+    val medlemskapsunntakUri: URI = UriComponentsBuilder.fromUri(medl2BaseUrl).pathSegment(PATH_MEDLEMSKAPSUNNTAK).build().toUri()
 
     fun hentMedlemskapsUnntakResponse(aktørId: String?): List<MedlemskapsunntakResponse> {
 
