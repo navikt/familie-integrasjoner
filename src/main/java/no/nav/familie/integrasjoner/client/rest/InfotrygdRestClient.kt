@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestOperations
+import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Service
@@ -15,18 +16,18 @@ class InfotrygdRestClient(@Qualifier("azure") private val restTemplate: RestOper
     : AbstractPingableRestClient(restTemplate, "infotrygd") {
 
     override val pingUri: URI = UriUtil.uri(infotrygdURL, PATH_PING)
-    private val harKontantstøtteUri = UriUtil.uri(infotrygdURL, PATH_ATIV_KONTANTSTØTTE)
+    private val harKontantstøtteUri = UriComponentsBuilder.fromUri(infotrygdURL).path(PATH_AKTIV_KONTANTSTØTTE).build().toUri()
 
     fun hentAktivKontantstøtteFor(fnr: String): AktivKontantstøtteInfo {
         val httpHeaders = org.springframework.http.HttpHeaders().apply {
             add("fnr", fnr)
         }
-        return getForEntity(harKontantstøtteUri, httpHeaders)
+        return  getForEntity(harKontantstøtteUri, httpHeaders)
     }
 
     companion object {
         private const val PATH_PING = "actuator/health"
-        private const val PATH_ATIV_KONTANTSTØTTE = "v1/harBarnAktivKontantstotte"
+        private const val PATH_AKTIV_KONTANTSTØTTE = "v1/harBarnAktivKontantstotte"
     }
 
 
