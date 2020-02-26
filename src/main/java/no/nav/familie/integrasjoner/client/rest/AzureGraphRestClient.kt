@@ -12,12 +12,12 @@ import java.net.URI
 
 @Service
 class AzureGraphRestClient(@Qualifier("azure") restTemplate: RestOperations,
-                           @Value("\${AAD_GRAPH_API_URI}") private val aadGrapURI: URI)
+                           @Value("\${AAD_GRAPH_API_URI}") private val aadGraphURI: URI)
     : AbstractRestClient(restTemplate, "AzureGraph") {
 
-    val saksbehandlerUri: URI = UriComponentsBuilder.fromUri(aadGrapURI).path(ME).build().toUri()
+    val saksbehandlerUri: URI = UriComponentsBuilder.fromUri(aadGraphURI).pathSegment(ME).build().toUri()
 
-    val grupperUri: URI = UriComponentsBuilder.fromUri(aadGrapURI).pathSegment(ME, GRUPPER).build().toUri()
+    val grupperUri: URI = UriComponentsBuilder.fromUri(aadGraphURI).pathSegment(ME, GRUPPER).build().toUri()
 
 
     fun hentSaksbehandler(): Saksbehandler {
