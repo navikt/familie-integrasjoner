@@ -41,7 +41,7 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
                 sjekkOmExceptionErUnexpectedEOFinProlog(e) -> {
                     throw OppslagException("Unexpected EOF in prolog",
                                            "TPS.hentPerson",
-                                           OppslagException.Level.MEDIUM,
+                                           OppslagException.Level.LAV,
                                            HttpStatus.INTERNAL_SERVER_ERROR,
                                            e)
                 }
@@ -85,7 +85,7 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
                 sjekkOmExceptionErUnexpectedEOFinProlog(e) -> {
                     throw OppslagException("Unexpected EOF in prolog",
                                            "TPS.hentPersonhistorikk",
-                                           OppslagException.Level.MEDIUM,
+                                           OppslagException.Level.LAV,
                                            HttpStatus.INTERNAL_SERVER_ERROR,
                                            e)
                 }
