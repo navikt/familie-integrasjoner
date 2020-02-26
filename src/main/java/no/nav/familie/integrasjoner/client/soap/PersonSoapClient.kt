@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component
 @Component
 class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV3"), Pingable {
 
-    @Retryable(value = [OppslagException::class], maxAttempts = 3, backoff = Backoff(delay = 2000))
+    @Retryable(value = [OppslagException::class], maxAttempts = 3, backoff = Backoff(delay = 4000))
     fun hentPersonResponse(request: HentPersonRequest?): HentPersonResponse {
         return try {
             executeMedMetrics { port.hentPerson(request) }
@@ -62,7 +62,7 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
      * @throws HentPersonhistorikkSikkerhetsbegrensning når bruker ikke har tilgang
      * @throws HentPersonhistorikkPersonIkkeFunnet      når bruker ikke finnes
      */
-    @Retryable(value = [OppslagException::class], maxAttempts = 3, backoff = Backoff(delay = 2000))
+    @Retryable(value = [OppslagException::class], maxAttempts = 3, backoff = Backoff(delay = 4000))
     fun hentPersonhistorikkResponse(request: HentPersonhistorikkRequest?): HentPersonhistorikkResponse {
         return try {
             executeMedMetrics { port.hentPersonhistorikk(request) }
