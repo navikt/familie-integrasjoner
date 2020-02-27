@@ -31,7 +31,7 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
                                                                  safJournalpostRequest,
                                                                  httpHeaders())
             if (response != null && !response.harFeil()) {
-                return  response.data?.journalpost ?: throw JournalpostRestClientException("Kan ikke hente journalpost", null, journalpostId)
+                return response.data?.journalpost ?: throw JournalpostRestClientException("Kan ikke hente journalpost", null, journalpostId)
 
             } else {
                 responsFailure.increment()
@@ -57,5 +57,4 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
         private const val PATH_GRAPHQL = "graphql"
         private const val NAV_CALL_ID = "Nav-Callid"
     }
-
 }
