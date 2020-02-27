@@ -3,12 +3,18 @@
     "person": {
       "navn": [
         {
-          "fornavn": "ENGASJERT"
+          "fornavn": "ENGASJERT",
+          "etternavn": "FYR"
         }
       ],
       "foedsel": [
         {
           "foedselsdato": null
+        }
+      ],
+      "kjoenn": [
+        {
+          "kjoenn": "MANN"
         }
       ]
     }

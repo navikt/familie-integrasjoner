@@ -4,6 +4,7 @@ import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.http.sts.StsRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.personopplysning.internal.*
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -21,21 +22,32 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
     : AbstractRestClient(restTemplate, "pdl.personinfo") {
 
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
+    private val graphQL = this::class.java.getResource("/pdl/hentperson.graphql").readText().graphqlCompatible()
 
     fun hentPerson(personIdent: String, tema: String): Person {
-        val pdlFødselsdatoRequest = PdlFødselsdatoRequest(PdlRequestVariable(personIdent))
+        val pdlPersonRequest = PdlPersonRequest(variables = PdlRequestVariable(personIdent),
+                                                query = graphQL)
         try {
             val response = postForEntity<PdlHentPersonResponse>(pdlUri,
-                                                                pdlFødselsdatoRequest,
+                                                                pdlPersonRequest,
                                                                 httpHeaders(tema))
-
             if (response != null && !response.harFeil()) {
-                return  Person(response?.data?.person?.foedsel!!.first().foedselsdato ?:
-                        throw OppslagException("Fant ikke forespurte data på person $personIdent",
-                                               "PdlRestClient",
-                                               OppslagException.Level.MEDIUM,
-                                               HttpStatus.NOT_FOUND))
-
+                return Result.runCatching {
+                    response?.data?.person!!.let {
+                        Person(fødselsdato = it.foedsel!!.first().foedselsdato!!,
+                               navn = it.navn!!.first().fulltNavn(),
+                               kjønn = it.kjoenn!!.first().kjoenn.toString())
+                    }
+                }.fold (
+                        onSuccess = {it},
+                        onFailure = {
+                            throw OppslagException("Fant ikke forespurte data på person $personIdent",
+                                                   "PdlRestClient",
+                                                   OppslagException.Level.MEDIUM,
+                                                   HttpStatus.NOT_FOUND,
+                                                   it)
+                        }
+                )
             } else {
                 responsFailure.increment()
                 throw OppslagException("Feil ved oppslag på personinfo: ${response?.errorMessages()}",

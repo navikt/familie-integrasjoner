@@ -1,1 +1,1 @@
-{"variables":{"ident":"12345678901"},"query":"query($ident: ID!) {person: hentPerson(ident: $ident) {foedsel {foedselsdato}}}"}
+{"variables":{"ident":"12345678901"},"query":"GRAPHQL-PLACEHOLDER"}

@@ -20,7 +20,7 @@ class PdlTestConfig {
 
         every {
             klient.hentPerson(any(), any())
-        } returns Person("1980-05-12")
+        } returns Person(fødselsdato = "1980-05-12", navn = "Kari Normann", kjønn = "KVINNE")
         return klient
     }
 }
