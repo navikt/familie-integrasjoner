@@ -31,7 +31,7 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
                                                                  safJournalpostRequest,
                                                                  httpHeaders())
             if (response != null && !response.harFeil()) {
-                return  response?.data?.journalpost ?: throw JournalpostRestClientException("Kan ikke hente journalpost", null, journalpostId)
+                return  response.data?.journalpost ?: throw JournalpostRestClientException("Kan ikke hente journalpost", null, journalpostId)
 
             } else {
                 responsFailure.increment()
