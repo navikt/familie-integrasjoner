@@ -1,11 +1,13 @@
 package no.nav.familie.integrasjoner.infotrygd
 
+import no.nav.familie.integrasjoner.client.rest.InfotrygdRestClient
 import no.nav.familie.integrasjoner.infotrygd.domene.AktivKontantstøtteInfo
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -15,7 +17,7 @@ import org.springframework.web.client.HttpStatusCodeException
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/infotrygd")
-class InfotrygdController(private val infotrygdService: InfotrygdService) {
+class InfotrygdController(private val infotrygdRestClient: InfotrygdRestClient) {
 
     @ExceptionHandler(HttpStatusCodeException::class)
     fun handleExceptions(ex: HttpStatusCodeException): ResponseEntity<Ressurs<Any>> {
@@ -36,7 +38,10 @@ class InfotrygdController(private val infotrygdService: InfotrygdService) {
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/harBarnAktivKontantstotte"])
     fun aktivKontantstøtte(@RequestHeader(name = "Nav-Personident")
                            fnr: String): ResponseEntity<Ressurs<AktivKontantstøtteInfo>> {
-        return ResponseEntity.ok(success(infotrygdService.hentAktivKontantstøtteFor(fnr),
+        if (!fnr.matches(Regex("[0-9]+"))) {
+            throw HttpClientErrorException(HttpStatus.BAD_REQUEST, "fnr må være et tall")
+        }
+        return ResponseEntity.ok(success(infotrygdRestClient.hentAktivKontantstøtteFor(fnr),
                                          "Oppslag mot Infotrygd OK"))
     }
 
