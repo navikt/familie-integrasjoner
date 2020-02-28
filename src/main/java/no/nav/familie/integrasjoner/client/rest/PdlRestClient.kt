@@ -33,10 +33,10 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                                                 httpHeaders(tema))
             if (response != null && !response.harFeil()) {
                 return Result.runCatching {
-                    response?.data?.person!!.let {
-                        Person(fødselsdato = it.foedsel!!.first().foedselsdato!!,
-                               navn = it.navn!!.first().fulltNavn(),
-                               kjønn = it.kjoenn!!.first().kjoenn.toString())
+                    response.data?.person!!.let {
+                        Person(fødselsdato = it.foedsel.first().foedselsdato!!,
+                               navn = it.navn.first().fulltNavn(),
+                               kjønn = it.kjoenn.first().kjoenn.toString())
                     }
                 }.fold (
                         onSuccess = {it},
