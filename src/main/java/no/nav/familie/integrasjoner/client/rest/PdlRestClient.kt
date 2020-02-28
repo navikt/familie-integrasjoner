@@ -50,7 +50,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                 )
             } else {
                 responsFailure.increment()
-                throw OppslagException("Feil ved oppslag på personinfo: ${response?.errorMessages()}",
+                throw OppslagException("Feil ved oppslag på person $personIdent: ${response?.errorMessages()}",
                                        "PdlRestClient",
                                        OppslagException.Level.MEDIUM,
                                        HttpStatus.INTERNAL_SERVER_ERROR)
@@ -60,7 +60,11 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                 is OppslagException -> throw e
                 else -> {
                     responsFailure.increment()
-                    throw OppslagException(e.message, "PdlRestClient", OppslagException.Level.MEDIUM, HttpStatus.INTERNAL_SERVER_ERROR)
+                    throw OppslagException("Feil ved oppslag på person $personIdent. Gav feil: ${e.message}",
+                                           "PdlRestClient",
+                                           OppslagException.Level.MEDIUM,
+                                           HttpStatus.INTERNAL_SERVER_ERROR,
+                                           e)
                 }
             }
         }
