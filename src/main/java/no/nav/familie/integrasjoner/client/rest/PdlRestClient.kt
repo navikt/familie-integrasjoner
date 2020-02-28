@@ -41,30 +41,34 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                 }.fold (
                         onSuccess = {it},
                         onFailure = {
-                            throw OppslagException("Fant ikke forespurte data på person $personIdent",
+                            throw OppslagException("Fant ikke forespurte data på person.",
                                                    "PdlRestClient",
                                                    OppslagException.Level.MEDIUM,
                                                    HttpStatus.NOT_FOUND,
-                                                   it)
+                                                   it,
+                                                   personIdent)
                         }
                 )
             } else {
                 responsFailure.increment()
-                throw OppslagException("Feil ved oppslag på person $personIdent: ${response?.errorMessages()}",
+                throw OppslagException("Feil ved oppslag på person: ${response?.errorMessages()}",
                                        "PdlRestClient",
                                        OppslagException.Level.MEDIUM,
-                                       HttpStatus.INTERNAL_SERVER_ERROR)
+                                       HttpStatus.INTERNAL_SERVER_ERROR,
+                                       null,
+                                       personIdent)
             }
         } catch (e: Exception) {
             when (e) {
                 is OppslagException -> throw e
                 else -> {
                     responsFailure.increment()
-                    throw OppslagException("Feil ved oppslag på person $personIdent. Gav feil: ${e.message}",
+                    throw OppslagException("Feil ved oppslag på person. Gav feil: ${e.message}",
                                            "PdlRestClient",
                                            OppslagException.Level.MEDIUM,
                                            HttpStatus.INTERNAL_SERVER_ERROR,
-                                           e)
+                                           e,
+                                           personIdent)
                 }
             }
         }
