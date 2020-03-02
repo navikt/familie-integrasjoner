@@ -68,17 +68,22 @@ class ApiExceptionHandler {
     @ExceptionHandler(OppslagException::class)
     fun handAktørOppslagException(e: OppslagException): ResponseEntity<Ressurs<Any>> {
         var feilmelding = "[${e.kilde}][${e.message}]"
+        var sensitivFeilmelding = feilmelding
+        if (!e.sensitiveInfo.isNullOrEmpty()) {
+            sensitivFeilmelding += "[${e.sensitiveInfo}]"
+        }
         if (e.error != null) {
             feilmelding += "[${e.error.javaClass.name}]"
+            sensitivFeilmelding += "[${e.error.javaClass.name}]"
         }
         when (e.level) {
             OppslagException.Level.KRITISK -> {
-                secureLogger.error("OppslagException : {} [{}]", feilmelding, e.error)
+                secureLogger.error("OppslagException : {} [{}]", sensitivFeilmelding, e.error)
                 logger.error("OppslagException : {}", feilmelding)
             }
 
             OppslagException.Level.MEDIUM -> {
-                secureLogger.warn("OppslagException : {} [{}]", feilmelding, e.error)
+                secureLogger.warn("OppslagException : {} [{}]", sensitivFeilmelding, e.error)
                 logger.warn("OppslagException : {}", feilmelding)
             }
 
