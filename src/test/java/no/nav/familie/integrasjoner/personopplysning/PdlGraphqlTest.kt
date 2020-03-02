@@ -3,7 +3,7 @@ package no.nav.familie.integrasjoner.personopplysning
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlHentPersonResponse
-import no.nav.familie.integrasjoner.personopplysning.internal.Person
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlNavn
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.io.File
@@ -14,10 +14,11 @@ class PdlGraphqlTest {
             .registerKotlinModule()
 
     @Test
-    fun testSerializationAndDeserialization() {
+    fun testDeserialization() {
         val resp = mapper.readValue(File(getFile("pdl/pdlOkResponse.json")), PdlHentPersonResponse::class.java)
         assertThat(resp.data!!.person!!.foedsel.first().foedselsdato).isEqualTo("1955-09-13")
-        assertThat(mapper.writeValueAsString (Person(resp.data!!.person!!.foedsel.first().foedselsdato!!))).contains("fødselsdato")
+        assertThat(resp.data!!.person!!.navn.first().fornavn).isEqualTo("ENGASJERT")
+        assertThat(resp.data!!.person!!.kjoenn.first().kjoenn.toString()).isEqualTo("MANN")
         assertThat(resp.errorMessages()).isEqualTo("")
     }
 
@@ -32,6 +33,14 @@ class PdlGraphqlTest {
     fun testDeserializationOfResponseWithoutFødselsdato() {
         val resp = mapper.readValue(File(getFile("pdl/pdlManglerFoedselResponse.json")), PdlHentPersonResponse::class.java)
         assertThat(resp.data!!.person!!.foedsel.first().foedselsdato).isNull()
+    }
+
+    @Test
+    fun testFulltNavn() {
+        assertThat(PdlNavn(fornavn = "For", mellomnavn = "Mellom", etternavn = "Etter").fulltNavn())
+                .isEqualTo("For Mellom Etter")
+        assertThat(PdlNavn(fornavn = "For", etternavn = "Etter").fulltNavn())
+                .isEqualTo("For Etter")
     }
 
     private fun getFile(name: String): String {
