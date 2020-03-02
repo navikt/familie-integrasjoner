@@ -8,15 +8,17 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkResponse
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
-import org.springframework.remoting.soap.SoapFaultException
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
-
+import javax.xml.ws.soap.SOAPFaultException
 
 @Component
 class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV3"), Pingable {
+
+    private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
     @Retryable(value = [OppslagException::class], maxAttempts = 3, backoff = Backoff(delay = 4000))
     fun hentPersonResponse(request: HentPersonRequest?): HentPersonResponse {
@@ -105,8 +107,12 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
     }
 
     private fun sjekkOmExceptionErUnexpectedEOFinProlog(e: Exception): Boolean {
-        return e is SoapFaultException &&
-               e.faultString != null &&
-               e.faultString.contains("Unexpected EOF in prolog")
+        return when {
+            e is SOAPFaultException -> {
+                secureLogger.info("message: ${e.message}, fault string: ${e.fault?.faultString}")
+                e.message != null && e.message!!.contains("Unexpected EOF in prolog")
+            }
+            else -> false
+        }
     }
 }
