@@ -26,6 +26,10 @@ class OppgaveRestClientTestConfig {
             klient.finnOppgaveMedId(any())
         } returns response
 
+        every {
+            klient.opprettOppgave(any())
+        } returns 42
+
         return klient
     }
 }
