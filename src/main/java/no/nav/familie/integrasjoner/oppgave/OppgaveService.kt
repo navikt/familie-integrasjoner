@@ -47,6 +47,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
                 orgnr = if (request.ident.type == IdentType.Organisasjon) request.ident.ident else null,
                 behandlesAvApplikasjon = GOSYS_APP_ID,
                 saksreferanse = request.saksId,
+                journalpostId = request.journalpostId,
                 prioritet = PrioritetEnum.NORM,
                 tema = request.tema.name,
                 tildeltEnhetsnr = request.enhetsnummer,
