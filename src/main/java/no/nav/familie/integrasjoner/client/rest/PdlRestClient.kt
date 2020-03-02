@@ -25,8 +25,8 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
     private val graphQL = this::class.java.getResource("/pdl/hentperson.graphql").readText().graphqlCompatible()
 
     fun hentPerson(personIdent: String, tema: String): Person {
-        val pdlPersonRequest = PdlPersonRequest(variables = PdlRequestVariable(personIdent),
-                                                query = graphQL)
+        val pdlPersonRequest = PdlRequest(variables = PdlRequestVariables(personIdent),
+                                          query = graphQL)
         try {
             val response = postForEntity<PdlHentPersonResponse>(pdlUri,
                                                                 pdlPersonRequest,

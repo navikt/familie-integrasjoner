@@ -1,12 +1,14 @@
 package no.nav.familie.integrasjoner.personopplysning
 
+import graphql.schema.idl.SchemaParser
+import graphql.schema.idl.TypeDefinitionRegistry
+import java.io.File
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlHentPersonResponse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlNavn
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.io.File
 
 class PdlGraphqlTest {
 
@@ -46,4 +48,16 @@ class PdlGraphqlTest {
     private fun getFile(name: String): String {
         return javaClass.classLoader?.getResource(name)?.file ?: error("Testkonfigurasjon feil")
     }
+
+    @Test
+    fun testreg() {
+        //val test = TypeResolver {  };
+
+        val schemaParser = SchemaParser()
+        //val registry: TypeDefinitionRegistry = schemaParser.parse(this::class.java.getResource("/pdl/pdl-api-schema.graphqls").readText())
+        val registry = schemaParser.parse(this::class.java.getResource("/pdl/pdl-api-schema.graphql").readText())
+        print(registry.types())
+
+    }
+
 }
