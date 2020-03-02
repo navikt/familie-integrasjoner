@@ -69,17 +69,6 @@ class DokarkivController(private val journalføringService: DokarkivService) {
                                          "Ferdigstilt journalpost $journalpostId"))
     }
 
-    @PutMapping("v2/{journalpostId}/ferdigstill")
-    @ResponseStatus(HttpStatus.OK)
-    fun ferdigstillJournalpostV2(@PathVariable(name = "journalpostId") journalpostId: String,
-                               @RequestParam(name = "journalfoerendeEnhet")
-                               journalførendeEnhet: String): ResponseEntity<Ressurs<Map<String, String>>> {
-
-        journalføringService.ferdistillJournalpost(journalpostId, journalførendeEnhet)
-        return ResponseEntity.ok(success(mapOf("journalpostId" to journalpostId),
-                                         "Ferdigstilt journalpost $journalpostId"))
-    }
-
     companion object {
         private val LOG = LoggerFactory.getLogger(DokarkivController::class.java)
     }
