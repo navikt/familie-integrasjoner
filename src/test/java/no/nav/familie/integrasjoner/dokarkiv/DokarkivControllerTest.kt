@@ -44,7 +44,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                           false,
                                           LinkedList())
 
-        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL),
+        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost("$DOKARKIV_URL/v2"),
                                                                                                HttpMethod.POST,
                                                                                                HttpEntity(body, headers))
 
@@ -60,13 +60,15 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                 .request()
                                 .withMethod("POST")
                                 .withPath("/rest/journalpostapi/v1/journalpost")
-                                .withQueryStringParameter("foersoekFerdigstill", "false"))
-                .respond(HttpResponse.response().withBody(gyldigDokarkivResponse()))
+                                .withQueryStringParameter("forsoekFerdigstill", "false"))
+                .respond(HttpResponse.response()
+                    .withHeader("Content-Type", "application/json;charset=UTF-8")
+                    .withBody(gyldigDokarkivResponse()))
         val body = ArkiverDokumentRequest("FNR",
                                           false,
                                           listOf(HOVEDDOKUMENT))
 
-        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL),
+        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost("$DOKARKIV_URL/v2"),
                                                                                                HttpMethod.POST,
                                                                                                HttpEntity(body, headers))
 
@@ -82,13 +84,15 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/journalpostapi/v1/journalpost")
-                                .withQueryStringParameter("foersoekFerdigstill", "false"))
-                .respond(HttpResponse.response().withBody(gyldigDokarkivResponse()))
+                                .withQueryStringParameter("forsoekFerdigstill", "false"))
+                .respond(HttpResponse.response()
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(gyldigDokarkivResponse()))
         val body = ArkiverDokumentRequest("FNR",
                                           false,
                                           listOf(HOVEDDOKUMENT, VEDLEGG))
 
-        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL),
+        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost("$DOKARKIV_URL/v2"),
                                                                                                HttpMethod.POST,
                                                                                                HttpEntity(body, headers))
 
@@ -104,8 +108,11 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/journalpostapi/v1/journalpost")
-                                .withQueryStringParameter("foersoekFerdigstill", "false"))
-                .respond(HttpResponse.response().withStatusCode(401).withBody("Tekst fra body"))
+                                .withQueryStringParameter("forsoekFerdigstill", "false"))
+                .respond(HttpResponse.response()
+                    .withStatusCode(401)
+                    .withHeader("Content-Type", "application/json;charset=UTF-8")
+                    .withBody("Tekst fra body"))
         val body = ArkiverDokumentRequest("FNR",
                                           false,
                                           listOf(Dokument("foo".toByteArray(),
@@ -114,13 +121,13 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                                           null,
                                                           "KONTANTSTØTTE_SØKNAD")))
 
-        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL),
+        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost("$DOKARKIV_URL/v2"),
                                                                                                HttpMethod.POST,
                                                                                                HttpEntity(body, headers))
 
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        Assertions.assertThat(response.body?.melding).contains("Feilresponse fra dokarkiv-tjenesten 401 Tekst fra body")
+        Assertions.assertThat(response.body?.melding).contains("Feil mot ekstern tjeneste. 401 Tekst fra body Message=401 Unauthorized")
     }
 
     @Test
@@ -133,7 +140,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                 .respond(HttpResponse.response().withStatusCode(200))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> =
-                restTemplate.exchange(localhost("$DOKARKIV_URL/123/ferdigstill?journalfoerendeEnhet=9999"),
+                restTemplate.exchange(localhost("$DOKARKIV_URL/v1/123/ferdigstill?journalfoerendeEnhet=9999"),
                                       HttpMethod.PUT,
                                       HttpEntity(null, headers))
 
@@ -151,7 +158,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                 .respond(HttpResponse.response().withStatusCode(400))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> =
-                restTemplate.exchange(localhost("$DOKARKIV_URL/123/ferdigstill?journalfoerendeEnhet=9999"),
+                restTemplate.exchange(localhost("$DOKARKIV_URL/v1/123/ferdigstill?journalfoerendeEnhet=9999"),
                                       HttpMethod.PUT,
                                       HttpEntity(null, headers))
 
@@ -167,7 +174,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
     companion object {
         private const val MOCK_SERVER_PORT = 18321
-        private const val DOKARKIV_URL = "/api/arkiv/v1"
+        private const val DOKARKIV_URL = "/api/arkiv"
         private val HOVEDDOKUMENT = Dokument("foo".toByteArray(),
                                              FilType.PDFA,
                                              "filnavn",
