@@ -39,8 +39,8 @@ enum class Tema {
 
 data class Sak(val arkivsaksnummer: String? = null,
                var arkivsaksystem: String? = null,
-               val fagsakId: String?,
-               val fagsaksystem: String?)
+               val fagsakId: String? = null,
+               val fagsaksystem: String? = null)
 
 enum class Kanal {
     ALTINN,

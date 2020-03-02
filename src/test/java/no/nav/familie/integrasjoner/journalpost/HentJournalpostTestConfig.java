@@ -24,7 +24,9 @@ public class HentJournalpostTestConfig {
         when(klient.hentJournalpost(stringCaptor.capture())).thenAnswer(invocation -> {
             String identArg = invocation.getArgument(0);
 
-            return new Journalpost(stringCaptor.getValue(), new Sak("1111" + stringCaptor.getValue(), "GSAK"));
+            return new Journalpost(stringCaptor.getValue(), null, null, null, null,
+                    new Sak("1111" + stringCaptor.getValue(), "GSAK", null, null),
+                    null, null, null);
         });
 
         doNothing().when(klient).ping();
