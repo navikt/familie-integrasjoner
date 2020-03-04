@@ -33,12 +33,15 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
     @get:Rule
     val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
     private lateinit var uriHentSaksnummer: String
+    private lateinit var uriHentJournalpost: String
 
     @Before
     fun setUp() {
         testLogger.addAppender(listAppender)
         headers.setBearerAuth(JwtTokenGenerator.signedJWTAsString("testbruker"))
         uriHentSaksnummer = UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/sak")
+                .queryParam("journalpostId", JOURNALPOST_ID).toUriString()
+        uriHentJournalpost = UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/")
                 .queryParam("journalpostId", JOURNALPOST_ID).toUriString()
     }
 
@@ -50,7 +53,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                                 .withPath("/rest/saf/graphql")
                                 .withBody(testdata("gyldigrequest.json"))
                 )
-                .respond(HttpResponse.response().withBody(testdata("gyldigresponse.json"))
+                .respond(HttpResponse.response().withBody(testdata("gyldigsakresponse.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
 
 
@@ -62,6 +65,27 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         Assertions.assertThat(response.body?.data?.get("saksnummer")).isEqualTo(SAKSNUMMER)
+    }
+
+    @Test
+    fun `hent journalpost skal returnere journalpost og status ok`() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                        .withMethod("POST")
+                        .withPath("/rest/saf/graphql")
+                        .withBody(testdata("gyldigrequest.json"))
+                )
+                .respond(HttpResponse.response().withBody(testdata("gyldigjournalpostresponse.json"))
+                        .withHeaders(Header("Content-Type", "application/json")))
+
+
+
+        val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
+                HttpMethod.GET,
+                HttpEntity<String>(headers))
+
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
     }
 
     @Test

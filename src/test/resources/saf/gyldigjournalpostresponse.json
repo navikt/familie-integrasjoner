@@ -1,0 +1,42 @@
+{
+  "data": {
+    "journalpost": {
+      "journalpostId": "12345678",
+      "journalposttype": "I",
+      "journalstatus": "JOURNALFOERT",
+      "tema": "BAR",
+      "behandlingstema": null,
+      "sak": {
+        "arkivsaksystem": "GSAK",
+        "arkivsaksnummer": "87654321",
+        "datoOpprettet": "2018-01-01T12:00:00",
+        "fagsakId": null,
+        "fagsaksystem": "FS22"
+      },
+      "journalforendeEnhet": "9999",
+      "kanal": "EIA",
+      "dokumenter": [
+        {
+          "tittel": "MASKERT_FELT",
+          "brevkode": "NAV 08-07.04 A",
+          "dokumentstatus": null,
+          "dokumentvarianter": [
+            {
+              "variantformat": "ARKIV"
+            }
+          ]
+        },
+        {
+          "tittel": "MASKERT_FELT",
+          "brevkode": "NAV 08-07.04 A",
+          "dokumentstatus": null,
+          "dokumentvarianter": [
+            {
+              "variantformat": "ARKIV"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
