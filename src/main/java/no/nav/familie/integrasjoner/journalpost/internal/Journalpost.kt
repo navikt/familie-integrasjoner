@@ -5,10 +5,22 @@ data class Journalpost(val journalpostId: String,
                        val journalstatus: Journalstatus?,
                        val tema: Tema?,
                        val behandlingstema: String?,
-                       val sak: Sak? = null,
+                       val sak: Sak?,
                        val journalforendeEnhet: String?,
                        val kanal: Kanal?,
                        val dokumenter: DokumentInfo?)
+
+data class Sak(val arkivsaksnummer: String?,
+               var arkivsaksystem: String?,
+               val fagsakId: String?,
+               val fagsaksystem: String?)
+
+data class DokumentInfo(val tittel: String?,
+                        val brevkode: String?,
+                        val dokumentstatus: Dokumentstatus?,
+                        val dokumentvarianter: Dokumentvariant?)
+
+data class Dokumentvariant(val variantformat: Variantformat?)
 
 enum class Journalposttype {
     I,
@@ -32,15 +44,60 @@ enum class Journalstatus {
 }
 
 enum class Tema {
+    AAR,
+    AGR,
     BAR,
+    BID,
+    BIL,
+    DAG,
     ENF,
-    KON
+    ERS,
+    FAR,
+    FEI,
+    FOR,
+    FOS,
+    FUL,
+    GEN,
+    GRA,
+    GRU,
+    HEL,
+    HJE,
+    IAR,
+    IND,
+    KON,
+    KTR,
+    MED,
+    MOB,
+    OMS,
+    OPA,
+    OPP,
+    PEN,
+    PER,
+    REH,
+    REK,
+    RPO,
+    RVE,
+    SAA,
+    SAK,
+    SAP,
+    SER,
+    SIK,
+    STO,
+    SUP,
+    SYK,
+    SYM,
+    TIL,
+    TRK,
+    TRY,
+    TSO,
+    TSR,
+    UFM,
+    UFO,
+    UKJ,
+    VEN,
+    YRA,
+    YRK
 }
-
-data class Sak(val arkivsaksnummer: String? = null,
-               var arkivsaksystem: String? = null,
-               val fagsakId: String? = null,
-               val fagsaksystem: String? = null)
 
 enum class Kanal {
     ALTINN,
@@ -60,19 +117,12 @@ enum class Kanal {
     UKJENT
 }
 
-data class DokumentInfo(val tittel: String?,
-                        val brevkode: String?,
-                        val dokumentstatus: Dokumentstatus?,
-                        val dokumentvarianter: Dokumentvariant?)
-
 enum class Dokumentstatus {
     FERDIGSTILT,
     AVBRUTT,
     UNDER_REDIGERING,
     KASSERT
 }
-
-data class Dokumentvariant(val variantformat: Variantformat?)
 
 enum class Variantformat {
     ARKIV,
