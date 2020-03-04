@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.personopplysning
 
 import ch.qos.logback.classic.Logger
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.security.token.support.test.JwtTokenGenerator
@@ -15,15 +16,12 @@ import org.mockserver.model.HttpRequest
 import org.mockserver.model.HttpResponse
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.web.client.exchange
-import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.util.UriComponentsBuilder
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
 
 @ActiveProfiles("integrasjonstest", "mock-personopplysninger", "mock-sts")
 class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
@@ -43,37 +41,39 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `hent personinfo skal returnere fødselsnummer og status ok`() {
+    fun `hent personinfo skal returnere persondata og status ok`() {
         mockServerRule.client
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/pdl/graphql")
                                 .withHeader("Tema", TEMA)
-                                .withBody(testdata("pdlGyldigRequest.json"))
+                                .withBody(gyldigRequest())
                 )
-                .respond(HttpResponse.response().withBody(testdata("pdlOkResponse.json"))
+                .respond(HttpResponse.response().withBody(readfile("pdlOkResponse.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
 
 
 
         val response: ResponseEntity<Ressurs<Person>> = restTemplate.exchange(uriHentPersoninfo,
-                                                                                           HttpMethod.GET,
-                                                                                           HttpEntity<String>(headers))
+                                                                              HttpMethod.GET,
+                                                                              HttpEntity<String>(headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         assertThat(response.body?.data?.fødselsdato).isEqualTo(FØDSELSDATO)
+        assertThat(response.body?.data?.navn).isEqualTo(NAVN)
+        assertThat(response.body?.data?.kjønn).isEqualTo(KJØNN)
     }
 
     @Test
-    fun `hent personinfo returnerer med feil hvis fødslelsdato ikke oppgis for`() {
+    fun `hent personinfo returnerer med feil hvis forventede persondata ikke oppgis`() {
         mockServerRule.client
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/pdl/graphql")
-                                .withBody(testdata("pdlGyldigRequest.json"))
+                                .withBody(gyldigRequest())
                 )
-                .respond(HttpResponse.response().withBody(testdata("pdlManglerFoedselResponse.json"))
+                .respond(HttpResponse.response().withBody(readfile("pdlManglerFoedselResponse.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentPersoninfo,
@@ -90,9 +90,9 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/pdl/graphql")
-                                .withBody(testdata("pdlGyldigRequest.json"))
+                                .withBody(gyldigRequest())
                 )
-                .respond(HttpResponse.response().withBody(testdata("pdlPersonIkkeFunnetResponse.json"))
+                .respond(HttpResponse.response().withBody(readfile("pdlPersonIkkeFunnetResponse.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentPersoninfo,
@@ -109,7 +109,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/pdl/graphql")
-                                .withBody(testdata("pdlGyldigRequest.json"))
+                                .withBody(gyldigRequest())
                 )
                 .respond(HttpResponse.response().withStatusCode(500))
 
@@ -121,14 +121,23 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
+    private fun gyldigRequest(): String {
+        return readfile("pdlGyldigRequest.json")
+                .replace(
+                        "GRAPHQL-PLACEHOLDER",
+                        readfile("hentperson.graphql").graphqlCompatible()
+        )
+    }
 
-    private fun testdata(filnavn: String): String {
-        return Files.readString(ClassPathResource("pdl/$filnavn").file.toPath(), StandardCharsets.UTF_8)
+    private fun readfile(filnavn: String): String {
+        return this::class.java.getResource("/pdl/$filnavn").readText()
     }
 
     companion object {
         const val MOCK_SERVER_PORT = 18321
         const val FØDSELSDATO = "1955-09-13"
+        const val NAVN = "ENGASJERT FYR"
+        const val KJØNN = "MANN"
         const val PDL_BASE_URL = "/api/personopplysning/"
         const val TEMA = "BAR"
     }
