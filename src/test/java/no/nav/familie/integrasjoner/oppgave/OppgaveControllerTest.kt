@@ -172,6 +172,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 behandlingstema = "behandlingstema",
                 enhetsnummer = "enhetsnummer",
                 tema = Tema.BAR,
+                oppgavetype = Oppgavetype.BehandleSak,
                 saksId = "saksid",
                 beskrivelse = "Oppgavetekst"
         )
@@ -198,6 +199,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 behandlingstema = "behandlingstema",
                 enhetsnummer = "enhetsnummer",
                 tema = Tema.BAR,
+                oppgavetype = Oppgavetype.BehandleSak,
                 saksId = "saksid",
                 beskrivelse = "Oppgavetekst"
         )
