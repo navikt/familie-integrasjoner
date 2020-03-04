@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.journalpost.internal
 
 data class Journalpost(val journalpostId: String,
-                       val journalpostype: Journalposttype?,
+                       val journalposttype: Journalposttype?,
                        val journalstatus: Journalstatus?,
                        val tema: Tema?,
                        val behandlingstema: String?,
