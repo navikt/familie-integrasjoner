@@ -8,7 +8,7 @@ val queryString: String = """
             journalstatus
             tema
             behandlingstema
-            sak { arkivsystem arkivsaksnummer datoOpprettet fagsakId fagsakSystem }
+            sak { arkivsaksystem arkivsaksnummer datoOpprettet fagsakId fagsaksystem }
             journalforendeEnhet
             kanal
             dokumenter { tittel brevkode dokumentstatus dokumentvarianter { variantformat } }
