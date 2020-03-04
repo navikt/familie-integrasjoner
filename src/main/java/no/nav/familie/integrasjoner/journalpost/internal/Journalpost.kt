@@ -8,7 +8,7 @@ data class Journalpost(val journalpostId: String,
                        val sak: Sak?,
                        val journalforendeEnhet: String?,
                        val kanal: Kanal?,
-                       val dokumenter: DokumentInfo?)
+                       val dokumenter: List<DokumentInfo>?)
 
 data class Sak(val arkivsaksnummer: String?,
                var arkivsaksystem: String?,
@@ -18,7 +18,7 @@ data class Sak(val arkivsaksnummer: String?,
 data class DokumentInfo(val tittel: String?,
                         val brevkode: String?,
                         val dokumentstatus: Dokumentstatus?,
-                        val dokumentvarianter: Dokumentvariant?)
+                        val dokumentvarianter: List<Dokumentvariant>?)
 
 data class Dokumentvariant(val variantformat: Variantformat?)
 
