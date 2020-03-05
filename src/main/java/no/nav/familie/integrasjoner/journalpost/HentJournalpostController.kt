@@ -46,7 +46,7 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
         return ResponseEntity.ok(success(mapOf("saksnummer" to saksnummer), "OK"))
     }
 
-    @GetMapping("/")
+    @GetMapping
     fun hentJournalpost(@RequestParam(name = "journalpostId") journalpostId: String)
             : ResponseEntity<Ressurs<Journalpost>> {
         return ResponseEntity.ok(success(journalpostService.hentJournalpost(journalpostId), "OK"))

@@ -4,6 +4,9 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.integrasjoner.journalpost.domene.Journalpost
+import no.nav.familie.integrasjoner.journalpost.domene.Journalposttype
+import no.nav.familie.integrasjoner.journalpost.domene.Journalstatus
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.security.token.support.test.JwtTokenGenerator
 import org.assertj.core.api.Assertions
@@ -41,7 +44,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
         headers.setBearerAuth(JwtTokenGenerator.signedJWTAsString("testbruker"))
         uriHentSaksnummer = UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/sak")
                 .queryParam("journalpostId", JOURNALPOST_ID).toUriString()
-        uriHentJournalpost = UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/")
+        uriHentJournalpost = UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
                 .queryParam("journalpostId", JOURNALPOST_ID).toUriString()
     }
 
@@ -55,8 +58,6 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                 )
                 .respond(HttpResponse.response().withBody(testdata("gyldigsakresponse.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
-
-
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
                                                                                            HttpMethod.GET,
@@ -78,14 +79,14 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                 .respond(HttpResponse.response().withBody(testdata("gyldigjournalpostresponse.json"))
                         .withHeaders(Header("Content-Type", "application/json")))
 
-
-
-        val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
-                HttpMethod.GET,
-                HttpEntity<String>(headers))
+        val response: ResponseEntity<Ressurs<Journalpost>> = restTemplate.exchange(uriHentJournalpost,
+                                                                                   HttpMethod.GET,
+                                                                                   HttpEntity<String>(headers))
 
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        Assertions.assertThat(response.body?.data?.journalposttype).isEqualTo(Journalposttype.I)
+        Assertions.assertThat(response.body?.data?.journalstatus).isEqualTo(Journalstatus.JOURNALFOERT)
     }
 
     @Test

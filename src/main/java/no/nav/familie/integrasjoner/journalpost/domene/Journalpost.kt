@@ -1,8 +1,8 @@
 package no.nav.familie.integrasjoner.journalpost.domene
 
 data class Journalpost(val journalpostId: String,
-                       val journalposttype: Journalposttype?,
-                       val journalstatus: Journalstatus?,
+                       val journalposttype: Journalposttype,
+                       val journalstatus: Journalstatus,
                        val tema: String?,
                        val behandlingstema: String?,
                        val sak: Sak?,
@@ -20,7 +20,7 @@ data class DokumentInfo(val tittel: String?,
                         val dokumentstatus: Dokumentstatus?,
                         val dokumentvarianter: List<Dokumentvariant>?)
 
-data class Dokumentvariant(val variantformat: String?)
+data class Dokumentvariant(val variantformat: String)
 
 enum class Journalposttype {
     I,
