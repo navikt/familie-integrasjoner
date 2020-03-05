@@ -1,8 +1,10 @@
 package no.nav.familie.integrasjoner.journalpost;
 
 import no.nav.familie.integrasjoner.client.rest.SafRestClient;
-import no.nav.familie.integrasjoner.journalpost.internal.Journalpost;
-import no.nav.familie.integrasjoner.journalpost.internal.Sak;
+import no.nav.familie.integrasjoner.journalpost.domene.Journalpost;
+import no.nav.familie.integrasjoner.journalpost.domene.Journalposttype;
+import no.nav.familie.integrasjoner.journalpost.domene.Journalstatus;
+import no.nav.familie.integrasjoner.journalpost.domene.Sak;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,9 +26,16 @@ public class HentJournalpostTestConfig {
         when(klient.hentJournalpost(stringCaptor.capture())).thenAnswer(invocation -> {
             String identArg = invocation.getArgument(0);
 
-            return new Journalpost(stringCaptor.getValue(), null, null, null, null,
+            return new Journalpost(
+                    stringCaptor.getValue(),
+                    Journalposttype.I,
+                    Journalstatus.JOURNALFOERT,
+                    "BAR",
+                    null,
                     new Sak("1111" + stringCaptor.getValue(), "GSAK", null, null),
-                    null, null, null);
+                    "9999",
+                    "EIA",
+                    null);
         });
 
         doNothing().when(klient).ping();

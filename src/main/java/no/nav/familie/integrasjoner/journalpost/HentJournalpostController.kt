@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.journalpost
 
-import no.nav.familie.integrasjoner.journalpost.internal.Journalpost
+import no.nav.familie.integrasjoner.journalpost.domene.Journalpost
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success

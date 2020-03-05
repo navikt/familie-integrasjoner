@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.journalpost
 
 import no.nav.familie.integrasjoner.client.rest.SafRestClient
-import no.nav.familie.integrasjoner.journalpost.internal.Journalpost
+import no.nav.familie.integrasjoner.journalpost.domene.Journalpost
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
