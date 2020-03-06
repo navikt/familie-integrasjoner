@@ -9,7 +9,7 @@ val queryString: String = """
             tema
             behandlingstema
             sak { arkivsaksystem arkivsaksnummer datoOpprettet fagsakId fagsaksystem }
-            bruker { id, type }
+            bruker { id type }
             journalforendeEnhet
             kanal
             dokumenter { tittel brevkode dokumentstatus dokumentvarianter { variantformat } }
