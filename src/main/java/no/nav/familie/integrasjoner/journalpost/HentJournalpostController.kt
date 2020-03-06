@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.journalpost
 
+import no.nav.familie.integrasjoner.journalpost.domene.Journalpost
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
@@ -45,8 +46,13 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
         return ResponseEntity.ok(success(mapOf("saksnummer" to saksnummer), "OK"))
     }
 
+    @GetMapping
+    fun hentJournalpost(@RequestParam(name = "journalpostId") journalpostId: String)
+            : ResponseEntity<Ressurs<Journalpost>> {
+        return ResponseEntity.ok(success(journalpostService.hentJournalpost(journalpostId), "OK"))
+    }
+
     companion object {
         private val LOG = LoggerFactory.getLogger(HentJournalpostController::class.java)
     }
-
 }
