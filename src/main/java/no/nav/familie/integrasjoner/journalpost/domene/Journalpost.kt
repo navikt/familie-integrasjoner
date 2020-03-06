@@ -6,6 +6,7 @@ data class Journalpost(val journalpostId: String,
                        val tema: String?,
                        val behandlingstema: String?,
                        val sak: Sak?,
+                       val bruker: Bruker?,
                        val journalforendeEnhet: String?,
                        val kanal: String?,
                        val dokumenter: List<DokumentInfo>?)
@@ -14,6 +15,9 @@ data class Sak(val arkivsaksnummer: String?,
                var arkivsaksystem: String?,
                val fagsakId: String?,
                val fagsaksystem: String?)
+
+data class Bruker(val id: String?,
+                  val type: BrukerIdType?)
 
 data class DokumentInfo(val tittel: String?,
                         val brevkode: String?,
@@ -48,4 +52,10 @@ enum class Dokumentstatus {
     AVBRUTT,
     UNDER_REDIGERING,
     KASSERT
+}
+
+enum class BrukerIdType {
+    AKTOERID,
+    FNR,
+    ORGNR
 }
