@@ -21,7 +21,7 @@ class PdlTestConfig {
 
         every {
             klient.hentPerson(any(), any())
-        } returns Person(fødselsdato = "1980-05-12", navn = "Kari Normann", kjønn = "KVINNE", familierelasjoner = arrayOf(Familierelasjon(ident = "12345678910", rolle = "BARN")))
+        } returns Person(fødselsdato = "1980-05-12", navn = "Kari Normann", kjønn = "KVINNE", familierelasjoner = setOf(Familierelasjon(personIdent = "12345678910", relasjonsrolle = "BARN")))
         return klient
     }
 }

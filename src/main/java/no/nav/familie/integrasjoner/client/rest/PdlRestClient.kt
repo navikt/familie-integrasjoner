@@ -33,10 +33,10 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                                                 httpHeaders(tema))
             if (response != null && !response.harFeil()) {
                 return Result.runCatching {
-                    val familierelasjoner: Array<Familierelasjon> = response.data?.person!!.familierelasjoner.map { relasjon ->
-                        Familierelasjon(ident = relasjon.relatertPersonsIdent,
-                                        rolle = relasjon.relatertPersonsRolle.toString())
-                    }.toTypedArray()
+                    val familierelasjoner: Set<Familierelasjon> = response.data?.person!!.familierelasjoner.map { relasjon ->
+                        Familierelasjon(personIdent = relasjon.relatertPersonsIdent,
+                                        relasjonsrolle = relasjon.relatertPersonsRolle.toString())
+                    }.toSet()
                     response.data?.person!!.let {
                         Person(fødselsdato = it.foedsel.first().foedselsdato!!,
                                navn = it.navn.first().fulltNavn(),

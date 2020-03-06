@@ -4,9 +4,9 @@ data class Person (
         val fødselsdato: String,
         val navn: String,
         val kjønn: String,
-        val familierelasjoner: Array<Familierelasjon>)
+        val familierelasjoner: Set<Familierelasjon>)
 
 data class Familierelasjon (
-        val ident: String,
-        val rolle: String
+        val personIdent: String,
+        val relasjonsrolle: String
 )
