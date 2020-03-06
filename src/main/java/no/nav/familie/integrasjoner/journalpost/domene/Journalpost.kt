@@ -16,8 +16,8 @@ data class Sak(val arkivsaksnummer: String?,
                val fagsakId: String?,
                val fagsaksystem: String?)
 
-data class Bruker(val id: String?,
-                  val type: BrukerIdType?)
+data class Bruker(val id: String,
+                  val type: BrukerIdType)
 
 data class DokumentInfo(val tittel: String?,
                         val brevkode: String?,
