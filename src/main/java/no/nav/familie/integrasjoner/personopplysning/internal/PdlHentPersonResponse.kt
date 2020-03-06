@@ -20,7 +20,7 @@ data class PdlPersonData (
         val foedsel: Array<PdlFødselsDato>,
         val navn: Array<PdlNavn>,
         val kjoenn: Array<PdlKjoenn>,
-        val familierelasjoner: Array<Familierelasjon>)
+        val familierelasjoner: Array<PdlFamilierelasjon>)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlFødselsDato (val foedselsdato: String?)
@@ -46,7 +46,7 @@ data class PdlNavn(
 data class PdlKjoenn(val kjoenn: KJØNN)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class Familierelasjon(
+data class PdlFamilierelasjon(
         val relatertPersonsIdent: String,
         val relatertPersonsRolle: FAMILIERELASJONSROLLE)
 

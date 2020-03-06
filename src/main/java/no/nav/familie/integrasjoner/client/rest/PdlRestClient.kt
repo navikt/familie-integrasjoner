@@ -33,13 +33,18 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                                                 httpHeaders(tema))
             if (response != null && !response.harFeil()) {
                 return Result.runCatching {
+                    val familierelasjoner: Array<Familierelasjon> = response.data?.person!!.familierelasjoner.map { relasjon ->
+                        Familierelasjon(ident = relasjon.relatertPersonsIdent,
+                                        rolle = relasjon.relatertPersonsRolle.toString())
+                    }.toTypedArray()
                     response.data?.person!!.let {
                         Person(fødselsdato = it.foedsel.first().foedselsdato!!,
                                navn = it.navn.first().fulltNavn(),
-                               kjønn = it.kjoenn.first().kjoenn.toString())
+                               kjønn = it.kjoenn.first().kjoenn.toString(),
+                               familierelasjoner = familierelasjoner)
                     }
-                }.fold (
-                        onSuccess = {it},
+                }.fold(
+                        onSuccess = { it },
                         onFailure = {
                             throw OppslagException("Fant ikke forespurte data på person.",
                                                    "PdlRestClient",
