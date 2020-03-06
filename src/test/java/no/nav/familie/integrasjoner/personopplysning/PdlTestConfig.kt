@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.personopplysning
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
+import no.nav.familie.integrasjoner.personopplysning.internal.Familierelasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -20,7 +21,7 @@ class PdlTestConfig {
 
         every {
             klient.hentPerson(any(), any())
-        } returns Person(fødselsdato = "1980-05-12", navn = "Kari Normann", kjønn = "KVINNE")
+        } returns Person(fødselsdato = "1980-05-12", navn = "Kari Normann", kjønn = "KVINNE", familierelasjoner = arrayOf(Familierelasjon(ident = "12345678910", rolle = "BARN")))
         return klient
     }
 }

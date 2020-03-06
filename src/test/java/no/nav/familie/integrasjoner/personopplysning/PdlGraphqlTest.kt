@@ -1,7 +1,5 @@
 package no.nav.familie.integrasjoner.personopplysning
 
-import graphql.schema.idl.SchemaParser
-import graphql.schema.idl.TypeDefinitionRegistry
 import java.io.File
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
@@ -21,6 +19,8 @@ class PdlGraphqlTest {
         assertThat(resp.data!!.person!!.foedsel.first().foedselsdato).isEqualTo("1955-09-13")
         assertThat(resp.data!!.person!!.navn.first().fornavn).isEqualTo("ENGASJERT")
         assertThat(resp.data!!.person!!.kjoenn.first().kjoenn.toString()).isEqualTo("MANN")
+        assertThat(resp.data!!.person!!.familierelasjoner.first().relatertPersonsIdent).isEqualTo("12345678910")
+        assertThat(resp.data!!.person!!.familierelasjoner.first().relatertPersonsRolle.toString()).isEqualTo("BARN")
         assertThat(resp.errorMessages()).isEqualTo("")
     }
 
@@ -47,17 +47,6 @@ class PdlGraphqlTest {
 
     private fun getFile(name: String): String {
         return javaClass.classLoader?.getResource(name)?.file ?: error("Testkonfigurasjon feil")
-    }
-
-    @Test
-    fun testreg() {
-        //val test = TypeResolver {  };
-
-        val schemaParser = SchemaParser()
-        //val registry: TypeDefinitionRegistry = schemaParser.parse(this::class.java.getResource("/pdl/pdl-api-schema.graphqls").readText())
-        val registry = schemaParser.parse(this::class.java.getResource("/pdl/pdl-api-schema.graphql").readText())
-        print(registry.types())
-
     }
 
 }
