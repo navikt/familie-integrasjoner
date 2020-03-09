@@ -1,10 +1,7 @@
 package no.nav.familie.integrasjoner.journalpost;
 
 import no.nav.familie.integrasjoner.client.rest.SafRestClient;
-import no.nav.familie.integrasjoner.journalpost.domene.Journalpost;
-import no.nav.familie.integrasjoner.journalpost.domene.Journalposttype;
-import no.nav.familie.integrasjoner.journalpost.domene.Journalstatus;
-import no.nav.familie.integrasjoner.journalpost.domene.Sak;
+import no.nav.familie.integrasjoner.journalpost.domene.*;
 import org.mockito.ArgumentCaptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +30,7 @@ public class HentJournalpostTestConfig {
                     "BAR",
                     null,
                     new Sak("1111" + stringCaptor.getValue(), "GSAK", null, null),
+                    new Bruker("1234567890123", BrukerIdType.AKTOERID),
                     "9999",
                     "EIA",
                     null);
