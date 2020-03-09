@@ -1,8 +1,8 @@
 no.nav.security.jwt:
   issuer.azuread:
     discoveryurl: http://vtp:8060/rest/isso/oauth2/.well-known/openid-configuration
-    accepted_audience: OIDC
-    cookie_name: localhost-idtoken
+    accepted_audience: dummy
+    cookie_name: azure_token
   client:
     registration:
       aad-graph-onbehalfof:
@@ -39,6 +39,7 @@ SAF_URL: http://vtp:8060/rest/api/saf
 OPPGAVE_URL: http://vtp:8060/rest/dokarkiv/rest/oppgave-kontantstotte
 ARBEIDSFORDELING_V1_URL: http://vtp:8060/soap/norg2/ws/Arbeidsfordeling/v1
 PDL_URL: http://vtp:8060/rest/api/pdl
+KODEVERK_URL: http://vtp:8060/rest/api/kodeverk
 
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw
