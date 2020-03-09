@@ -1,12 +1,16 @@
 package no.nav.familie.integrasjoner.personopplysning.internal
 
-data class Person (
+data class Person(
         val fødselsdato: String,
         val navn: String,
         val kjønn: String,
         val familierelasjoner: Set<Familierelasjon>)
 
-data class Familierelasjon (
-        val personIdent: String,
+data class Familierelasjon(
+        val personIdent: Personident,
         val relasjonsrolle: String
+)
+
+data class Personident(
+        val id: String
 )

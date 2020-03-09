@@ -34,7 +34,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
             if (response != null && !response.harFeil()) {
                 return Result.runCatching {
                     val familierelasjoner: Set<Familierelasjon> = response.data?.person!!.familierelasjoner.map { relasjon ->
-                        Familierelasjon(personIdent = relasjon.relatertPersonsIdent,
+                        Familierelasjon(personIdent = Personident(id= relasjon.relatertPersonsIdent),
                                         relasjonsrolle = relasjon.relatertPersonsRolle.toString())
                     }.toSet()
                     response.data?.person!!.let {

@@ -63,7 +63,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.data?.fødselsdato).isEqualTo(FØDSELSDATO)
         assertThat(response.body?.data?.navn).isEqualTo(NAVN)
         assertThat(response.body?.data?.kjønn).isEqualTo(KJØNN)
-        assertThat(response.body?.data?.familierelasjoner?.stream()?.findFirst()?.get()?.personIdent).isEqualTo(FAMILIERELASJON_PERSONIDENT)
+        assertThat(response.body?.data?.familierelasjoner?.stream()?.findFirst()?.get()?.personIdent?.id).isEqualTo(FAMILIERELASJON_PERSONIDENT)
         assertThat(response.body?.data?.familierelasjoner?.stream()?.findFirst()?.get()?.relasjonsrolle).isEqualTo(FAMILIERELASJON_RELASJONSROLLE)
     }
 
