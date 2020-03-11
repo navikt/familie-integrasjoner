@@ -1,15 +1,16 @@
 package no.nav.familie.integrasjoner.dokarkiv
 
 import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
-import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
-import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentResponse
-import no.nav.familie.integrasjoner.dokarkiv.api.Dokument
-import no.nav.familie.integrasjoner.dokarkiv.api.FilType
+import no.nav.familie.integrasjoner.dokarkiv.api.*
 import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.Bruker
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.IdType
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.Sak
 import no.nav.familie.integrasjoner.dokarkiv.metadata.DokarkivMetadata
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
+import no.nav.familie.kontrakter.felles.objectMapper
 import org.springframework.stereotype.Service
 
 @Service
@@ -33,6 +34,13 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
         val response =
                 dokarkivRestClient.lagJournalpost(request, arkiverDokumentRequest.forsøkFerdigstill)
         return mapTilArkiverDokumentResponse(response)
+    }
+
+    fun oppdaterJournalpost(request: TilknyttFagsakRequest, journalpostId: String): String {
+        val request = mapTilOppdaterJournalpostRequest(request)
+        val response =
+            dokarkivRestClient.oppdaterJournalpost(request, journalpostId)
+        return response.journalpostId
     }
 
     private fun hentNavnForFnr(fnr: String?): String {
@@ -64,6 +72,13 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
                                          journalfoerendeEnhet = arkiverDokumentRequest.journalførendeEnhet,
                                          sak = jpsak
         )
+    }
+
+    private fun mapTilOppdaterJournalpostRequest(tilknyttFagsakRequest: TilknyttFagsakRequest): OppdaterJournalpostRequest {
+        return objectMapper.convertValue(tilknyttFagsakRequest, OppdaterJournalpostRequest::class.java)
+            .copy(sak = Sak(fagsakId = tilknyttFagsakRequest.sak.fagsakId,
+                            sakstype = "FAGSAK",
+                            fagsaksystem = tilknyttFagsakRequest.sak.fagsaksystem))
     }
 
     private fun mapTilArkivdokument(dokument: Dokument): ArkivDokument {

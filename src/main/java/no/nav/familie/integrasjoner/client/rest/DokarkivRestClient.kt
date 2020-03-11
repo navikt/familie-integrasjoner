@@ -4,9 +4,7 @@ import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.dokarkiv.client.KanIkkeFerdigstilleJournalpostException
-import no.nav.familie.integrasjoner.dokarkiv.client.domene.FerdigstillJournalPost
-import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
-import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -34,6 +32,16 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
             return postForEntity(uri, jp)!!
         } catch (e: RuntimeException) {
             secureLogger.error("Feil ved opprettelse av journalpost for bruker ${jp.bruker} ")
+            throw e
+        }
+    }
+
+    fun oppdaterJournalpost(jp: OppdaterJournalpostRequest, journalpostId: String): OppdaterJournalpostResponse {
+        val uri = UriUtil.uri(dokarkivUrl, PATH_JOURNALPOST, journalpostId)
+        try {
+            return putForEntity(uri, jp)!!
+        } catch (e: RuntimeException) {
+            secureLogger.error("Feil ved oppdatering av journalpost for bruker ${jp.bruker} ")
             throw e
         }
     }
