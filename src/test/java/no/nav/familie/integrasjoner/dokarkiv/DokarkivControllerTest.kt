@@ -2,10 +2,8 @@ package no.nav.familie.integrasjoner.dokarkiv
 
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
-import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
-import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentResponse
-import no.nav.familie.integrasjoner.dokarkiv.api.Dokument
-import no.nav.familie.integrasjoner.dokarkiv.api.FilType
+import no.nav.familie.integrasjoner.dokarkiv.api.*
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.OppdaterJournalpostResponse
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions
@@ -127,7 +125,32 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        Assertions.assertThat(response.body?.melding).contains("Feil mot ekstern tjeneste. 401 Tekst fra body Message=401 Unauthorized")
+        Assertions.assertThat(response.body?.melding).contains("Unauthorized")
+    }
+
+    @Test
+    fun `Test oppdaterJournalpost`() {
+        val journalpostId = "12345678"
+        mockServerRule.client
+            .`when`(HttpRequest
+                .request()
+                .withMethod("PUT")
+                .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId"))
+            .respond(HttpResponse.response()
+                .withHeader("Content-Type", "application/json;charset=UTF-8")
+                .withBody(gyldigDokarkivResponse()))
+
+        val body = TilknyttFagsakRequest(bruker = Bruker(IdType.FNR, "12345678910"),
+                                         tema = "tema",
+                                         sak = Sak("11111111", "fagsaksystem"))
+
+        val response: ResponseEntity<Ressurs<OppdaterJournalpostResponse>> = restTemplate.exchange(localhost("$DOKARKIV_URL/12345678"),
+            HttpMethod.PUT,
+            HttpEntity(body, headers))
+
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        Assertions.assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
     }
 
     @Test

@@ -36,11 +36,9 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
         return mapTilArkiverDokumentResponse(response)
     }
 
-    fun oppdaterJournalpost(request: TilknyttFagsakRequest, journalpostId: String): String {
+    fun oppdaterJournalpost(request: TilknyttFagsakRequest, journalpostId: String): OppdaterJournalpostResponse {
         val request = mapTilOppdaterJournalpostRequest(request)
-        val response =
-            dokarkivRestClient.oppdaterJournalpost(request, journalpostId)
-        return response.journalpostId
+        return dokarkivRestClient.oppdaterJournalpost(request, journalpostId)
     }
 
     private fun hentNavnForFnr(fnr: String?): String {
