@@ -2,6 +2,8 @@
   "data": {
     "journalpost": {
       "journalpostId": "12345678",
+      "journalposttype": "I",
+      "journalstatus": "JOURNALFOERT",
       "sak": null
     }
   }

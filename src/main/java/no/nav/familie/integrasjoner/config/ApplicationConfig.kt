@@ -21,7 +21,7 @@ import org.springframework.web.client.RestOperations
 import springfox.documentation.swagger2.annotations.EnableSwagger2
 
 @SpringBootConfiguration
-@ComponentScan("no.nav.familie")
+@ComponentScan("no.nav.familie.integrasjoner")
 @ConfigurationPropertiesScan
 @EnableSwagger2
 @EnableJwtTokenValidation(ignore = ["org.springframework", "springfox.documentation.swagger.web.ApiResourceController"])

@@ -4,7 +4,7 @@ import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
-import no.nav.familie.integrasjoner.journalpost.internal.Journalpost
+import no.nav.familie.integrasjoner.journalpost.domene.Journalpost
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostRequest
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostResponse
 import no.nav.familie.integrasjoner.journalpost.internal.SafRequestVariable
@@ -31,7 +31,7 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
                                                                  safJournalpostRequest,
                                                                  httpHeaders())
             if (response != null && !response.harFeil()) {
-                return  response?.data?.journalpost ?: throw JournalpostRestClientException("Kan ikke hente journalpost", null, journalpostId)
+                return response.data?.journalpost ?: throw JournalpostRestClientException("Kan ikke hente journalpost", null, journalpostId)
 
             } else {
                 responsFailure.increment()
@@ -57,5 +57,4 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
         private const val PATH_GRAPHQL = "graphql"
         private const val NAV_CALL_ID = "Nav-Callid"
     }
-
 }

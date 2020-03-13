@@ -10,4 +10,8 @@ query($ident: ID!) {person: hentPerson(ident: $ident) {
     kjoenn {
         kjoenn
     }
+    familierelasjoner {
+        relatertPersonsIdent,
+        relatertPersonsRolle
+    }
 }}

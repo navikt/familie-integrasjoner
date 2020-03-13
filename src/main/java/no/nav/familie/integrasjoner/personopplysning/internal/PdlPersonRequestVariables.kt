@@ -1,3 +1,3 @@
 package no.nav.familie.integrasjoner.personopplysning.internal
 
-data class PdlRequestVariable (var ident: String)
+data class PdlPersonRequestVariables (var ident: String)

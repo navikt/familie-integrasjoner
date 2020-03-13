@@ -63,6 +63,8 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.data?.fødselsdato).isEqualTo(FØDSELSDATO)
         assertThat(response.body?.data?.navn).isEqualTo(NAVN)
         assertThat(response.body?.data?.kjønn).isEqualTo(KJØNN)
+        assertThat(response.body?.data?.familierelasjoner?.stream()?.findFirst()?.get()?.personIdent?.id).isEqualTo(FAMILIERELASJON_PERSONIDENT)
+        assertThat(response.body?.data?.familierelasjoner?.stream()?.findFirst()?.get()?.relasjonsrolle).isEqualTo(FAMILIERELASJON_RELASJONSROLLE)
     }
 
     @Test
@@ -138,6 +140,8 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         const val FØDSELSDATO = "1955-09-13"
         const val NAVN = "ENGASJERT FYR"
         const val KJØNN = "MANN"
+        const val FAMILIERELASJON_PERSONIDENT = "12345678910"
+        const val FAMILIERELASJON_RELASJONSROLLE = "BARN"
         const val PDL_BASE_URL = "/api/personopplysning/"
         const val TEMA = "BAR"
     }

@@ -1,12 +1,12 @@
 package no.nav.familie.integrasjoner.personopplysning
 
+import java.io.File
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlHentPersonResponse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlNavn
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.io.File
 
 class PdlGraphqlTest {
 
@@ -19,6 +19,8 @@ class PdlGraphqlTest {
         assertThat(resp.data!!.person!!.foedsel.first().foedselsdato).isEqualTo("1955-09-13")
         assertThat(resp.data!!.person!!.navn.first().fornavn).isEqualTo("ENGASJERT")
         assertThat(resp.data!!.person!!.kjoenn.first().kjoenn.toString()).isEqualTo("MANN")
+        assertThat(resp.data!!.person!!.familierelasjoner.first().relatertPersonsIdent).isEqualTo("12345678910")
+        assertThat(resp.data!!.person!!.familierelasjoner.first().relatertPersonsRolle.toString()).isEqualTo("BARN")
         assertThat(resp.errorMessages()).isEqualTo("")
     }
 
@@ -46,4 +48,5 @@ class PdlGraphqlTest {
     private fun getFile(name: String): String {
         return javaClass.classLoader?.getResource(name)?.file ?: error("Testkonfigurasjon feil")
     }
+
 }
