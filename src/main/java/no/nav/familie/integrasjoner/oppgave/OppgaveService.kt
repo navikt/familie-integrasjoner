@@ -20,7 +20,7 @@ import java.time.format.DateTimeFormatter
 class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClient) {
 
     fun finnOppgaverKnyttetTilSaksbehandlerOgEnhet(saksbehandler: String, enhet: String): List<OppgaveJsonDto> {
-        return finnOppgaverKnyttetTilSaksbehandlerOgEnhet(saksbehandler, enhet)
+        return oppgaveRestClient.finnOppgaverKnyttetTilSaksbehandlerOgEnhet(saksbehandler, enhet)
     }
 
     fun oppdaterOppgave(request: Oppgave): Long {
