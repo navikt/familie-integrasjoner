@@ -19,6 +19,10 @@ import java.time.format.DateTimeFormatter
 @Service @ApplicationScope
 class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClient) {
 
+    fun finnOppgaverKnyttetTilSaksbehandlerOgEnhet(saksbehandler: String, enhet: String): List<OppgaveJsonDto> {
+        return finnOppgaverKnyttetTilSaksbehandlerOgEnhet(saksbehandler, enhet)
+    }
+
     fun oppdaterOppgave(request: Oppgave): Long {
         val oppgaveJsonDto: OppgaveJsonDto = if (StringUtils.nullOrEmpty(request.eksisterendeOppgaveId)) {
             oppgaveRestClient.finnOppgave(request)
