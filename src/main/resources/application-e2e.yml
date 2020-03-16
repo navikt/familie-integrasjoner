@@ -9,19 +9,19 @@ no.nav.security.jwt:
         resource-url: ${AAD_GRAPH_API_URI}
         token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
-        scope: ${AAD_GRAPH_SCOPE}
+        scope: ${INTEGRASJONER_AAD_GRAPH_SCOPE}
         authentication:
           client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-secret: ${INTEGRASJONER_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       infotrygd:
         resource-url: ${INFOTRYGD_URL}
         token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
         grant-type: client_credentials
-        scope: ${INFOTRYGD_KS_SCOPE}
+        scope: ${INTEGRASJONER_INFOTRYGD_KS_SCOPE}
         authentication:
           client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-secret: ${INTEGRASJONER_CLIENT_SECRET}
           client-auth-method: client_secret_basic
 
 AAD_URL: http://vtp:8060/rest/isso/oauth2/access_token
