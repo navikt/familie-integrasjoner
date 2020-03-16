@@ -1,13 +1,13 @@
 no.nav.security.jwt:
   issuer.azuread:
-    discoveryurl: http://vtp:8060/rest/isso/oauth2/.well-known/openid-configuration
-    accepted_audience: dummy
+    discoveryurl: https://login.microsoftonline.com/navq.onmicrosoft.com/v2.0/.well-known/openid-configuration
+    accepted_audience: ${INTEGRASJONER_CLIENT_ID}
     cookie_name: azure_token
   client:
     registration:
       aad-graph-onbehalfof:
         resource-url: ${AAD_GRAPH_API_URI}
-        token-endpoint-url: http://vtp:8060/rest/isso/oauth2/access_token
+        token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${AAD_GRAPH_SCOPE}
         authentication:
@@ -27,19 +27,22 @@ no.nav.security.jwt:
 AAD_URL: http://vtp:8060/rest/isso/oauth2/access_token
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
-SECURITYTOKENSERVICE_URL: http://vtp:8060/soap/SecurityTokenServiceProvider/
+SECURITYTOKENSERVICE_URL: https://vtp:8063/soap/SecurityTokenServiceProvider/
 AKTOERID_URL: http://vtp:8060/rest/aktoerregister
-PERSON_V3_URL: http://vtp:8060/soap/tpsws/ws/Person/v3
+PERSON_V3_URL: https://vtp:8063/soap/tpsws/ws/Person/v3
 DOKARKIV_V1_URL: http://vtp:8060/rest/dokarkiv/rest/journalpostapi/v1
 DOKDIST_URL: http://nowhere
 INFOTRYGD_URL: http://vtp:8060/rest/infotrygd-kontantstotte
-EGEN_ANSATT_V1_URL: http://vtp:8060/soap/tpsws/EgenAnsatt_v1
+EGEN_ANSATT_V1_URL: https://vtp:8063/soap/tpsws/EgenAnsatt_v1
 MEDL2_URL: http://vtp:8060/rest/medl2
 SAF_URL: http://vtp:8060/rest/api/saf
 OPPGAVE_URL: http://vtp:8060/rest/dokarkiv/rest/oppgave-kontantstotte
-ARBEIDSFORDELING_V1_URL: http://vtp:8060/soap/norg2/ws/Arbeidsfordeling/v1
+ARBEIDSFORDELING_V1_URL: https://vtp:8063/soap/norg2/ws/Arbeidsfordeling/v1
 PDL_URL: http://vtp:8060/rest/api/pdl
 KODEVERK_URL: http://vtp:8060/rest/api/kodeverk
 
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw
+
+logging:
+  config: "classpath:logback-e2e.xml"
