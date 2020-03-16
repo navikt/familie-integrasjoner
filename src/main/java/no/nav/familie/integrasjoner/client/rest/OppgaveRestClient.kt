@@ -41,13 +41,27 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         return getForEntity(requestUrl(oppgaveId.toLong()), httpHeaders())
     }
 
+    fun finnOppgaverKnyttetTilSaksbehandlerOgEnhet(tilordnetRessurs: String, tildeltEnhetsnr: String): List<OppgaveJsonDto> {
+        val uri = UriComponentsBuilder.fromUri(oppgaveBaseUrl)
+                .path(PATH_OPPGAVE)
+                .queryParam("tilordnetRessurs", tilordnetRessurs)
+                .queryParam("tildeltEnhetsnr", tildeltEnhetsnr)
+                .queryParam("oppgavetype", OPPGAVE_TYPE)
+                .build()
+                .toUri()
+
+        val finnOppgaveResponseDto = getForEntity<FinnOppgaveResponseDto>(uri, httpHeaders())
+
+        return finnOppgaveResponseDto.oppgaver
+    }
+
     fun oppdaterOppgave(patchDto: OppgaveJsonDto) {
         return Result.runCatching {
             patchForEntity<OppgaveJsonDto>(requestUrl(patchDto.id ?: error("Kan ikke finne oppgaveId på oppgaven")),
                                            patchDto,
                                            httpHeaders())
         }.fold(
-                onSuccess = { it },
+                onSuccess = { },
                 onFailure = {
                     var feilmelding = "Feil ved oppdatering av oppgave for ${patchDto.id}."
                     if (it is HttpStatusCodeException) {
