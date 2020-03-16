@@ -61,7 +61,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
                                            patchDto,
                                            httpHeaders())
         }.fold(
-                onSuccess = { },
+                onSuccess = {},
                 onFailure = {
                     var feilmelding = "Feil ved oppdatering av oppgave for ${patchDto.id}."
                     if (it is HttpStatusCodeException) {
