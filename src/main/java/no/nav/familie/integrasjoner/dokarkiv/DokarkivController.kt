@@ -21,7 +21,7 @@ import javax.validation.Valid
 
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
-@RequestMapping("/api/arkiv")
+@RequestMapping("/api/arkiv/v2")
 class DokarkivController(private val journalføringService: DokarkivService) {
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
@@ -42,15 +42,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
         return ResponseEntity.badRequest().body(failure(null, ex))
     }
 
-    @PostMapping(path = ["v1"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun arkiverDokument(@RequestBody @Valid arkiverDokumentRequest: ArkiverDokumentRequest)
-            : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(success(journalføringService.lagInngåendeJournalpost(arkiverDokumentRequest),
-                              "Arkivert journalpost OK"))
-    }
-
-    @PostMapping(path = ["v2"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun arkiverDokumentV2(@RequestBody @Valid arkiverDokumentRequest: ArkiverDokumentRequest)
             : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -58,7 +50,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
                               "Arkivert journalpost OK"))
     }
 
-    @PutMapping("v1/{journalpostId}/ferdigstill")
+    @PutMapping("{journalpostId}/ferdigstill")
     @ResponseStatus(HttpStatus.OK)
     fun ferdigstillJournalpost(@PathVariable(name = "journalpostId") journalpostId: String,
                                @RequestParam(name = "journalfoerendeEnhet")
