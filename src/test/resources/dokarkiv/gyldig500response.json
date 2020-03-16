@@ -1,0 +1,7 @@
+{
+  "timestamp": "2020-03-16T13:35:47.892+0000",
+  "status": 500,
+  "error": "Internal Server Error",
+  "message": "Fant ikke person med ident: 12345678910",
+  "path": "/rest/journalpostapi/v1/journalpost/12345678"
+}

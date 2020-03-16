@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
@@ -32,12 +33,7 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
         try {
             return postForEntity(uri, jp)!!
         } catch (e: RuntimeException) {
-            throw OppslagException("Feil ved opprettelse av journalpost ",
-                                   "Dokarkiv",
-                                   OppslagException.Level.MEDIUM,
-                                   HttpStatus.INTERNAL_SERVER_ERROR,
-                                   e,
-                                   "Feil ved opprettelse av journalpost for bruker ${jp.bruker} ")
+            throw oppslagExceptionVed("opprettelse", e, jp.bruker?.id)
         }
     }
 
@@ -46,17 +42,23 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
         try {
             return putForEntity(uri, jp)!!
         } catch (e: RuntimeException) {
-            throw OppslagException("Feil ved oppdatering av journalpost ",
-                                   "Dokarkiv",
-                                   OppslagException.Level.MEDIUM,
-                                   HttpStatus.INTERNAL_SERVER_ERROR,
-                                   e,
-                                   "Feil ved oppdatering av journalpost for bruker ${jp.bruker} ")
+            throw oppslagExceptionVed("oppdatering", e, jp.bruker?.id)
         }
     }
 
     fun ferdigstillJournalpost(journalpostId: String, journalførendeEnhet: String) {
         ferdigstillJournalPostClient.ferdigstillJournalpost(journalpostId, journalførendeEnhet)
+    }
+
+    private fun oppslagExceptionVed(requestType: String, e: RuntimeException, brukerId: String?): Throwable {
+        val message = "Feil ved $requestType av journalpost "
+        val sensitiveInfo = if (e is HttpServerErrorException) e.responseBodyAsString else "$message for bruker $brukerId "
+        return OppslagException(message,
+                                "Dokarkiv",
+                                OppslagException.Level.MEDIUM,
+                                HttpStatus.INTERNAL_SERVER_ERROR,
+                                e,
+                                sensitiveInfo)
     }
 
     /**
