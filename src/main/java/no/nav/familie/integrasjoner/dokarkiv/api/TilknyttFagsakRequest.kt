@@ -11,5 +11,5 @@ class Bruker(val idType: IdType,
              val id: String)
 
 enum class IdType {
-    FNR, ORGNR
+    FNR, ORGNR, AKTOERID
 }
