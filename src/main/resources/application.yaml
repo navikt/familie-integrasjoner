@@ -10,6 +10,19 @@ spring:
   autoconfigure.exclude: org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
   main.banner-mode: "off"
 
+no.nav.security.jwt:
+  tilgang:
+    grupper:
+      kode6:
+        rolle-id: 87ea7c87-08a2-43bc-83d6-0bfeee92185d
+        beskrivelse: Strengt fortrolig adresse
+      kode7:
+        rolle-id: 69d4a70f-1c83-42a8-8fb8-2f5d54048647
+        beskrivelse: Fortrolig adresse
+      utvidet-tilgang:
+        rolle-id: de44052d-b062-4497-89a2-0c85b935b808
+        beskrivelse: NAV-ansatt
+
 management:
   endpoint.health:
     show-details: always
