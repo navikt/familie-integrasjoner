@@ -19,10 +19,10 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["/"])
     fun finnOppgaverKnyttetTilSaksbehandlerOgEnhet(@RequestParam("tema") tema: String,
-                                                   @RequestParam("behandlingstema") behandlingstema: String?,
-                                                   @RequestParam("oppgavetype") oppgavetype: String?,
-                                                   @RequestParam("enhet") enhet: String?,
-                                                   @RequestParam("saksbehandler") saksbehandler: String?)
+                                                   @RequestParam("behandlingstema", required = false) behandlingstema: String?,
+                                                   @RequestParam("oppgavetype", required = false) oppgavetype: String?,
+                                                   @RequestParam("enhet", required = false) enhet: String?,
+                                                   @RequestParam("saksbehandler", required = false) saksbehandler: String?)
             : ResponseEntity<Ressurs<List<OppgaveJsonDto>>> {
         val oppgaver = oppgaveService.finnOppgaverKnyttetTilSaksbehandlerOgEnhet(tema, behandlingstema, oppgavetype, enhet, saksbehandler)
         return ResponseEntity.ok().body(success(oppgaver, "Finn oppgaver OK"))
