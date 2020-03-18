@@ -4,13 +4,16 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.familie.integrasjoner.azure.domene.Gruppe
 import no.nav.familie.integrasjoner.azure.domene.Grupper
-import no.nav.familie.integrasjoner.azure.domene.Saksbehandler
 import no.nav.familie.integrasjoner.client.rest.AzureGraphRestClient
+import no.nav.familie.integrasjoner.config.TilgangConfig
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
+import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.Tilgang
+import no.nav.security.token.support.core.jwt.JwtToken
+import no.nav.security.token.support.core.jwt.JwtTokenClaims
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,22 +24,31 @@ import java.time.LocalDate
 class TilgangskontrollServiceTest {
 
     private val azureGraphRestClient: AzureGraphRestClient = mockk(relaxed = true)
-    private val saksbehandler = Saksbehandler("", "sdfsdf")
+    private val saksbehandler: JwtToken = mockk(relaxed = true)
+    private val jwtTokenClaims: JwtTokenClaims = mockk()
     private val egenAnsattService: EgenAnsattService = mockk(relaxed = true)
+    private val tilgangConfig: TilgangConfig = mockk(relaxed = true)
     private val personopplysningerService: PersonopplysningerService = mockk(relaxed = true)
 
-    private var tilgangskontrollService: TilgangskontrollService = TilgangskontrollService(azureGraphRestClient,
-                                                                                           egenAnsattService,
-                                                                                           personopplysningerService)
+    private var tilgangskontrollService: TilgangskontrollService = TilgangskontrollService(egenAnsattService,
+                                                                                           personopplysningerService,
+                                                                                           tilgangConfig)
 
     @Test
     fun `tilgang til egen ansatt gir ikke tilgang hvis saksbehandler mangler rollen`() {
         every { egenAnsattService.erEgenAnsatt(any()) }
                 .returns(true)
+        every { tilgangConfig.grupper["utvidetTilgang"] }
+                .returns(AdRolle("8796", "Mangler tilgang egen ansatt"))
+        every { saksbehandler.jwtTokenClaims }
+                .returns(jwtTokenClaims)
+        every { jwtTokenClaims.getAsList(any()) }
+                .returns(listOf("id1"))
+        every { jwtTokenClaims.get("preferred_username") }
+                .returns(listOf("bob"))
 
         assertThat(tilgangskontrollService.sjekkTilgang("123",
-                                                        saksbehandler,
-                                                        personinfoUtenKode6og7()).harTilgang)
+                                                        saksbehandler).harTilgang)
                 .isEqualTo(Tilgang(false).harTilgang)
     }
 
@@ -44,12 +56,17 @@ class TilgangskontrollServiceTest {
     fun `tilgang til egen ansatt gir tilgang hvis saksbehandler har rollen`() {
         every { egenAnsattService.erEgenAnsatt(any()) }
                 .returns(true)
-        every { azureGraphRestClient.hentGrupper() }
-                .returns(Grupper(listOf(Gruppe("1", "0000-GA-GOSYS_UTVIDET"))))
+        every { tilgangConfig.grupper["utvidetTilgang"] }
+                .returns(AdRolle("8796", "Mangler tilgang egen ansatt"))
+        every { saksbehandler.jwtTokenClaims }
+                .returns(jwtTokenClaims)
+        every { jwtTokenClaims.getAsList(any()) }
+                .returns(listOf("8796"))
+        every { jwtTokenClaims.get("preferred_username") }
+                .returns(listOf("bob"))
 
         assertThat(tilgangskontrollService.sjekkTilgang("123",
-                                                        saksbehandler,
-                                                        personinfoUtenKode6og7()).harTilgang)
+                                                        saksbehandler).harTilgang)
                 .isEqualTo(Tilgang(true).harTilgang)
     }
 
@@ -59,8 +76,7 @@ class TilgangskontrollServiceTest {
                 .returns(false)
 
         assertThat(tilgangskontrollService.sjekkTilgang("123",
-                                                        saksbehandler,
-                                                        personinfoUtenKode6og7()).harTilgang)
+                                                        saksbehandler).harTilgang)
                 .isEqualTo(Tilgang(true).harTilgang)
     }
 
@@ -68,10 +84,19 @@ class TilgangskontrollServiceTest {
     fun `hvis kode6 har ikke saksbehandler uten rollen tilgang`() {
         every { egenAnsattService.erEgenAnsatt(any()) }
                 .returns(false)
+        every { tilgangConfig.grupper["kode6"] }
+                .returns(AdRolle("8796", "Mangler tilgang egen ansatt"))
+        every { saksbehandler.jwtTokenClaims }
+                .returns(jwtTokenClaims)
+        every { jwtTokenClaims.getAsList(any()) }
+                .returns(listOf("id1"))
+        every { jwtTokenClaims.get("preferred_username") }
+                .returns(listOf("bob"))
+        every { personopplysningerService.hentPersoninfo("123") }
+                .returns(personinfoMedKode6())
 
         assertThat(tilgangskontrollService.sjekkTilgang("123",
-                                                        saksbehandler,
-                                                        personinfoMedKode6()).harTilgang)
+                                                        saksbehandler).harTilgang)
                 .isEqualTo(Tilgang(false).harTilgang)
     }
 
@@ -79,10 +104,19 @@ class TilgangskontrollServiceTest {
     fun `hvis kode7 har ikke saksbehandler uten rollen tilgang`() {
         every { egenAnsattService.erEgenAnsatt(any()) }
                 .returns(false)
+        every { tilgangConfig.grupper["kode7"] }
+                .returns(AdRolle("8796", "Mangler tilgang egen ansatt"))
+        every { saksbehandler.jwtTokenClaims }
+                .returns(jwtTokenClaims)
+        every { jwtTokenClaims.getAsList(any()) }
+                .returns(listOf("id1"))
+        every { jwtTokenClaims.get("preferred_username") }
+                .returns(listOf("bob"))
+        every { personopplysningerService.hentPersoninfo("123") }
+                .returns(personinfoMedKode7())
 
         assertThat(tilgangskontrollService.sjekkTilgang("123",
-                                                        saksbehandler,
-                                                        personinfoMedKode7()).harTilgang)
+                                                        saksbehandler).harTilgang)
                 .isEqualTo(Tilgang(false).harTilgang)
     }
 
@@ -95,8 +129,7 @@ class TilgangskontrollServiceTest {
 
 
         assertThat(tilgangskontrollService.sjekkTilgang("123",
-                                                        saksbehandler,
-                                                        personinfoMedKode6()).harTilgang)
+                                                        saksbehandler).harTilgang)
                 .isEqualTo(Tilgang(true).harTilgang)
     }
 
@@ -108,8 +141,7 @@ class TilgangskontrollServiceTest {
                 .returns(Grupper(listOf(Gruppe("1", "0000-GA-GOSYS_KODE7"))))
 
         assertThat(tilgangskontrollService.sjekkTilgang("123",
-                                                        saksbehandler,
-                                                        personinfoMedKode7()).harTilgang)
+                                                        saksbehandler).harTilgang)
                 .isEqualTo(Tilgang(true).harTilgang)
     }
 
