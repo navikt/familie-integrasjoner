@@ -9,6 +9,7 @@ import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
 import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
 import no.nav.familie.integrasjoner.dokarkiv.api.Dokument
 import no.nav.familie.integrasjoner.dokarkiv.api.FilType
+import no.nav.familie.integrasjoner.dokarkiv.api.TilknyttFagsakRequest
 import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
 import no.nav.familie.integrasjoner.dokarkiv.metadata.BarnetrygdVedtakMetadata
@@ -46,6 +47,25 @@ class DokarkivServiceTest {
                                           DokarkivMetadata(KontanstøtteSøknadMetadata,
                                                            KontanstøtteSøknadVedleggMetadata,
                                                            BarnetrygdVedtakMetadata))
+    }
+
+    @Test fun `oppdaterJournalpost skal konverte TilKnyttFagsakRequest til OppdaterJournalpostRequest og legge til sakstype`() {
+        val slot = slot<OppdaterJournalpostRequest>()
+        every { dokarkivRestClient.oppdaterJournalpost(capture(slot), any()) }
+            .answers { OppdaterJournalpostResponse(JOURNALPOST_ID) }
+
+        val idType = no.nav.familie.integrasjoner.dokarkiv.api.IdType.FNR
+        val sak = no.nav.familie.integrasjoner.dokarkiv.api.Sak("11111111", "fagsaksystem")
+        val bruker = no.nav.familie.integrasjoner.dokarkiv.api.Bruker(idType, "12345678910")
+        val dto = TilknyttFagsakRequest(bruker, "tema", sak)
+
+        dokarkivService.oppdaterJournalpost(dto, JOURNALPOST_ID)
+
+        val request = slot.captured
+        verify {
+            dokarkivRestClient.oppdaterJournalpost(slot.captured, JOURNALPOST_ID)
+        }
+        assertOppdaterJournalpostRequest(request, dto)
     }
 
     @Test fun `skal mappe request til opprettJournalpostRequest av type arkiv pdfa`() {
@@ -155,6 +175,14 @@ class DokarkivServiceTest {
 
         Assertions.assertThat(thrown).isInstanceOf(RuntimeException::class.java)
                 .withFailMessage("Kan ikke hente navn")
+    }
+
+    private fun assertOppdaterJournalpostRequest(request: OppdaterJournalpostRequest, dto: TilknyttFagsakRequest) {
+        Assertions.assertThat(request.bruker!!.id).isEqualTo(dto.bruker.id)
+        Assertions.assertThat(request.bruker!!.idType.name).isEqualTo(dto.bruker.idType.name)
+        Assertions.assertThat(request.sak!!.fagsakId).isEqualTo(dto.sak.fagsakId)
+        Assertions.assertThat(request.sak!!.sakstype).isEqualTo("FAGSAK")
+        Assertions.assertThat(request.tema).isEqualTo(dto.tema)
     }
 
     private fun assertOpprettJournalpostRequest(request: OpprettJournalpostRequest,
