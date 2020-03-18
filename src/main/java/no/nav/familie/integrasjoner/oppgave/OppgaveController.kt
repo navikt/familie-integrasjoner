@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/oppgave")
 class OppgaveController(private val oppgaveService: OppgaveService) {
 
-    @GetMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/"])
+    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["/"])
     fun finnOppgaverKnyttetTilSaksbehandlerOgEnhet(@RequestParam("tema") tema: String,
                                                    @RequestParam("behandlingstema") behandlingstema: String?,
                                                    @RequestParam("oppgavetype") oppgavetype: String?,
