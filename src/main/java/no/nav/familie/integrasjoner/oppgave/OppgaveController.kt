@@ -18,9 +18,13 @@ import org.springframework.web.bind.annotation.*
 class OppgaveController(private val oppgaveService: OppgaveService) {
 
     @GetMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/"])
-    fun finnOppgaverKnyttetTilSaksbehandlerOgEnhet(@RequestParam("saksbehandler") saksbehandler: String,
-                                                   @RequestParam("enhet") enhet: String): ResponseEntity<Ressurs<List<OppgaveJsonDto>>> {
-        val oppgaver = oppgaveService.finnOppgaverKnyttetTilSaksbehandlerOgEnhet(saksbehandler, enhet)
+    fun finnOppgaverKnyttetTilSaksbehandlerOgEnhet(@RequestParam("tema") tema: String,
+                                                   @RequestParam("behandlingstema") behandlingstema: String?,
+                                                   @RequestParam("oppgavetype") oppgavetype: String?,
+                                                   @RequestParam("enhet") enhet: String?,
+                                                   @RequestParam("saksbehandler") saksbehandler: String?)
+            : ResponseEntity<Ressurs<List<OppgaveJsonDto>>> {
+        val oppgaver = oppgaveService.finnOppgaverKnyttetTilSaksbehandlerOgEnhet(tema, behandlingstema, oppgavetype, enhet, saksbehandler)
         return ResponseEntity.ok().body(success(oppgaver, "Finn oppgaver OK"))
     }
 

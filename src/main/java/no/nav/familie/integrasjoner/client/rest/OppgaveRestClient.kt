@@ -19,6 +19,7 @@ import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
+import java.time.LocalDate
 
 @Component
 class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: URI,
@@ -41,18 +42,33 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         return getForEntity(requestUrl(oppgaveId.toLong()), httpHeaders())
     }
 
-    fun finnOppgaverKnyttetTilSaksbehandlerOgEnhet(tilordnetRessurs: String, tildeltEnhetsnr: String): List<OppgaveJsonDto> {
-        val uri = UriComponentsBuilder.fromUri(oppgaveBaseUrl)
-                .path(PATH_OPPGAVE)
-                .queryParam("tilordnetRessurs", tilordnetRessurs)
-                .queryParam("tildeltEnhetsnr", tildeltEnhetsnr)
-                .queryParam("oppgavetype", OPPGAVE_TYPE)
-                .build()
-                .toUri()
+    fun finnOppgaverKnyttetTilSaksbehandlerOgEnhet(tema: String, behandlingstema: String?, oppgavetype: String?, tildeltEnhetsnr: String?, tilordnetRessurs: String?): List<OppgaveJsonDto> {
+        fun finnAlleOppgaver(oppgaver: List<OppgaveJsonDto> = listOf(), antallHentet: Int = 0): List<OppgaveJsonDto> {
+            val limit = 50
 
-        val finnOppgaveResponseDto = getForEntity<FinnOppgaveResponseDto>(uri, httpHeaders())
+            val uri = UriComponentsBuilder.fromUri(oppgaveBaseUrl)
+                    .path(PATH_OPPGAVE)
+                    .queryParam("limit", limit.toString())
+                    .queryParam("offset", antallHentet.toString())
+                    .queryParam("statuskategori", "AAPEN")
+                    .queryParam("aktivDatoTom", LocalDate.now().toString())
+                    .queryParam("tema", tema)
+                    .queryParam("behandlingstema", behandlingstema)
+                    .queryParam("oppgavetype", oppgavetype)
+                    .queryParam("tildeltEnhetsnr", tildeltEnhetsnr)
+                    .queryParam("tilordnetRessurs", tilordnetRessurs)
+                    .build()
+                    .toUri()
 
-        return finnOppgaveResponseDto.oppgaver
+            val finnOppgaveResponseDto = getForEntity<FinnOppgaveResponseDto>(uri, httpHeaders())
+
+            return when (finnOppgaveResponseDto.antallTreffTotalt <= antallHentet + limit) {
+                true -> oppgaver + finnOppgaveResponseDto.oppgaver
+                false -> finnAlleOppgaver(oppgaver + finnOppgaveResponseDto.oppgaver, antallHentet + limit)
+            }
+        }
+
+        return finnAlleOppgaver()
     }
 
     fun oppdaterOppgave(patchDto: OppgaveJsonDto) {
