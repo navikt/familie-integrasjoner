@@ -42,3 +42,6 @@ OPPGAVE_URL: http://localhost:18321
 PDL_URL: http://localhost:18321/rest/pdl
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw
+strengt_fortrolig_adresse: Ingen tilgang
+fortrolig_adresse: Ingen tilgang
+egen_ansatt: Ingen tilgang
