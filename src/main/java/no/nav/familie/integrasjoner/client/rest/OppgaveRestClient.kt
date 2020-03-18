@@ -43,20 +43,24 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
     }
 
     fun finnOppgaverKnyttetTilSaksbehandlerOgEnhet(tema: String, behandlingstema: String?, oppgavetype: String?, tildeltEnhetsnr: String?, tilordnetRessurs: String?): List<OppgaveJsonDto> {
+
         fun finnAlleOppgaver(oppgaver: List<OppgaveJsonDto> = listOf(), antallHentet: Int = 0): List<OppgaveJsonDto> {
             val limit = 50
 
-            val uri = UriComponentsBuilder.fromUri(oppgaveBaseUrl)
+            val uriBuilder = UriComponentsBuilder.fromUri(oppgaveBaseUrl)
                     .path(PATH_OPPGAVE)
-                    .queryParam("limit", limit.toString())
-                    .queryParam("offset", antallHentet.toString())
                     .queryParam("statuskategori", "AAPEN")
                     .queryParam("aktivDatoTom", LocalDate.now().toString())
                     .queryParam("tema", tema)
-                    .queryParam("behandlingstema", behandlingstema)
-                    .queryParam("oppgavetype", oppgavetype)
-                    .queryParam("tildeltEnhetsnr", tildeltEnhetsnr)
-                    .queryParam("tilordnetRessurs", tilordnetRessurs)
+
+            behandlingstema?.apply { uriBuilder.queryParam("behandlingstema", this) }
+            oppgavetype?.apply { uriBuilder.queryParam("oppgavetype", this) }
+            tildeltEnhetsnr?.apply { uriBuilder.queryParam("tildeltEnhetsnr", this) }
+            tilordnetRessurs?.apply { uriBuilder.queryParam("tilordnetRessurs", this) }
+
+            val uri = uriBuilder
+                    .queryParam("limit", limit.toString())
+                    .queryParam("offset", antallHentet.toString())
                     .build()
                     .toUri()
 
