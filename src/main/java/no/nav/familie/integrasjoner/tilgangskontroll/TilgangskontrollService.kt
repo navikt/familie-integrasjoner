@@ -1,57 +1,59 @@
 package no.nav.familie.integrasjoner.tilgangskontroll
 
-import no.nav.familie.integrasjoner.azure.domene.Saksbehandler
-import no.nav.familie.integrasjoner.client.rest.AzureGraphRestClient
+import no.nav.familie.integrasjoner.config.TilgangConfig
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
-import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.Tilgang
+import no.nav.security.token.support.core.jwt.JwtToken
+import no.nav.security.token.support.spring.SpringTokenValidationContextHolder
 import org.slf4j.LoggerFactory
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
 @Service
-class TilgangskontrollService(private val azureGraphRestClient: AzureGraphRestClient,
-                              private val egenAnsattService: EgenAnsattService,
-                              private val personopplysningerService: PersonopplysningerService) {
+class TilgangskontrollService(private val egenAnsattService: EgenAnsattService,
+                              private val personopplysningerService: PersonopplysningerService,
+                              private val tilgangConfig: TilgangConfig) {
 
     fun sjekkTilgangTilBrukere(personIdenter: List<String>): List<Tilgang> {
         return personIdenter.map(this::sjekkTilgangTilBruker)
     }
 
     fun sjekkTilgangTilBruker(personIdent: String): Tilgang {
-        val saksbehandler = azureGraphRestClient.hentSaksbehandler()
-        val personInfo = personopplysningerService.hentPersoninfo(personIdent)
-        return sjekkTilgang(personIdent, saksbehandler, personInfo)
+        val jwtToken = SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken("azuread")
+        return sjekkTilgang(personIdent, jwtToken)
     }
 
     @Cacheable(cacheNames = [TILGANG_TIL_BRUKER],
-               key = "#saksbehandler.id.concat(#personFnr)",
-               condition = "#personFnr != null && #saksbehandler.id != null")
-    fun sjekkTilgang(personFnr: String, saksbehandler: Saksbehandler, personInfo: Personinfo): Tilgang {
-        val navIdent = saksbehandler.userPrincipalName
+               key = "#jwtToken.subject.concat(#personIdent)",
+               condition = "#personIdent != null && #jwtToken.subject != null")
+    fun sjekkTilgang(personIdent: String, jwtToken: JwtToken): Tilgang {
+        val personInfo = personopplysningerService.hentPersoninfo(personIdent)
         val diskresjonskode = personInfo.diskresjonskode
 
-        if (DISKRESJONSKODE_KODE6 == diskresjonskode && !harRolleForTilgang(AdRolle.KODE6)) {
-            secureLogger.info("$navIdent har ikke tilgang til $personFnr")
-            return Tilgang(false, AdRolle.KODE6.rollekode)
+        if (DISKRESJONSKODE_KODE6 == diskresjonskode) {
+             return hentTilgangForRolle(tilgangConfig.grupper["kode6"], jwtToken, personIdent)
         }
 
-        if (DISKRESJONSKODE_KODE7 == diskresjonskode && !harRolleForTilgang(AdRolle.KODE7)) {
-            secureLogger.info("$navIdent har ikke tilgang til $personFnr")
-            return Tilgang(false, AdRolle.KODE7.rollekode)
+        if (DISKRESJONSKODE_KODE7 == diskresjonskode) {
+            return hentTilgangForRolle(tilgangConfig.grupper["kode7"], jwtToken, personIdent)
         }
 
-        if (egenAnsattService.erEgenAnsatt(personFnr) && !harRolleForTilgang(AdRolle.EGEN_ANSATT)) {
-            secureLogger.info("$navIdent har ikke tilgang til egen ansatt $personFnr")
-            return Tilgang(false, AdRolle.EGEN_ANSATT.rollekode)
+        if (egenAnsattService.erEgenAnsatt(personIdent)) {
+            return hentTilgangForRolle(tilgangConfig.grupper["utvidetTilgang"], jwtToken, personIdent)
         }
         return Tilgang(true)
     }
 
-    private fun harRolleForTilgang(adRolle: AdRolle): Boolean {
-        return azureGraphRestClient.hentGrupper().value.any { it.onPremisesSamAccountName == adRolle.rollekode }
+    private fun hentTilgangForRolle(adRolle: AdRolle?, jwtToken: JwtToken, personIdent: String): Tilgang {
+        val grupper = jwtToken.jwtTokenClaims.getAsList("groups")
+        if (grupper.any { it == adRolle?.rolleId }) {
+            return Tilgang(true)
+        }
+        secureLogger.info("${jwtToken.jwtTokenClaims["preferred_username"]} " +
+                          "har ikke tilgang ${adRolle?.beskrivelse} for $personIdent")
+        return Tilgang(false, adRolle?.beskrivelse)
     }
 
     companion object {
