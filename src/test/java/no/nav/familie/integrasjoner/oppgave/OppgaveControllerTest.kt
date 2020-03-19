@@ -51,9 +51,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal logge stack trace og returnere internal server error ved IllegalStateException`() {
-        stubFor(get(urlEqualTo(GET_OPPGAVE_URL))
-                        .willReturn(aResponse()
-                                            .withStatus(200)))
+        stubFor(get(GET_OPPGAVE_URL).willReturn(ok()))
 
         val oppgave = Oppgave("1234567891011", "1", null, "test NPE", Tema.KON)
 
@@ -69,9 +67,8 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal logge og returnere internal server error ved restClientException`() {
-        stubFor(get(urlEqualTo(GET_OPPGAVE_URL))
-                        .willReturn(aResponse()
-                                            .withStatus(404)))
+        stubFor(get(GET_OPPGAVE_URL).willReturn(status(404)))
+
         val oppgave = Oppgave("1234567891011", "1", null, "test RestClientException", Tema.KON)
 
         val response: ResponseEntity<Ressurs<Map<String, Long>>> = restTemplate.exchange(localhost(OPPDATER_OPPGAVE_URL),
@@ -86,11 +83,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal logge og returnere not found ved oppgaveIkkeFunnetException`() {
-        stubFor(get(urlEqualTo(GET_OPPGAVE_URL))
-                        .willReturn(aResponse()
-                                            .withStatus(200)
-                                            .withHeader("Content-Type", "application/json")
-                                            .withBody(gyldigOppgaveResponse("tom_response.json"))))
+        stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(gyldigOppgaveResponse("tom_response.json"))))
 
         val oppgave = Oppgave("1234567891011", "1", null, "test oppgave ikke funnet", Tema.KON)
 
@@ -109,11 +102,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal ignorere oppdatering hvis oppgave er ferdigstilt`() {
-        stubFor(get(urlEqualTo(GET_OPPGAVE_URL))
-                        .willReturn(aResponse()
-                                            .withStatus(200)
-                                            .withHeader("Content-Type", "application/json")
-                                            .withBody(gyldigOppgaveResponse("ferdigstilt_oppgave.json"))))
+        stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(gyldigOppgaveResponse("ferdigstilt_oppgave.json"))))
 
         val oppgave = Oppgave("1234567891011", "1", null, "test oppgave ikke funnet", null)
 
@@ -133,20 +122,14 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `skal oppdatere oppgave med ekstra beskrivelse, returnere oppgaveid og 200 OK`() {
 
-        stubFor(get(urlEqualTo(GET_OPPGAVE_URL))
-                        .willReturn(aResponse()
-                                            .withStatus(200)
-                                            .withHeader("Content-Type", "application/json")
-                                            .withBody(gyldigOppgaveResponse("oppgave.json"))))
+        stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(gyldigOppgaveResponse("oppgave.json"))))
 
-        stubFor(
-                patch(
-                        urlEqualTo("/api/v1/oppgaver/${OPPGAVE_ID}"))
-                        .withRequestBody(matchingJsonPath("$.[?(@.beskrivelse == 'Behandle sak$EKSTRA_BESKRIVELSE')]"))
-                        .willReturn(aResponse()
-                                            .withStatus(201)
-                                            .withHeader("Content-Type", "application/json")
-                                            .withBody(gyldigOppgaveResponse("ferdigstilt_oppgave.json"))))
+        stubFor(patch(urlEqualTo("/api/v1/oppgaver/${OPPGAVE_ID}"))
+                .withRequestBody(matchingJsonPath("$.[?(@.beskrivelse == 'Behandle sak$EKSTRA_BESKRIVELSE')]"))
+                .willReturn(aResponse()
+                        .withStatus(201)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(gyldigOppgaveResponse("ferdigstilt_oppgave.json"))))
 
         val oppgave = Oppgave("1234567891011", "1", null, EKSTRA_BESKRIVELSE, null)
 
@@ -162,11 +145,8 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `skal opprette oppgave, returnere oppgaveid og 201 Created`() {
 
-        stubFor(post(urlEqualTo("/api/v1/oppgaver"))
-                        .willReturn(aResponse()
-                                            .withStatus(200)
-                                            .withHeader("Content-Type", "application/json")
-                                            .withBody(objectMapper.writeValueAsBytes(OppgaveJsonDto(id = OPPGAVE_ID)))))
+        stubFor(post("/api/v1/oppgaver").willReturn(okJson(objectMapper.writeValueAsString(OppgaveJsonDto(id = OPPGAVE_ID)))))
+
         val opprettOppgave = OpprettOppgave(
                 ident = OppgaveIdent(ident = "123456789012", type = IdentType.Aktør),
                 fristFerdigstillelse = LocalDate.now().plusDays(3),
@@ -189,7 +169,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `kall mot oppgave ved opprett feiler med bad request, tjenesten vår returernerer 500 og med info om feil i response `() {
 
-        stubFor(post(urlEqualTo("/api/v1/oppgaver"))
+        stubFor(post("/api/v1/oppgaver")
                         .willReturn(aResponse()
                                             .withStatus(400)
                                             .withHeader("Content-Type", "application/json")
@@ -215,12 +195,9 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `Ferdigstilling av oppgave som er alt ferdigstillt skal logge og returnerer 200 OK`() {
-        stubFor(get(urlEqualTo("/api/v1/oppgaver/123"))
-                        .willReturn(aResponse()
-                                            .withStatus(200)
-                                            .withHeader("Content-Type", "application/json")
-                                            .withBody(objectMapper.writeValueAsBytes(OppgaveJsonDto(id = 123,
-                                                                                                    status = StatusEnum.FERDIGSTILT)))))
+        stubFor(get("/api/v1/oppgaver/123").willReturn(okJson(
+                objectMapper.writeValueAsString(OppgaveJsonDto(id = 123, status = StatusEnum.FERDIGSTILT)))))
+
 
         verify(exactly(0), patchRequestedFor(urlEqualTo("/api/v1/oppgaver/123")))
 
@@ -235,12 +212,8 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `Ferdigstilling av oppgave som er feilregistrert skal generere en oppslagsfeil`() {
-        stubFor(get(urlEqualTo("/api/v1/oppgaver/${OPPGAVE_ID}"))
-                        .willReturn(aResponse()
-                                            .withStatus(200)
-                                            .withHeader("Content-Type", "application/json")
-                                            .withBody(objectMapper.writeValueAsBytes(OppgaveJsonDto(id = OPPGAVE_ID,
-                                                                                                    status = StatusEnum.FEILREGISTRERT)))))
+        stubFor(get("/api/v1/oppgaver/${OPPGAVE_ID}").willReturn(okJson(
+                objectMapper.writeValueAsString(OppgaveJsonDto(id = OPPGAVE_ID, status = StatusEnum.FEILREGISTRERT)))))
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
                 restTemplate.exchange(localhost("/api/oppgave/${OPPGAVE_ID}/ferdigstill"),
@@ -253,12 +226,9 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `Ferdigstilling av oppgave som er i status opprettet skal gjøre et patch kall mot oppgave med status FERDIGSTILL`() {
-        stubFor(get(urlEqualTo("/api/v1/oppgaver/${OPPGAVE_ID}"))
-                        .willReturn(aResponse()
-                                            .withStatus(200)
-                                            .withHeader("Content-Type", "application/json")
-                                            .withBody(objectMapper.writeValueAsBytes(OppgaveJsonDto(id = OPPGAVE_ID,
-                                                                                                    status = StatusEnum.OPPRETTET)))))
+        stubFor(get("/api/v1/oppgaver/${OPPGAVE_ID}").willReturn(okJson(
+                objectMapper.writeValueAsString(OppgaveJsonDto(id = OPPGAVE_ID, status = StatusEnum.OPPRETTET)))))
+
         stubFor(patch(urlEqualTo("/api/v1/oppgaver/${OPPGAVE_ID}"))
                         .withRequestBody(matchingJsonPath("$.[?(@.status == 'FERDIGSTILT')]"))
                         .willReturn(aResponse()
