@@ -282,7 +282,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 .willReturn(okJson(gyldigOppgaveResponse("tom_response.json"))))
 
         val response: ResponseEntity<Ressurs<List<OppgaveJsonDto>>> =
-                restTemplate.exchange(localhost("/api/oppgave/?tema=BAR"), HttpMethod.GET, HttpEntity(null, headers))
+                restTemplate.exchange(localhost("/api/oppgave?tema=BAR"), HttpMethod.GET, HttpEntity(null, headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.data?.count()).isEqualTo(0)
@@ -294,7 +294,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 .willReturn(okJson(gyldigOppgaveResponse("oppgave.json"))))
 
         val response: ResponseEntity<Ressurs<List<OppgaveJsonDto>>> =
-                restTemplate.exchange(localhost("/api/oppgave/?tema=BAR"), HttpMethod.GET, HttpEntity(null, headers))
+                restTemplate.exchange(localhost("/api/oppgave?tema=BAR"), HttpMethod.GET, HttpEntity(null, headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.data?.count()).isEqualTo(1)
@@ -312,7 +312,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 .willReturn(okJson(objectMapper.writeValueAsString(oppgaver1stk))))
 
         val response: ResponseEntity<Ressurs<List<OppgaveJsonDto>>> =
-                restTemplate.exchange(localhost("/api/oppgave/?tema=BAR"), HttpMethod.GET, HttpEntity(null, headers))
+                restTemplate.exchange(localhost("/api/oppgave?tema=BAR"), HttpMethod.GET, HttpEntity(null, headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.data?.count()).isEqualTo(51)
@@ -321,7 +321,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `finnOppgaveKnyttetTilSaksbehandlerOgEnhet skal feile hvis tema ikke er angitt`() {
         val response: ResponseEntity<Ressurs<List<OppgaveJsonDto>>> =
-                restTemplate.exchange(localhost("/api/oppgave/"), HttpMethod.GET, HttpEntity(null, headers))
+                restTemplate.exchange(localhost("/api/oppgave"), HttpMethod.GET, HttpEntity(null, headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
     }

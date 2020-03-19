@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/oppgave")
 class OppgaveController(private val oppgaveService: OppgaveService) {
 
-    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["/"])
+    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun finnOppgaverKnyttetTilSaksbehandlerOgEnhet(@RequestParam("tema") tema: String,
                                                    @RequestParam("behandlingstema", required = false) behandlingstema: String?,
                                                    @RequestParam("oppgavetype", required = false) oppgavetype: String?,
@@ -34,7 +34,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
     }
 
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/"])
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun opprettOppgave(@RequestBody oppgave: OpprettOppgave): ResponseEntity<Ressurs<OppgaveResponse>> {
         val oppgaveId = oppgaveService.opprettOppgave(oppgave)
         return ResponseEntity.status(HttpStatus.CREATED)
