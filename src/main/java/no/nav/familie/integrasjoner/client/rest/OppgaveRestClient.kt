@@ -44,7 +44,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
 
     fun finnOppgaverKnyttetTilSaksbehandlerOgEnhet(tema: String, behandlingstema: String?, oppgavetype: String?, tildeltEnhetsnr: String?, tilordnetRessurs: String?): List<OppgaveJsonDto> {
 
-        fun finnAlleOppgaver(oppgaver: List<OppgaveJsonDto> = listOf(), antallHentet: Int = 0): List<OppgaveJsonDto> {
+        tailrec fun finnAlleOppgaver(oppgaver: List<OppgaveJsonDto> = listOf()): List<OppgaveJsonDto> {
             val limit = 50
 
             val uriBuilder = UriComponentsBuilder.fromUri(oppgaveBaseUrl)
@@ -60,15 +60,16 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
 
             val uri = uriBuilder
                     .queryParam("limit", limit.toString())
-                    .queryParam("offset", antallHentet.toString())
+                    .queryParam("offset", oppgaver.count().toString())
                     .build()
                     .toUri()
 
             val finnOppgaveResponseDto = getForEntity<FinnOppgaveResponseDto>(uri, httpHeaders())
+            val nyeOppgaver = oppgaver + finnOppgaveResponseDto.oppgaver
 
-            return when (finnOppgaveResponseDto.antallTreffTotalt <= antallHentet + limit) {
-                true -> oppgaver + finnOppgaveResponseDto.oppgaver
-                false -> finnAlleOppgaver(oppgaver + finnOppgaveResponseDto.oppgaver, antallHentet + limit)
+            return when (nyeOppgaver.count() < finnOppgaveResponseDto.antallTreffTotalt) {
+                true -> finnAlleOppgaver(nyeOppgaver)
+                false -> nyeOppgaver
             }
         }
 
