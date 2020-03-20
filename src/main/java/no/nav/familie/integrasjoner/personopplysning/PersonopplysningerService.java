@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.personopplysning;
 
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient;
+import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery;
 import no.nav.familie.integrasjoner.client.soap.PersonSoapClient;
 import no.nav.familie.integrasjoner.felles.ws.DateUtil;
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo;
@@ -81,7 +82,7 @@ public class PersonopplysningerService {
                                         response);
     }
 
-    public Person hentPersoninfo(String personIdent, String tema) {
-        return pdlRestClient.hentPerson(personIdent, tema);
+    public Person hentPersoninfo(String personIdent, String tema, PersonInfoQuery personInfoQuery) {
+        return pdlRestClient.hentPerson(personIdent, tema, personInfoQuery);
     }
 }

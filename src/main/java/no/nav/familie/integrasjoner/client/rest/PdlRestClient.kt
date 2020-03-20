@@ -22,22 +22,28 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
     : AbstractRestClient(restTemplate, "pdl.personinfo") {
 
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
-    private val graphQL = this::class.java.getResource("/pdl/hentperson.graphql").readText().graphqlCompatible()
 
-    fun hentPerson(personIdent: String, tema: String): Person {
+    fun hentPerson(personIdent: String, tema: String, personInfoQuery: PersonInfoQuery): Person {
+
         val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
-                                                query = graphQL)
+                                                query = personInfoQuery.graphQL)
         try {
             val response = postForEntity<PdlHentPersonResponse>(pdlUri,
                                                                 pdlPersonRequest,
                                                                 httpHeaders(tema))
             if (response != null && !response.harFeil()) {
                 return Result.runCatching {
-                    val familierelasjoner: Set<Familierelasjon> = response.data?.person!!.familierelasjoner.map { relasjon ->
-                        Familierelasjon(personIdent = Personident(id= relasjon.relatertPersonsIdent),
-                                        relasjonsrolle = relasjon.relatertPersonsRolle.toString())
-                    }.toSet()
-                    response.data.person.let {
+                    val familierelasjoner: Set<Familierelasjon> =
+                            when (personInfoQuery) {
+                                PersonInfoQuery.ENKEL -> emptySet()
+                                PersonInfoQuery.MED_RELASJONER -> {
+                                    response.data?.person!!.familierelasjoner.map { relasjon ->
+                                        Familierelasjon(personIdent = Personident(id = relasjon.relatertPersonsIdent),
+                                                        relasjonsrolle = relasjon.relatertPersonsRolle.toString())
+                                    }.toSet()
+                                }
+                            }
+                    response.data?.person!!.let {
                         Person(fødselsdato = it.foedsel.first().foedselsdato!!,
                                navn = it.navn.first().fulltNavn(),
                                kjønn = it.kjoenn.first().kjoenn.toString(),
@@ -91,4 +97,9 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
     companion object {
         private const val PATH_GRAPHQL = "graphql"
     }
+}
+
+enum class PersonInfoQuery(val graphQL: String) {
+    ENKEL(this::class.java.getResource("/pdl/hentperson-enkel.graphql").readText().graphqlCompatible()),
+    MED_RELASJONER(this::class.java.getResource("/pdl/hentperson-med-relasjoner.graphql").readText().graphqlCompatible())
 }
