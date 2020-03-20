@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MissingRequestHeaderException
+import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.client.RestClientResponseException
@@ -46,6 +47,14 @@ class ApiExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(failure("Mangler påkrevd request header", e))
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException::class)
+    fun handleMissingServletRequestParameterException(e: MissingServletRequestParameterException): ResponseEntity<Ressurs<Any>> {
+        logger.warn("Mangler påkrevd request parameter. {}", e.message)
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(failure("Mangler påkrevd request parameter", e))
     }
 
     @ExceptionHandler(OAuth2ClientException::class)

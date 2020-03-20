@@ -19,6 +19,7 @@ import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
+import java.time.LocalDate
 
 @Component
 class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: URI,
@@ -41,13 +42,47 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         return getForEntity(requestUrl(oppgaveId.toLong()), httpHeaders())
     }
 
+    fun finnOppgaverKnyttetTilSaksbehandlerOgEnhet(tema: String, behandlingstema: String?, oppgavetype: String?, tildeltEnhetsnr: String?, tilordnetRessurs: String?): List<OppgaveJsonDto> {
+
+        tailrec fun finnAlleOppgaver(oppgaver: List<OppgaveJsonDto> = listOf()): List<OppgaveJsonDto> {
+            val limit = 50
+
+            val uriBuilder = UriComponentsBuilder.fromUri(oppgaveBaseUrl)
+                    .path(PATH_OPPGAVE)
+                    .queryParam("statuskategori", "AAPEN")
+                    .queryParam("aktivDatoTom", LocalDate.now().toString())
+                    .queryParam("tema", tema)
+
+            behandlingstema?.apply { uriBuilder.queryParam("behandlingstema", this) }
+            oppgavetype?.apply { uriBuilder.queryParam("oppgavetype", this) }
+            tildeltEnhetsnr?.apply { uriBuilder.queryParam("tildeltEnhetsnr", this) }
+            tilordnetRessurs?.apply { uriBuilder.queryParam("tilordnetRessurs", this) }
+
+            val uri = uriBuilder
+                    .queryParam("limit", limit.toString())
+                    .queryParam("offset", oppgaver.count().toString())
+                    .build()
+                    .toUri()
+
+            val finnOppgaveResponseDto = getForEntity<FinnOppgaveResponseDto>(uri, httpHeaders())
+            val nyeOppgaver = oppgaver + finnOppgaveResponseDto.oppgaver
+
+            return when (nyeOppgaver.count() < finnOppgaveResponseDto.antallTreffTotalt) {
+                true -> finnAlleOppgaver(nyeOppgaver)
+                false -> nyeOppgaver
+            }
+        }
+
+        return finnAlleOppgaver()
+    }
+
     fun oppdaterOppgave(patchDto: OppgaveJsonDto) {
         return Result.runCatching {
             patchForEntity<OppgaveJsonDto>(requestUrl(patchDto.id ?: error("Kan ikke finne oppgaveId på oppgaven")),
                                            patchDto,
                                            httpHeaders())
         }.fold(
-                onSuccess = { it },
+                onSuccess = {},
                 onFailure = {
                     var feilmelding = "Feil ved oppdatering av oppgave for ${patchDto.id}."
                     if (it is HttpStatusCodeException) {
