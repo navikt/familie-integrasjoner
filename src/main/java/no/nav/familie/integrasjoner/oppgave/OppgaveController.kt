@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.oppgave
 
+import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
@@ -16,13 +17,24 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/oppgave")
 class OppgaveController(private val oppgaveService: OppgaveService) {
 
+    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun finnOppgaverKnyttetTilSaksbehandlerOgEnhet(@RequestParam("tema") tema: String,
+                                                   @RequestParam("behandlingstema", required = false) behandlingstema: String?,
+                                                   @RequestParam("oppgavetype", required = false) oppgavetype: String?,
+                                                   @RequestParam("enhet", required = false) enhet: String?,
+                                                   @RequestParam("saksbehandler", required = false) saksbehandler: String?)
+            : ResponseEntity<Ressurs<List<OppgaveJsonDto>>> {
+        val oppgaver = oppgaveService.finnOppgaverKnyttetTilSaksbehandlerOgEnhet(tema, behandlingstema, oppgavetype, enhet, saksbehandler)
+        return ResponseEntity.ok().body(success(oppgaver, "Finn oppgaver OK"))
+    }
+
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdater"])
     fun oppdaterOppgave(@RequestBody oppgave: Oppgave): ResponseEntity<Ressurs<OppgaveResponse>> {
         val oppgaveId = oppgaveService.oppdaterOppgave(oppgave)
         return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
     }
 
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/"])
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun opprettOppgave(@RequestBody oppgave: OpprettOppgave): ResponseEntity<Ressurs<OppgaveResponse>> {
         val oppgaveId = oppgaveService.opprettOppgave(oppgave)
         return ResponseEntity.status(HttpStatus.CREATED)
