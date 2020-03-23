@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.personopplysning
 
+import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
@@ -52,8 +53,17 @@ class PersonopplysningerController(private val personopplysningerService: Person
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/info/{tema}"])
     fun personInfo(@RequestHeader(name = "Nav-Personident") @NotNull personIdent: String,
                    @PathVariable tema: Tema): ResponseEntity<Ressurs<Person>> {
-        return ResponseEntity.ok().body(success(personopplysningerService.hentPersoninfo(personIdent, tema.toString()),
-                                                "Hent personinfo OK"))
+        return ResponseEntity.ok().body(success(
+                personopplysningerService.hentPersoninfo(personIdent, tema.toString(), PersonInfoQuery.MED_RELASJONER),
+                "Hent personinfo OK"))
+    }
+
+    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/infoEnkel/{tema}"])
+    fun personInfoEnkel(@RequestHeader(name = "Nav-Personident") @NotNull personIdent: String,
+                        @PathVariable tema: Tema): ResponseEntity<Ressurs<Person>> {
+        return ResponseEntity.ok().body(success(
+                personopplysningerService.hentPersoninfo(personIdent, tema.toString(), PersonInfoQuery.ENKEL),
+                "Hent personinfo OK"))
     }
 
     enum class Tema {

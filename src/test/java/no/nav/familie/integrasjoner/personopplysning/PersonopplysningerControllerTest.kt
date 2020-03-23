@@ -30,6 +30,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
     @get:Rule
     val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
     private lateinit var uriHentPersoninfo: String
+    private lateinit var uriHentPersoninfoEnkel: String
 
     @Before
     fun setUp() {
@@ -38,6 +39,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
             add("Nav-Personident", "12345678901")
         }.setBearerAuth(JwtTokenGenerator.signedJWTAsString("testbruker"))
         uriHentPersoninfo = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}v1/info/$TEMA").toUriString()
+        uriHentPersoninfoEnkel = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}v1/infoEnkel/$TEMA").toUriString()
     }
 
     @Test
@@ -65,6 +67,32 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.data?.kjønn).isEqualTo(KJØNN)
         assertThat(response.body?.data?.familierelasjoner?.stream()?.findFirst()?.get()?.personIdent?.id).isEqualTo(FAMILIERELASJON_PERSONIDENT)
         assertThat(response.body?.data?.familierelasjoner?.stream()?.findFirst()?.get()?.relasjonsrolle).isEqualTo(FAMILIERELASJON_RELASJONSROLLE)
+    }
+
+    @Test
+    fun `hent personinfoEnkel skal returnere persondata og status ok`() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withPath("/rest/pdl/graphql")
+                                .withHeader("Tema", TEMA)
+                                .withBody(gyldigRequest())
+                )
+                .respond(HttpResponse.response().withBody(readfile("pdlOkResponseEnkel.json"))
+                                 .withHeaders(Header("Content-Type", "application/json")))
+
+
+
+        val response: ResponseEntity<Ressurs<Person>> = restTemplate.exchange(uriHentPersoninfo,
+                                                                              HttpMethod.GET,
+                                                                              HttpEntity<String>(headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.body?.data?.fødselsdato).isEqualTo(FØDSELSDATO)
+        assertThat(response.body?.data?.navn).isEqualTo(NAVN)
+        assertThat(response.body?.data?.kjønn).isEqualTo(KJØNN)
+        assertThat(response.body?.data?.familierelasjoner).isEmpty()
     }
 
     @Test
@@ -127,7 +155,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         return readfile("pdlGyldigRequest.json")
                 .replace(
                         "GRAPHQL-PLACEHOLDER",
-                        readfile("hentperson.graphql").graphqlCompatible()
+                        readfile("hentperson-med-relasjoner.graphql").graphqlCompatible()
         )
     }
 

@@ -2,7 +2,7 @@ package no.nav.familie.integrasjoner.personopplysning.internal
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
-data class PdlHentPersonResponse (val data: PdlPerson?,
+data class PdlHentPersonResponse (val data: PdlPerson,
                                   val errors: Array<PdlError>?) {
     fun harFeil(): Boolean {
         return errors != null && errors.isNotEmpty()
@@ -20,7 +20,7 @@ data class PdlPersonData (
         val foedsel: Array<PdlFødselsDato>,
         val navn: Array<PdlNavn>,
         val kjoenn: Array<PdlKjoenn>,
-        val familierelasjoner: Array<PdlFamilierelasjon>)
+        val familierelasjoner: Array<PdlFamilierelasjon> = emptyArray())
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlFødselsDato (val foedselsdato: String?)
