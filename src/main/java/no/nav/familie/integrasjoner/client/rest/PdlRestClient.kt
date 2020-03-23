@@ -37,13 +37,13 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                             when (personInfoQuery) {
                                 PersonInfoQuery.ENKEL -> emptySet()
                                 PersonInfoQuery.MED_RELASJONER -> {
-                                    response.data?.person!!.familierelasjoner.map { relasjon ->
+                                    response.data.person!!.familierelasjoner.map { relasjon ->
                                         Familierelasjon(personIdent = Personident(id = relasjon.relatertPersonsIdent),
                                                         relasjonsrolle = relasjon.relatertPersonsRolle.toString())
                                     }.toSet()
                                 }
                             }
-                    response.data?.person!!.let {
+                    response.data.person!!.let {
                         Person(fødselsdato = it.foedsel.first().foedselsdato!!,
                                navn = it.navn.first().fulltNavn(),
                                kjønn = it.kjoenn.first().kjoenn.toString(),

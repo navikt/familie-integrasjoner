@@ -2,7 +2,7 @@ package no.nav.familie.integrasjoner.personopplysning.internal
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
-data class PdlHentPersonResponse (val data: PdlPerson?,
+data class PdlHentPersonResponse (val data: PdlPerson,
                                   val errors: Array<PdlError>?) {
     fun harFeil(): Boolean {
         return errors != null && errors.isNotEmpty()
