@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
+import no.nav.familie.integrasjoner.aktør.domene.Aktør
 import no.nav.familie.integrasjoner.aktør.internal.AktørResponse
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -9,6 +10,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestOperations
 import java.net.URI
+import javax.ws.rs.core.MediaType
 
 @Component
 class AktørregisterRestClient(@Value("\${AKTOERID_URL}")
@@ -32,6 +34,7 @@ class AktørregisterRestClient(@Value("\${AKTOERID_URL}")
     private fun httpHeaders(personIdent: String): HttpHeaders {
         return HttpHeaders().apply {
             add(NAV_PERSONIDENTER, personIdent)
+            add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
         }
     }
 

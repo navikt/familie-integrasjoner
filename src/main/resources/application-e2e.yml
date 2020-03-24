@@ -27,19 +27,21 @@ no.nav.security.jwt:
 AAD_URL: http://vtp:8060/rest/isso/oauth2/access_token
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
-SECURITYTOKENSERVICE_URL: https://vtp:8063/soap/SecurityTokenServiceProvider/
-AKTOERID_URL: http://vtp:8060/rest/aktoerregister
+STS_URL: http://nav-auth-mock:8200/nais-sts/token
+SECURITYTOKENSERVICE_URL: http://vtp:8060/soap/SecurityTokenServiceProvider/
 PERSON_V3_URL: https://vtp:8063/soap/tpsws/ws/Person/v3
 DOKARKIV_V1_URL: http://vtp:8060/rest/dokarkiv/rest/journalpostapi/v1
 DOKDIST_URL: http://nowhere
+KODEVERK_URL: http://nowhere
 INFOTRYGD_URL: http://vtp:8060/rest/infotrygd-kontantstotte
 EGEN_ANSATT_V1_URL: https://vtp:8063/soap/tpsws/EgenAnsatt_v1
 MEDL2_URL: http://vtp:8060/rest/medl2
 SAF_URL: http://vtp:8060/rest/api/saf
 OPPGAVE_URL: http://vtp:8060/rest/dokarkiv/rest/oppgave-kontantstotte
-ARBEIDSFORDELING_V1_URL: https://vtp:8063/soap/norg2/ws/Arbeidsfordeling/v1
-PDL_URL: http://vtp:8060/rest/api/pdl
-KODEVERK_URL: http://vtp:8060/rest/api/kodeverk
+ARBEIDSFORDELING_V1_URL: http://vtp:8060/soap/norg2/ws/Arbeidsfordeling/v1
+
+PDL_URL: http://familie-mock-server:1337/rest/api/pdl
+AKTOERID_URL: http://familie-mock-server:1337/rest/aktoerregister
 
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw
