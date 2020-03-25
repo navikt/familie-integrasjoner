@@ -41,7 +41,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     @ExceptionHandler(KanIkkeFerdigstilleJournalpostException::class)
     fun handleKanIkkeFerdigstilleException(ex: KanIkkeFerdigstilleJournalpostException): ResponseEntity<Ressurs<Any>> {
         LOG.warn("Feil ved ferdigstilling {}", ex.message)
-        return ResponseEntity.badRequest().body(failure(null, ex))
+        return ResponseEntity.badRequest().body(failure(ex.message, ex))
     }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
