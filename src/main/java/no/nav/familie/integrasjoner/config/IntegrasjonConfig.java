@@ -21,7 +21,7 @@ public class IntegrasjonConfig {
                                        @Value("${CREDENTIAL_USERNAME}") String stsUsername,
                                        @Value("${CREDENTIAL_PASSWORD}") String stsPassword) {
 
-        final var stsFullUrl = URI.create(stsUrl + "/rest/v1/sts/token?grant_type=client_credentials&scope=openid");
+        final var stsFullUrl = URI.create(stsUrl + "?grant_type=client_credentials&scope=openid");
 
         return new StsRestClient(objectMapper, stsFullUrl, stsUsername, stsPassword);
     }
