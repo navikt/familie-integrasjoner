@@ -79,7 +79,7 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
                 patchForEntity<Any>(uri, FerdigstillJournalPost(journalførendeEnhet))
             } catch (e: RestClientResponseException) {
                 if (e.rawStatusCode == HttpStatus.BAD_REQUEST.value()) {
-                    throw KanIkkeFerdigstilleJournalpostException("Kan ikke ferdigstille journalpost $journalpostId")
+                    throw KanIkkeFerdigstilleJournalpostException("Kan ikke ferdigstille journalpost $journalpostId body ${e.responseBodyAsString}")
                 }
                 throw e
             }
