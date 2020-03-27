@@ -193,7 +193,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                 .request()
                                 .withMethod("PATCH")
                                 .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill"))
-                .respond(HttpResponse.response().withStatusCode(200))
+                .respond(HttpResponse.response().withStatusCode(200).withBody("Journalpost ferdigstilt"))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> =
                 restTemplate.exchange(localhost("$DOKARKIV_URL/123/ferdigstill?journalfoerendeEnhet=9999"),
