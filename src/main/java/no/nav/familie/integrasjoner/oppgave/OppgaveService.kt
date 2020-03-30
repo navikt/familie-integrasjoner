@@ -19,8 +19,17 @@ import java.time.format.DateTimeFormatter
 @Service @ApplicationScope
 class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClient) {
 
-    fun finnOppgaverKnyttetTilSaksbehandlerOgEnhet(tema: String, behandlingstema: String?, oppgaveType: String?, enhet: String?, saksbehandler: String?): List<OppgaveJsonDto> {
-        return oppgaveRestClient.finnOppgaverKnyttetTilSaksbehandlerOgEnhet(tema, behandlingstema, oppgaveType, enhet, saksbehandler)
+    fun finnOppgaver(tema: String,
+                     behandlingstema: String?,
+                     oppgaveType: String?,
+                     enhet: String?,
+                     saksbehandler: String?,
+                     journalpostId: String?): List<OppgaveJsonDto> {
+        return oppgaveRestClient.finnOppgaver(tema, behandlingstema, oppgaveType, enhet, saksbehandler, journalpostId)
+    }
+
+    fun hentOppgave(oppgaveId: String): OppgaveJsonDto {
+        return oppgaveRestClient.finnOppgaveMedId(oppgaveId)
     }
 
     fun oppdaterOppgave(request: Oppgave): Long {
@@ -87,6 +96,8 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         }
 
     }
+
+
 
 
     companion object {

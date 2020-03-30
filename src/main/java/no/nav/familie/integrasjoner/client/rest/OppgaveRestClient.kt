@@ -42,7 +42,12 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         return getForEntity(requestUrl(oppgaveId.toLong()), httpHeaders())
     }
 
-    fun finnOppgaverKnyttetTilSaksbehandlerOgEnhet(tema: String, behandlingstema: String?, oppgavetype: String?, tildeltEnhetsnr: String?, tilordnetRessurs: String?): List<OppgaveJsonDto> {
+    fun finnOppgaver(tema: String,
+                     behandlingstema: String?,
+                     oppgavetype: String?,
+                     tildeltEnhetsnr: String?,
+                     tilordnetRessurs: String?,
+                     journalpostId: String?): List<OppgaveJsonDto> {
 
         tailrec fun finnAlleOppgaver(oppgaver: List<OppgaveJsonDto> = listOf()): List<OppgaveJsonDto> {
             val limit = 50
@@ -57,17 +62,18 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
             oppgavetype?.apply { uriBuilder.queryParam("oppgavetype", this) }
             tildeltEnhetsnr?.apply { uriBuilder.queryParam("tildeltEnhetsnr", this) }
             tilordnetRessurs?.apply { uriBuilder.queryParam("tilordnetRessurs", this) }
+            journalpostId?.apply { uriBuilder.queryParam("journalpostId", this) }
 
             val uri = uriBuilder
                     .queryParam("limit", limit.toString())
-                    .queryParam("offset", oppgaver.count().toString())
+                    .queryParam("offset", oppgaver.size.toString())
                     .build()
                     .toUri()
 
             val finnOppgaveResponseDto = getForEntity<FinnOppgaveResponseDto>(uri, httpHeaders())
             val nyeOppgaver = oppgaver + finnOppgaveResponseDto.oppgaver
 
-            return when (nyeOppgaver.count() < finnOppgaveResponseDto.antallTreffTotalt) {
+            return when (nyeOppgaver.size < finnOppgaveResponseDto.antallTreffTotalt) {
                 true -> finnAlleOppgaver(nyeOppgaver)
                 false -> nyeOppgaver
             }
@@ -145,7 +151,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         }
         if (finnOppgaveResponseDto.oppgaver.size > 1) {
             returnerteMerEnnEnOppgave.increment()
-            LOG.warn("FinnOppgave returnerte mer enn 1 oppgave, antall: ${finnOppgaveResponseDto.oppgaver.size}, oppgave: $requestUrl")
+            LOG.warn("Returnerte mer enn 1 oppgave, antall: ${finnOppgaveResponseDto.oppgaver.size}, oppgave: $requestUrl")
         }
         return finnOppgaveResponseDto.oppgaver[0]
     }
