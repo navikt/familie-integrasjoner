@@ -17,16 +17,31 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/oppgave")
 class OppgaveController(private val oppgaveService: OppgaveService) {
 
+
+    @GetMapping(path = ["/{oppgaveId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun hentOppgave(@PathVariable(name = "oppgaveId") oppgaveId: String)
+            : ResponseEntity<Ressurs<OppgaveJsonDto>> {
+        val oppgave = oppgaveService.hentOppgave(oppgaveId)
+        return ResponseEntity.ok().body(success(oppgave, "Hent Oppgave OK"))
+    }
+
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun finnOppgaverKnyttetTilSaksbehandlerOgEnhet(@RequestParam("tema") tema: String,
-                                                   @RequestParam("behandlingstema", required = false) behandlingstema: String?,
-                                                   @RequestParam("oppgavetype", required = false) oppgavetype: String?,
-                                                   @RequestParam("enhet", required = false) enhet: String?,
-                                                   @RequestParam("saksbehandler", required = false) saksbehandler: String?)
+    fun finnOppgaver(@RequestParam("tema") tema: String,
+                     @RequestParam("behandlingstema", required = false) behandlingstema: String?,
+                     @RequestParam("oppgavetype", required = false) oppgavetype: String?,
+                     @RequestParam("enhet", required = false) enhet: String?,
+                     @RequestParam("saksbehandler", required = false) saksbehandler: String?,
+                     @RequestParam("journalpostId", required = false) journalpostId: String?)
             : ResponseEntity<Ressurs<List<OppgaveJsonDto>>> {
-        val oppgaver = oppgaveService.finnOppgaverKnyttetTilSaksbehandlerOgEnhet(tema, behandlingstema, oppgavetype, enhet, saksbehandler)
+        val oppgaver = oppgaveService.finnOppgaver(tema,
+                                                   behandlingstema,
+                                                   oppgavetype,
+                                                   enhet,
+                                                   saksbehandler,
+                                                   journalpostId)
         return ResponseEntity.ok().body(success(oppgaver, "Finn oppgaver OK"))
     }
+
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdater"])
     fun oppdaterOppgave(@RequestBody oppgave: Oppgave): ResponseEntity<Ressurs<OppgaveResponse>> {

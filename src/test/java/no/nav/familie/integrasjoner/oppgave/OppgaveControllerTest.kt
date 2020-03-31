@@ -51,7 +51,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal logge stack trace og returnere internal server error ved IllegalStateException`() {
-        stubFor(get(GET_OPPGAVE_URL).willReturn(ok()))
+        stubFor(get(GET_OPPGAVER_URL).willReturn(ok()))
 
         val oppgave = Oppgave("1234567891011", "1", null, "test NPE", Tema.KON)
 
@@ -67,7 +67,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal logge og returnere internal server error ved restClientException`() {
-        stubFor(get(GET_OPPGAVE_URL).willReturn(status(404)))
+        stubFor(get(GET_OPPGAVER_URL).willReturn(status(404)))
 
         val oppgave = Oppgave("1234567891011", "1", null, "test RestClientException", Tema.KON)
 
@@ -83,7 +83,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal logge og returnere not found ved oppgaveIkkeFunnetException`() {
-        stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(gyldigOppgaveResponse("tom_response.json"))))
+        stubFor(get(GET_OPPGAVER_URL).willReturn(okJson(gyldigOppgaveResponse("tom_response.json"))))
 
         val oppgave = Oppgave("1234567891011", "1", null, "test oppgave ikke funnet", Tema.KON)
 
@@ -102,7 +102,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal ignorere oppdatering hvis oppgave er ferdigstilt`() {
-        stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(gyldigOppgaveResponse("ferdigstilt_oppgave.json"))))
+        stubFor(get(GET_OPPGAVER_URL).willReturn(okJson(gyldigOppgaveResponse("ferdigstilt_oppgave.json"))))
 
         val oppgave = Oppgave("1234567891011", "1", null, "test oppgave ikke funnet", null)
 
@@ -122,7 +122,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `skal oppdatere oppgave med ekstra beskrivelse, returnere oppgaveid og 200 OK`() {
 
-        stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(gyldigOppgaveResponse("oppgave.json"))))
+        stubFor(get(GET_OPPGAVER_URL).willReturn(okJson(gyldigOppgaveResponse("oppgave.json"))))
 
         stubFor(patch(urlEqualTo("/api/v1/oppgaver/${OPPGAVE_ID}"))
                 .withRequestBody(matchingJsonPath("$.[?(@.beskrivelse == 'Behandle sak$EKSTRA_BESKRIVELSE')]"))
@@ -247,7 +247,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `finnOppgaveKnyttetTilSaksbehandlerOgEnhet skal fungere ved retur av 0 oppgaver`() {
+    fun `finnOppgaver skal fungere ved retur av 0 oppgaver`() {
         stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&aktivDatoTom=${LocalDate.now()}&tema=BAR&limit=50&offset=0")
                 .willReturn(okJson(gyldigOppgaveResponse("tom_response.json"))))
 
@@ -255,11 +255,11 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 restTemplate.exchange(localhost("/api/oppgave?tema=BAR"), HttpMethod.GET, HttpEntity(null, headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(response.body?.data?.count()).isEqualTo(0)
+        assertThat(response.body?.data).isEmpty()
     }
 
     @Test
-    fun `finnOppgaveKnyttetTilSaksbehandlerOgEnhet skal fungere ved retur av 1 oppgave`() {
+    fun `finnOppgaver skal fungere ved retur av 1 oppgave`() {
         stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&aktivDatoTom=${LocalDate.now()}&tema=BAR&limit=50&offset=0")
                 .willReturn(okJson(gyldigOppgaveResponse("oppgave.json"))))
 
@@ -267,13 +267,13 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 restTemplate.exchange(localhost("/api/oppgave?tema=BAR"), HttpMethod.GET, HttpEntity(null, headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(response.body?.data?.count()).isEqualTo(1)
+        assertThat(response.body?.data).hasSize(1)
     }
 
     @Test
-    fun `finnOppgaveKnyttetTilSaksbehandlerOgEnhet skal fungere ved retur av 51 oppgaver`() {
-        val oppgaver50stk = FinnOppgaveResponseDto(51, List(50, { OppgaveJsonDto() }))
-        val oppgaver1stk = FinnOppgaveResponseDto(51, List(1, { OppgaveJsonDto() }))
+    fun `finnOppgaver skal fungere ved retur av 51 oppgaver`() {
+        val oppgaver50stk = FinnOppgaveResponseDto(51, List(50) { OppgaveJsonDto() })
+        val oppgaver1stk = FinnOppgaveResponseDto(51, List(1) { OppgaveJsonDto() })
 
         stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&aktivDatoTom=${LocalDate.now()}&tema=BAR&limit=50&offset=0")
                 .willReturn(okJson(objectMapper.writeValueAsString(oppgaver50stk))))
@@ -285,15 +285,28 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 restTemplate.exchange(localhost("/api/oppgave?tema=BAR"), HttpMethod.GET, HttpEntity(null, headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(response.body?.data?.count()).isEqualTo(51)
+        assertThat(response.body?.data).hasSize(51)
     }
 
     @Test
-    fun `finnOppgaveKnyttetTilSaksbehandlerOgEnhet skal feile hvis tema ikke er angitt`() {
+    fun `finnOppgaver skal feile hvis tema ikke er angitt`() {
         val response: ResponseEntity<Ressurs<List<OppgaveJsonDto>>> =
                 restTemplate.exchange(localhost("/api/oppgave"), HttpMethod.GET, HttpEntity(null, headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    @Test
+    fun `Skal hente oppgave basert på id`() {
+        stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(objectMapper.writeValueAsString(OppgaveJsonDto (id = OPPGAVE_ID)))))
+
+        val response: ResponseEntity<Ressurs<OppgaveJsonDto>> =
+                restTemplate.exchange(localhost("/api/oppgave/$OPPGAVE_ID"), HttpMethod.GET, HttpEntity(null, headers))
+
+        println(response.body)
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.data?.id).isEqualTo(OPPGAVE_ID)
     }
 
     private fun gyldigOppgaveResponse(filnavn: String): String {
@@ -305,7 +318,8 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         private const val OPPGAVE_URL = "/api/oppgave/"
         private const val OPPDATER_OPPGAVE_URL = "${OPPGAVE_URL}/oppdater"
         private const val OPPGAVE_ID = 315488374L
-        private const val GET_OPPGAVE_URL = "/api/v1/oppgaver?aktoerId=1234567891011&tema=KON&oppgavetype=BEH_SAK&journalpostId=1"
+        private const val GET_OPPGAVER_URL = "/api/v1/oppgaver?aktoerId=1234567891011&tema=KON&oppgavetype=BEH_SAK&journalpostId=1"
+        private const val GET_OPPGAVE_URL = "/api/v1/oppgaver/$OPPGAVE_ID"
         private const val EKSTRA_BESKRIVELSE = " Ekstra beskrivelse"
     }
 }
