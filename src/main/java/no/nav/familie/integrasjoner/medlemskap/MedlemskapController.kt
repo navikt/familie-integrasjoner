@@ -17,7 +17,7 @@ class MedlemskapController(private val medlemskapService: MedlemskapService) {
     }
 
     @GetMapping("forIdent")
-    fun hentMedlemskapsunntakForIdent(@RequestHeader("NAV_PERSONIDENT") ident: String): Medlemskapsinfo {
+    fun hentMedlemskapsunntakForIdent(@RequestHeader("Nav-Personident") ident: String): Medlemskapsinfo {
         return medlemskapService.hentMedlemskapsunntakForIdent(ident)
     }
 }
