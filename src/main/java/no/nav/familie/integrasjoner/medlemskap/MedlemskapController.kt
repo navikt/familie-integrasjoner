@@ -1,13 +1,9 @@
 package no.nav.familie.integrasjoner.medlemskap
 
-import no.nav.familie.integrasjoner.medlemskap.domain.Medlemskapsinfo
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
+import no.nav.familie.kontrakter.felles.medlemskap.Medlemskapsinfo
 import no.nav.security.token.support.core.api.ProtectedWithClaims
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
@@ -15,8 +11,14 @@ import org.springframework.web.bind.annotation.RestController
 class MedlemskapController(private val medlemskapService: MedlemskapService) {
 
     @GetMapping("v1")
+    @Deprecated("Bruk v2")
     fun hentMedlemskapsunntak(@RequestParam("id") aktørId: String): Ressurs<Medlemskapsinfo> {
-        return success(medlemskapService.hentMedlemskapsunntak(aktørId), "Henting av medlemskapsunntak OK")
+        return Ressurs.success(medlemskapService.hentMedlemskapsunntak(aktørId), "Henting av medlemskapsunntak OK")
     }
 
+    @GetMapping("v2")
+    fun hentMedlemskapsunntakForIdentEllerAktørId(@RequestHeader("Nav-Personident") ident: String)
+            : Ressurs<Medlemskapsinfo> {
+        return Ressurs.success(medlemskapService.hentMedlemskapsunntakForIdent(ident))
+    }
 }

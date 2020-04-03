@@ -2,8 +2,8 @@ package no.nav.familie.integrasjoner.medlemskap
 
 import com.github.tomakehurst.wiremock.client.WireMock
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
-import no.nav.familie.integrasjoner.medlemskap.domain.Medlemskapsinfo
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.medlemskap.Medlemskapsinfo
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test

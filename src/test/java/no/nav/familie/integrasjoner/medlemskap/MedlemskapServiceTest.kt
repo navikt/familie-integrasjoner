@@ -3,7 +3,7 @@ package no.nav.familie.integrasjoner.medlemskap
 import io.mockk.every
 import no.nav.familie.integrasjoner.client.rest.MedlRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.familie.integrasjoner.medlemskap.domain.PeriodeStatus
+import no.nav.familie.kontrakter.felles.medlemskap.PeriodeStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test

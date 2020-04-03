@@ -1,6 +1,10 @@
 package no.nav.familie.integrasjoner.medlemskap.domain
 
 import no.nav.familie.integrasjoner.medlemskap.MedlemskapsunntakResponse
+import no.nav.familie.kontrakter.felles.medlemskap.Medlemskapsinfo
+import no.nav.familie.kontrakter.felles.medlemskap.PeriodeInfo
+import no.nav.familie.kontrakter.felles.medlemskap.PeriodeStatus
+import no.nav.familie.kontrakter.felles.medlemskap.PeriodeStatusÅrsak
 
 object MedlemskapsinfoMapper {
 
