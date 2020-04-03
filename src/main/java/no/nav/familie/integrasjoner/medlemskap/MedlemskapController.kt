@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*
 class MedlemskapController(private val medlemskapService: MedlemskapService) {
 
     @GetMapping("v1")
+    @Deprecated("Bruk v2")
     fun hentMedlemskapsunntak(@RequestParam("id") aktørId: String): Ressurs<Medlemskapsinfo> {
         return success(medlemskapService.hentMedlemskapsunntak(aktørId), "Henting av medlemskapsunntak OK")
     }
