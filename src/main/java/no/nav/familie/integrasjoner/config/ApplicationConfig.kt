@@ -43,6 +43,17 @@ class ApplicationConfig {
                 .build()
     }
 
+    @Bean("azurePropagatingClientToken")
+    fun restTemplateAzureAdMinusBearerTokenInterceptor(consumerIdClientInterceptor: ConsumerIdClientInterceptor)
+        : RestOperations {
+        return RestTemplateBuilder()
+            .additionalCustomizers(NaisProxyCustomizer())
+            .interceptors(consumerIdClientInterceptor,
+                MdcValuesPropagatingClientInterceptor())
+            .requestFactory(this::requestFactory)
+            .build()
+    }
+
     @Bean("sts")
     fun restTemplateSts(stsBearerTokenClientInterceptor: StsBearerTokenClientInterceptor,
                         consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations {
