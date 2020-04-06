@@ -23,7 +23,7 @@ class SafHentDokumentRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
     private fun httpHeaders(): HttpHeaders {
         return HttpHeaders().apply {
             add(NAV_CALL_ID, MDCOperations.getCallId())
-            accept = listOf(MediaType.APPLICATION_PDF)
+            accept = listOf(MediaType.ALL)
         }
     }
 
