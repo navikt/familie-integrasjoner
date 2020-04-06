@@ -14,23 +14,20 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestOperations
-import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Service
 class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
-                    @Qualifier("azure") val restTemplate: RestOperations)
+                    @Qualifier("sts") val restTemplate: RestOperations)
     : AbstractPingableRestClient(restTemplate, "saf.journalpost") {
 
     override val pingUri: URI = UriUtil.uri(safBaseUrl, PATH_PING)
-    private val safGraphQlUri = UriUtil.uri(safBaseUrl, PATH_GRAPHQL)
-    private val safHentdokumentUri = UriComponentsBuilder.fromUri(safBaseUrl).path(PATH_HENT_DOKUMENT)
-
+    private val safUri = UriUtil.uri(safBaseUrl, PATH_GRAPHQL)
 
     fun hentJournalpost(journalpostId: String): Journalpost {
         val safJournalpostRequest = SafJournalpostRequest(SafRequestVariable(journalpostId))
         try {
-            val response = postForEntity<SafJournalpostResponse>(safGraphQlUri,
+            val response = postForEntity<SafJournalpostResponse>(safUri,
                                                                  safJournalpostRequest,
                                                                  httpHeaders())
             if (response != null && !response.harFeil()) {
@@ -55,19 +52,9 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
         }
     }
 
-    fun hentDokument(journalpostId: String, dokumentInfoId: String, variantFormat: String?): ByteArray {
-        val hentDokumentUri = safHentdokumentUri.buildAndExpand(journalpostId, dokumentInfoId, variantFormat ?: "ARKIV").toUri()
-        try {
-            return getForEntity(hentDokumentUri)
-        } catch (e: Exception) {
-            throw JournalpostRestClientException(e.message, e, journalpostId)
-        }
-    }
-
     companion object {
         private const val PATH_PING = "isAlive"
         private const val PATH_GRAPHQL = "graphql"
-        private const val PATH_HENT_DOKUMENT = "/rest/hentdokument/{journalpostId}/{dokumentInfoId}/{variantFormat}"
         private const val NAV_CALL_ID = "Nav-Callid"
     }
 }
