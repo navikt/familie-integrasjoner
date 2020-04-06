@@ -14,7 +14,7 @@ import java.net.URI
 
 @Service
 class SafHentDokumentRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
-                                @Qualifier("azurePropagatingClientToken") val restTemplate: RestOperations)
+                                @Qualifier("propagateAuth") val restTemplate: RestOperations)
     : AbstractPingableRestClient(restTemplate, "saf.journalpost") {
 
     override val pingUri: URI = UriComponentsBuilder.fromUri(safBaseUrl).path(PATH_PING).build().toUri()

@@ -16,9 +16,12 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Import
+import org.springframework.http.HttpHeaders.AUTHORIZATION
+import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.RestOperations
 import springfox.documentation.swagger2.annotations.EnableSwagger2
+import javax.servlet.http.HttpServletRequest
 
 @SpringBootConfiguration
 @ComponentScan("no.nav.familie.integrasjoner")
@@ -43,17 +46,6 @@ class ApplicationConfig {
                 .build()
     }
 
-    @Bean("azurePropagatingClientToken")
-    fun restTemplateAzureAdMinusBearerTokenInterceptor(consumerIdClientInterceptor: ConsumerIdClientInterceptor)
-        : RestOperations {
-        return RestTemplateBuilder()
-            .additionalCustomizers(NaisProxyCustomizer())
-            .interceptors(consumerIdClientInterceptor,
-                MdcValuesPropagatingClientInterceptor())
-            .requestFactory(this::requestFactory)
-            .build()
-    }
-
     @Bean("sts")
     fun restTemplateSts(stsBearerTokenClientInterceptor: StsBearerTokenClientInterceptor,
                         consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations {
@@ -64,6 +56,21 @@ class ApplicationConfig {
                               MdcValuesPropagatingClientInterceptor())
                 .requestFactory(this::requestFactory)
                 .build()
+    }
+
+    @Bean("propagateAuth")
+    fun restTemplatePropagateAuth(inRequest: HttpServletRequest,
+                                  consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations {
+
+        return RestTemplateBuilder()
+            .interceptors(ClientHttpRequestInterceptor { outRequest, body, requestExecution ->
+                              outRequest.headers.setBearerAuth(inRequest.getHeader(AUTHORIZATION))
+                              requestExecution.execute(outRequest, body)
+                          },
+                          consumerIdClientInterceptor,
+                          MdcValuesPropagatingClientInterceptor())
+            .requestFactory(this::requestFactory)
+            .build()
     }
 
     fun requestFactory() = HttpComponentsClientHttpRequestFactory()
