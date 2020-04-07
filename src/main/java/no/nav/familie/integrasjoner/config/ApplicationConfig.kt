@@ -64,7 +64,7 @@ class ApplicationConfig {
 
         return RestTemplateBuilder()
             .interceptors(ClientHttpRequestInterceptor { outRequest, body, requestExecution ->
-                              outRequest.headers.setBearerAuth(inRequest.getHeader(AUTHORIZATION))
+                              outRequest.headers.set(AUTHORIZATION, inRequest.getHeader(AUTHORIZATION))
                               requestExecution.execute(outRequest, body)
                           },
                           consumerIdClientInterceptor,
