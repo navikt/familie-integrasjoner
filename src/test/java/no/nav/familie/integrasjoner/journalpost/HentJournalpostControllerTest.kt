@@ -30,7 +30,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
-@ActiveProfiles("integrasjonstest", "mock-sts")
+@ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
 class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
 
     private val testLogger = LoggerFactory.getLogger(HentJournalpostController::class.java) as Logger
@@ -92,7 +92,6 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
         Assertions.assertThat(response.body?.data?.journalstatus).isEqualTo(Journalstatus.JOURNALFOERT)
     }
 
-    @Ignore
     @Test
     fun `hent dokument skal returnere dokument og status ok`() {
         mockServerRule.client
