@@ -11,7 +11,6 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.security.token.support.test.JwtTokenGenerator
 import org.assertj.core.api.Assertions
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.mockserver.junit.MockServerRule
