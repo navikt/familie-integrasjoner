@@ -52,6 +52,14 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
         return ResponseEntity.ok(success(journalpostService.hentJournalpost(journalpostId), "OK"))
     }
 
+    @GetMapping("hentdokument/{journalpostId}/{dokumentInfoId}")
+    fun hentDokument(@PathVariable journalpostId: String,
+                     @PathVariable dokumentInfoId: String,
+                     @RequestParam("variantFormat", required = false) variantFormat: String?)
+            : ResponseEntity<Ressurs<ByteArray>> {
+        return ResponseEntity.ok(success(journalpostService.hentDokument(journalpostId, dokumentInfoId, variantFormat ?: "ARKIV"), "OK"))
+    }
+
     companion object {
         private val LOG = LoggerFactory.getLogger(HentJournalpostController::class.java)
     }
