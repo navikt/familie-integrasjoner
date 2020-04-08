@@ -55,10 +55,9 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
     @GetMapping("hentdokument/{journalpostId}/{dokumentInfoId}")
     fun hentDokument(@PathVariable journalpostId: String,
                      @PathVariable dokumentInfoId: String,
-                     @RequestParam("variantFormat", required = false) variantFormat: String?)
+                     @RequestParam("variantFormat", required = false) variantFormat: String? = "ARKIV")
             : ResponseEntity<Ressurs<ByteArray>> {
-        val format = variantFormat ?: "ARKIV"
-        return ResponseEntity.ok(success(journalpostService.hentDokument(journalpostId, dokumentInfoId, format), "OK"))
+        return ResponseEntity.ok(success(journalpostService.hentDokument(journalpostId, dokumentInfoId, variantFormat!!), "OK"))
     }
 
     companion object {
