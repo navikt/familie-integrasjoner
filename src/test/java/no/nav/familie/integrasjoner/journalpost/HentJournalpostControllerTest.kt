@@ -10,6 +10,7 @@ import no.nav.familie.integrasjoner.journalpost.domene.Journalstatus
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.security.token.support.test.JwtTokenGenerator
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -63,9 +64,9 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                                                                                            HttpMethod.GET,
                                                                                            HttpEntity<String>(headers))
 
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
-        Assertions.assertThat(response.body?.data?.get("saksnummer")).isEqualTo(SAKSNUMMER)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.body?.data?.get("saksnummer")).isEqualTo(SAKSNUMMER)
     }
 
     @Test
@@ -83,10 +84,10 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                                                                                    HttpMethod.GET,
                                                                                    HttpEntity<String>(headers))
 
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
-        Assertions.assertThat(response.body?.data?.journalposttype).isEqualTo(Journalposttype.I)
-        Assertions.assertThat(response.body?.data?.journalstatus).isEqualTo(Journalstatus.JOURNALFOERT)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.body?.data?.journalposttype).isEqualTo(Journalposttype.I)
+        assertThat(response.body?.data?.journalstatus).isEqualTo(Journalstatus.JOURNALFOERT)
     }
 
     @Test
@@ -103,9 +104,9 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                                                                                            HttpMethod.GET,
                                                                                            HttpEntity<String>(headers))
 
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        Assertions.assertThat(response.body?.melding).isEqualTo("Sak mangler for journalpostId=$JOURNALPOST_ID")
+        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.body?.melding).isEqualTo("Sak mangler for journalpostId=$JOURNALPOST_ID")
     }
 
     @Test
@@ -122,9 +123,9 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                                                                                            HttpMethod.GET,
                                                                                            HttpEntity<String>(headers))
 
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        Assertions.assertThat(response.body?.melding).isEqualTo("Sak mangler for journalpostId=$JOURNALPOST_ID")
+        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.body?.melding).isEqualTo("Sak mangler for journalpostId=$JOURNALPOST_ID")
     }
 
     @Test
@@ -141,13 +142,13 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                                                                                            HttpMethod.GET,
                                                                                            HttpEntity<String>(headers))
 
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        Assertions.assertThat(response.body?.melding)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.body?.melding)
                 .contains("Feil ved henting av journalpost=12345678 klientfeilmelding=Kan ikke hente journalpost " +
                           "[SafError(message=Feilet ved henting av data (/journalpost) : null, " +
                           "exceptionType=TECHNICAL, exception=NullPointerException)]")
-        Assertions.assertThat(loggingEvents)
+        assertThat(loggingEvents)
                 .extracting<Level, RuntimeException> { obj: ILoggingEvent -> obj.level }
                 .containsExactly(Level.WARN)
     }
@@ -165,11 +166,11 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                                                                                            HttpMethod.GET,
                                                                                            HttpEntity<String>(headers))
 
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        Assertions.assertThat(response.body?.melding)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.body?.melding)
                 .contains("Feil ved henting av journalpost=12345678 statuscode=500 INTERNAL_SERVER_ERROR body=feilmelding")
-        Assertions.assertThat(loggingEvents)
+        assertThat(loggingEvents)
                 .extracting<Level, RuntimeException> { obj: ILoggingEvent -> obj.level }
                 .containsExactly(Level.WARN)
     }

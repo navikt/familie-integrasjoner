@@ -17,6 +17,7 @@
       "kanal": "EIA",
       "dokumenter": [
         {
+          "dokumentInfoId": "123",
           "tittel": "MASKERT_FELT",
           "brevkode": "NAV 08-07.04 A",
           "dokumentstatus": null,
@@ -24,9 +25,14 @@
             {
               "variantformat": "ARKIV"
             }
-          ]
+          ],
+          "logiskeVedlegg": [ {
+            "logiskVedleggId": "21",
+            "tittel": "foo"
+          }]
         },
         {
+          "dokumentInfoId": "124",
           "tittel": "MASKERT_FELT",
           "brevkode": "NAV 08-07.04 A",
           "dokumentstatus": null,

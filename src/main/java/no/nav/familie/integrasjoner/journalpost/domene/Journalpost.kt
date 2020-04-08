@@ -9,6 +9,7 @@ data class Journalpost(val journalpostId: String,
                        val bruker: Bruker?,
                        val journalforendeEnhet: String?,
                        val kanal: String?,
+                       val logiskeVedlegg: List<LogiskVedlegg>?,
                        val dokumenter: List<DokumentInfo>?)
 
 data class Sak(val arkivsaksnummer: String?,
@@ -19,12 +20,15 @@ data class Sak(val arkivsaksnummer: String?,
 data class Bruker(val id: String,
                   val type: BrukerIdType)
 
-data class DokumentInfo(val tittel: String?,
+data class DokumentInfo(val dokumentInfoId: String,
+                        val tittel: String?,
                         val brevkode: String?,
                         val dokumentstatus: Dokumentstatus?,
-                        val dokumentvarianter: List<Dokumentvariant>?)
+                        val dokumentvarianter: List<Dokumentvariant>?
+                        )
 
 data class Dokumentvariant(val variantformat: String)
+data class LogiskVedlegg(val logiskVedleggId: String, val tittel: String)
 
 enum class Journalposttype {
     I,

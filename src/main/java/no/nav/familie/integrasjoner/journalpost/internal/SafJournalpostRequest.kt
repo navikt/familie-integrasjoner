@@ -12,7 +12,7 @@ val queryString: String = """
             bruker { id type }
             journalforendeEnhet
             kanal
-            dokumenter { tittel brevkode dokumentstatus dokumentvarianter { variantformat } }
+            dokumenter { dokumentInfoId tittel brevkode dokumentstatus dokumentvarianter { variantformat } logiskeVedlegg { logiskVedleggId tittel } }
         }
     }
 """.trimIndent()
