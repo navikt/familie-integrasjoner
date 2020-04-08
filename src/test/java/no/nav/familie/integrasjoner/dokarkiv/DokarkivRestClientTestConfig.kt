@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.dokarkiv
 
 import io.mockk.*
+import no.nav.familie.integrasjoner.client.rest.DokarkivLogiskVedleggRestClient
 import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
 import org.springframework.context.annotation.Bean
@@ -27,6 +28,23 @@ class DokarkivRestClientTestConfig {
 
         every {
             klient.ferdigstillJournalpost(any(), any())
+        } just Runs
+
+        return klient
+    }
+
+    @Bean
+    @Profile("mock-dokarkiv")
+    @Primary
+    fun dokarkivLogiskVedleggMockRestClient(): DokarkivLogiskVedleggRestClient {
+        val klient: DokarkivLogiskVedleggRestClient = mockk(relaxed = true)
+
+        every {
+            klient.opprettLogiskVedlegg(any(), any())
+        } returns DokarkivController.LogiskVedleggResponse(123456789L)
+
+        every {
+            klient.slettLogiskVedlegg(any(), any())
         } just Runs
 
         return klient

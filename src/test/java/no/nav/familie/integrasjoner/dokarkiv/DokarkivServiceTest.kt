@@ -5,12 +5,12 @@ import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
+import no.nav.familie.integrasjoner.client.rest.DokarkivLogiskVedleggRestClient
 import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
 import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
 import no.nav.familie.integrasjoner.dokarkiv.api.Dokument
 import no.nav.familie.integrasjoner.dokarkiv.api.FilType
 import no.nav.familie.integrasjoner.dokarkiv.api.TilknyttFagsakRequest
-import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
 import no.nav.familie.integrasjoner.dokarkiv.metadata.BarnetrygdVedtakMetadata
 import no.nav.familie.integrasjoner.dokarkiv.metadata.DokarkivMetadata
@@ -29,10 +29,10 @@ class DokarkivServiceTest {
     private val navn = "Navn Navnesen"
 
     @MockK
-    lateinit var dokarkivClient: DokarkivClient
+    lateinit var dokarkivRestClient: DokarkivRestClient
 
     @MockK
-    lateinit var dokarkivRestClient: DokarkivRestClient
+    lateinit var dokarkivLogiskVedleggRestClient: DokarkivLogiskVedleggRestClient
 
     @MockK
     lateinit var personopplysningerService: PersonopplysningerService
@@ -41,12 +41,12 @@ class DokarkivServiceTest {
 
     @Before fun setUp() {
         MockKAnnotations.init(this)
-        dokarkivService = DokarkivService(dokarkivClient,
-                                          dokarkivRestClient,
+        dokarkivService = DokarkivService(dokarkivRestClient,
                                           personopplysningerService,
                                           DokarkivMetadata(KontanstøtteSøknadMetadata,
                                                            KontanstøtteSøknadVedleggMetadata,
-                                                           BarnetrygdVedtakMetadata))
+                                                           BarnetrygdVedtakMetadata),
+                                          dokarkivLogiskVedleggRestClient)
     }
 
     @Test fun `oppdaterJournalpost skal konverte TilKnyttFagsakRequest til OppdaterJournalpostRequest og legge til sakstype`() {
@@ -245,6 +245,6 @@ class DokarkivServiceTest {
         private const val JOURNALPOST_ID = "123"
         private const val FILNAVN = "filnavn"
         private val PERSON_IDENT = PersonIdent(FNR)
-        private val FAGSAK_ID = "s200"
+        private const val FAGSAK_ID = "s200"
     }
 }

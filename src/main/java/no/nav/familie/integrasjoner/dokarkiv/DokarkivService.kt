@@ -1,8 +1,10 @@
 package no.nav.familie.integrasjoner.dokarkiv
 
+import no.nav.familie.integrasjoner.client.rest.DokarkivLogiskVedleggRestClient
 import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
+import no.nav.familie.integrasjoner.dokarkiv.DokarkivController.LogiskVedleggRequest
+import no.nav.familie.integrasjoner.dokarkiv.DokarkivController.LogiskVedleggResponse
 import no.nav.familie.integrasjoner.dokarkiv.api.*
-import no.nav.familie.integrasjoner.dokarkiv.client.DokarkivClient
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.Bruker
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.IdType
@@ -14,16 +16,10 @@ import no.nav.familie.kontrakter.felles.objectMapper
 import org.springframework.stereotype.Service
 
 @Service
-class DokarkivService(private val dokarkivClient: DokarkivClient,
-                      private val dokarkivRestClient: DokarkivRestClient,
+class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
                       private val personopplysningerService: PersonopplysningerService,
-                      private val dokarkivMetadata: DokarkivMetadata) {
-
-    fun lagInngåendeJournalpost(arkiverDokumentRequest: ArkiverDokumentRequest): ArkiverDokumentResponse {
-        val request = mapTilOpprettJournalpostRequest(arkiverDokumentRequest)
-        val response = dokarkivClient.lagJournalpost(request, arkiverDokumentRequest.forsøkFerdigstill)
-        return mapTilArkiverDokumentResponse(response)
-    }
+                      private val dokarkivMetadata: DokarkivMetadata,
+                      private val dokarkivLogiskVedleggRestClient: DokarkivLogiskVedleggRestClient) {
 
     fun ferdistillJournalpost(journalpost: String, journalførendeEnhet: String) {
         dokarkivRestClient.ferdigstillJournalpost(journalpost, journalførendeEnhet)
@@ -98,6 +94,15 @@ class DokarkivService(private val dokarkivClient: DokarkivClient,
     private fun mapTilArkiverDokumentResponse(response: OpprettJournalpostResponse): ArkiverDokumentResponse {
         return ArkiverDokumentResponse(response.journalpostId,
                                        response.journalpostferdigstilt)
+    }
+
+    fun lagNyttLogiskVedlegg(dokumentInfoId: String,
+                             request: LogiskVedleggRequest): LogiskVedleggResponse {
+        return dokarkivLogiskVedleggRestClient.opprettLogiskVedlegg(dokumentInfoId, request)
+    }
+
+    fun slettLogiskVedlegg(dokumentInfoId: String, logiskVedleggId: String) {
+        dokarkivLogiskVedleggRestClient.slettLogiskVedlegg(dokumentInfoId, logiskVedleggId)
     }
 
 }
