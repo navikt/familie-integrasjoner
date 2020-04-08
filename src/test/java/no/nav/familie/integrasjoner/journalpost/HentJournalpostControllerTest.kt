@@ -30,7 +30,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
-@ActiveProfiles("integrasjonstest", "mock-sts")
+@ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
 class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
 
     private val testLogger = LoggerFactory.getLogger(HentJournalpostController::class.java) as Logger
@@ -38,6 +38,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
     val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
     private lateinit var uriHentSaksnummer: String
     private lateinit var uriHentJournalpost: String
+    private lateinit var uriHentDokument: String
 
     @Before
     fun setUp() {
@@ -47,6 +48,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                 .queryParam("journalpostId", JOURNALPOST_ID).toUriString()
         uriHentJournalpost = UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
                 .queryParam("journalpostId", JOURNALPOST_ID).toUriString()
+        uriHentDokument = localhost(JOURNALPOST_BASE_URL) + "hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID"
     }
 
     @Test
@@ -88,6 +90,22 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         assertThat(response.body?.data?.journalposttype).isEqualTo(Journalposttype.I)
         assertThat(response.body?.data?.journalstatus).isEqualTo(Journalstatus.JOURNALFOERT)
+    }
+
+    @Test
+    fun `hent dokument skal returnere dokument og status ok`() {
+        mockServerRule.client
+            .`when`(HttpRequest.request()
+                .withMethod("GET")
+                .withPath("/rest/saf/rest/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID/ARKIV")
+            )
+            .respond(HttpResponse().withBody("pdf".toByteArray()).withHeaders(Header("Content-Type", "application/pdf")))
+
+        val response: ResponseEntity<Ressurs<ByteArray>> = restTemplate.exchange(uriHentDokument,
+                                                                                   HttpMethod.GET,
+                                                                                   HttpEntity<String>(headers))
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
     }
 
     @Test
@@ -182,6 +200,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
     companion object {
         const val MOCK_SERVER_PORT = 18321
         const val JOURNALPOST_ID = "12345678"
+        const val DOKUMENTINFO_ID = "123456789"
         const val SAKSNUMMER = "87654321"
         const val JOURNALPOST_BASE_URL = "/api/journalpost/"
     }
