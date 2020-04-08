@@ -4,7 +4,6 @@ import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.OppslagException.Level
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto
-import no.nav.familie.integrasjoner.oppgave.domene.PrioritetEnum
 import no.nav.familie.integrasjoner.oppgave.domene.StatusEnum
 import no.nav.familie.kontrakter.felles.oppgave.IdentType
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
@@ -58,10 +57,12 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         val oppgave = OppgaveJsonDto(
                 aktoerId = if (request.ident.type == IdentType.Aktør) request.ident.ident else null,
                 orgnr = if (request.ident.type == IdentType.Organisasjon) request.ident.ident else null,
-                behandlesAvApplikasjon = GOSYS_APP_ID,
                 saksreferanse = request.saksId,
+                //TODO oppgave-gjengen mente vi kunne sette denne til vår applikasjon, og så kan de gjøre en filtrering på sin
+                //men da må vi få applikasjonen vår inn i Felles kodeverk ellers så får vi feil: Fant ingen kode 'BA' i felles kodeverk under kodeverk 'Applikasjoner'
+//                behandlesAvApplikasjon = request.tema.fagsaksystem,
                 journalpostId = request.journalpostId,
-                prioritet = PrioritetEnum.NORM,
+                prioritet = request.prioritet.name,
                 tema = request.tema.name,
                 tildeltEnhetsnr = request.enhetsnummer,
                 behandlingstema = request.behandlingstema,
@@ -102,7 +103,6 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
 
     companion object {
         private val LOG = LoggerFactory.getLogger(OppgaveService::class.java)
-        private const val GOSYS_APP_ID = "FS22"
     }
 
 }
