@@ -31,23 +31,17 @@ data class OppgaveJsonDto(val id: Long? = null,
                           val endretAv: String? = null,
                           val ferdigstiltTidspunkt: String? = null,
                           val endretTidspunkt: String? = null,
-                          val prioritet: PrioritetEnum? = null,
+                          val prioritet: String? = null,
                           val status: StatusEnum? = null,
                           private var metadata: MutableMap<String, String>? = null)
 
 
-enum class StatusEnum(private val value: String) {
+enum class StatusEnum {
 
-    OPPRETTET("OPPRETTET"),
-    AAPNET("AAPNET"),
-    UNDER_BEHANDLING("UNDER_BEHANDLING"),
-    FERDIGSTILT("FERDIGSTILT"),
-    FEILREGISTRERT("FEILREGISTRERT");
+    OPPRETTET,
+    AAPNET,
+    UNDER_BEHANDLING,
+    FERDIGSTILT,
+    FEILREGISTRERT;
 
-}
-
-enum class PrioritetEnum(private val value: String) {
-    HOY("HOY"),
-    NORM("NORM"),
-    LAV("LAV");
 }
