@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.client.rest
 
-import no.nav.familie.http.client.AbstractPingableRestClient
+import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
 import org.springframework.beans.factory.annotation.Qualifier
@@ -15,9 +15,8 @@ import java.net.URI
 @Service
 class SafHentDokumentRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
                                 @Qualifier("propagateAuth") val restTemplate: RestOperations)
-    : AbstractPingableRestClient(restTemplate, "saf.journalpost") {
+    : AbstractRestClient(restTemplate, "saf.journalpost") {
 
-    override val pingUri: URI = UriComponentsBuilder.fromUri(safBaseUrl).path(PATH_PING).build().toUri()
     private val safHentdokumentUri = UriComponentsBuilder.fromUri(safBaseUrl).path(PATH_HENT_DOKUMENT)
 
     private fun httpHeaders(): HttpHeaders {
@@ -27,8 +26,8 @@ class SafHentDokumentRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
         }
     }
 
-    fun hentDokument(journalpostId: String, dokumentInfoId: String, variantFormat: String?): ByteArray {
-        val hentDokumentUri = safHentdokumentUri.buildAndExpand(journalpostId, dokumentInfoId, variantFormat ?: "ARKIV").toUri()
+    fun hentDokument(journalpostId: String, dokumentInfoId: String, variantFormat: String): ByteArray {
+        val hentDokumentUri = safHentdokumentUri.buildAndExpand(journalpostId, dokumentInfoId, variantFormat).toUri()
         try {
             return getForEntity(hentDokumentUri, httpHeaders())
         } catch (e: Exception) {
@@ -37,7 +36,6 @@ class SafHentDokumentRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
     }
 
     companion object {
-        private const val PATH_PING = "/isAlive"
         private const val PATH_HENT_DOKUMENT = "/rest/hentdokument/{journalpostId}/{dokumentInfoId}/{variantFormat}"
         private const val NAV_CALL_ID = "Nav-Callid"
     }

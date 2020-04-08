@@ -57,7 +57,8 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
                      @PathVariable dokumentInfoId: String,
                      @RequestParam("variantFormat", required = false) variantFormat: String?)
             : ResponseEntity<Ressurs<ByteArray>> {
-        return ResponseEntity.ok(success(journalpostService.hentDokument(journalpostId, dokumentInfoId, variantFormat), "OK"))
+        val format = variantFormat ?: "ARKIV"
+        return ResponseEntity.ok(success(journalpostService.hentDokument(journalpostId, dokumentInfoId, format), "OK"))
     }
 
     companion object {

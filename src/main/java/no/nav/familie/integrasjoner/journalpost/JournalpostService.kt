@@ -21,8 +21,7 @@ class JournalpostService @Autowired constructor(private val safRestClient: SafRe
         return safRestClient.hentJournalpost(journalpostId)
     }
 
-    fun hentDokument(journalpostId: String, dokumentInfoId: String, variantFormat: String?): ByteArray {
-        val dokument = safHentDokumentRestClient.hentDokument(journalpostId, dokumentInfoId, variantFormat)
-        return dokument
+    fun hentDokument(journalpostId: String, dokumentInfoId: String, variantFormat: String): ByteArray {
+        return safHentDokumentRestClient.hentDokument(journalpostId, dokumentInfoId, variantFormat)
     }
 }
