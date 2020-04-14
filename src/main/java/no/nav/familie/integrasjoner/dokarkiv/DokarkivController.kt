@@ -23,7 +23,7 @@ import javax.validation.Valid
 
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
-@RequestMapping("/api/arkiv/v2")
+@RequestMapping("/api/arkiv")
 class DokarkivController(private val journalføringService: DokarkivService) {
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
@@ -44,7 +44,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
         return ResponseEntity.badRequest().body(failure(ex.message, ex))
     }
 
-    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(path = ["/v2"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun arkiverDokumentV2(@RequestBody @Valid arkiverDokumentRequest: ArkiverDokumentRequest)
             : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -52,15 +52,15 @@ class DokarkivController(private val journalføringService: DokarkivService) {
                               "Arkivert journalpost OK"))
     }
 
-    @PutMapping(path = ["{journalpostId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(path = ["/v2/{journalpostId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun oppdaterJournalpost(@PathVariable(name = "journalpostId") journalpostId: String,
                             @RequestBody @Valid tilknyttFagsakRequest: TilknyttFagsakRequest)
-             : ResponseEntity<Ressurs<OppdaterJournalpostResponse>> {
+            : ResponseEntity<Ressurs<OppdaterJournalpostResponse>> {
         val response = journalføringService.oppdaterJournalpost(tilknyttFagsakRequest, journalpostId)
         return ResponseEntity.ok(success(response, "Oppdatert journalpost $journalpostId sakstilknyttning"))
     }
 
-    @PutMapping("{journalpostId}/ferdigstill")
+    @PutMapping("/v2/{journalpostId}/ferdigstill")
     @ResponseStatus(HttpStatus.OK)
     fun ferdigstillJournalpost(@PathVariable(name = "journalpostId") journalpostId: String,
                                @RequestParam(name = "journalfoerendeEnhet")
@@ -70,6 +70,31 @@ class DokarkivController(private val journalføringService: DokarkivService) {
         return ResponseEntity.ok(success(mapOf("journalpostId" to journalpostId),
                                          "Ferdigstilt journalpost $journalpostId"))
     }
+
+
+    @PostMapping(path = ["/dokument/{dokumentinfoId}/logiskVedlegg"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun leggTilLogiskVedlegg(@PathVariable(name = "dokumentinfoId") dokumentinfoId: String,
+                             @RequestBody @Valid request: LogiskVedleggRequest)
+            : ResponseEntity<Ressurs<LogiskVedleggResponse>> {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(success(journalføringService.lagNyttLogiskVedlegg(dokumentinfoId, request),
+                              "Opprettet logisk vedlegg"))
+    }
+
+    @DeleteMapping(path = ["/dokument/{dokumentinfoId}/logiskVedlegg/{logiskVedleggId}"])
+    fun slettLogiskVedlegg(@PathVariable(name = "dokumentinfoId") dokumentinfoId: String,
+                           @PathVariable(name = "logiskVedleggId") logiskVedleggId: String)
+            : ResponseEntity<Ressurs<LogiskVedleggResponse>> {
+
+        journalføringService.slettLogiskVedlegg(dokumentinfoId, logiskVedleggId)
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(success(LogiskVedleggResponse(logiskVedleggId.toLong()), "logisk vedlegg slettet"))
+    }
+
+    data class LogiskVedleggRequest(val tittel: String)
+
+    data class LogiskVedleggResponse(val logiskVedleggId: Long)
+
 
     companion object {
         private val LOG = LoggerFactory.getLogger(DokarkivController::class.java)

@@ -33,6 +33,7 @@ public class HentJournalpostTestConfig {
                     new Bruker("1234567890123", BrukerIdType.AKTOERID),
                     "9999",
                     "EIA",
+                    null,
                     null);
         });
 

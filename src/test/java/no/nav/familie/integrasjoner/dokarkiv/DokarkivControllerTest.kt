@@ -4,17 +4,19 @@ import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.integrasjoner.dokarkiv.DokarkivController.LogiskVedleggRequest
+import no.nav.familie.integrasjoner.dokarkiv.DokarkivController.LogiskVedleggResponse
 import no.nav.familie.integrasjoner.dokarkiv.api.*
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OppdaterJournalpostResponse
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.objectMapper
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockserver.junit.MockServerRule
 import org.mockserver.model.HttpRequest
-import org.mockserver.model.HttpResponse
+import org.mockserver.model.HttpResponse.response
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.core.io.ClassPathResource
@@ -39,7 +41,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
         objectMapper.registerModule(KotlinModule())
 
         (LoggerFactory.getLogger("secureLogger") as Logger)
-            .addAppender(listAppender)
+                .addAppender(listAppender)
     }
 
     @Test
@@ -48,13 +50,13 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                           false,
                                           LinkedList())
 
-        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL),
+        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL_V2),
                                                                                                HttpMethod.POST,
                                                                                                HttpEntity(body, headers))
 
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        Assertions.assertThat(response.body?.melding).contains("dokumenter=must not be empty")
+        assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.body?.melding).contains("dokumenter=must not be empty")
     }
 
     @Test
@@ -65,21 +67,21 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                 .withMethod("POST")
                                 .withPath("/rest/journalpostapi/v1/journalpost")
                                 .withQueryStringParameter("forsoekFerdigstill", "false"))
-                .respond(HttpResponse.response()
-                    .withHeader("Content-Type", "application/json;charset=UTF-8")
-                    .withBody(gyldigDokarkivResponse()))
+                .respond(response()
+                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
+                                 .withBody(gyldigDokarkivResponse()))
         val body = ArkiverDokumentRequest("FNR",
                                           false,
                                           listOf(HOVEDDOKUMENT))
 
-        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL),
+        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL_V2),
                                                                                                HttpMethod.POST,
                                                                                                HttpEntity(body, headers))
 
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
-        Assertions.assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
-        Assertions.assertThat(response.body?.data?.ferdigstilt).isFalse()
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
+        assertThat(response.body?.data?.ferdigstilt).isFalse()
     }
 
     @Test
@@ -89,21 +91,21 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                 .withMethod("POST")
                                 .withPath("/rest/journalpostapi/v1/journalpost")
                                 .withQueryStringParameter("forsoekFerdigstill", "false"))
-                .respond(HttpResponse.response()
-                    .withHeader("Content-Type", "application/json")
-                    .withBody(gyldigDokarkivResponse()))
+                .respond(response()
+                                 .withHeader("Content-Type", "application/json")
+                                 .withBody(gyldigDokarkivResponse()))
         val body = ArkiverDokumentRequest("FNR",
                                           false,
                                           listOf(HOVEDDOKUMENT, VEDLEGG))
 
-        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL),
+        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL_V2),
                                                                                                HttpMethod.POST,
                                                                                                HttpEntity(body, headers))
 
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
-        Assertions.assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
-        Assertions.assertThat(response.body?.data?.ferdigstilt).isFalse()
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
+        assertThat(response.body?.data?.ferdigstilt).isFalse()
     }
 
     @Test
@@ -113,10 +115,10 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                 .withMethod("POST")
                                 .withPath("/rest/journalpostapi/v1/journalpost")
                                 .withQueryStringParameter("forsoekFerdigstill", "false"))
-                .respond(HttpResponse.response()
-                    .withStatusCode(401)
-                    .withHeader("Content-Type", "application/json;charset=UTF-8")
-                    .withBody("Tekst fra body"))
+                .respond(response()
+                                 .withStatusCode(401)
+                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
+                                 .withBody("Tekst fra body"))
         val body = ArkiverDokumentRequest("FNR",
                                           false,
                                           listOf(Dokument("foo".toByteArray(),
@@ -125,65 +127,67 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                                           null,
                                                           "KONTANTSTØTTE_SØKNAD")))
 
-        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL),
+        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL_V2),
                                                                                                HttpMethod.POST,
                                                                                                HttpEntity(body, headers))
 
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        Assertions.assertThat(response.body?.melding).contains("Unauthorized")
+        assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.body?.melding).contains("Unauthorized")
     }
 
     @Test
     fun `oppdaterJournalpost returnerer OK`() {
         val journalpostId = "12345678"
         mockServerRule.client
-            .`when`(HttpRequest
-                .request()
-                .withMethod("PUT")
-                .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId"))
-            .respond(HttpResponse.response()
-                .withHeader("Content-Type", "application/json;charset=UTF-8")
-                .withBody(gyldigDokarkivResponse()))
+                .`when`(HttpRequest
+                                .request()
+                                .withMethod("PUT")
+                                .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId"))
+                .respond(response()
+                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
+                                 .withBody(gyldigDokarkivResponse()))
 
         val body = TilknyttFagsakRequest(bruker = Bruker(IdType.FNR, "12345678910"),
                                          tema = "tema",
                                          sak = Sak("11111111", "fagsaksystem"))
 
-        val response: ResponseEntity<Ressurs<OppdaterJournalpostResponse>> = restTemplate.exchange(localhost("$DOKARKIV_URL/12345678"),
-            HttpMethod.PUT,
-            HttpEntity(body, headers))
+        val response: ResponseEntity<Ressurs<OppdaterJournalpostResponse>> =
+                restTemplate.exchange(localhost("$DOKARKIV_URL_V2/12345678"),
+                                      HttpMethod.PUT,
+                                      HttpEntity(body, headers))
 
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
-        Assertions.assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
     }
 
     @Test
     fun `dokarkiv skal logge detaljert feilmelding til secureLogger ved HttpServerErrorExcetion`() {
         val journalpostId = "12345678"
         mockServerRule.client
-            .`when`(HttpRequest
-                .request()
-                .withMethod("PUT")
-                .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId"))
-            .respond(HttpResponse.response().withStatusCode(500)
-                .withHeader("Content-Type", "application/json;charset=UTF-8")
-                .withBody(gyldigDokarkivResponse(500)))
+                .`when`(HttpRequest
+                                .request()
+                                .withMethod("PUT")
+                                .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId"))
+                .respond(response().withStatusCode(500)
+                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
+                                 .withBody(gyldigDokarkivResponse(500)))
 
         val body = TilknyttFagsakRequest(bruker = Bruker(IdType.FNR, "12345678910"),
-            tema = "tema",
-            sak = Sak("11111111", "fagsaksystem"))
+                                         tema = "tema",
+                                         sak = Sak("11111111", "fagsaksystem"))
 
-        val response: ResponseEntity<Ressurs<OppdaterJournalpostResponse>> = restTemplate.exchange(localhost("$DOKARKIV_URL/12345678"),
-            HttpMethod.PUT,
-            HttpEntity(body, headers))
+        val response: ResponseEntity<Ressurs<OppdaterJournalpostResponse>> =
+                restTemplate.exchange(localhost("$DOKARKIV_URL_V2/12345678"),
+                                      HttpMethod.PUT,
+                                      HttpEntity(body, headers))
 
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        Assertions.assertThat(loggingEvents)
-            .extracting<String, RuntimeException> { obj: ILoggingEvent -> obj.formattedMessage }
-            .anyMatch { message -> message.contains("Fant ikke person med ident: 12345678910") }
+        assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(loggingEvents)
+                .extracting<String, RuntimeException> { obj: ILoggingEvent -> obj.formattedMessage }
+                .anyMatch { message -> message.contains("Fant ikke person med ident: 12345678910") }
     }
 
     @Test
@@ -193,15 +197,15 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                 .request()
                                 .withMethod("PATCH")
                                 .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill"))
-                .respond(HttpResponse.response().withStatusCode(200).withBody("Journalpost ferdigstilt"))
+                .respond(response().withStatusCode(200).withBody("Journalpost ferdigstilt"))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> =
-                restTemplate.exchange(localhost("$DOKARKIV_URL/123/ferdigstill?journalfoerendeEnhet=9999"),
+                restTemplate.exchange(localhost("$DOKARKIV_URL_V2/123/ferdigstill?journalfoerendeEnhet=9999"),
                                       HttpMethod.PUT,
                                       HttpEntity(null, headers))
 
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
     }
 
     @Test
@@ -211,16 +215,104 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                 .request()
                                 .withMethod("PATCH")
                                 .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill"))
-                .respond(HttpResponse.response().withStatusCode(400))
+                .respond(response().withStatusCode(400))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> =
-                restTemplate.exchange(localhost("$DOKARKIV_URL/123/ferdigstill?journalfoerendeEnhet=9999"),
+                restTemplate.exchange(localhost("$DOKARKIV_URL_V2/123/ferdigstill?journalfoerendeEnhet=9999"),
                                       HttpMethod.PUT,
                                       HttpEntity(null, headers))
 
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        Assertions.assertThat(response.body?.melding).contains("Kan ikke ferdigstille journalpost 123")
+        assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.body?.melding).contains("Kan ikke ferdigstille journalpost 123")
+    }
+
+
+    @Test
+    fun `skal opprette logisk vedlegg`() {
+        mockServerRule.client
+                .`when`(HttpRequest
+                                .request()
+                                .withMethod("POST")
+                                .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"))
+                .respond(response()
+                                 .withStatusCode(200)
+                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
+                                 .withBody(objectMapper.writeValueAsString(
+                                         LogiskVedleggResponse(21L))))
+
+        val response: ResponseEntity<Ressurs<LogiskVedleggResponse>> =
+                restTemplate.exchange(localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg"),
+                                      HttpMethod.POST,
+                                      HttpEntity(LogiskVedleggRequest("Ny tittel"), headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
+        assertThat(response.body?.data?.logiskVedleggId).isEqualTo(21L)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+    }
+
+    @Test
+    fun `skal returnere feil hvis man ikke kan opprette logisk vedlegg`() {
+        mockServerRule.client
+                .`when`(HttpRequest
+                                .request()
+                                .withMethod("POST")
+                                .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"))
+                .respond(response()
+                                 .withStatusCode(404)
+                                 .withBody("melding fra klient"))
+
+        val response: ResponseEntity<Ressurs<LogiskVedleggResponse>> =
+                restTemplate.exchange(localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg"),
+                                      HttpMethod.POST,
+                                      HttpEntity(LogiskVedleggRequest("Ny tittel"), headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(response.body?.melding).contains("melding fra klient")
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+    }
+
+
+    @Test
+    fun `skal slette logisk vedlegg`() {
+        mockServerRule.client
+                .`when`(HttpRequest
+                                .request()
+                                .withMethod("DELETE")
+                                .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/432"))
+                .respond(response()
+                                 .withStatusCode(200))
+
+        val response: ResponseEntity<Ressurs<LogiskVedleggResponse>> =
+                restTemplate.exchange(localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg/432"),
+                                      HttpMethod.DELETE,
+                                      HttpEntity(LogiskVedleggRequest("Ny tittel"), headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.data?.logiskVedleggId).isEqualTo(432L)
+        assertThat(response.body?.melding).contains("logisk vedlegg slettet")
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+    }
+
+    @Test
+    fun `skal returnere feil hvis man ikke kan slette logisk vedlegg`() {
+        mockServerRule.client
+                .`when`(HttpRequest
+                                .request()
+                                .withMethod("DELETE")
+                                .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/432"))
+                .respond(response()
+                                 .withStatusCode(404)
+                                 .withBody("sletting feilet"))
+
+        val response: ResponseEntity<Ressurs<LogiskVedleggResponse>> =
+                restTemplate.exchange(localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg/432"),
+                                      HttpMethod.DELETE,
+                                      HttpEntity(LogiskVedleggRequest("Ny tittel"), headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(response.body?.melding).contains("sletting feilet")
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
     @Throws(IOException::class) private fun gyldigDokarkivResponse(statusKode: Int? = null): String {
@@ -230,7 +322,9 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
     companion object {
         private const val MOCK_SERVER_PORT = 18321
-        private const val DOKARKIV_URL = "/api/arkiv/v2"
+        private const val DOKARKIV_URL = "/api/arkiv"
+        private const val DOKARKIV_URL_V2 = "${DOKARKIV_URL}/v2/"
+
         private val HOVEDDOKUMENT = Dokument("foo".toByteArray(),
                                              FilType.PDFA,
                                              "filnavn",
