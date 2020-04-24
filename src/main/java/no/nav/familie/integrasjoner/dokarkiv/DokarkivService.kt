@@ -12,7 +12,6 @@ import no.nav.familie.integrasjoner.dokarkiv.client.domene.Sak
 import no.nav.familie.integrasjoner.dokarkiv.metadata.DokarkivMetadata
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
-import no.nav.familie.kontrakter.felles.objectMapper
 import org.springframework.stereotype.Service
 
 @Service
@@ -32,9 +31,8 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
         return mapTilArkiverDokumentResponse(response)
     }
 
-    fun oppdaterJournalpost(request: TilknyttFagsakRequest, journalpostId: String): OppdaterJournalpostResponse {
-        val request = mapTilOppdaterJournalpostRequest(request)
-        return dokarkivRestClient.oppdaterJournalpost(request, journalpostId)
+    fun oppdaterJournalpost(request: OppdaterJournalpostRequest, journalpostId: String): OppdaterJournalpostResponse {
+        return dokarkivRestClient.oppdaterJournalpost(supplerDefaultVerdier(request), journalpostId)
     }
 
     private fun hentNavnForFnr(fnr: String?): String {
@@ -68,11 +66,8 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
         )
     }
 
-    private fun mapTilOppdaterJournalpostRequest(tilknyttFagsakRequest: TilknyttFagsakRequest): OppdaterJournalpostRequest {
-        return objectMapper.convertValue(tilknyttFagsakRequest, OppdaterJournalpostRequest::class.java)
-            .copy(sak = Sak(fagsakId = tilknyttFagsakRequest.sak.fagsakId,
-                            sakstype = "FAGSAK",
-                            fagsaksystem = tilknyttFagsakRequest.sak.fagsaksystem))
+    private fun supplerDefaultVerdier(request: OppdaterJournalpostRequest): OppdaterJournalpostRequest {
+        return request.copy(sak = request.sak?.copy(sakstype = request.sak.sakstype ?: "FAGSAK"))
     }
 
     private fun mapTilArkivdokument(dokument: Dokument): ArkivDokument {

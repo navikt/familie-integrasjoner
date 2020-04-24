@@ -2,8 +2,8 @@ package no.nav.familie.integrasjoner.dokarkiv
 
 import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
 import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentResponse
-import no.nav.familie.integrasjoner.dokarkiv.api.TilknyttFagsakRequest
 import no.nav.familie.integrasjoner.dokarkiv.client.KanIkkeFerdigstilleJournalpostException
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.OppdaterJournalpostRequest
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OppdaterJournalpostResponse
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
@@ -54,9 +54,9 @@ class DokarkivController(private val journalføringService: DokarkivService) {
 
     @PutMapping(path = ["/v2/{journalpostId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun oppdaterJournalpost(@PathVariable(name = "journalpostId") journalpostId: String,
-                            @RequestBody @Valid tilknyttFagsakRequest: TilknyttFagsakRequest)
+                            @RequestBody @Valid oppdaterJournalpostRequest: OppdaterJournalpostRequest)
             : ResponseEntity<Ressurs<OppdaterJournalpostResponse>> {
-        val response = journalføringService.oppdaterJournalpost(tilknyttFagsakRequest, journalpostId)
+        val response = journalføringService.oppdaterJournalpost(oppdaterJournalpostRequest, journalpostId)
         return ResponseEntity.ok(success(response, "Oppdatert journalpost $journalpostId sakstilknyttning"))
     }
 
