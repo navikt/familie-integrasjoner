@@ -4,10 +4,10 @@ import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
-import no.nav.familie.integrasjoner.journalpost.domene.Journalpost
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostRequest
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostResponse
 import no.nav.familie.integrasjoner.journalpost.internal.SafRequestVariable
+import no.nav.familie.kontrakter.felles.journalpost.Journalpost
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -18,7 +18,7 @@ import java.net.URI
 
 @Service
 class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
-                    @Qualifier("sts") val restTemplate: RestOperations)
+                    @Qualifier("jwtBearer") val restTemplate: RestOperations)
     : AbstractPingableRestClient(restTemplate, "saf.journalpost") {
 
     override val pingUri: URI = UriUtil.uri(safBaseUrl, PATH_PING)
@@ -31,8 +31,9 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
                                                                  safJournalpostRequest,
                                                                  httpHeaders())
             if (response != null && !response.harFeil()) {
-                return response.data?.journalpost ?: throw JournalpostRestClientException("Kan ikke hente journalpost", null, journalpostId)
-
+                return response.data?.journalpost ?: throw JournalpostRestClientException("Kan ikke hente journalpost",
+                                                                                   null,
+                                                                                   journalpostId)
             } else {
                 responsFailure.increment()
                 throw JournalpostRestClientException("Kan ikke hente journalpost " + response?.errors?.toString(),
