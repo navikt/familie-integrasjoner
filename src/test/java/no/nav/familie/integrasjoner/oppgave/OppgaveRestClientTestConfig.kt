@@ -17,7 +17,7 @@ class OppgaveRestClientTestConfig {
     @Primary
     fun OppgaveMockRestClient(): OppgaveRestClient {
         val klient: OppgaveRestClient = mockk(relaxed = true)
-        val response = Oppgave(id = 42, journalpostId = null, eksisterendeOppgaveId = null, beskrivelse = "")
+        val response = Oppgave(id = 42)
 
         every {
             klient.finnOppgave(any())

@@ -164,10 +164,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `skal opprette oppgave, returnere oppgaveid og 201 Created`() {
 
-        stubFor(post("/api/v1/oppgaver").willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID,
-                                                                                                   beskrivelse = "",
-                                                                                                   eksisterendeOppgaveId = null,
-                                                                                                   journalpostId = null)))))
+        stubFor(post("/api/v1/oppgaver").willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
 
         val opprettOppgave = OpprettOppgave(
                 ident = OppgaveIdent(ident = "123456789012", type = IdentType.Aktør),
@@ -219,10 +216,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     fun `Ferdigstilling av oppgave som er alt ferdigstillt skal logge og returnerer 200 OK`() {
         stubFor(get("/api/v1/oppgaver/123").willReturn(okJson(
                 objectMapper.writeValueAsString(Oppgave(id = 123,
-                                                        status = StatusEnum.FERDIGSTILT,
-                                                        journalpostId = null,
-                                                        eksisterendeOppgaveId = null,
-                                                        beskrivelse = "")))))
+                                                        status = StatusEnum.FERDIGSTILT)))))
 
 
         verify(exactly(0), patchRequestedFor(urlEqualTo("/api/v1/oppgaver/123")))
@@ -239,9 +233,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `Ferdigstilling av oppgave som er feilregistrert skal generere en oppslagsfeil`() {
         stubFor(get("/api/v1/oppgaver/${OPPGAVE_ID}").willReturn(okJson(
-                objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID, status = StatusEnum.FEILREGISTRERT, journalpostId = null,
-                                                        eksisterendeOppgaveId = null,
-                                                        beskrivelse = "")))))
+                objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID, status = StatusEnum.FEILREGISTRERT)))))
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
                 restTemplate.exchange(localhost("/api/oppgave/${OPPGAVE_ID}/ferdigstill"),
@@ -255,9 +247,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `Ferdigstilling av oppgave som er i status opprettet skal gjøre et patch kall mot oppgave med status FERDIGSTILL`() {
         stubFor(get("/api/v1/oppgaver/${OPPGAVE_ID}").willReturn(okJson(
-                objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID, status = StatusEnum.OPPRETTET, journalpostId = null,
-                                                        eksisterendeOppgaveId = null,
-                                                        beskrivelse = "")))))
+                objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID, status = StatusEnum.OPPRETTET)))))
 
         stubFor(patch(urlEqualTo("/api/v1/oppgaver/${OPPGAVE_ID}"))
                         .withRequestBody(matchingJsonPath("$.[?(@.status == 'FERDIGSTILT')]"))
@@ -265,10 +255,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                                             .withStatus(200)
                                             .withHeader("Content-Type", "application/json")
                                             .withBody(objectMapper.writeValueAsBytes(Oppgave(id = OPPGAVE_ID,
-                                                                                             status = StatusEnum.FERDIGSTILT,
-                                                                                             journalpostId = null,
-                                                                                             eksisterendeOppgaveId = null,
-                                                                                             beskrivelse = "")))))
+                                                                                             status = StatusEnum.FERDIGSTILT)))))
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
                 restTemplate.exchange(localhost("/api/oppgave/${OPPGAVE_ID}/ferdigstill"),
@@ -306,14 +293,10 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `finnOppgaver skal fungere ved retur av 51 oppgaver`() {
         val oppgaver50stk = FinnOppgaveResponseDto(51, List(50) {
-            Oppgave(journalpostId = null,
-                    eksisterendeOppgaveId = null,
-                    beskrivelse = "")
+            Oppgave()
         })
         val oppgaver1stk = FinnOppgaveResponseDto(51, List(1) {
-            Oppgave(journalpostId = null,
-                    eksisterendeOppgaveId = null,
-                    beskrivelse = "")
+            Oppgave()
         })
 
         stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&aktivDatoTom=${LocalDate.now()}&tema=BAR&limit=50&offset=0")
@@ -339,10 +322,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `Skal hente oppgave basert på id`() {
-        stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID,
-                                                                                               journalpostId = null,
-                                                                                               eksisterendeOppgaveId = null,
-                                                                                               beskrivelse = "")))))
+        stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
 
         val response: ResponseEntity<Ressurs<Oppgave>> =
                 restTemplate.exchange(localhost("/api/oppgave/$OPPGAVE_ID"), HttpMethod.GET, HttpEntity(null, headers))
