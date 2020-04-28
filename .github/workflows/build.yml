@@ -4,6 +4,8 @@ on:
     branches:
       - '*'
       - '*/*'
+env:
+  IMAGE: docker.pkg.github.com/${{ github.repository }}/familie-integrasjoner:${{ github.sha }}
 jobs:
   deploy-to-dev:
     name: Build, push and deploy to dev-fss
@@ -27,15 +29,9 @@ jobs:
           GITHUB_USERNAME: x-access-token
           GITHUB_TOKEN: ${{ secrets.GPR_TOKEN }}
         run: mvn -B --no-transfer-progress package --settings .m2/maven-settings.xml --file pom.xml
-      - name: Lag Docker tag
-        env:
-          NAME: familie-integrasjoner
-        run: |
-          echo "docker.pkg.github.com"/"$GITHUB_REPOSITORY"/"$NAME" > .docker_image
-          echo "$(date "+%Y.%m.%d")-$(git rev-parse --short HEAD)" > .docker_tag
       - name: Bygg Docker image
-        run: |
-          docker build -t $(cat .docker_image):$(cat .docker_tag) .
+          run: |
+            docker build -t $IMAGE .
       - name: Login to Github Package Registry
         env:
           DOCKER_USERNAME: x-access-token
@@ -43,7 +39,7 @@ jobs:
         run: |
           echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin docker.pkg.github.com
       - name: Push Docker image
-        run: "docker push $(cat .docker_image):$(cat .docker_tag)"
+        run: docker push $IMAGE
       - name: Deploy til dev-fss
         uses: nais/deploy/actions/deploy@v1
         env:
