@@ -45,10 +45,8 @@ jobs:
       - name: Push Docker image
         run: "docker push $(cat .docker_image):$(cat .docker_tag)"
       - name: Deploy til dev-fss
-        uses: navikt/deployment-cli/action@b60ef91
+        uses: nais/deploy/actions/deploy@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
-        with:
-          cluster: dev-fss
-          team: teamfamilie
-          resource: app-preprod.yaml
+          APIKEY: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+          CLUSTER: dev-fss
+          RESOURCE: app-preprod.yaml
