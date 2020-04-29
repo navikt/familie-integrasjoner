@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.oppgave
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.OppslagException.Level
+import no.nav.familie.integrasjoner.oppgave.domene.FinnOppgaveResponseDto
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto
 import no.nav.familie.integrasjoner.oppgave.domene.StatusEnum
 import no.nav.familie.kontrakter.felles.oppgave.IdentType
@@ -25,6 +26,36 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
                      saksbehandler: String?,
                      journalpostId: String?): List<OppgaveJsonDto> {
         return oppgaveRestClient.finnOppgaver(tema, behandlingstema, oppgaveType, enhet, saksbehandler, journalpostId)
+    }
+
+    fun finnOppgaverV2(tema: String,
+                       behandlingstema: String?,
+                       oppgaveType: String?,
+                       enhet: String?,
+                       saksbehandler: String?,
+                       journalpostId: String?,
+                       opprettetFomTidspunkt: String?,
+                       opprettetTomTidspunkt: String?,
+                       fristFomDato: String?,
+                       fristTomDato: String?,
+                       aktivFomDato: String?,
+                       aktivTomDato: String?,
+                       limit: Long?,
+                       offset: Long?): FinnOppgaveResponseDto {
+        return oppgaveRestClient.finnOppgaverV2(tema,
+                behandlingstema,
+                oppgaveType,
+                enhet,
+                saksbehandler,
+                journalpostId,
+                opprettetFomTidspunkt,
+                opprettetTomTidspunkt,
+                fristFomDato,
+                fristTomDato,
+                aktivFomDato,
+                aktivTomDato,
+                limit,
+                offset)
     }
 
     fun hentOppgave(oppgaveId: String): OppgaveJsonDto {

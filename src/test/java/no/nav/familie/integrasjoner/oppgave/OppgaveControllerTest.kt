@@ -297,6 +297,56 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
+    fun `finnOppgaverV2 skal fungere ved retur av 0 oppgaver`() {
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=opprettetTidspunkt&sorteringsrekkefolge=DESC&limit=50&offset=0")
+                .willReturn(okJson(gyldigOppgaveResponse("tom_response.json"))))
+
+        val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
+                restTemplate.exchange(localhost("/api/oppgave/v2?tema=BAR"), HttpMethod.GET, HttpEntity(null, headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.data?.oppgaver).isEmpty()
+    }
+
+    @Test
+    fun `finnOppgaverV2 skal fungere ved retur av 1 oppgave`() {
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=opprettetTidspunkt&sorteringsrekkefolge=DESC&limit=50&offset=0")
+                .willReturn(okJson(gyldigOppgaveResponse("oppgave.json"))))
+
+        val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
+                restTemplate.exchange(localhost("/api/oppgave/v2?tema=BAR"), HttpMethod.GET, HttpEntity(null, headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.data?.oppgaver).hasSize(1)
+    }
+
+    @Test
+    fun `finnOppgaverV2 skal fungere ved retur av 51 oppgaver`() {
+        val oppgaver50stk = FinnOppgaveResponseDto(51, List(50) { OppgaveJsonDto() })
+        val oppgaver1stk = FinnOppgaveResponseDto(51, List(1) { OppgaveJsonDto() })
+
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=opprettetTidspunkt&sorteringsrekkefolge=DESC&limit=50&offset=0")
+                .willReturn(okJson(objectMapper.writeValueAsString(oppgaver50stk))))
+
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=opprettetTidspunkt&sorteringsrekkefolge=DESC&limit=50&offset=50")
+                .willReturn(okJson(objectMapper.writeValueAsString(oppgaver1stk))))
+
+        val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
+                restTemplate.exchange(localhost("/api/oppgave/v2?tema=BAR"), HttpMethod.GET, HttpEntity(null, headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.data?.oppgaver).hasSize(51)
+    }
+
+    @Test
+    fun `finnOppgaverV2 skal feile hvis tema ikke er angitt`() {
+        val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
+                restTemplate.exchange(localhost("/api/oppgave/v2"), HttpMethod.GET, HttpEntity(null, headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
+
+    @Test
     fun `Skal hente oppgave basert på id`() {
         stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(objectMapper.writeValueAsString(OppgaveJsonDto (id = OPPGAVE_ID)))))
 

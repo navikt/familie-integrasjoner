@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.oppgave
 
+import no.nav.familie.integrasjoner.oppgave.domene.FinnOppgaveResponseDto
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
@@ -42,6 +43,38 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         return ResponseEntity.ok().body(success(oppgaver, "Finn oppgaver OK"))
     }
 
+    @GetMapping(path = ["/v2"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun finnOppgaverV2(@RequestParam("tema") tema: String,
+                       @RequestParam("behandlingstema", required = false) behandlingstema: String?,
+                       @RequestParam("oppgavetype", required = false) oppgavetype: String?,
+                       @RequestParam("enhet", required = false) enhet: String?,
+                       @RequestParam("saksbehandler", required = false) saksbehandler: String?,
+                       @RequestParam("journalpostId", required = false) journalpostId: String?,
+                       @RequestParam("opprettetFomTidspunkt", required = false) opprettetFomTidspunkt: String?,
+                       @RequestParam("opprettetTomTidspunkt", required = false) opprettetTomTidspunkt: String?,
+                       @RequestParam("fristFomDato", required = false) fristFomDato: String?,
+                       @RequestParam("fristTomDato", required = false) fristTomDato: String?,
+                       @RequestParam("aktivFomDato", required = false) aktivFomDato: String?,
+                       @RequestParam("aktivTomDato", required = false) aktivTomDato: String?,
+                       @RequestParam("limit", required = false) limit: Long?,
+                       @RequestParam("offset", required = false) offset: Long?)
+            : ResponseEntity<Ressurs<FinnOppgaveResponseDto>> {
+        val oppgaver = oppgaveService.finnOppgaverV2(tema,
+                behandlingstema,
+                oppgavetype,
+                enhet,
+                saksbehandler,
+                journalpostId,
+                opprettetFomTidspunkt,
+                opprettetTomTidspunkt,
+                fristFomDato,
+                fristTomDato,
+                aktivFomDato,
+                aktivTomDato,
+                limit,
+                offset)
+        return ResponseEntity.ok().body(success(oppgaver, "Finn oppgaver OK"))
+    }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdater"])
     fun oppdaterOppgave(@RequestBody oppgave: Oppgave): ResponseEntity<Ressurs<OppgaveResponse>> {

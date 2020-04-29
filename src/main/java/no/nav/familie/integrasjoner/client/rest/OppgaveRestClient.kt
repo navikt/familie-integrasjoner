@@ -82,6 +82,66 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         return finnAlleOppgaver()
     }
 
+    fun finnOppgaverV2(tema: String,
+                       behandlingstema: String?,
+                       oppgavetype: String?,
+                       tildeltEnhetsnr: String?,
+                       tilordnetRessurs: String?,
+                       journalpostId: String?,
+                       opprettetFom: String?,
+                       opprettetTom: String?,
+                       fristFom: String?,
+                       fristTom: String?,
+                       aktivFom: String?,
+                       aktivTom: String?,
+                       limit: Long?,
+                       offset: Long?): FinnOppgaveResponseDto {
+
+        val limitMotOppgave = 50
+
+        fun uriMotOppgave(offset: Long): URI {
+            val uriBuilder = UriComponentsBuilder.fromUri(oppgaveBaseUrl)
+                    .path(PATH_OPPGAVE)
+                    .queryParam("statuskategori", "AAPEN")
+                    .queryParam("tema", tema)
+                    .queryParam("sorteringsfelt", "opprettetTidspunkt")
+                    .queryParam("sorteringsrekkefolge", "DESC")
+                    .queryParam("limit", limitMotOppgave)
+                    .queryParam("offset", offset)
+
+            behandlingstema?.apply { uriBuilder.queryParam("behandlingstema", this) }
+            oppgavetype?.apply { uriBuilder.queryParam("oppgavetype", this) }
+            tildeltEnhetsnr?.apply { uriBuilder.queryParam("tildeltEnhetsnr", this) }
+            tilordnetRessurs?.apply { uriBuilder.queryParam("tilordnetRessurs", this) }
+            journalpostId?.apply { uriBuilder.queryParam("journalpostId", this) }
+            opprettetFom?.apply { uriBuilder.queryParam("opprettetFom", this) }
+            opprettetTom?.apply { uriBuilder.queryParam("opprettetTom", this) }
+            fristFom?.apply { uriBuilder.queryParam("fristFom", this) }
+            fristTom?.apply { uriBuilder.queryParam("fristTom", this) }
+            aktivFom?.apply { uriBuilder.queryParam("aktivFom", this) }
+            aktivTom?.apply { uriBuilder.queryParam("aktivTom", this) }
+
+            return uriBuilder.build().toUri()
+        }
+
+        var markør = offset ?: 0
+        val oppgaverOgAntall = getForEntity<FinnOppgaveResponseDto>(uriMotOppgave(markør), httpHeaders())
+        val oppgaver: MutableList<OppgaveJsonDto> = oppgaverOgAntall.oppgaver.toMutableList()
+        val grense = when (limit == null) {
+            true -> oppgaverOgAntall.antallTreffTotalt
+            false -> markør + limit
+        }
+        markør += limitMotOppgave
+
+        while (markør < grense) {
+            val nyeOppgaver = getForEntity<FinnOppgaveResponseDto>(uriMotOppgave(markør), httpHeaders())
+            oppgaver.addAll(nyeOppgaver.oppgaver)
+            markør += limitMotOppgave
+        }
+
+        return FinnOppgaveResponseDto(oppgaverOgAntall.antallTreffTotalt, oppgaver)
+    }
+
     fun oppdaterOppgave(patchDto: OppgaveJsonDto) {
         return Result.runCatching {
             patchForEntity<OppgaveJsonDto>(requestUrl(patchDto.id ?: error("Kan ikke finne oppgaveId på oppgaven")),
