@@ -4,10 +4,10 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
-import no.nav.familie.integrasjoner.journalpost.domene.Journalpost
-import no.nav.familie.integrasjoner.journalpost.domene.Journalposttype
-import no.nav.familie.integrasjoner.journalpost.domene.Journalstatus
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.journalpost.Journalpost
+import no.nav.familie.kontrakter.felles.journalpost.Journalposttype
+import no.nav.familie.kontrakter.felles.journalpost.Journalstatus
 import no.nav.security.token.support.test.JwtTokenGenerator
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
@@ -30,7 +30,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
-@ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
+@ActiveProfiles("integrasjonstest", "mock-oauth")
 class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
 
     private val testLogger = LoggerFactory.getLogger(HentJournalpostController::class.java) as Logger
@@ -104,8 +104,8 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
         val response: ResponseEntity<Ressurs<ByteArray>> = restTemplate.exchange(uriHentDokument,
                                                                                    HttpMethod.GET,
                                                                                    HttpEntity<String>(headers))
-        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
     }
 
     @Test

@@ -14,7 +14,7 @@ import java.net.URI
 
 @Service
 class SafHentDokumentRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
-                                @Qualifier("propagateAuth") val restTemplate: RestOperations)
+                                @Qualifier("jwtBearer") val restTemplate: RestOperations)
     : AbstractRestClient(restTemplate, "saf.journalpost") {
 
     private val safHentdokumentUri = UriComponentsBuilder.fromUri(safBaseUrl).path(PATH_HENT_DOKUMENT)
