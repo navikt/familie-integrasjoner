@@ -9,11 +9,11 @@ object ArbeidsregistreringsskjemaMetadata : DokumentMetadata {
     override val journalpostType: JournalpostType = JournalpostType.INNGAAENDE
     override val fagsakSystem: String? = null
     override val tema: String = "ENF"
-    override val behandlingstema: String? = "ab0071" // https://confluence.adeo.no/display/BOA/Behandlingstema
+    override val behandlingstema: String? = null //"ab0071" // https://confluence.adeo.no/display/BOA/Behandlingstema
     override val kanal: String? = "NAV_NO"
-    override val dokumentTypeId: String = "OVERGANGSSTØNAD_SØKNAD"
-    override val tittel: String? = "Søknad om overgangsstønad - enslig mor eller far"
-    override val brevkode: String? = "NAV 15-00.01"
-    override val dokumentKategori: String = "SOK"
+    override val dokumentTypeId: String = "SKJEMA_ARBEIDSSØKER"
+    override val tittel: String? = "Enslig mor eller far som er arbeidssøker"
+    override val brevkode: String? = "NAV 15-08.01"
+    override val dokumentKategori: String = "ES" // ES Elektronisk skjema  - https://confluence.adeo.no/display/BOA/Dokumentkategori
 
 }
