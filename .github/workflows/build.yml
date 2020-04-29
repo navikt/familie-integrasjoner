@@ -4,6 +4,8 @@ on:
     branches:
       - '*'
       - '*/*'
+env:
+  IMAGE: docker.pkg.github.com/${{ github.repository }}/familie-integrasjoner:${{ github.sha }}
 jobs:
   deploy-to-dev:
     name: Build, push and deploy to dev-fss
@@ -25,30 +27,22 @@ jobs:
       - name: Bygg med maven
         env:
           GITHUB_USERNAME: x-access-token
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GPR_TOKEN }}
         run: mvn -B --no-transfer-progress package --settings .m2/maven-settings.xml --file pom.xml
-      - name: Lag Docker tag
-        env:
-          NAME: familie-integrasjoner
-        run: |
-          echo "docker.pkg.github.com"/"$GITHUB_REPOSITORY"/"$NAME" > .docker_image
-          echo "$(date "+%Y.%m.%d")-$(git rev-parse --short HEAD)" > .docker_tag
       - name: Bygg Docker image
         run: |
-          docker build -t $(cat .docker_image):$(cat .docker_tag) .
+          docker build -t $IMAGE .
       - name: Login to Github Package Registry
         env:
           DOCKER_USERNAME: x-access-token
-          DOCKER_PASSWORD: ${{ secrets.GITHUB_ACCESS_TOKEN }}
+          DOCKER_PASSWORD: ${{ secrets.GPR_TOKEN }}
         run: |
           echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin docker.pkg.github.com
       - name: Push Docker image
-        run: "docker push $(cat .docker_image):$(cat .docker_tag)"
+        run: docker push $IMAGE
       - name: Deploy til dev-fss
-        uses: navikt/deployment-cli/action@b60ef91
+        uses: nais/deploy/actions/deploy@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_ACCESS_TOKEN }}
-        with:
-          cluster: dev-fss
-          team: teamfamilie
-          resource: app-preprod.yaml
+          APIKEY: ${{ secrets.DEPLOY_APIKEY }}
+          CLUSTER: dev-fss
+          RESOURCE: app-preprod.yaml
