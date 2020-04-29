@@ -9,7 +9,7 @@ object ArbeidsregistreringsskjemaMetadata : DokumentMetadata {
     override val journalpostType: JournalpostType = JournalpostType.INNGAAENDE
     override val fagsakSystem: String? = null
     override val tema: String = "ENF"
-    override val behandlingstema: String? = null //"ab0071" // https://confluence.adeo.no/display/BOA/Behandlingstema
+    override val behandlingstema: String? = null // https://confluence.adeo.no/display/BOA/Behandlingstema
     override val kanal: String? = "NAV_NO"
     override val dokumentTypeId: String = "SKJEMA_ARBEIDSSØKER"
     override val tittel: String? = "Enslig mor eller far som er arbeidssøker"
