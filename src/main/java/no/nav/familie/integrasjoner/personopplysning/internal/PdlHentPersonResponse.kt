@@ -2,8 +2,9 @@ package no.nav.familie.integrasjoner.personopplysning.internal
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
-data class PdlHentPersonResponse (val data: PdlPerson,
-                                  val errors: Array<PdlError>?) {
+data class PdlHentPersonResponse(val data: PdlPerson,
+                                 val errors: List<PdlError>?) {
+
     fun harFeil(): Boolean {
         return errors != null && errors.isNotEmpty()
     }
@@ -13,27 +14,25 @@ data class PdlHentPersonResponse (val data: PdlPerson,
     }
 }
 
-data class PdlPerson (val person: PdlPersonData?)
+data class PdlPerson(val person: PdlPersonData?)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class PdlPersonData (
-        val foedsel: Array<PdlFødselsDato>,
-        val navn: Array<PdlNavn>,
-        val kjoenn: Array<PdlKjoenn>,
-        val familierelasjoner: Array<PdlFamilierelasjon> = emptyArray())
+data class PdlPersonData(val foedsel: List<PdlFødselsDato>,
+                         val navn: List<PdlNavn>,
+                         val kjoenn: List<PdlKjoenn>,
+                         val familierelasjoner: List<PdlFamilierelasjon> = emptyList())
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class PdlFødselsDato (val foedselsdato: String?)
+data class PdlFødselsDato(val foedselsdato: String?)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class PdlError (val message: String)
+data class PdlError(val message: String)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class PdlNavn(
-        val fornavn: String,
-        val mellomnavn: String? = null,
-        val etternavn: String
-) {
+data class PdlNavn(val fornavn: String,
+                   val mellomnavn: String? = null,
+                   val etternavn: String) {
+
     fun fulltNavn(): String {
         return when (mellomnavn) {
             null -> "$fornavn $etternavn"
@@ -46,10 +45,18 @@ data class PdlNavn(
 data class PdlKjoenn(val kjoenn: KJØNN)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class PdlFamilierelasjon(
-        val relatertPersonsIdent: String,
-        val relatertPersonsRolle: FAMILIERELASJONSROLLE)
+data class PdlFamilierelasjon(val relatertPersonsIdent: String,
+                              val relatertPersonsRolle: FAMILIERELASJONSROLLE)
 
-enum class KJØNN {MANN, KVINNE, UKJENT}
+enum class KJØNN {
+    MANN,
+    KVINNE,
+    UKJENT
+}
 
-enum class FAMILIERELASJONSROLLE { BARN, FAR, MEDMOR, MOR}
+enum class FAMILIERELASJONSROLLE {
+    BARN,
+    FAR,
+    MEDMOR,
+    MOR
+}
