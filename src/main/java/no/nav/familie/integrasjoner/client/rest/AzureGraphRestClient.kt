@@ -11,7 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Service
-class AzureGraphRestClient(@Qualifier("azure") restTemplate: RestOperations,
+class AzureGraphRestClient(@Qualifier("jwtBearer") restTemplate: RestOperations,
                            @Value("\${AAD_GRAPH_API_URI}") private val aadGraphURI: URI)
     : AbstractRestClient(restTemplate, "AzureGraph") {
 
@@ -32,5 +32,4 @@ class AzureGraphRestClient(@Qualifier("azure") restTemplate: RestOperations,
         private const val ME = "me"
         private const val GRUPPER = "memberOf"
     }
-
 }

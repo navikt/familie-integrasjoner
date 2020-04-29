@@ -11,7 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Service
-class InfotrygdRestClient(@Qualifier("azure") private val restTemplate: RestOperations,
+class InfotrygdRestClient(@Qualifier("jwtBearer") private val restTemplate: RestOperations,
                           @Value("\${INFOTRYGD_URL}") private val infotrygdURL: URI)
     : AbstractPingableRestClient(restTemplate, "infotrygd") {
 
@@ -23,14 +23,12 @@ class InfotrygdRestClient(@Qualifier("azure") private val restTemplate: RestOper
         val httpHeaders = org.springframework.http.HttpHeaders().apply {
             add("fnr", fnr)
         }
-        return  getForEntity(harKontantstøtteUri, httpHeaders)
+        return getForEntity(harKontantstøtteUri, httpHeaders)
     }
 
     companion object {
         private const val PATH_PING = "actuator/health"
         private const val PATH_AKTIV_KONTANTSTØTTE = "v1/harBarnAktivKontantstotte"
     }
-
-
 }
 
