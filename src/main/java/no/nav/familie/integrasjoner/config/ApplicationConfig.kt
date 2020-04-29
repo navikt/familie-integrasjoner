@@ -16,12 +16,8 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Import
-import org.springframework.http.HttpHeaders.AUTHORIZATION
-import org.springframework.http.client.ClientHttpRequestInterceptor
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.RestOperations
 import springfox.documentation.swagger2.annotations.EnableSwagger2
-import javax.servlet.http.HttpServletRequest
 
 @SpringBootConfiguration
 @ComponentScan("no.nav.familie.integrasjoner")
@@ -29,57 +25,9 @@ import javax.servlet.http.HttpServletRequest
 @EnableSwagger2
 @EnableJwtTokenValidation(ignore = ["org.springframework", "springfox.documentation.swagger.web.ApiResourceController"])
 @EnableOAuth2Client(cacheEnabled = true)
-@Import(ConsumerIdClientInterceptor::class, BearerTokenClientInterceptor::class, StsBearerTokenClientInterceptor::class)
 class ApplicationConfig {
 
     private val logger = LoggerFactory.getLogger(ApplicationConfig::class.java)
-
-    @Bean("azure")
-    fun restTemplateAzureAd(interceptorAzure: BearerTokenClientInterceptor,
-                            consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations {
-        return RestTemplateBuilder()
-                .additionalCustomizers(NaisProxyCustomizer())
-                .interceptors(consumerIdClientInterceptor,
-                              interceptorAzure,
-                              MdcValuesPropagatingClientInterceptor())
-                .requestFactory(this::requestFactory)
-                .build()
-    }
-
-    @Bean("sts")
-    fun restTemplateSts(stsBearerTokenClientInterceptor: StsBearerTokenClientInterceptor,
-                        consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations {
-
-        return RestTemplateBuilder()
-                .interceptors(consumerIdClientInterceptor,
-                              stsBearerTokenClientInterceptor,
-                              MdcValuesPropagatingClientInterceptor())
-                .requestFactory(this::requestFactory)
-                .build()
-    }
-
-    @Bean("propagateAuth")
-    fun restTemplatePropagateAuth(inRequest: HttpServletRequest,
-                                  consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations {
-
-        return RestTemplateBuilder()
-            .interceptors(ClientHttpRequestInterceptor { outRequest, body, requestExecution ->
-                              outRequest.headers.set(AUTHORIZATION, inRequest.getHeader(AUTHORIZATION))
-                              requestExecution.execute(outRequest, body)
-                          },
-                          consumerIdClientInterceptor,
-                          MdcValuesPropagatingClientInterceptor())
-            .requestFactory(this::requestFactory)
-            .build()
-    }
-
-    fun requestFactory() = HttpComponentsClientHttpRequestFactory()
-            .apply {
-                setConnectionRequestTimeout(20 * 1000)
-                setReadTimeout(20 * 1000)
-                setConnectTimeout(20 * 1000)
-            }
-
 
     @Bean
     fun kotlinModule(): KotlinModule = KotlinModule()
