@@ -61,6 +61,11 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
         return pdlRestClient.hentPerson(personIdent, tema, personInfoQuery)
     }
 
+    fun hentAktørId(personIdent: String, tema: String): List<String> {
+        val hentAktørId = pdlRestClient.hentAktørId(personIdent, tema)
+        return hentAktørId.data.identer.map { it.ident }
+    }
+
     companion object {
         private val LOG = LoggerFactory.getLogger(PersonopplysningerService::class.java)
         private val secureLogger = LoggerFactory.getLogger("secureLogger")

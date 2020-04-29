@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpClientErrorException.Forbidden
 import java.time.LocalDate
-import javax.validation.constraints.NotNull
 
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
@@ -33,6 +32,13 @@ class PersonopplysningerController(private val personopplysningerService: Person
     fun handleRestClientResponseException(e: Forbidden): ResponseEntity<Ressurs<Any>> {
         return ResponseEntity.status(e.rawStatusCode)
                 .body(ikkeTilgang("Ikke tilgang mot personopplysning ${e.message}"))
+    }
+
+    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["aktorId/{tema}"])
+    fun historikk(@RequestHeader(name = "Nav-Personident") personIdent: String,
+                  @PathVariable tema: Tema): ResponseEntity<Ressurs<List<String>>> {
+        return ResponseEntity.ok().body(success(data = personopplysningerService.hentAktørId(personIdent, tema.toString()),
+                                                melding = "Hent aktørId OK"))
     }
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/historikk"])
