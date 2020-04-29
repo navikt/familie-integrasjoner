@@ -35,7 +35,7 @@ class PersonopplysningerController(private val personopplysningerService: Person
     }
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["aktorId/{tema}"])
-    fun historikk(@RequestHeader(name = "Nav-Personident") personIdent: String,
+    fun aktørId(@RequestHeader(name = "Nav-Personident") personIdent: String,
                   @PathVariable tema: Tema): ResponseEntity<Ressurs<List<String>>> {
         return ResponseEntity.ok().body(success(data = personopplysningerService.hentAktørId(personIdent, tema.toString()),
                                                 melding = "Hent aktørId OK"))
