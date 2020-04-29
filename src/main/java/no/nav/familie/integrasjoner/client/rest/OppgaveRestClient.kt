@@ -34,19 +34,14 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
     private val LOG = LoggerFactory.getLogger(OppgaveRestClient::class.java)
 
     fun finnOppgave(request: Oppgave): Oppgave {
-        when {
-            request.aktoerId == null -> {
-                error("Finner ikke aktør id på request")
-            }
-            request.journalpostId == null -> {
-                error("Finner ikke journalpost id på request")
-            }
-            else -> {
-                val requestUrl = lagRequestUrlMed(request.aktoerId!!,
-                                                  request.journalpostId!!, request.tema?.name ?: KONTANTSTØTTE_TEMA.name)
-                return requestOppgaveJson(requestUrl)
-            }
-        }
+        request.takeUnless { it.aktoerId == null } ?: error("Finner ikke aktør id på request")
+        request.takeUnless {
+            it.journalpostId == null
+        } ?: error("Finner ikke journalpost id på request")
+
+        val requestUrl = lagRequestUrlMed(request.aktoerId!!,
+                                          request.journalpostId!!, request.tema?.name ?: KONTANTSTØTTE_TEMA.name)
+        return requestOppgaveJson(requestUrl)
     }
 
     fun finnOppgaveMedId(oppgaveId: String): Oppgave {
