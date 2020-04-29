@@ -1,143 +1,165 @@
-package no.nav.familie.integrasjoner.personopplysning;
+package no.nav.familie.integrasjoner.personopplysning
 
-import no.nav.familie.integrasjoner.client.soap.PersonSoapClient;
-import no.nav.familie.integrasjoner.felles.OppslagException;
-import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo;
-import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo;
-import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter;
-import no.nav.familie.integrasjoner.personopplysning.domene.adresse.AdresseType;
-import no.nav.familie.integrasjoner.personopplysning.domene.adresse.TpsAdresseOversetter;
-import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.Familierelasjon;
-import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.RelasjonsRolleType;
-import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.SivilstandType;
-import no.nav.familie.integrasjoner.personopplysning.domene.status.PersonstatusType;
-import no.nav.familie.integrasjoner.personopplysning.domene.tilhørighet.Landkode;
-import no.nav.familie.kontrakter.ks.søknad.testdata.SøknadTestdata;
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest;
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest;
-import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.Test;
+import no.nav.familie.integrasjoner.client.soap.PersonSoapClient
+import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter
+import no.nav.familie.integrasjoner.personopplysning.domene.adresse.AdresseType
+import no.nav.familie.integrasjoner.personopplysning.domene.adresse.TpsAdresseOversetter
+import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.Familierelasjon
+import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.RelasjonsRolleType
+import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.SivilstandType
+import no.nav.familie.integrasjoner.personopplysning.domene.status.PersonstatusType
+import no.nav.familie.integrasjoner.personopplysning.domene.tilhørighet.Landkode
+import no.nav.familie.kontrakter.ks.søknad.testdata.SøknadTestdata
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest
+import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest
+import org.assertj.core.api.Assertions
+import org.junit.Before
+import org.junit.Test
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
-
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-public class PersonopplysningerServiceTest {
-
-    private static final String PERSONIDENT = SøknadTestdata.farPersonident;
-    private static final LocalDate TOM = LocalDate.now();
-    private static final LocalDate FOM = TOM.minusYears(5);
-
-    private PersonSoapClient personSoapClient;
-    private PersonopplysningerService personopplysningerService;
-
-    @Before
-    public void setUp() throws Exception {
-        personSoapClient = new PersonopplysningerTestConfig().personConsumerMock();
-        personopplysningerService =
-                new PersonopplysningerService(this.personSoapClient, new TpsOversetter(new TpsAdresseOversetter()), null);
+class PersonopplysningerServiceTest {
+    private var personSoapClient: PersonSoapClient? = null
+    private var personopplysningerService: PersonopplysningerService? = null
+    @Before @Throws(Exception::class) fun setUp() {
+        personSoapClient = PersonopplysningerTestConfig().personConsumerMock()
+        personopplysningerService = PersonopplysningerService(personSoapClient!!, TpsOversetter(TpsAdresseOversetter()), null)
     }
 
-    @Test
-    public void personhistorikkInfoSkalGiFeilVedUgyldigAktørId() throws Exception {
-        when(personSoapClient.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class)))
-                .thenThrow(new OppslagException("feil","feil", OppslagException.Level.MEDIUM));
-
-        assertThatThrownBy(() -> personopplysningerService.hentHistorikkFor(PERSONIDENT, FOM, TOM)).isInstanceOf(
-                OppslagException.class);
+    @Test @Throws(Exception::class) fun personhistorikkInfoSkalGiFeilVedUgyldigAktørId() {
+        Mockito.`when`(personSoapClient!!.hentPersonhistorikkResponse(
+                ArgumentMatchers.any(
+                        HentPersonhistorikkRequest::class.java)))
+                .thenThrow(OppslagException("feil", "feil", OppslagException.Level.MEDIUM))
+        Assertions.assertThatThrownBy {
+            personopplysningerService!!.hentHistorikkFor(
+                    PERSONIDENT,
+                    FOM,
+                    TOM)
+        }.isInstanceOf(
+                OppslagException::class.java)
     }
 
-    @Test
-    public void personHistorikkSkalGiFeilVedSikkerhetsbegrensning() throws Exception {
-        when(personSoapClient.hentPersonhistorikkResponse(any(HentPersonhistorikkRequest.class)))
-                .thenThrow(new OppslagException("feil","feil", OppslagException.Level.MEDIUM));
-
-        assertThatThrownBy(() -> personopplysningerService.hentHistorikkFor(PERSONIDENT, FOM, TOM)).isInstanceOf(
-                OppslagException.class);
+    @Test @Throws(Exception::class) fun personHistorikkSkalGiFeilVedSikkerhetsbegrensning() {
+        Mockito.`when`(personSoapClient!!.hentPersonhistorikkResponse(
+                ArgumentMatchers.any(
+                        HentPersonhistorikkRequest::class.java)))
+                .thenThrow(OppslagException("feil", "feil", OppslagException.Level.MEDIUM))
+        Assertions.assertThatThrownBy {
+            personopplysningerService!!.hentHistorikkFor(
+                    PERSONIDENT,
+                    FOM,
+                    TOM)
+        }.isInstanceOf(
+                OppslagException::class.java)
     }
 
-    @Test
-    public void personinfoSkalGiFeilVedUgyldigAktørId() throws Exception {
-        when(personSoapClient.hentPersonResponse(any(HentPersonRequest.class)))
-                .thenThrow(new OppslagException("feil","feil", OppslagException.Level.MEDIUM));
-
-        assertThatThrownBy(() -> personopplysningerService.hentPersoninfoFor(PERSONIDENT))
-                .isInstanceOf(OppslagException.class);
+    @Test @Throws(Exception::class) fun personinfoSkalGiFeilVedUgyldigAktørId() {
+        Mockito.`when`(personSoapClient!!.hentPersonResponse(
+                ArgumentMatchers.any(
+                        HentPersonRequest::class.java)))
+                .thenThrow(OppslagException("feil", "feil", OppslagException.Level.MEDIUM))
+        Assertions.assertThatThrownBy {
+            personopplysningerService!!.hentPersoninfoFor(
+                    PERSONIDENT)
+        }
+                .isInstanceOf(OppslagException::class.java)
     }
 
-    @Test
-    public void personinfoSkalGiFeilVedSikkerhetsbegrensning() throws Exception {
-        when(personSoapClient.hentPersonResponse(any(HentPersonRequest.class)))
-                .thenThrow(new OppslagException("feil","feil", OppslagException.Level.MEDIUM));
-
-        assertThatThrownBy(() -> personopplysningerService.hentPersoninfoFor(PERSONIDENT))
-                .isInstanceOf(OppslagException.class);
+    @Test @Throws(Exception::class) fun personinfoSkalGiFeilVedSikkerhetsbegrensning() {
+        Mockito.`when`(personSoapClient!!.hentPersonResponse(
+                ArgumentMatchers.any(
+                        HentPersonRequest::class.java)))
+                .thenThrow(OppslagException("feil", "feil", OppslagException.Level.MEDIUM))
+        Assertions.assertThatThrownBy {
+            personopplysningerService!!.hentPersoninfoFor(
+                    PERSONIDENT)
+        }
+                .isInstanceOf(OppslagException::class.java)
     }
 
-    @Test
-    public void skalKonvertereResponsTilPersonInfo() {
-        Personinfo response = personopplysningerService.hentPersoninfoFor(PERSONIDENT);
-
-        LocalDate forventetFødselsdato = LocalDate.parse("1990-01-01");
-
-        Familierelasjon barn = response.getFamilierelasjoner().stream()
-                                       .filter(p -> p.getRelasjonsrolle() == RelasjonsRolleType.BARN)
-                                       .findFirst().orElse(null);
-        Familierelasjon ektefelle = response.getFamilierelasjoner().stream()
-                                            .filter(p -> p.getRelasjonsrolle() == RelasjonsRolleType.EKTE)
-                                            .findFirst().orElse(null);
-
-        assertThat(response.getPersonIdent().getId()).isEqualTo(PERSONIDENT);
-        assertThat(response.getStatsborgerskap().erNorge()).isTrue();
-        assertThat(response.getSivilstand()).isEqualTo(SivilstandType.GIFT);
-        assertThat(response.getAlder()).isEqualTo(ChronoUnit.YEARS.between(forventetFødselsdato, LocalDate.now()));
-        Assertions.assertThat(response.getAdresseInfoList()).hasSize(1);
-        Assertions.assertThat(response.getPersonstatus()).isEqualTo(PersonstatusType.BOSA);
-        assertThat(response.getGeografiskTilknytning()).isEqualTo("0315");
-        assertThat(response.getFødselsdato()).isEqualTo(forventetFødselsdato);
-        assertThat(response.getDødsdato()).isNull();
-        assertThat(response.getDiskresjonskode()).isNull();
-        assertThat(response.getAdresseLandkode()).isEqualTo("NOR");
-
-        assertThat(response.getFamilierelasjoner()).hasSize(2);
-        assertThat(barn).isNotNull();
-        assertThat(barn.getHarSammeBosted()).isTrue();
-        assertThat(ektefelle).isNotNull();
-        assertThat(ektefelle.getHarSammeBosted()).isTrue();
+    @Test fun skalKonvertereResponsTilPersonInfo() {
+        val response =
+                personopplysningerService!!.hentPersoninfoFor(PERSONIDENT)
+        val forventetFødselsdato = LocalDate.parse("1990-01-01")
+        val barn =
+                response.familierelasjoner.stream()
+                        .filter { p: Familierelasjon -> p.relasjonsrolle == RelasjonsRolleType.BARN }
+                        .findFirst().orElse(null)
+        val ektefelle =
+                response.familierelasjoner.stream()
+                        .filter { p: Familierelasjon -> p.relasjonsrolle == RelasjonsRolleType.EKTE }
+                        .findFirst().orElse(null)
+        Assertions.assertThat(response.personIdent.id)
+                .isEqualTo(PERSONIDENT)
+        Assertions.assertThat(response.statsborgerskap.erNorge()).isTrue
+        Assertions.assertThat(response.sivilstand).isEqualTo(SivilstandType.GIFT)
+        Assertions.assertThat(response.alder)
+                .isEqualTo(ChronoUnit.YEARS.between(forventetFødselsdato, LocalDate.now()))
+        Assertions.assertThat(response.adresseInfoList).hasSize(1)
+        Assertions.assertThat(response.personstatus).isEqualTo(PersonstatusType.BOSA)
+        Assertions.assertThat(response.geografiskTilknytning).isEqualTo("0315")
+        Assertions.assertThat(response.fødselsdato).isEqualTo(forventetFødselsdato)
+        Assertions.assertThat(response.dødsdato).isNull()
+        Assertions.assertThat(response.diskresjonskode).isNull()
+        Assertions.assertThat(response.adresseLandkode).isEqualTo("NOR")
+        Assertions.assertThat(
+                response.familierelasjoner).hasSize(2)
+        Assertions.assertThat(
+                barn).isNotNull
+        Assertions.assertThat(barn.harSammeBosted).isTrue
+        Assertions.assertThat(
+                ektefelle).isNotNull
+        Assertions.assertThat(ektefelle.harSammeBosted).isTrue
     }
 
-    @Test
-    public void skalKonvertereResponsTilPersonhistorikkInfo() {
-        PersonhistorikkInfo response = personopplysningerService.hentHistorikkFor(PERSONIDENT, FOM, TOM);
-
-        assertThat(response.getPersonIdent().getId()).isEqualTo(PERSONIDENT);
-        Assertions.assertThat(response.getStatsborgerskaphistorikk()).hasSize(1);
-        Assertions.assertThat(response.getPersonstatushistorikk()).hasSize(1);
-        Assertions.assertThat(response.getAdressehistorikk()).hasSize(2);
-
-        assertThat(response.getStatsborgerskaphistorikk().get(0).getTilhørendeLand()).isEqualTo(Landkode.NORGE);
-        Assertions.assertThat(response.getStatsborgerskaphistorikk().get(0).getPeriode().getFom()).isEqualTo(FOM);
-
-        Assertions.assertThat(response.getPersonstatushistorikk().get(0).getPersonstatus()).isEqualTo(PersonstatusType.BOSA);
-        Assertions.assertThat(response.getPersonstatushistorikk().get(0).getPeriode().getTom()).isEqualTo(TOM);
-
-        Assertions.assertThat(response.getAdressehistorikk().get(0).getAdresse().getAdresseType())
-                  .isEqualTo(AdresseType.BOSTEDSADRESSE);
-        Assertions.assertThat(response.getAdressehistorikk().get(0).getAdresse().getLand()).isEqualTo(Landkode.NORGE.getKode());
-        Assertions.assertThat(response.getAdressehistorikk().get(0).getAdresse().getAdresselinje1()).isEqualTo("Sannergata 2");
-        Assertions.assertThat(response.getAdressehistorikk().get(0).getAdresse().getPostnummer()).isEqualTo("0560");
-        Assertions.assertThat(response.getAdressehistorikk().get(0).getAdresse().getPoststed()).isEqualTo("OSLO");
-
-        Assertions.assertThat(response.getAdressehistorikk().get(1).getAdresse().getAdresseType())
-                  .isEqualTo(AdresseType.MIDLERTIDIG_POSTADRESSE_UTLAND);
-        Assertions.assertThat(response.getAdressehistorikk().get(1).getAdresse().getLand()).isEqualTo("SWE");
-        Assertions.assertThat(response.getAdressehistorikk().get(1).getAdresse().getAdresselinje1()).isEqualTo("TEST 1");
+    @Test fun skalKonvertereResponsTilPersonhistorikkInfo() {
+        val response =
+                personopplysningerService!!.hentHistorikkFor(PERSONIDENT,
+                                                             FOM,
+                                                             TOM)
+        Assertions.assertThat(response.personIdent.id)
+                .isEqualTo(PERSONIDENT)
+        Assertions.assertThat(
+                response.statsborgerskaphistorikk).hasSize(1)
+        Assertions.assertThat(
+                response.personstatushistorikk).hasSize(1)
+        Assertions.assertThat(response.adressehistorikk).hasSize(2)
+        Assertions.assertThat(response.statsborgerskaphistorikk[0].tilhørendeLand)
+                .isEqualTo(Landkode.NORGE)
+        Assertions.assertThat(response.statsborgerskaphistorikk[0].periode.fom)
+                .isEqualTo(FOM)
+        Assertions.assertThat(response.personstatushistorikk[0].personstatus)
+                .isEqualTo(PersonstatusType.BOSA)
+        Assertions.assertThat(response.personstatushistorikk[0].periode.tom)
+                .isEqualTo(TOM)
+        Assertions.assertThat(response.adressehistorikk[0]
+                                      .adresse
+                                      .adresseType)
+                .isEqualTo(AdresseType.BOSTEDSADRESSE)
+        Assertions.assertThat(response.adressehistorikk[0].adresse.land)
+                .isEqualTo(Landkode.NORGE.kode)
+        Assertions.assertThat(response.adressehistorikk[0].adresse.adresselinje1)
+                .isEqualTo("Sannergata 2")
+        Assertions.assertThat(response.adressehistorikk[0].adresse.postnummer)
+                .isEqualTo("0560")
+        Assertions.assertThat(response.adressehistorikk[0].adresse.poststed)
+                .isEqualTo("OSLO")
+        Assertions.assertThat(response.adressehistorikk[1]
+                                      .adresse
+                                      .adresseType)
+                .isEqualTo(AdresseType.MIDLERTIDIG_POSTADRESSE_UTLAND)
+        Assertions.assertThat(response.adressehistorikk[1].adresse.land).isEqualTo("SWE")
+        Assertions.assertThat(response.adressehistorikk[1].adresse.adresselinje1)
+                .isEqualTo("TEST 1")
     }
 
+    companion object {
+        private const val PERSONIDENT = SøknadTestdata.farPersonident
+        private val TOM = LocalDate.now()
+        private val FOM = TOM.minusYears(5)
+    }
 }
