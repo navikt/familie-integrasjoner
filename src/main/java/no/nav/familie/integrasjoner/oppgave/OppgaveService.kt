@@ -30,7 +30,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
 
     fun finnOppgaverV2(tema: String,
                        behandlingstema: String?,
-                       oppgaveType: String?,
+                       oppgavetype: String?,
                        enhet: String?,
                        saksbehandler: String?,
                        journalpostId: String?,
@@ -44,7 +44,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
                        offset: Long?): FinnOppgaveResponseDto {
         return oppgaveRestClient.finnOppgaverV2(tema,
                 behandlingstema,
-                oppgaveType,
+                oppgavetype,
                 enhet,
                 saksbehandler,
                 journalpostId,

@@ -92,8 +92,8 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
                        opprettetTom: String?,
                        fristFom: String?,
                        fristTom: String?,
-                       aktivFom: String?,
-                       aktivTom: String?,
+                       aktivDatoFom: String?,
+                       aktivDatoTom: String?,
                        limit: Long?,
                        offset: Long?): FinnOppgaveResponseDto {
 
@@ -118,8 +118,8 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
             opprettetTom?.apply { uriBuilder.queryParam("opprettetTom", this) }
             fristFom?.apply { uriBuilder.queryParam("fristFom", this) }
             fristTom?.apply { uriBuilder.queryParam("fristTom", this) }
-            aktivFom?.apply { uriBuilder.queryParam("aktivFom", this) }
-            aktivTom?.apply { uriBuilder.queryParam("aktivTom", this) }
+            aktivDatoFom?.apply { uriBuilder.queryParam("aktivDatoFom", this) }
+            aktivDatoTom?.apply { uriBuilder.queryParam("aktivDatoTom", this) }
 
             return uriBuilder.build().toUri()
         }
