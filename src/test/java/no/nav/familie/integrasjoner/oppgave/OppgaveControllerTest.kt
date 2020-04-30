@@ -48,7 +48,6 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     }
 
-
     @Test
     fun `skal logge stack trace og returnere internal server error ved IllegalStateException`() {
         stubFor(get(GET_OPPGAVER_URL).willReturn(ok()))
