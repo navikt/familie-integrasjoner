@@ -135,5 +135,4 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
     companion object {
         private val LOG = LoggerFactory.getLogger(OppgaveService::class.java)
     }
-
 }
