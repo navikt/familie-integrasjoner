@@ -58,7 +58,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         if (oppgaveJsonDto.status === StatusEnum.FERDIGSTILT) {
             error("Kan ikke fordele oppgave med id $oppgaveId som allerede er ferdigstilt")
         }
-        val oppdatertOppgaveDto = OppgaveJsonDto(
+        val oppdatertOppgaveDto = oppgaveJsonDto.copy(
                 id = oppgaveJsonDto.id,
                 versjon = oppgaveJsonDto.versjon,
                 tilordnetRessurs = saksbehandler
@@ -74,7 +74,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
             error("Kan ikke tilbakestille fordeling på oppgave med id $oppgaveId som allerede er ferdigstilt")
         }
 
-        val oppdatertOppgaveDto = OppgaveJsonDto(
+        val oppdatertOppgaveDto = oppgaveJsonDto.copy(
                 id = oppgaveJsonDto.id,
                 versjon = oppgaveJsonDto.versjon,
                 tilordnetRessurs = null
