@@ -132,7 +132,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
 
         var markør = offset ?: 0
         val oppgaverOgAntall = getForEntity<FinnOppgaveResponseDto>(uriMotOppgave(markør), httpHeaders())
-        val oppgaver: MutableList<OppgaveJsonDto> = oppgaverOgAntall.oppgaver.toMutableList()
+        val oppgaver: MutableList<Oppgave> = oppgaverOgAntall.oppgaver.toMutableList()
         val grense = when (limit == null) {
             true -> oppgaverOgAntall.antallTreffTotalt
             false -> markør + limit

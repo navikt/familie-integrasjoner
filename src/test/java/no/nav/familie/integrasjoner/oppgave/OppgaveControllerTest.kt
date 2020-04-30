@@ -345,8 +345,8 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `finnOppgaverV2 skal fungere ved retur av 51 oppgaver`() {
-        val oppgaver50stk = FinnOppgaveResponseDto(51, List(50) { OppgaveJsonDto() })
-        val oppgaver1stk = FinnOppgaveResponseDto(51, List(1) { OppgaveJsonDto() })
+        val oppgaver50stk = FinnOppgaveResponseDto(51, List(50) { Oppgave() })
+        val oppgaver1stk = FinnOppgaveResponseDto(51, List(1) { Oppgave() })
 
         stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT&sorteringsrekkefolge=DESC&limit=50&offset=0")
                 .willReturn(okJson(objectMapper.writeValueAsString(oppgaver50stk))))
