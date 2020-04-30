@@ -17,20 +17,22 @@ class HentJournalpostTestConfig {
         val klient: SafRestClient = mockk()
         val slot = slot<String>()
 
-        every { klient.hentJournalpost(capture(slot)) } returns Journalpost(
-                journalpostId = if (slot.isCaptured) slot.captured else "123",
-                journalposttype = Journalposttype.I,
-                journalstatus = Journalstatus.JOURNALFOERT,
-                tema = "BAR",
-                behandlingstema = null,
-                sak = Sak("1111" + if (slot.isCaptured) slot.captured else "123",
-                          "GSAK",
-                          null,
-                          null, null),
-                bruker = Bruker("1234567890123", BrukerIdType.AKTOERID),
-                journalforendeEnhet = "9999",
-                kanal = "EIA",
-                dokumenter = emptyList())
+        every { klient.hentJournalpost(capture(slot)) } answers {
+            Journalpost(
+                    journalpostId = slot.captured,
+                    journalposttype = Journalposttype.I,
+                    journalstatus = Journalstatus.JOURNALFOERT,
+                    tema = "BAR",
+                    behandlingstema = null,
+                    sak = Sak("1111" + slot.captured,
+                              "GSAK",
+                              null,
+                              null, null),
+                    bruker = Bruker("1234567890123", BrukerIdType.AKTOERID),
+                    journalforendeEnhet = "9999",
+                    kanal = "EIA",
+                    dokumenter = emptyList())
+        }
 
         every { klient.ping() } just runs
 
