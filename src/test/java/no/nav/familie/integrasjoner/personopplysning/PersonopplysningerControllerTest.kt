@@ -33,6 +33,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
     private lateinit var uriHentPersoninfo: String
     private lateinit var uriHentPersoninfoEnkel: String
     private lateinit var uriHentIdenter: String
+    private lateinit var uriHentAktørId: String
 
     @Before
     fun setUp() {
@@ -43,6 +44,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         uriHentPersoninfo = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}v1/info/$TEMA").toUriString()
         uriHentPersoninfoEnkel = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}v1/infoEnkel/$TEMA").toUriString()
         uriHentIdenter = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}identer/$TEMA").toUriString()
+        uriHentAktørId = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}aktorId/$TEMA").toUriString()
     }
 
     @Test
@@ -188,7 +190,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                                  .withHeaders(Header("Content-Type", "application/json"))
                                  .withStatusCode(200))
 
-        val response: ResponseEntity<Ressurs<List<String>>> = restTemplate.exchange(uriHentIdenter,
+        val response: ResponseEntity<Ressurs<List<String>>> = restTemplate.exchange(uriHentAktørId,
                                                                                     HttpMethod.GET,
                                                                                     HttpEntity<String>(headers))
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
