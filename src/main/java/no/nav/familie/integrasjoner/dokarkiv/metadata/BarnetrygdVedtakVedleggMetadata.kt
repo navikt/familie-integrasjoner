@@ -12,8 +12,8 @@ object BarnetrygdVedleggMetadata : DokumentMetadata {
     override val behandlingstema: String? = null
     override val kanal: String? = null
     override val dokumentTypeId: String = "BARNETRYGD_VEDLEGG"
-    override val tittel: String? = null
-    override val brevkode: String? = null
+    override val tittel: String? = "Stønadsmottakerens rettigheter og plikter (Barnetrygd)"
+    override val brevkode: String? = "NAV 33-00.05"
     override val dokumentKategori: String = "VB"
 
 }
