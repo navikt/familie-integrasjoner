@@ -68,6 +68,22 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         return oppgaveJsonDto.id!!
     }
 
+    fun tilbakestillFordelingPåOppgave(oppgaveId: Long): Long {
+        val oppgaveJsonDto = oppgaveRestClient.finnOppgaveMedId(oppgaveId.toString())
+
+        if (oppgaveJsonDto.status === StatusEnum.FERDIGSTILT) {
+            error("Kan ikke tilbakestille fordeling på oppgave med id $oppgaveId som allerede er ferdigstilt")
+        }
+
+        val oppdatertOppgaveDto = OppgaveJsonDto(
+                id = oppgaveJsonDto.id,
+                versjon = oppgaveJsonDto.versjon,
+                tilordnetRessurs = null
+        )
+        oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
+        return oppgaveJsonDto.id!!
+    }
+
     fun opprettOppgave(request: OpprettOppgave): Long {
         val oppgave = OppgaveJsonDto(
                 aktoerId = if (request.ident.type == IdentType.Aktør) request.ident.ident else null,

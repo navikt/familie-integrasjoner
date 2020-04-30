@@ -42,12 +42,13 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         return ResponseEntity.ok().body(success(oppgaver, "Finn oppgaver OK"))
     }
 
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/{oppgaveId}/fordel"])
+    @PostMapping(path = ["/{oppgaveId}/fordel"])
     fun fordelOppgave(@PathVariable(name = "oppgaveId") oppgaveId: Long,
-                      @RequestParam("saksbehandler") saksbehandler: String
+                      @RequestParam("saksbehandler") saksbehandler: String?
     ): ResponseEntity<Ressurs<OppgaveResponse>> {
         Result.runCatching {
-            oppgaveService.fordelOppgave(oppgaveId, saksbehandler)
+            if (saksbehandler == null) oppgaveService.tilbakestillFordelingPåOppgave(oppgaveId)
+            else oppgaveService.fordelOppgave(oppgaveId, saksbehandler)
         }.fold(
                 onSuccess = {
                     return ResponseEntity.ok(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppgaven ble tildelt saksbehandler $saksbehandler"))
