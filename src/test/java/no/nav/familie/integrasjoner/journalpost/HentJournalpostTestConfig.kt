@@ -14,7 +14,7 @@ class HentJournalpostTestConfig {
     @Bean
     @Profile("mock-saf")
     @Primary fun safRestClientMock(): SafRestClient {
-        val klient: SafRestClient = mockk()
+        val klient: SafRestClient = mockk(relaxed = true)
         val slot = slot<String>()
 
         every { klient.hentJournalpost(capture(slot)) } answers {
@@ -33,8 +33,6 @@ class HentJournalpostTestConfig {
                     kanal = "EIA",
                     dokumenter = emptyList())
         }
-
-        every { klient.ping() } just runs
 
         return klient
     }
