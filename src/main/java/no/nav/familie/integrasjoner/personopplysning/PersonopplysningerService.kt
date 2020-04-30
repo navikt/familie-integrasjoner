@@ -8,6 +8,7 @@ import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter
+import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent
@@ -62,8 +63,13 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
     }
 
     fun hentAktørId(personIdent: String, tema: String): List<String> {
-        val hentAktørId = pdlRestClient.hentAktørId(personIdent, tema)
-        return hentAktørId.data.identer.map { it.ident }
+        val hentIdenter = pdlRestClient.hentIdenter(personIdent, tema)
+        return hentIdenter.data.pdlIdenter.identer.filter { it.gruppe == "AKTORID" }.map { it.ident }
+    }
+
+    fun hentIdenter(personIdent: String, tema: String): List<IdentInformasjon> {
+        val hentIdenter = pdlRestClient.hentIdenter(personIdent, tema)
+        return hentIdenter.data.pdlIdenter.identer.map { it }
     }
 
     companion object {

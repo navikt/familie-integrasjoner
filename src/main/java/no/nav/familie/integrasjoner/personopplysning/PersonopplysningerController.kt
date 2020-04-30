@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.personopplysning
 import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
+import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
@@ -38,6 +39,13 @@ class PersonopplysningerController(private val personopplysningerService: Person
     fun aktørId(@RequestHeader(name = "Nav-Personident") personIdent: String,
                 @PathVariable tema: Tema): ResponseEntity<Ressurs<List<String>>> {
         return ResponseEntity.ok().body(success(data = personopplysningerService.hentAktørId(personIdent, tema.toString()),
+                                                melding = "Hent aktørId OK"))
+    }
+
+    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["identer/{tema}"])
+    fun identer(@RequestHeader(name = "Nav-Personident") personIdent: String,
+                @PathVariable tema: Tema): ResponseEntity<Ressurs<List<IdentInformasjon>>> {
+        return ResponseEntity.ok().body(success(data = personopplysningerService.hentIdenter(personIdent, tema.toString()),
                                                 melding = "Hent aktørId OK"))
     }
 

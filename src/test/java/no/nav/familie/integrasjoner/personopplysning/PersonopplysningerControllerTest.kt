@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.personopplysning
 import ch.qos.logback.classic.Logger
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
+import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.security.token.support.test.JwtTokenGenerator
@@ -31,6 +32,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
     val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
     private lateinit var uriHentPersoninfo: String
     private lateinit var uriHentPersoninfoEnkel: String
+    private lateinit var uriHentIdenter: String
 
     @Before
     fun setUp() {
@@ -40,6 +42,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         }.setBearerAuth(JwtTokenGenerator.signedJWTAsString("testbruker"))
         uriHentPersoninfo = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}v1/info/$TEMA").toUriString()
         uriHentPersoninfoEnkel = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}v1/infoEnkel/$TEMA").toUriString()
+        uriHentIdenter = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}identer/$TEMA").toUriString()
     }
 
     @Test
@@ -55,7 +58,6 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                                  .withHeaders(Header("Content-Type", "application/json")))
 
 
-
         val response: ResponseEntity<Ressurs<Person>> = restTemplate.exchange(uriHentPersoninfo,
                                                                               HttpMethod.GET,
                                                                               HttpEntity<String>(headers))
@@ -65,8 +67,10 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.data?.fødselsdato).isEqualTo(FØDSELSDATO)
         assertThat(response.body?.data?.navn).isEqualTo(NAVN)
         assertThat(response.body?.data?.kjønn).isEqualTo(KJØNN)
-        assertThat(response.body?.data?.familierelasjoner?.stream()?.findFirst()?.get()?.personIdent?.id).isEqualTo(FAMILIERELASJON_PERSONIDENT)
-        assertThat(response.body?.data?.familierelasjoner?.stream()?.findFirst()?.get()?.relasjonsrolle).isEqualTo(FAMILIERELASJON_RELASJONSROLLE)
+        assertThat(response.body?.data?.familierelasjoner?.stream()?.findFirst()?.get()?.personIdent?.id).isEqualTo(
+                FAMILIERELASJON_PERSONIDENT)
+        assertThat(response.body?.data?.familierelasjoner?.stream()?.findFirst()?.get()?.relasjonsrolle).isEqualTo(
+                FAMILIERELASJON_RELASJONSROLLE)
     }
 
     @Test
@@ -80,7 +84,6 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                 )
                 .respond(HttpResponse.response().withBody(readfile("pdlOkResponseEnkel.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
-
 
 
         val response: ResponseEntity<Ressurs<Person>> = restTemplate.exchange(uriHentPersoninfo,
@@ -151,12 +154,61 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
+    @Test
+    fun `hentIdenter returnerer identer fra pdl`() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withPath("/rest/pdl/graphql")
+                                .withBody(gyldigIdenterRequest())
+                )
+                .respond(HttpResponse.response()
+                                 .withBody(readfile("pdlAktorIdResponse.json"))
+                                 .withHeaders(Header("Content-Type", "application/json"))
+                                 .withStatusCode(200))
+
+        val response: ResponseEntity<Ressurs<List<IdentInformasjon>>> = restTemplate.exchange(uriHentIdenter,
+                                                                                              HttpMethod.GET,
+                                                                                              HttpEntity<String>(headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+    }
+
+    @Test
+    fun `hentAktørId returnerer aktørId fra pdl`() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withPath("/rest/pdl/graphql")
+                                .withBody(gyldigIdenterRequest())
+                )
+                .respond(HttpResponse.response()
+                                 .withBody(readfile("pdlAktorIdResponse.json"))
+                                 .withHeaders(Header("Content-Type", "application/json"))
+                                 .withStatusCode(200))
+
+        val response: ResponseEntity<Ressurs<List<String>>> = restTemplate.exchange(uriHentIdenter,
+                                                                                    HttpMethod.GET,
+                                                                                    HttpEntity<String>(headers))
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+    }
+
     private fun gyldigRequest(): String {
         return readfile("pdlGyldigRequest.json")
                 .replace(
                         "GRAPHQL-PLACEHOLDER",
                         readfile("hentperson-med-relasjoner.graphql").graphqlCompatible()
-        )
+                )
+    }
+
+    private fun gyldigIdenterRequest(): String {
+        return readfile("pdlGyldigRequest.json")
+                .replace(
+                        "GRAPHQL-PLACEHOLDER",
+                        readfile("hentIdenter.graphql").graphqlCompatible()
+                )
     }
 
     private fun readfile(filnavn: String): String {

@@ -23,7 +23,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
 
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
 
-    private val aktørIdQuery = this::class.java.getResource("/pdl/hentAktørId.graphql").readText().graphqlCompatible()
+    private val aktørIdQuery = this::class.java.getResource("/pdl/hentIdenter.graphql").readText().graphqlCompatible()
 
     fun hentPerson(personIdent: String, tema: String, personInfoQuery: PersonInfoQuery): Person {
 
@@ -96,7 +96,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         }
     }
 
-    fun hentAktørId(personIdent: String, tema: String): PdlHentIdenterResponse {
+    fun hentIdenter(personIdent: String, tema: String): PdlHentIdenterResponse {
         val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
                                                 query = aktørIdQuery)
         val response = postForEntity<PdlHentIdenterResponse>(pdlUri,
