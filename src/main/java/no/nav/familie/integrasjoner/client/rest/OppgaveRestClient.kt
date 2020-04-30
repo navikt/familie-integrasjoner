@@ -104,7 +104,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
                     .path(PATH_OPPGAVE)
                     .queryParam("statuskategori", "AAPEN")
                     .queryParam("tema", tema)
-                    .queryParam("sorteringsfelt", "opprettetTidspunkt")
+                    .queryParam("sorteringsfelt", "OPPRETTET_TIDSPUNKT")
                     .queryParam("sorteringsrekkefolge", "DESC")
                     .queryParam("limit", limitMotOppgave)
                     .queryParam("offset", offset)
