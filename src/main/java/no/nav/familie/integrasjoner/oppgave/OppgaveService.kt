@@ -3,11 +3,10 @@ package no.nav.familie.integrasjoner.oppgave
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.OppslagException.Level
-import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto
-import no.nav.familie.integrasjoner.oppgave.domene.StatusEnum
 import no.nav.familie.kontrakter.felles.oppgave.IdentType
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgave
+import no.nav.familie.kontrakter.felles.oppgave.StatusEnum
 import no.nav.sbl.util.StringUtils
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -23,34 +22,34 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
                      oppgaveType: String?,
                      enhet: String?,
                      saksbehandler: String?,
-                     journalpostId: String?): List<OppgaveJsonDto> {
+                     journalpostId: String?): List<Oppgave> {
         return oppgaveRestClient.finnOppgaver(tema, behandlingstema, oppgaveType, enhet, saksbehandler, journalpostId)
     }
 
-    fun hentOppgave(oppgaveId: String): OppgaveJsonDto {
+    fun hentOppgave(oppgaveId: String): Oppgave {
         return oppgaveRestClient.finnOppgaveMedId(oppgaveId)
     }
 
     fun oppdaterOppgave(request: Oppgave): Long {
-        val oppgaveJsonDto: OppgaveJsonDto = if (StringUtils.nullOrEmpty(request.eksisterendeOppgaveId)) {
+        val oppgave: Oppgave = if (StringUtils.nullOrEmpty(request.eksisterendeOppgaveId)) {
             oppgaveRestClient.finnOppgave(request)
         } else {
             oppgaveRestClient.finnOppgaveMedId(request.eksisterendeOppgaveId!!)
         }
-        if (oppgaveJsonDto.status === StatusEnum.FERDIGSTILT) {
+        if (oppgave.status === StatusEnum.FERDIGSTILT) {
             LOG.info("Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId={} journalpostId={} oppgaveId={}",
-                     oppgaveJsonDto.aktoerId,
-                     oppgaveJsonDto.journalpostId,
-                     oppgaveJsonDto.id)
+                     oppgave.aktoerId,
+                     oppgave.journalpostId,
+                     oppgave.id)
         } else {
-            val patchOppgaveDto = OppgaveJsonDto(
-                    id = oppgaveJsonDto.id,
-                    versjon = oppgaveJsonDto.versjon,
-                    beskrivelse = oppgaveJsonDto.beskrivelse + request.beskrivelse
+            val patchOppgaveDto = oppgave.copy(
+                    id = oppgave.id,
+                    versjon = oppgave.versjon,
+                    beskrivelse = oppgave.beskrivelse + request.beskrivelse
             )
             oppgaveRestClient.oppdaterOppgave(patchOppgaveDto)
         }
-        return oppgaveJsonDto.id!!
+        return oppgave.id!!
     }
 
     fun fordelOppgave(oppgaveId: Long, saksbehandler: String): Long {
@@ -85,22 +84,23 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
     }
 
     fun opprettOppgave(request: OpprettOppgave): Long {
-        val oppgave = OppgaveJsonDto(
+        val oppgave = Oppgave(
                 aktoerId = if (request.ident.type == IdentType.Aktør) request.ident.ident else null,
                 orgnr = if (request.ident.type == IdentType.Organisasjon) request.ident.ident else null,
                 saksreferanse = request.saksId,
                 //TODO oppgave-gjengen mente vi kunne sette denne til vår applikasjon, og så kan de gjøre en filtrering på sin
                 //men da må vi få applikasjonen vår inn i Felles kodeverk ellers så får vi feil: Fant ingen kode 'BA' i felles kodeverk under kodeverk 'Applikasjoner'
-//                behandlesAvApplikasjon = request.tema.fagsaksystem,
+//              behandlesAvApplikasjon = request.tema.fagsaksystem,
                 journalpostId = request.journalpostId,
                 prioritet = request.prioritet.name,
-                tema = request.tema.name,
+                tema = request.tema,
                 tildeltEnhetsnr = request.enhetsnummer,
                 behandlingstema = request.behandlingstema,
                 fristFerdigstillelse = request.fristFerdigstillelse.format(DateTimeFormatter.ISO_DATE),
                 aktivDato = request.aktivFra.format(DateTimeFormatter.ISO_DATE),
                 oppgavetype = request.oppgavetype.value,
-                beskrivelse = request.beskrivelse
+                beskrivelse = request.beskrivelse,
+                eksisterendeOppgaveId = null
         )
 
         return oppgaveRestClient.opprettOppgave(oppgave)
@@ -111,7 +111,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
 
         when (oppgave.status) {
             StatusEnum.OPPRETTET, StatusEnum.AAPNET, StatusEnum.UNDER_BEHANDLING -> {
-                val patchOppgaveDto = OppgaveJsonDto(
+                val patchOppgaveDto = oppgave.copy(
                         id = oppgave.id,
                         versjon = oppgave.versjon,
                         status = StatusEnum.FERDIGSTILT
@@ -128,8 +128,6 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         }
 
     }
-
-
 
 
     companion object {

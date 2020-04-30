@@ -1,8 +1,9 @@
 package no.nav.familie.integrasjoner.oppgave
 
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
-import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto
+import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
@@ -16,7 +17,7 @@ class OppgaveRestClientTestConfig {
     @Primary
     fun OppgaveMockRestClient(): OppgaveRestClient {
         val klient: OppgaveRestClient = mockk(relaxed = true)
-        val response = OppgaveJsonDto(id = 42)
+        val response = Oppgave(id = 42)
 
         every {
             klient.finnOppgave(any())

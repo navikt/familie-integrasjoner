@@ -1,6 +1,5 @@
 package no.nav.familie.integrasjoner.oppgave
 
-import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
@@ -20,7 +19,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
 
     @GetMapping(path = ["/{oppgaveId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun hentOppgave(@PathVariable(name = "oppgaveId") oppgaveId: String)
-            : ResponseEntity<Ressurs<OppgaveJsonDto>> {
+            : ResponseEntity<Ressurs<Oppgave>> {
         val oppgave = oppgaveService.hentOppgave(oppgaveId)
         return ResponseEntity.ok().body(success(oppgave, "Hent Oppgave OK"))
     }
@@ -32,7 +31,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
                      @RequestParam("enhet", required = false) enhet: String?,
                      @RequestParam("saksbehandler", required = false) saksbehandler: String?,
                      @RequestParam("journalpostId", required = false) journalpostId: String?)
-            : ResponseEntity<Ressurs<List<OppgaveJsonDto>>> {
+            : ResponseEntity<Ressurs<List<Oppgave>>> {
         val oppgaver = oppgaveService.finnOppgaver(tema,
                                                    behandlingstema,
                                                    oppgavetype,
