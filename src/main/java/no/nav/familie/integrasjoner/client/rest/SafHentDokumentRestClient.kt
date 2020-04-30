@@ -12,6 +12,11 @@ import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
+/**
+ * Henting av dokumenter krever saksbehandler context.
+ * Bruk av denne clienten vil fungere med et azure systemtoken,
+ * men vil stange i saf sin implementasjon mot abac.
+ */
 @Service
 class SafHentDokumentRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
                                 @Qualifier("jwtBearer") val restTemplate: RestOperations)
