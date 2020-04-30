@@ -298,7 +298,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `finnOppgaverV2 skal fungere ved retur av 0 oppgaver`() {
-        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=opprettetTidspunkt&sorteringsrekkefolge=DESC&limit=50&offset=0")
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT&sorteringsrekkefolge=DESC&limit=50&offset=0")
                 .willReturn(okJson(gyldigOppgaveResponse("tom_response.json"))))
 
         val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
@@ -310,7 +310,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `finnOppgaverV2 skal fungere ved retur av 1 oppgave`() {
-        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=opprettetTidspunkt&sorteringsrekkefolge=DESC&limit=50&offset=0")
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT&sorteringsrekkefolge=DESC&limit=50&offset=0")
                 .willReturn(okJson(gyldigOppgaveResponse("oppgave.json"))))
 
         val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
@@ -325,10 +325,10 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         val oppgaver50stk = FinnOppgaveResponseDto(51, List(50) { OppgaveJsonDto() })
         val oppgaver1stk = FinnOppgaveResponseDto(51, List(1) { OppgaveJsonDto() })
 
-        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=opprettetTidspunkt&sorteringsrekkefolge=DESC&limit=50&offset=0")
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT&sorteringsrekkefolge=DESC&limit=50&offset=0")
                 .willReturn(okJson(objectMapper.writeValueAsString(oppgaver50stk))))
 
-        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=opprettetTidspunkt&sorteringsrekkefolge=DESC&limit=50&offset=50")
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT&sorteringsrekkefolge=DESC&limit=50&offset=50")
                 .willReturn(okJson(objectMapper.writeValueAsString(oppgaver1stk))))
 
         val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
