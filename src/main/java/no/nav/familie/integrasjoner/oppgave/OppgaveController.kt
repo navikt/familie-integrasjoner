@@ -50,7 +50,10 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
             else oppgaveService.fordelOppgave(oppgaveId, saksbehandler)
         }.fold(
                 onSuccess = {
-                    return ResponseEntity.ok(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppgaven ble tildelt saksbehandler $saksbehandler"))
+                    return ResponseEntity.ok(success(OppgaveResponse(oppgaveId = oppgaveId),
+                            if (saksbehandler !== null) "Oppgaven ble tildelt saksbehandler $saksbehandler"
+                            else "Fordeling på oppgaven ble tilbakestilt"
+                    ))
                 },
                 onFailure = {
                     return ResponseEntity.badRequest().body(Ressurs.failure(errorMessage = it.message))
