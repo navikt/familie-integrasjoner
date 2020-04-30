@@ -38,6 +38,7 @@ management:
 INTEGRASJONER_CLIENT_ID: "dummy-klient-id"
 CLIENT_SECRET: "dummy-klient-secret"
 INFOTRYGD_KS_SCOPE: "dummy-scope"
+SAF_SCOPE: "dummy-scope"
 
 STS_URL: http://security-token-service.default.svc.nais.local/rest/v1/sts/token
 INFOTRYGD_URL: http://infotrygd-kontantstotte

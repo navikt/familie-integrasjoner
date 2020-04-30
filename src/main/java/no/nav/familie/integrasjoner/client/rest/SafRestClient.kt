@@ -18,7 +18,7 @@ import java.net.URI
 
 @Service
 class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
-                    @Qualifier("jwtBearer") val restTemplate: RestOperations)
+                    @Qualifier("sts") val restTemplate: RestOperations)
     : AbstractPingableRestClient(restTemplate, "saf.journalpost") {
 
     override val pingUri: URI = UriUtil.uri(safBaseUrl, PATH_PING)
@@ -32,8 +32,8 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
                                                                  httpHeaders())
             if (response != null && !response.harFeil()) {
                 return response.data?.journalpost ?: throw JournalpostRestClientException("Kan ikke hente journalpost",
-                                                                                   null,
-                                                                                   journalpostId)
+                                                                                          null,
+                                                                                          journalpostId)
             } else {
                 responsFailure.increment()
                 throw JournalpostRestClientException("Kan ikke hente journalpost " + response?.errors?.toString(),
