@@ -68,6 +68,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
     }
 
     fun tilbakestillFordelingPåOppgave(oppgaveId: Long): Long {
+        LOG.info("Tilbakestiller fordeling på oppgave med id $oppgaveId")
         val oppgaveJsonDto = oppgaveRestClient.finnOppgaveMedId(oppgaveId.toString())
 
         if (oppgaveJsonDto.status === StatusEnum.FERDIGSTILT) {
