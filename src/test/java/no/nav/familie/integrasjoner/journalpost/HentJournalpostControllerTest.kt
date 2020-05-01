@@ -30,7 +30,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
-@ActiveProfiles("integrasjonstest", "mock-oauth")
+@ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
 class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
 
     private val testLogger = LoggerFactory.getLogger(HentJournalpostController::class.java) as Logger
