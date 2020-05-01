@@ -61,7 +61,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
                 //men da må vi få applikasjonen vår inn i Felles kodeverk ellers så får vi feil: Fant ingen kode 'BA' i felles kodeverk under kodeverk 'Applikasjoner'
 //              behandlesAvApplikasjon = request.tema.fagsaksystem,
                 journalpostId = request.journalpostId,
-                prioritet = request.prioritet.name,
+                prioritet = request.prioritet,
                 tema = request.tema,
                 tildeltEnhetsnr = request.enhetsnummer,
                 behandlingstema = request.behandlingstema,
