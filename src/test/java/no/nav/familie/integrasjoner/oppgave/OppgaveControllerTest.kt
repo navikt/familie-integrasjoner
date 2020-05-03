@@ -321,6 +321,68 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
+    fun `fordelOppgave skal tilordne oppgave til saksbehandler når saksbehandler er satt på requesten`() {
+        val SAKSBEHANDLER_ID = "Z999999"
+        stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
+        stubFor(patch(urlEqualTo("/api/v1/oppgaver/${OPPGAVE_ID}"))
+                .willReturn(aResponse()
+                        .withStatus(201)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(gyldigOppgaveResponse("oppgave.json"))))
+
+        val response: ResponseEntity<Ressurs<OppgaveResponse>> = restTemplate.exchange(
+                localhost("/api/oppgave/$OPPGAVE_ID/fordel?saksbehandler=$SAKSBEHANDLER_ID"),
+                HttpMethod.POST,
+                HttpEntity(null, headers)
+        )
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.melding).isEqualTo("Oppgaven ble tildelt saksbehandler $SAKSBEHANDLER_ID")
+        assertThat(response.body?.data).isEqualTo(OppgaveResponse(oppgaveId = OPPGAVE_ID))
+    }
+
+    @Test
+    fun `fordelOppgave skal tilbakestille tilordning på oppgave når saksbehandler ikke er satt på requesten`() {
+        stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
+        stubFor(patch(urlEqualTo("/api/v1/oppgaver/${OPPGAVE_ID}"))
+                .willReturn(aResponse()
+                        .withStatus(201)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(gyldigOppgaveResponse("oppgave.json"))))
+
+        val response: ResponseEntity<Ressurs<OppgaveResponse>> = restTemplate.exchange(
+                localhost("/api/oppgave/$OPPGAVE_ID/fordel"),
+                HttpMethod.POST,
+                HttpEntity(null, headers)
+        )
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.melding).isEqualTo("Fordeling på oppgaven ble tilbakestilt")
+        assertThat(response.body?.data).isEqualTo(OppgaveResponse(oppgaveId = OPPGAVE_ID))
+    }
+
+    @Test
+    fun `fordelOppgave skal returnere feil når oppgaven er ferdigstilt`() {
+        stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(
+                objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID, status = StatusEnum.FERDIGSTILT))
+        )))
+        stubFor(patch(urlEqualTo("/api/v1/oppgaver/${OPPGAVE_ID}"))
+                .willReturn(aResponse()
+                        .withStatus(201)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(gyldigOppgaveResponse("oppgave.json"))))
+
+        val response: ResponseEntity<Ressurs<OppgaveResponse>> = restTemplate.exchange(
+                localhost("/api/oppgave/$OPPGAVE_ID/fordel?saksbehandler=Z999999"),
+                HttpMethod.POST,
+                HttpEntity(null, headers)
+        )
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(response.body?.melding).isEqualTo("Kan ikke fordele oppgave med id $OPPGAVE_ID som allerede er ferdigstilt")
+    }
+
+    @Test
     fun `Skal hente oppgave basert på id`() {
         stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
 

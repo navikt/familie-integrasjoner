@@ -53,34 +53,34 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
     }
 
     fun fordelOppgave(oppgaveId: Long, saksbehandler: String): Long {
-        val oppgaveJsonDto = oppgaveRestClient.finnOppgaveMedId(oppgaveId.toString())
+        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId.toString())
 
-        if (oppgaveJsonDto.status === StatusEnum.FERDIGSTILT) {
+        if (oppgave.status === StatusEnum.FERDIGSTILT) {
             error("Kan ikke fordele oppgave med id $oppgaveId som allerede er ferdigstilt")
         }
-        val oppdatertOppgaveDto = oppgaveJsonDto.copy(
-                id = oppgaveJsonDto.id,
-                versjon = oppgaveJsonDto.versjon,
+        val oppdatertOppgaveDto = oppgave.copy(
+                id = oppgave.id,
+                versjon = oppgave.versjon,
                 tilordnetRessurs = saksbehandler
         )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
-        return oppgaveJsonDto.id!!
+        return oppgave.id!!
     }
 
     fun tilbakestillFordelingPåOppgave(oppgaveId: Long): Long {
-        val oppgaveJsonDto = oppgaveRestClient.finnOppgaveMedId(oppgaveId.toString())
+        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId.toString())
 
-        if (oppgaveJsonDto.status === StatusEnum.FERDIGSTILT) {
+        if (oppgave.status === StatusEnum.FERDIGSTILT) {
             error("Kan ikke tilbakestille fordeling på oppgave med id $oppgaveId som allerede er ferdigstilt")
         }
 
-        val oppdatertOppgaveDto = oppgaveJsonDto.copy(
-                id = oppgaveJsonDto.id,
-                versjon = oppgaveJsonDto.versjon,
+        val oppdatertOppgaveDto = oppgave.copy(
+                id = oppgave.id,
+                versjon = oppgave.versjon,
                 tilordnetRessurs = ""
         )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
-        return oppgaveJsonDto.id!!
+        return oppgave.id!!
     }
 
     fun opprettOppgave(request: OpprettOppgave): Long {
