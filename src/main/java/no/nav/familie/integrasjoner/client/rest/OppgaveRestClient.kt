@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.Metrics
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.integrasjoner.oppgave.FinnOppgaveRequest
 import no.nav.familie.integrasjoner.oppgave.domene.FinnOppgaveResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.kontrakter.felles.oppgave.Tema
@@ -88,61 +89,50 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         return finnAlleOppgaver()
     }
 
-    fun finnOppgaverV2(tema: String,
-                       behandlingstema: String?,
-                       oppgavetype: String?,
-                       tildeltEnhetsnr: String?,
-                       tilordnetRessurs: String?,
-                       journalpostId: String?,
-                       opprettetFom: String?,
-                       opprettetTom: String?,
-                       fristFom: String?,
-                       fristTom: String?,
-                       aktivDatoFom: String?,
-                       aktivDatoTom: String?,
-                       limit: Long?,
-                       offset: Long?): FinnOppgaveResponseDto {
+    fun finnOppgaverV2(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {
 
         val limitMotOppgave = 50
 
         fun uriMotOppgave(offset: Long): URI {
-            val uriBuilder = UriComponentsBuilder.fromUri(oppgaveBaseUrl)
-                    .path(PATH_OPPGAVE)
-                    .queryParam("statuskategori", "AAPEN")
-                    .queryParam("tema", tema)
-                    .queryParam("sorteringsfelt", "OPPRETTET_TIDSPUNKT")
-                    .queryParam("sorteringsrekkefolge", "DESC")
-                    .queryParam("limit", limitMotOppgave)
-                    .queryParam("offset", offset)
+            return finnOppgaveRequest.run {
+                val uriBuilder = UriComponentsBuilder.fromUri(oppgaveBaseUrl)
+                        .path(PATH_OPPGAVE)
+                        .queryParam("statuskategori", "AAPEN")
+                        .queryParam("tema", tema)
+                        .queryParam("sorteringsfelt", "OPPRETTET_TIDSPUNKT")
+                        .queryParam("sorteringsrekkefolge", "DESC")
+                        .queryParam("limit", limitMotOppgave)
+                        .queryParam("offset", offset)
 
-            behandlingstema?.apply { uriBuilder.queryParam("behandlingstema", this) }
-            oppgavetype?.apply { uriBuilder.queryParam("oppgavetype", this) }
-            tildeltEnhetsnr?.apply { uriBuilder.queryParam("tildeltEnhetsnr", this) }
-            tilordnetRessurs?.apply { uriBuilder.queryParam("tilordnetRessurs", this) }
-            journalpostId?.apply { uriBuilder.queryParam("journalpostId", this) }
-            opprettetFom?.apply { uriBuilder.queryParam("opprettetFom", this) }
-            opprettetTom?.apply { uriBuilder.queryParam("opprettetTom", this) }
-            fristFom?.apply { uriBuilder.queryParam("fristFom", this) }
-            fristTom?.apply { uriBuilder.queryParam("fristTom", this) }
-            aktivDatoFom?.apply { uriBuilder.queryParam("aktivDatoFom", this) }
-            aktivDatoTom?.apply { uriBuilder.queryParam("aktivDatoTom", this) }
+                behandlingstema?.apply { uriBuilder.queryParam("behandlingstema", this) }
+                oppgavetype?.apply { uriBuilder.queryParam("oppgavetype", this) }
+                enhet?.apply { uriBuilder.queryParam("tildeltEnhetsnr", this) }
+                saksbehandler?.apply { uriBuilder.queryParam("tilordnetRessurs", this) }
+                journalpostId?.apply { uriBuilder.queryParam("journalpostId", this) }
+                opprettetFomTidspunkt?.apply { uriBuilder.queryParam("opprettetFom", this) }
+                opprettetTomTidspunkt?.apply { uriBuilder.queryParam("opprettetTom", this) }
+                fristFomDato?.apply { uriBuilder.queryParam("fristFom", this) }
+                fristTomDato?.apply { uriBuilder.queryParam("fristTom", this) }
+                aktivFomDato?.apply { uriBuilder.queryParam("aktivDatoFom", this) }
+                aktivTomDato?.apply { uriBuilder.queryParam("aktivDatoTom", this) }
 
-            return uriBuilder.build().toUri()
+                uriBuilder.build().toUri()
+            }
         }
 
-        var markør = offset ?: 0
-        val oppgaverOgAntall = getForEntity<FinnOppgaveResponseDto>(uriMotOppgave(markør), httpHeaders())
+        var offset = finnOppgaveRequest.offset ?: 0
+        val oppgaverOgAntall = getForEntity<FinnOppgaveResponseDto>(uriMotOppgave(offset), httpHeaders())
         val oppgaver: MutableList<Oppgave> = oppgaverOgAntall.oppgaver.toMutableList()
-        val grense = when (limit == null) {
+        val grense = when (finnOppgaveRequest.limit == null) {
             true -> oppgaverOgAntall.antallTreffTotalt
-            false -> markør + limit
+            false -> offset + finnOppgaveRequest.limit
         }
-        markør += limitMotOppgave
+        offset += limitMotOppgave
 
-        while (markør < grense) {
-            val nyeOppgaver = getForEntity<FinnOppgaveResponseDto>(uriMotOppgave(markør), httpHeaders())
+        while (offset < grense) {
+            val nyeOppgaver = getForEntity<FinnOppgaveResponseDto>(uriMotOppgave(offset), httpHeaders())
             oppgaver.addAll(nyeOppgaver.oppgaver)
-            markør += limitMotOppgave
+            offset += limitMotOppgave
         }
 
         return FinnOppgaveResponseDto(oppgaverOgAntall.antallTreffTotalt, oppgaver)

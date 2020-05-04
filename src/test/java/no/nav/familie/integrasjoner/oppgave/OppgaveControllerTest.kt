@@ -325,7 +325,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 .willReturn(okJson(gyldigOppgaveResponse("tom_response.json"))))
 
         val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
-                restTemplate.exchange(localhost("/api/oppgave/v2?tema=BAR"), HttpMethod.GET, HttpEntity(null, headers))
+                restTemplate.exchange(localhost("/api/oppgave/v2"), HttpMethod.POST, HttpEntity(FinnOppgaveRequest("BAR"), headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.data?.oppgaver).isEmpty()
@@ -337,7 +337,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 .willReturn(okJson(gyldigOppgaveResponse("oppgave.json"))))
 
         val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
-                restTemplate.exchange(localhost("/api/oppgave/v2?tema=BAR"), HttpMethod.GET, HttpEntity(null, headers))
+                restTemplate.exchange(localhost("/api/oppgave/v2"), HttpMethod.POST, HttpEntity(FinnOppgaveRequest("BAR"), headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.data?.oppgaver).hasSize(1)
@@ -355,7 +355,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 .willReturn(okJson(objectMapper.writeValueAsString(oppgaver1stk))))
 
         val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
-                restTemplate.exchange(localhost("/api/oppgave/v2?tema=BAR"), HttpMethod.GET, HttpEntity(null, headers))
+                restTemplate.exchange(localhost("/api/oppgave/v2"), HttpMethod.POST, HttpEntity(FinnOppgaveRequest("BAR"), headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.data?.oppgaver).hasSize(51)
@@ -364,9 +364,9 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `finnOppgaverV2 skal feile hvis tema ikke er angitt`() {
         val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
-                restTemplate.exchange(localhost("/api/oppgave/v2"), HttpMethod.GET, HttpEntity(null, headers))
+                restTemplate.exchange(localhost("/api/oppgave/v2"), HttpMethod.POST, HttpEntity(FinnOppgaveRequest(), headers))
 
-        assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
     @Test

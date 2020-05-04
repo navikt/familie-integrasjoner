@@ -27,34 +27,8 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         return oppgaveRestClient.finnOppgaver(tema, behandlingstema, oppgaveType, enhet, saksbehandler, journalpostId)
     }
 
-    fun finnOppgaverV2(tema: String,
-                       behandlingstema: String?,
-                       oppgavetype: String?,
-                       enhet: String?,
-                       saksbehandler: String?,
-                       journalpostId: String?,
-                       opprettetFomTidspunkt: String?,
-                       opprettetTomTidspunkt: String?,
-                       fristFomDato: String?,
-                       fristTomDato: String?,
-                       aktivFomDato: String?,
-                       aktivTomDato: String?,
-                       limit: Long?,
-                       offset: Long?): FinnOppgaveResponseDto {
-        return oppgaveRestClient.finnOppgaverV2(tema,
-                behandlingstema,
-                oppgavetype,
-                enhet,
-                saksbehandler,
-                journalpostId,
-                opprettetFomTidspunkt,
-                opprettetTomTidspunkt,
-                fristFomDato,
-                fristTomDato,
-                aktivFomDato,
-                aktivTomDato,
-                limit,
-                offset)
+    fun finnOppgaverV2(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {
+        return oppgaveRestClient.finnOppgaverV2(finnOppgaveRequest)
     }
 
     fun hentOppgave(oppgaveId: String): Oppgave {
