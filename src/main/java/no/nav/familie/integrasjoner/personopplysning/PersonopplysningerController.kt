@@ -35,15 +35,15 @@ class PersonopplysningerController(private val personopplysningerService: Person
                 .body(ikkeTilgang("Ikke tilgang mot personopplysning ${e.message}"))
     }
 
-    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["aktorId/{tema}"])
-    fun aktørId(@RequestHeader(name = "Nav-Personident") personIdent: String,
+    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["aktorId/{tema}"])
+    fun aktørId(@RequestBody personIdent: String,
                 @PathVariable tema: Tema): ResponseEntity<Ressurs<List<String>>> {
         return ResponseEntity.ok().body(success(data = personopplysningerService.hentAktørId(personIdent, tema.toString()),
                                                 melding = "Hent aktørId OK"))
     }
 
-    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["identer/{tema}"])
-    fun identer(@RequestHeader(name = "Nav-Personident") personIdent: String,
+    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["identer/{tema}"])
+    fun identer(@RequestBody personIdent: String,
                 @PathVariable tema: Tema): ResponseEntity<Ressurs<List<IdentInformasjon>>> {
         return ResponseEntity.ok().body(success(data = personopplysningerService.hentIdenter(personIdent, tema.toString()),
                                                 melding = "Hent aktørId OK"))

@@ -168,10 +168,9 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                                  .withBody(readfile("pdlAktorIdResponse.json"))
                                  .withHeaders(Header("Content-Type", "application/json"))
                                  .withStatusCode(200))
-
         val response: ResponseEntity<Ressurs<List<IdentInformasjon>>> = restTemplate.exchange(uriHentIdenter,
-                                                                                              HttpMethod.GET,
-                                                                                              HttpEntity<String>(headers))
+                                                                                              HttpMethod.POST,
+                                                                                              HttpEntity("12345678901", headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -191,8 +190,9 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                                  .withStatusCode(200))
 
         val response: ResponseEntity<Ressurs<List<String>>> = restTemplate.exchange(uriHentAktørId,
-                                                                                    HttpMethod.GET,
-                                                                                    HttpEntity<String>(headers))
+                                                                                    HttpMethod.POST,
+                                                                                    HttpEntity("12345678901", headers))
+
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
     }
