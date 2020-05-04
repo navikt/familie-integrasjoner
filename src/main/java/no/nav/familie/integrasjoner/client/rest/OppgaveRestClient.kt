@@ -4,9 +4,10 @@ import io.micrometer.core.instrument.Metrics
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.integrasjoner.oppgave.FinnOppgaveRequest
 import no.nav.familie.integrasjoner.oppgave.domene.FinnOppgaveResponseDto
-import no.nav.familie.integrasjoner.oppgave.domene.OppgaveJsonDto
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
+import no.nav.familie.kontrakter.felles.oppgave.Tema
 import no.nav.familie.log.mdc.MDCConstants
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
@@ -33,12 +34,18 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
 
     private val LOG = LoggerFactory.getLogger(OppgaveRestClient::class.java)
 
-    fun finnOppgave(request: Oppgave): OppgaveJsonDto {
-        val requestUrl = lagRequestUrlMed(request.aktorId, request.journalpostId, request.tema?.name ?: KONTANTSTØTTE_TEMA)
+    fun finnOppgave(request: Oppgave): Oppgave {
+        request.takeUnless { it.aktoerId == null } ?: error("Finner ikke aktør id på request")
+        request.takeUnless {
+            it.journalpostId == null
+        } ?: error("Finner ikke journalpost id på request")
+
+        val requestUrl = lagRequestUrlMed(request.aktoerId!!,
+                                          request.journalpostId!!, request.tema?.name ?: KONTANTSTØTTE_TEMA.name)
         return requestOppgaveJson(requestUrl)
     }
 
-    fun finnOppgaveMedId(oppgaveId: String): OppgaveJsonDto {
+    fun finnOppgaveMedId(oppgaveId: String): Oppgave {
         return getForEntity(requestUrl(oppgaveId.toLong()), httpHeaders())
     }
 
@@ -47,9 +54,9 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
                      oppgavetype: String?,
                      tildeltEnhetsnr: String?,
                      tilordnetRessurs: String?,
-                     journalpostId: String?): List<OppgaveJsonDto> {
+                     journalpostId: String?): List<Oppgave> {
 
-        tailrec fun finnAlleOppgaver(oppgaver: List<OppgaveJsonDto> = listOf()): List<OppgaveJsonDto> {
+        tailrec fun finnAlleOppgaver(oppgaver: List<Oppgave> = listOf()): List<Oppgave> {
             val limit = 50
 
             val uriBuilder = UriComponentsBuilder.fromUri(oppgaveBaseUrl)
@@ -82,11 +89,60 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         return finnAlleOppgaver()
     }
 
-    fun oppdaterOppgave(patchDto: OppgaveJsonDto) {
+    fun finnOppgaverV2(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {
+
+        val limitMotOppgave = 50
+
+        fun uriMotOppgave(offset: Long): URI {
+            return finnOppgaveRequest.run {
+                val uriBuilder = UriComponentsBuilder.fromUri(oppgaveBaseUrl)
+                        .path(PATH_OPPGAVE)
+                        .queryParam("statuskategori", "AAPEN")
+                        .queryParam("tema", tema)
+                        .queryParam("sorteringsfelt", "OPPRETTET_TIDSPUNKT")
+                        .queryParam("sorteringsrekkefolge", "DESC")
+                        .queryParam("limit", limitMotOppgave)
+                        .queryParam("offset", offset)
+
+                behandlingstema?.apply { uriBuilder.queryParam("behandlingstema", this) }
+                oppgavetype?.apply { uriBuilder.queryParam("oppgavetype", this) }
+                enhet?.apply { uriBuilder.queryParam("tildeltEnhetsnr", this) }
+                saksbehandler?.apply { uriBuilder.queryParam("tilordnetRessurs", this) }
+                journalpostId?.apply { uriBuilder.queryParam("journalpostId", this) }
+                opprettetFomTidspunkt?.apply { uriBuilder.queryParam("opprettetFom", this) }
+                opprettetTomTidspunkt?.apply { uriBuilder.queryParam("opprettetTom", this) }
+                fristFomDato?.apply { uriBuilder.queryParam("fristFom", this) }
+                fristTomDato?.apply { uriBuilder.queryParam("fristTom", this) }
+                aktivFomDato?.apply { uriBuilder.queryParam("aktivDatoFom", this) }
+                aktivTomDato?.apply { uriBuilder.queryParam("aktivDatoTom", this) }
+
+                uriBuilder.build().toUri()
+            }
+        }
+
+        var offset = finnOppgaveRequest.offset ?: 0
+        val oppgaverOgAntall = getForEntity<FinnOppgaveResponseDto>(uriMotOppgave(offset), httpHeaders())
+        val oppgaver: MutableList<Oppgave> = oppgaverOgAntall.oppgaver.toMutableList()
+        val grense = when (finnOppgaveRequest.limit == null) {
+            true -> oppgaverOgAntall.antallTreffTotalt
+            false -> offset + finnOppgaveRequest.limit
+        }
+        offset += limitMotOppgave
+
+        while (offset < grense) {
+            val nyeOppgaver = getForEntity<FinnOppgaveResponseDto>(uriMotOppgave(offset), httpHeaders())
+            oppgaver.addAll(nyeOppgaver.oppgaver)
+            offset += limitMotOppgave
+        }
+
+        return FinnOppgaveResponseDto(oppgaverOgAntall.antallTreffTotalt, oppgaver)
+    }
+
+    fun oppdaterOppgave(patchDto: Oppgave) {
         return Result.runCatching {
-            patchForEntity<OppgaveJsonDto>(requestUrl(patchDto.id ?: error("Kan ikke finne oppgaveId på oppgaven")),
-                                           patchDto,
-                                           httpHeaders())
+            patchForEntity<Oppgave>(requestUrl(patchDto.id ?: error("Kan ikke finne oppgaveId på oppgaven")),
+                                    patchDto,
+                                    httpHeaders())
         }.fold(
                 onSuccess = {},
                 onFailure = {
@@ -105,9 +161,9 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         )
     }
 
-    fun opprettOppgave(dto: OppgaveJsonDto): Long {
+    fun opprettOppgave(dto: Oppgave): Long {
         val uri = UriComponentsBuilder.fromUri(oppgaveBaseUrl).path(PATH_OPPGAVE).build().toUri()
-        return Result.runCatching { postForEntity<OppgaveJsonDto>(uri, dto, httpHeaders()) }
+        return Result.runCatching { postForEntity<Oppgave>(uri, dto, httpHeaders()) }
                 .map { it?.id ?: error("Kan ikke finne oppgaveId på oppgaven $it") }
                 .onFailure {
                     var feilmelding = "Feil ved oppretting av oppgave for ${dto.aktoerId}."
@@ -140,7 +196,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         return UriComponentsBuilder.fromUri(oppgaveBaseUrl).pathSegment(PATH_OPPGAVE, oppgaveId.toString()).build().toUri()
     }
 
-    private fun requestOppgaveJson(requestUrl: URI): OppgaveJsonDto {
+    private fun requestOppgaveJson(requestUrl: URI): Oppgave {
         val finnOppgaveResponseDto = getForEntity<FinnOppgaveResponseDto>(requestUrl, httpHeaders())
         if (finnOppgaveResponseDto.oppgaver.isEmpty()) {
             returnerteIngenOppgaver.increment()
@@ -164,9 +220,8 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
 
         private const val PATH_PING = "internal/alive"
         private const val PATH_OPPGAVE = "api/v1/oppgaver"
-        private const val KONTANTSTØTTE_TEMA = "KON"
+        private val KONTANTSTØTTE_TEMA = Tema.KON
         private const val OPPGAVE_TYPE = "BEH_SAK"
         private const val X_CORRELATION_ID = "X-Correlation-ID"
     }
-
 }

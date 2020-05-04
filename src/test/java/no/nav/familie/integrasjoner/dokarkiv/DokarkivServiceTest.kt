@@ -11,10 +11,7 @@ import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
 import no.nav.familie.integrasjoner.dokarkiv.api.Dokument
 import no.nav.familie.integrasjoner.dokarkiv.api.FilType
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
-import no.nav.familie.integrasjoner.dokarkiv.metadata.BarnetrygdVedtakMetadata
-import no.nav.familie.integrasjoner.dokarkiv.metadata.DokarkivMetadata
-import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadMetadata
-import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadVedleggMetadata
+import no.nav.familie.integrasjoner.dokarkiv.metadata.*
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
@@ -44,7 +41,8 @@ class DokarkivServiceTest {
                                           personopplysningerService,
                                           DokarkivMetadata(KontanstøtteSøknadMetadata,
                                                            KontanstøtteSøknadVedleggMetadata,
-                                                           BarnetrygdVedtakMetadata),
+                                                           BarnetrygdVedtakMetadata,
+                                                           BarnetrygdVedleggMetadata),
                                           dokarkivLogiskVedleggRestClient)
     }
 
@@ -102,7 +100,8 @@ class DokarkivServiceTest {
 
         val dto = ArkiverDokumentRequest(FNR,
                                          false,
-                                         listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "BARNETRYGD_VEDTAK")),
+                                         listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "BARNETRYGD_VEDTAK"),
+                                                Dokument(PDF_DOK, FilType.PDFA, null, TITTEL, "BARNETRYGD_VEDLEGG")),
                                          fagsakId = FAGSAK_ID)
 
         dokarkivService.lagJournalpostV2(dto)
@@ -162,7 +161,7 @@ class DokarkivServiceTest {
 
     @Test fun `skal kaste exception hvis navn er null`() {
         every { personopplysningerService.hentPersoninfoFor(FNR) }
-            .answers { null }
+            .answers { Personinfo.Builder().medNavn(null).build() }
 
         val dto = ArkiverDokumentRequest(FNR,
                                          false,
@@ -220,6 +219,13 @@ class DokarkivServiceTest {
         assertThat(request.dokumenter[0].dokumentvarianter[0].fysiskDokument).isEqualTo(pdfDok)
         assertThat(request.dokumenter[0].dokumentvarianter[0].variantformat).isEqualTo("ARKIV")
         assertThat(request.dokumenter[0].dokumentvarianter[0].filnavn).isEqualTo(FILNAVN)
+        assertThat(request.dokumenter[1].tittel).isEqualTo(TITTEL)
+        assertThat(request.dokumenter[1].brevkode).isEqualTo(BarnetrygdVedleggMetadata.brevkode)
+        assertThat(request.dokumenter[1].dokumentKategori).isEqualTo(BarnetrygdVedleggMetadata.dokumentKategori)
+        assertThat(request.dokumenter[1].dokumentvarianter[0].filtype).isEqualTo("PDFA")
+        assertThat(request.dokumenter[1].dokumentvarianter[0].fysiskDokument).isEqualTo(pdfDok)
+        assertThat(request.dokumenter[1].dokumentvarianter[0].variantformat).isEqualTo("ARKIV")
+        assertThat(request.dokumenter[1].dokumentvarianter[0].filnavn).isEqualTo(null)
         assertThat(request.sak!!.fagsakId).isEqualTo(sak.fagsakId)
         assertThat(request.sak!!.fagsaksystem).isEqualTo(sak.fagsaksystem)
         assertThat(request.sak!!.sakstype).isEqualTo(sak.sakstype)
@@ -233,6 +239,7 @@ class DokarkivServiceTest {
         private const val STRUKTURERT_VARIANTFORMAT = "ORIGINAL"
         private const val JOURNALPOST_ID = "123"
         private const val FILNAVN = "filnavn"
+        private const val TITTEL = "tittel"
         private val PERSON_IDENT = PersonIdent(FNR)
         private const val FAGSAK_ID = "s200"
     }

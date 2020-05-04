@@ -23,6 +23,8 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
 
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
 
+    private val aktørIdQuery = this::class.java.getResource("/pdl/hentIdenter.graphql").readText().graphqlCompatible()
+
     fun hentPerson(personIdent: String, tema: String, personInfoQuery: PersonInfoQuery): Person {
 
         val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
@@ -92,6 +94,23 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
             add("Nav-Consumer-Token", "Bearer ${stsRestClient.systemOIDCToken}")
             add("Tema", tema)
         }
+    }
+
+    fun hentIdenter(personIdent: String, tema: String): PdlHentIdenterResponse {
+        val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
+                                                query = aktørIdQuery)
+        val response = postForEntity<PdlHentIdenterResponse>(pdlUri,
+                                                             pdlPersonRequest,
+                                                             httpHeaders(tema))
+        if (response != null && !response.harFeil()) {
+            return response
+        }
+        throw OppslagException("Fant ikke identer for person.",
+                               "PdlRestClient",
+                               OppslagException.Level.MEDIUM,
+                               HttpStatus.NOT_FOUND,
+                               null,
+                               personIdent)
     }
 
     companion object {

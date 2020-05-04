@@ -2,7 +2,7 @@ package no.nav.familie.integrasjoner.journalpost
 
 import no.nav.familie.integrasjoner.client.rest.SafHentDokumentRestClient
 import no.nav.familie.integrasjoner.client.rest.SafRestClient
-import no.nav.familie.integrasjoner.journalpost.domene.Journalpost
+import no.nav.familie.kontrakter.felles.journalpost.Journalpost
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -12,8 +12,8 @@ class JournalpostService @Autowired constructor(private val safRestClient: SafRe
 
     fun hentSaksnummer(journalpostId: String): String? {
         val journalpost = safRestClient.hentJournalpost(journalpostId)
-        return if (journalpost.sak != null && "GSAK" == journalpost.sak.arkivsaksystem) {
-            journalpost.sak.arkivsaksnummer
+        return if (journalpost.sak != null && journalpost.sak?.arkivsaksystem == "GSAK") {
+            journalpost.sak?.arkivsaksnummer
         } else null
     }
 
