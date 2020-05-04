@@ -161,7 +161,7 @@ class DokarkivServiceTest {
 
     @Test fun `skal kaste exception hvis navn er null`() {
         every { personopplysningerService.hentPersoninfoFor(FNR) }
-            .answers { null }
+            .answers { Personinfo.Builder().medNavn(null).build() }
 
         val dto = ArkiverDokumentRequest(FNR,
                                          false,

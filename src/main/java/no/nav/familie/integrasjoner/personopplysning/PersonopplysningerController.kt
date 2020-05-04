@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.personopplysning
 import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
+import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpClientErrorException.Forbidden
 import java.time.LocalDate
-import javax.validation.constraints.NotNull
 
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
@@ -35,23 +35,37 @@ class PersonopplysningerController(private val personopplysningerService: Person
                 .body(ikkeTilgang("Ikke tilgang mot personopplysning ${e.message}"))
     }
 
+    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["aktorId/{tema}"])
+    fun aktørId(@RequestBody personIdent: String,
+                @PathVariable tema: Tema): ResponseEntity<Ressurs<List<String>>> {
+        return ResponseEntity.ok().body(success(data = personopplysningerService.hentAktørId(personIdent, tema.toString()),
+                                                melding = "Hent aktørId OK"))
+    }
+
+    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["identer/{tema}"])
+    fun identer(@RequestBody personIdent: String,
+                @PathVariable tema: Tema): ResponseEntity<Ressurs<List<IdentInformasjon>>> {
+        return ResponseEntity.ok().body(success(data = personopplysningerService.hentIdenter(personIdent, tema.toString()),
+                                                melding = "Hent aktørId OK"))
+    }
+
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/historikk"])
-    fun historikk(@RequestHeader(name = "Nav-Personident") @NotNull personIdent: String?,
-                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @NotNull fomDato: LocalDate?,
-                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @NotNull tomDato: LocalDate?)
+    fun historikk(@RequestHeader(name = "Nav-Personident") personIdent: String,
+                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) fomDato: LocalDate,
+                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) tomDato: LocalDate)
             : ResponseEntity<Ressurs<PersonhistorikkInfo>> {
         return ResponseEntity.ok().body(success(personopplysningerService.hentHistorikkFor(personIdent, fomDato, tomDato),
                                                 "Hent personhistorikk OK"))
     }
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/info"])
-    fun personInfo(@RequestHeader(name = "Nav-Personident") @NotNull personIdent: String?): ResponseEntity<Ressurs<Personinfo>> {
+    fun personInfo(@RequestHeader(name = "Nav-Personident") personIdent: String): ResponseEntity<Ressurs<Personinfo>> {
         return ResponseEntity.ok().body(success(personopplysningerService.hentPersoninfoFor(personIdent),
                                                 "Hent personinfo OK"))
     }
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/info/{tema}"])
-    fun personInfo(@RequestHeader(name = "Nav-Personident") @NotNull personIdent: String,
+    fun personInfo(@RequestHeader(name = "Nav-Personident") personIdent: String,
                    @PathVariable tema: Tema): ResponseEntity<Ressurs<Person>> {
         return ResponseEntity.ok().body(success(
                 personopplysningerService.hentPersoninfo(personIdent, tema.toString(), PersonInfoQuery.MED_RELASJONER),
@@ -59,7 +73,7 @@ class PersonopplysningerController(private val personopplysningerService: Person
     }
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/infoEnkel/{tema}"])
-    fun personInfoEnkel(@RequestHeader(name = "Nav-Personident") @NotNull personIdent: String,
+    fun personInfoEnkel(@RequestHeader(name = "Nav-Personident") personIdent: String,
                         @PathVariable tema: Tema): ResponseEntity<Ressurs<Person>> {
         return ResponseEntity.ok().body(success(
                 personopplysningerService.hentPersoninfo(personIdent, tema.toString(), PersonInfoQuery.ENKEL),
