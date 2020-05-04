@@ -46,9 +46,29 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     fun finnOppgaverV2(@RequestBody finnOppgaveRequest: FinnOppgaveRequest)
             : ResponseEntity<Ressurs<FinnOppgaveResponseDto>> {
         return when {
-            finnOppgaveRequest.tema == null -> ResponseEntity.ok().body(failure("påkrevd felt 'tema' mangler"))
+            finnOppgaveRequest.tema == null -> ResponseEntity.ok().body(Ressurs.failure("påkrevd felt 'tema' mangler"))
             else -> ResponseEntity.ok().body(success(oppgaveService.finnOppgaverV2(finnOppgaveRequest), "Finn oppgaver OK"))
         }
+    }
+
+    @PostMapping(path = ["/{oppgaveId}/fordel"])
+    fun fordelOppgave(@PathVariable(name = "oppgaveId") oppgaveId: Long,
+                      @RequestParam("saksbehandler") saksbehandler: String?
+    ): ResponseEntity<Ressurs<OppgaveResponse>> {
+        Result.runCatching {
+            if (saksbehandler == null) oppgaveService.tilbakestillFordelingPåOppgave(oppgaveId)
+            else oppgaveService.fordelOppgave(oppgaveId, saksbehandler)
+        }.fold(
+                onSuccess = {
+                    return ResponseEntity.ok(success(OppgaveResponse(oppgaveId = oppgaveId),
+                            if (saksbehandler !== null) "Oppgaven ble tildelt saksbehandler $saksbehandler"
+                            else "Fordeling på oppgaven ble tilbakestilt"
+                    ))
+                },
+                onFailure = {
+                    return ResponseEntity.badRequest().body(Ressurs.failure(errorMessage = it.message))
+                }
+        )
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdater"])
