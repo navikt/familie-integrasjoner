@@ -1,6 +1,8 @@
 package no.nav.familie.integrasjoner.oppgave
 
+import no.nav.familie.integrasjoner.oppgave.domene.FinnOppgaveResponseDto
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.kontrakter.felles.oppgave.OppgaveResponse
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.*
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/oppgave")
 class OppgaveController(private val oppgaveService: OppgaveService) {
-
 
     @GetMapping(path = ["/{oppgaveId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun hentOppgave(@PathVariable(name = "oppgaveId") oppgaveId: String)
@@ -41,6 +42,15 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         return ResponseEntity.ok().body(success(oppgaver, "Finn oppgaver OK"))
     }
 
+    @PostMapping(path = ["/v2"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun finnOppgaverV2(@RequestBody finnOppgaveRequest: FinnOppgaveRequest)
+            : ResponseEntity<Ressurs<FinnOppgaveResponseDto>> {
+        return when {
+            finnOppgaveRequest.tema == null -> ResponseEntity.ok().body(Ressurs.failure("påkrevd felt 'tema' mangler"))
+            else -> ResponseEntity.ok().body(success(oppgaveService.finnOppgaverV2(finnOppgaveRequest), "Finn oppgaver OK"))
+        }
+    }
+
     @PostMapping(path = ["/{oppgaveId}/fordel"])
     fun fordelOppgave(@PathVariable(name = "oppgaveId") oppgaveId: Long,
                       @RequestParam("saksbehandler") saksbehandler: String?
@@ -60,7 +70,6 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
                 }
         )
     }
-
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdater"])
     fun oppdaterOppgave(@RequestBody oppgave: Oppgave): ResponseEntity<Ressurs<OppgaveResponse>> {
@@ -82,3 +91,17 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 }
 
+class FinnOppgaveRequest(val tema: String? = null,
+                         val behandlingstema: String? = null,
+                         val oppgavetype: String? = null,
+                         val enhet: String? = null,
+                         val saksbehandler: String? = null,
+                         val journalpostId: String? = null,
+                         val opprettetFomTidspunkt: String? = null,
+                         val opprettetTomTidspunkt: String? = null,
+                         val fristFomDato: String? = null,
+                         val fristTomDato: String? = null,
+                         val aktivFomDato: String? = null,
+                         val aktivTomDato: String? = null,
+                         val limit: Long? = null,
+                         val offset: Long? = null)

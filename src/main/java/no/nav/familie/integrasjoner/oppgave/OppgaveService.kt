@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.oppgave
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.OppslagException.Level
+import no.nav.familie.integrasjoner.oppgave.domene.FinnOppgaveResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.IdentType
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgave
@@ -24,6 +25,10 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
                      saksbehandler: String?,
                      journalpostId: String?): List<Oppgave> {
         return oppgaveRestClient.finnOppgaver(tema, behandlingstema, oppgaveType, enhet, saksbehandler, journalpostId)
+    }
+
+    fun finnOppgaverV2(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {
+        return oppgaveRestClient.finnOppgaverV2(finnOppgaveRequest)
     }
 
     fun hentOppgave(oppgaveId: String): Oppgave {
@@ -133,5 +138,4 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
     companion object {
         private val LOG = LoggerFactory.getLogger(OppgaveService::class.java)
     }
-
 }
