@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.dokarkiv.client.domene
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import java.time.LocalDate
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class OppdaterJournalpostRequest(val avsenderMottaker: AvsenderMottaker? = null,
@@ -10,5 +11,5 @@ data class OppdaterJournalpostRequest(val avsenderMottaker: AvsenderMottaker? = 
                                       val tittel: String? = null,
                                       val journalfoerendeEnhet: String? = null,
                                       val sak: Sak? = null,
-                                      val dokumenter: List<DokumentInfo>? = null
-)
+                                      val dokumenter: List<DokumentInfo>? = null,
+                                      val datoMottatt: LocalDate? = null)
