@@ -15,6 +15,20 @@
       },
       "journalforendeEnhet": "9999",
       "kanal": "EIA",
+      "relevanteDatoer": [
+        {
+          "dato": "2020-05-05T11:03:31",
+          "datotype": "DATO_DOKUMENT"
+        },
+        {
+          "dato": "2020-05-05T11:04:52",
+          "datotype": "DATO_JOURNALFOERT"
+        },
+        {
+          "dato": "2020-03-26T01:00",
+          "datotype": "DATO_REGISTRERT"
+        }
+      ],
       "dokumenter": [
         {
           "dokumentInfoId": "123",

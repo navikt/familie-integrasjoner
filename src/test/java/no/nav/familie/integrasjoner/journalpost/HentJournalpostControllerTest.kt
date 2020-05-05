@@ -29,6 +29,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.util.UriComponentsBuilder
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
+import java.time.LocalDateTime
 
 @ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
 class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
@@ -90,6 +91,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         assertThat(response.body?.data?.journalposttype).isEqualTo(Journalposttype.I)
         assertThat(response.body?.data?.journalstatus).isEqualTo(Journalstatus.JOURNALFOERT)
+        assertThat(response.body?.data?.datoMottatt).isEqualTo(LocalDateTime.of(2020,3,26,1,0))
     }
 
     @Test
