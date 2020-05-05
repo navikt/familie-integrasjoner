@@ -11,5 +11,4 @@ data class OppdaterJournalpostRequest(val avsenderMottaker: AvsenderMottaker? = 
                                       val tittel: String? = null,
                                       val journalfoerendeEnhet: String? = null,
                                       val sak: Sak? = null,
-                                      val dokumenter: List<DokumentInfo>? = null,
-                                      val datoMottatt: LocalDate? = null)
+                                      val dokumenter: List<DokumentInfo>? = null)
