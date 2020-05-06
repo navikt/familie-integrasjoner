@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.dokarkiv
 
-import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
-import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentResponse
+import no.nav.familie.integrasjoner.dokarkiv.api.DeprecatedArkiverDokumentRequest
+import no.nav.familie.integrasjoner.dokarkiv.api.DeprecatedArkiverDokumentResponse
 import no.nav.familie.integrasjoner.dokarkiv.client.KanIkkeFerdigstilleJournalpostException
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OppdaterJournalpostRequest
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OppdaterJournalpostResponse
@@ -45,10 +45,10 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     }
 
     @PostMapping(path = ["/v2"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun arkiverDokumentV2(@RequestBody @Valid arkiverDokumentRequest: ArkiverDokumentRequest)
-            : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
+    fun arkiverDokumentV2(@RequestBody @Valid deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest)
+            : ResponseEntity<Ressurs<DeprecatedArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(success(journalføringService.lagJournalpostV2(arkiverDokumentRequest),
+                .body(success(journalføringService.lagJournalpostV2(deprecatedArkiverDokumentRequest),
                               "Arkivert journalpost OK"))
     }
 

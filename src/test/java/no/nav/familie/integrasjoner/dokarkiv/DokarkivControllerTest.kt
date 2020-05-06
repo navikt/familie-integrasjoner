@@ -46,17 +46,17 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal returnere bad request hvis ingen dokumenter`() {
-        val body = ArkiverDokumentRequest("fnr",
-                                          false,
-                                          LinkedList())
+        val body = DeprecatedArkiverDokumentRequest("fnr",
+                                                    false,
+                                                    LinkedList())
 
-        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL_V2),
-                                                                                               HttpMethod.POST,
-                                                                                               HttpEntity(body, headers))
+        val responseDeprecated: ResponseEntity<Ressurs<DeprecatedArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL_V2),
+                                                                                                                   HttpMethod.POST,
+                                                                                                                   HttpEntity(body, headers))
 
-        assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        assertThat(response.body?.melding).contains("dokumenter=must not be empty")
+        assertThat(responseDeprecated.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(responseDeprecated.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(responseDeprecated.body?.melding).contains("dokumenter=must not be empty")
     }
 
     @Test
@@ -70,18 +70,18 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                 .respond(response()
                                  .withHeader("Content-Type", "application/json;charset=UTF-8")
                                  .withBody(gyldigDokarkivResponse()))
-        val body = ArkiverDokumentRequest("FNR",
-                                          false,
-                                          listOf(HOVEDDOKUMENT))
+        val body = DeprecatedArkiverDokumentRequest("FNR",
+                                                    false,
+                                                    listOf(HOVEDDOKUMENT))
 
-        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL_V2),
-                                                                                               HttpMethod.POST,
-                                                                                               HttpEntity(body, headers))
+        val responseDeprecated: ResponseEntity<Ressurs<DeprecatedArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL_V2),
+                                                                                                                   HttpMethod.POST,
+                                                                                                                   HttpEntity(body, headers))
 
-        assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
-        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
-        assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
-        assertThat(response.body?.data?.ferdigstilt).isFalse()
+        assertThat(responseDeprecated.statusCode).isEqualTo(HttpStatus.CREATED)
+        assertThat(responseDeprecated.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(responseDeprecated.body?.data?.journalpostId).isEqualTo("12345678")
+        assertThat(responseDeprecated.body?.data?.ferdigstilt).isFalse()
     }
 
     @Test
@@ -94,18 +94,18 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                 .respond(response()
                                  .withHeader("Content-Type", "application/json")
                                  .withBody(gyldigDokarkivResponse()))
-        val body = ArkiverDokumentRequest("FNR",
-                                          false,
-                                          listOf(HOVEDDOKUMENT, VEDLEGG))
+        val body = DeprecatedArkiverDokumentRequest("FNR",
+                                                    false,
+                                                    listOf(HOVEDDOKUMENT, VEDLEGG))
 
-        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL_V2),
-                                                                                               HttpMethod.POST,
-                                                                                               HttpEntity(body, headers))
+        val responseDeprecated: ResponseEntity<Ressurs<DeprecatedArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL_V2),
+                                                                                                                   HttpMethod.POST,
+                                                                                                                   HttpEntity(body, headers))
 
-        assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
-        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
-        assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
-        assertThat(response.body?.data?.ferdigstilt).isFalse()
+        assertThat(responseDeprecated.statusCode).isEqualTo(HttpStatus.CREATED)
+        assertThat(responseDeprecated.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(responseDeprecated.body?.data?.journalpostId).isEqualTo("12345678")
+        assertThat(responseDeprecated.body?.data?.ferdigstilt).isFalse()
     }
 
     @Test
@@ -119,21 +119,21 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                  .withStatusCode(401)
                                  .withHeader("Content-Type", "application/json;charset=UTF-8")
                                  .withBody("Tekst fra body"))
-        val body = ArkiverDokumentRequest("FNR",
-                                          false,
-                                          listOf(Dokument("foo".toByteArray(),
-                                                          FilType.PDFA,
-                                                          null,
-                                                          null,
-                                                          "KONTANTSTØTTE_SØKNAD")))
+        val body = DeprecatedArkiverDokumentRequest("FNR",
+                                                    false,
+                                                    listOf(DeprecatedDokument("foo".toByteArray(),
+                                                                              DeprecatedFilType.PDFA,
+                                                                              null,
+                                                                              null,
+                                                                              "KONTANTSTØTTE_SØKNAD")))
 
-        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL_V2),
-                                                                                               HttpMethod.POST,
-                                                                                               HttpEntity(body, headers))
+        val responseDeprecated: ResponseEntity<Ressurs<DeprecatedArkiverDokumentResponse>> = restTemplate.exchange(localhost(DOKARKIV_URL_V2),
+                                                                                                                   HttpMethod.POST,
+                                                                                                                   HttpEntity(body, headers))
 
-        assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        assertThat(response.body?.melding).contains("Unauthorized")
+        assertThat(responseDeprecated.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(responseDeprecated.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(responseDeprecated.body?.melding).contains("Unauthorized")
     }
 
     @Test
@@ -325,15 +325,15 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
         private const val DOKARKIV_URL = "/api/arkiv"
         private const val DOKARKIV_URL_V2 = "${DOKARKIV_URL}/v2/"
 
-        private val HOVEDDOKUMENT = Dokument("foo".toByteArray(),
-                                             FilType.PDFA,
-                                             "filnavn",
-                                             null,
-                                             "KONTANTSTØTTE_SØKNAD")
-        private val VEDLEGG = Dokument("foo".toByteArray(),
-                                       FilType.PDFA,
-                                       "filnavn",
-                                       "Vedlegg",
-                                       "KONTANTSTØTTE_SØKNAD_VEDLEGG")
+        private val HOVEDDOKUMENT = DeprecatedDokument("foo".toByteArray(),
+                                                       DeprecatedFilType.PDFA,
+                                                       "filnavn",
+                                                       null,
+                                                       "KONTANTSTØTTE_SØKNAD")
+        private val VEDLEGG = DeprecatedDokument("foo".toByteArray(),
+                                                 DeprecatedFilType.PDFA,
+                                                 "filnavn",
+                                                 "Vedlegg",
+                                                 "KONTANTSTØTTE_SØKNAD_VEDLEGG")
     }
 }

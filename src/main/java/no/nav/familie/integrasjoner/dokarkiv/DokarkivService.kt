@@ -24,10 +24,10 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
         dokarkivRestClient.ferdigstillJournalpost(journalpost, journalførendeEnhet)
     }
 
-    fun lagJournalpostV2(arkiverDokumentRequest: ArkiverDokumentRequest): ArkiverDokumentResponse {
-        val request = mapTilOpprettJournalpostRequest(arkiverDokumentRequest)
+    fun lagJournalpostV2(deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest): DeprecatedArkiverDokumentResponse {
+        val request = mapTilOpprettJournalpostRequest(deprecatedArkiverDokumentRequest)
         val response =
-                dokarkivRestClient.lagJournalpost(request, arkiverDokumentRequest.forsøkFerdigstill)
+                dokarkivRestClient.lagJournalpost(request, deprecatedArkiverDokumentRequest.forsøkFerdigstill)
         return mapTilArkiverDokumentResponse(response)
     }
 
@@ -39,15 +39,15 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
         return personopplysningerService.hentPersoninfoFor(fnr)?.navn ?: error("Kan ikke hente navn")
     }
 
-    private fun mapTilOpprettJournalpostRequest(arkiverDokumentRequest: ArkiverDokumentRequest): OpprettJournalpostRequest {
+    private fun mapTilOpprettJournalpostRequest(deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest): OpprettJournalpostRequest {
 
-        val fnr = arkiverDokumentRequest.fnr
+        val fnr = deprecatedArkiverDokumentRequest.fnr
         val navn = hentNavnForFnr(fnr)
 
-        val metadata = dokarkivMetadata.getMetadata(arkiverDokumentRequest.dokumenter[0])
-        val arkivdokumenter = arkiverDokumentRequest.dokumenter.map(this::mapTilArkivdokument)
-        val jpsak: Sak? = if (arkiverDokumentRequest.fagsakId != null) Sak(
-                fagsakId = arkiverDokumentRequest.fagsakId,
+        val metadata = dokarkivMetadata.getMetadata(deprecatedArkiverDokumentRequest.dokumenter[0])
+        val arkivdokumenter = deprecatedArkiverDokumentRequest.dokumenter.map(this::mapTilArkivdokument)
+        val jpsak: Sak? = if (deprecatedArkiverDokumentRequest.fagsakId != null) Sak(
+                fagsakId = deprecatedArkiverDokumentRequest.fagsakId,
                 sakstype = "FAGSAK",
                 fagsaksystem = metadata.fagsakSystem
         ) else null
@@ -61,7 +61,7 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
                                          bruker = Bruker(IdType.FNR, fnr),
                                          dokumenter = arkivdokumenter,
                                          eksternReferanseId = MDCOperations.getCallId(),
-                                         journalfoerendeEnhet = arkiverDokumentRequest.journalførendeEnhet,
+                                         journalfoerendeEnhet = deprecatedArkiverDokumentRequest.journalførendeEnhet,
                                          sak = jpsak
         )
     }
@@ -70,25 +70,25 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
         return request.copy(sak = request.sak?.copy(sakstype = request.sak.sakstype ?: "FAGSAK"))
     }
 
-    private fun mapTilArkivdokument(dokument: Dokument): ArkivDokument {
-        val metadata = dokarkivMetadata.getMetadata(dokument)
-        val variantFormat: String = if (dokument.filType == FilType.PDFA) {
+    private fun mapTilArkivdokument(deprecatedDokument: DeprecatedDokument): ArkivDokument {
+        val metadata = dokarkivMetadata.getMetadata(deprecatedDokument)
+        val variantFormat: String = if (deprecatedDokument.filType == DeprecatedFilType.PDFA) {
             "ARKIV" //ustrukturert dokumentDto
         } else {
             "ORIGINAL" //strukturert dokumentDto
         }
         return ArkivDokument(brevkode = metadata.brevkode,
                              dokumentKategori = metadata.dokumentKategori,
-                             tittel = metadata.tittel ?: dokument.tittel,
-                             dokumentvarianter = listOf(DokumentVariant(dokument.filType.name,
+                             tittel = metadata.tittel ?: deprecatedDokument.tittel,
+                             dokumentvarianter = listOf(DokumentVariant(deprecatedDokument.filType.name,
                                                                         variantFormat,
-                                                                        dokument.dokument,
-                                                                        dokument.filnavn)))
+                                                                        deprecatedDokument.dokument,
+                                                                        deprecatedDokument.filnavn)))
     }
 
-    private fun mapTilArkiverDokumentResponse(response: OpprettJournalpostResponse): ArkiverDokumentResponse {
-        return ArkiverDokumentResponse(response.journalpostId,
-                                       response.journalpostferdigstilt)
+    private fun mapTilArkiverDokumentResponse(response: OpprettJournalpostResponse): DeprecatedArkiverDokumentResponse {
+        return DeprecatedArkiverDokumentResponse(response.journalpostId,
+                                                 response.journalpostferdigstilt)
     }
 
     fun lagNyttLogiskVedlegg(dokumentInfoId: String,

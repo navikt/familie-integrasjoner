@@ -7,9 +7,9 @@ import io.mockk.slot
 import io.mockk.verify
 import no.nav.familie.integrasjoner.client.rest.DokarkivLogiskVedleggRestClient
 import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
-import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
-import no.nav.familie.integrasjoner.dokarkiv.api.Dokument
-import no.nav.familie.integrasjoner.dokarkiv.api.FilType
+import no.nav.familie.integrasjoner.dokarkiv.api.DeprecatedArkiverDokumentRequest
+import no.nav.familie.integrasjoner.dokarkiv.api.DeprecatedDokument
+import no.nav.familie.integrasjoner.dokarkiv.api.DeprecatedFilType
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
 import no.nav.familie.integrasjoner.dokarkiv.metadata.*
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
@@ -73,9 +73,9 @@ class DokarkivServiceTest {
                                     .medFødselsdato(LocalDate.now())
                                     .medNavn(navn)
                                     .build() }
-        val dto = ArkiverDokumentRequest(FNR,
-                                         false,
-                                         listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
+        val dto = DeprecatedArkiverDokumentRequest(FNR,
+                                                   false,
+                                                   listOf(DeprecatedDokument(PDF_DOK, DeprecatedFilType.PDFA, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
 
         dokarkivService.lagJournalpostV2(dto)
 
@@ -98,11 +98,11 @@ class DokarkivServiceTest {
                 .medNavn(navn)
                 .build() }
 
-        val dto = ArkiverDokumentRequest(FNR,
-                                         false,
-                                         listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "BARNETRYGD_VEDTAK"),
-                                                Dokument(PDF_DOK, FilType.PDFA, null, TITTEL, "BARNETRYGD_VEDLEGG")),
-                                         fagsakId = FAGSAK_ID)
+        val dto = DeprecatedArkiverDokumentRequest(FNR,
+                                                   false,
+                                                   listOf(DeprecatedDokument(PDF_DOK, DeprecatedFilType.PDFA, FILNAVN, null, "BARNETRYGD_VEDTAK"),
+                                                          DeprecatedDokument(PDF_DOK, DeprecatedFilType.PDFA, null, TITTEL, "BARNETRYGD_VEDLEGG")),
+                                                   fagsakId = FAGSAK_ID)
 
         dokarkivService.lagJournalpostV2(dto)
 
@@ -122,9 +122,9 @@ class DokarkivServiceTest {
                 .medNavn(navn)
                 .build() }
 
-        val dto = ArkiverDokumentRequest(FNR,
-                                         false,
-                                         listOf(Dokument(JSON_DOK, FilType.JSON, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
+        val dto = DeprecatedArkiverDokumentRequest(FNR,
+                                                   false,
+                                                   listOf(DeprecatedDokument(JSON_DOK, DeprecatedFilType.JSON, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
 
         dokarkivService.lagJournalpostV2(dto)
 
@@ -149,9 +149,9 @@ class DokarkivServiceTest {
                 .medNavn(navn)
                 .build() }
 
-        val dto = ArkiverDokumentRequest(FNR,
-                                         false,
-                                         listOf(Dokument(JSON_DOK, FilType.JSON, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
+        val dto = DeprecatedArkiverDokumentRequest(FNR,
+                                                   false,
+                                                   listOf(DeprecatedDokument(JSON_DOK, DeprecatedFilType.JSON, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
 
         val arkiverDokumentResponse = dokarkivService.lagJournalpostV2(dto)
 
@@ -163,9 +163,9 @@ class DokarkivServiceTest {
         every { personopplysningerService.hentPersoninfoFor(FNR) }
             .answers { Personinfo.Builder().medNavn(null).build() }
 
-        val dto = ArkiverDokumentRequest(FNR,
-                                         false,
-                                         listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
+        val dto = DeprecatedArkiverDokumentRequest(FNR,
+                                                   false,
+                                                   listOf(DeprecatedDokument(PDF_DOK, DeprecatedFilType.PDFA, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
 
         val thrown = catchThrowable { dokarkivService.lagJournalpostV2(dto) }
 
