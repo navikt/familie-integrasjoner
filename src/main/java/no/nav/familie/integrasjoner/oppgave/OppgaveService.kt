@@ -105,7 +105,8 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
                 aktivDato = request.aktivFra.format(DateTimeFormatter.ISO_DATE),
                 oppgavetype = request.oppgavetype.value,
                 beskrivelse = request.beskrivelse,
-                eksisterendeOppgaveId = null
+                eksisterendeOppgaveId = null,
+                behandlingstype = request.behandlingstype
         )
 
         return oppgaveRestClient.opprettOppgave(oppgave)
