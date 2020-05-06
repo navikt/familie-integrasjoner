@@ -35,7 +35,7 @@ class HentJournalpostTestConfig {
                     journalforendeEnhet = "9999",
                     kanal = "EIA",
                     dokumenter = emptyList(),
-                    datoMottatt = LocalDateTime.now())
+                    relevanteDatoer = emptyList())
         }
 
         return klient
