@@ -1,13 +1,13 @@
 package no.nav.familie.integrasjoner.dokarkiv
 
-import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
-import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentResponse
 import no.nav.familie.integrasjoner.dokarkiv.client.KanIkkeFerdigstilleJournalpostException
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OppdaterJournalpostRequest
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OppdaterJournalpostResponse
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
+import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentResponse
+import no.nav.familie.kontrakter.felles.arkivering.v2.ArkiverDokumentRequest
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 import java.util.function.Consumer
 import javax.validation.Valid
+import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequest
 
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
@@ -45,10 +46,18 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     }
 
     @PostMapping(path = ["/v2"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun arkiverDokumentV2(@RequestBody @Valid arkiverDokumentRequest: ArkiverDokumentRequest)
+    fun arkiverDokumentV2(@RequestBody @Valid deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest)
             : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(success(journalføringService.lagJournalpostV2(arkiverDokumentRequest),
+                .body(success(journalføringService.lagJournalpostV2(deprecatedArkiverDokumentRequest),
+                              "Arkivert journalpost OK"))
+    }
+
+    @PostMapping(path = ["/v3"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun arkiverDokumentV3(@RequestBody @Valid arkiverDokumentRequest: ArkiverDokumentRequest)
+            : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(success(journalføringService.lagJournalpostV3(arkiverDokumentRequest),
                               "Arkivert journalpost OK"))
     }
 

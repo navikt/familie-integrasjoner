@@ -7,18 +7,19 @@ import io.mockk.slot
 import io.mockk.verify
 import no.nav.familie.integrasjoner.client.rest.DokarkivLogiskVedleggRestClient
 import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
-import no.nav.familie.integrasjoner.dokarkiv.api.ArkiverDokumentRequest
-import no.nav.familie.integrasjoner.dokarkiv.api.Dokument
-import no.nav.familie.integrasjoner.dokarkiv.api.FilType
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
 import no.nav.familie.integrasjoner.dokarkiv.metadata.*
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
-import org.assertj.core.api.Assertions.*
+import no.nav.familie.kontrakter.felles.arkivering.Dokument
+import no.nav.familie.kontrakter.felles.arkivering.FilType
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.Before
 import org.junit.Test
 import java.time.LocalDate
+import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequest
 
 class DokarkivServiceTest {
 
@@ -49,7 +50,7 @@ class DokarkivServiceTest {
     @Test fun `oppdaterJournalpost skal legge til default sakstype`() {
         val slot = slot<OppdaterJournalpostRequest>()
         every { dokarkivRestClient.oppdaterJournalpost(capture(slot), any()) }
-            .answers { OppdaterJournalpostResponse(JOURNALPOST_ID) }
+                .answers { OppdaterJournalpostResponse(JOURNALPOST_ID) }
 
         val bruker = Bruker(IdType.FNR, "12345678910")
         val dto = OppdaterJournalpostRequest(bruker = bruker, tema = "tema", sak = Sak("11111111", "fagsaksystem"))
@@ -66,16 +67,18 @@ class DokarkivServiceTest {
     @Test fun `skal mappe request til opprettJournalpostRequest av type arkiv pdfa`() {
         val slot = slot<OpprettJournalpostRequest>()
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
-            .answers { OpprettJournalpostResponse() }
+                .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
 
         every { personopplysningerService.hentPersoninfoFor(FNR) }
-                .answers { Personinfo.Builder().medPersonIdent(PERSON_IDENT)
-                                    .medFødselsdato(LocalDate.now())
-                                    .medNavn(navn)
-                                    .build() }
-        val dto = ArkiverDokumentRequest(FNR,
-                                         false,
-                                         listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
+                .answers {
+                    Personinfo.Builder().medPersonIdent(PERSON_IDENT)
+                            .medFødselsdato(LocalDate.now())
+                            .medNavn(navn)
+                            .build()
+                }
+        val dto = DeprecatedArkiverDokumentRequest(FNR,
+                                                   false,
+                                                   listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
 
         dokarkivService.lagJournalpostV2(dto)
 
@@ -90,19 +93,21 @@ class DokarkivServiceTest {
         val slot = slot<OpprettJournalpostRequest>()
 
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
-                .answers { OpprettJournalpostResponse() }
+                .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
 
         every { personopplysningerService.hentPersoninfoFor(FNR) }
-                .answers { Personinfo.Builder().medPersonIdent(PERSON_IDENT)
-                .medFødselsdato(LocalDate.now())
-                .medNavn(navn)
-                .build() }
+                .answers {
+                    Personinfo.Builder().medPersonIdent(PERSON_IDENT)
+                            .medFødselsdato(LocalDate.now())
+                            .medNavn(navn)
+                            .build()
+                }
 
-        val dto = ArkiverDokumentRequest(FNR,
-                                         false,
-                                         listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "BARNETRYGD_VEDTAK"),
-                                                Dokument(PDF_DOK, FilType.PDFA, null, TITTEL, "BARNETRYGD_VEDLEGG")),
-                                         fagsakId = FAGSAK_ID)
+        val dto = DeprecatedArkiverDokumentRequest(FNR,
+                                                   false,
+                                                   listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "BARNETRYGD_VEDTAK"),
+                                                          Dokument(PDF_DOK, FilType.PDFA, null, TITTEL, "BARNETRYGD_VEDLEGG")),
+                                                   fagsakId = FAGSAK_ID)
 
         dokarkivService.lagJournalpostV2(dto)
 
@@ -115,16 +120,20 @@ class DokarkivServiceTest {
     @Test fun `skal mappe request til opprettJournalpostRequest av type ORIGINAL JSON`() {
         val slot = slot<OpprettJournalpostRequest>()
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
-            .answers { OpprettJournalpostResponse() }
+                .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
         every { personopplysningerService.hentPersoninfoFor(FNR) }
-            .answers { Personinfo.Builder().medPersonIdent(PERSON_IDENT)
-                .medFødselsdato(LocalDate.now())
-                .medNavn(navn)
-                .build() }
+                .answers {
+                    Personinfo.Builder().medPersonIdent(PERSON_IDENT)
+                            .medFødselsdato(LocalDate.now())
+                            .medNavn(navn)
+                            .build()
+                }
 
-        val dto = ArkiverDokumentRequest(FNR,
-                                         false,
-                                         listOf(Dokument(JSON_DOK, FilType.JSON, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
+        val dto = DeprecatedArkiverDokumentRequest(FNR, false, listOf(Dokument(JSON_DOK,
+                                                                               FilType.JSON,
+                                                                               FILNAVN,
+                                                                               null,
+                                                                               "KONTANTSTØTTE_SØKNAD")))
 
         dokarkivService.lagJournalpostV2(dto)
 
@@ -142,16 +151,20 @@ class DokarkivServiceTest {
 
     @Test fun `response fra klient skal returnere arkiverDokumentResponse`() {
         every { dokarkivRestClient.lagJournalpost(any(), any()) }
-            .answers { OpprettJournalpostResponse(journalpostId = JOURNALPOST_ID, journalpostferdigstilt = true) }
+                .answers { OpprettJournalpostResponse(journalpostId = JOURNALPOST_ID, journalpostferdigstilt = true) }
         every { personopplysningerService.hentPersoninfoFor(FNR) }
-            .answers { Personinfo.Builder().medPersonIdent(PERSON_IDENT)
-                .medFødselsdato(LocalDate.now())
-                .medNavn(navn)
-                .build() }
+                .answers {
+                    Personinfo.Builder().medPersonIdent(PERSON_IDENT)
+                            .medFødselsdato(LocalDate.now())
+                            .medNavn(navn)
+                            .build()
+                }
 
-        val dto = ArkiverDokumentRequest(FNR,
-                                         false,
-                                         listOf(Dokument(JSON_DOK, FilType.JSON, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
+        val dto = DeprecatedArkiverDokumentRequest(FNR, false, listOf(Dokument(JSON_DOK,
+                                                                               FilType.JSON,
+                                                                               FILNAVN,
+                                                                               null,
+                                                                               "KONTANTSTØTTE_SØKNAD")))
 
         val arkiverDokumentResponse = dokarkivService.lagJournalpostV2(dto)
 
@@ -161,11 +174,11 @@ class DokarkivServiceTest {
 
     @Test fun `skal kaste exception hvis navn er null`() {
         every { personopplysningerService.hentPersoninfoFor(FNR) }
-            .answers { Personinfo.Builder().medNavn(null).build() }
+                .answers { Personinfo.Builder().medNavn(null).build() }
 
-        val dto = ArkiverDokumentRequest(FNR,
-                                         false,
-                                         listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
+        val dto = DeprecatedArkiverDokumentRequest(FNR,
+                                                   false,
+                                                   listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
 
         val thrown = catchThrowable { dokarkivService.lagJournalpostV2(dto) }
 
