@@ -16,7 +16,6 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Periode
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest
-import org.slf4j.LoggerFactory
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.web.context.annotation.ApplicationScope
@@ -64,17 +63,20 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
 
     fun hentAktørId(personIdent: String, tema: String): List<String> {
         val hentIdenter = pdlRestClient.hentIdenter(personIdent, tema)
-        return hentIdenter.data.pdlIdenter.identer.filter { it.gruppe == "AKTORID" }.map { it.ident }
+        return hentIdenter.data.pdlIdenter.identer.filter { it.gruppe == "AKTORID" && !it.historisk }.map { it.ident }
     }
 
-    fun hentIdenter(personIdent: String, tema: String): List<IdentInformasjon> {
+    fun hentIdenter(personIdent: String, tema: String, historikk: Boolean): List<IdentInformasjon> {
         val hentIdenter = pdlRestClient.hentIdenter(personIdent, tema)
-        return hentIdenter.data.pdlIdenter.identer.map { it }
+
+        return if (historikk) {
+            hentIdenter.data.pdlIdenter.identer.map { it }
+        } else {
+            hentIdenter.data.pdlIdenter.identer.filter { !it.historisk }.map { it }
+        }
     }
 
     companion object {
-        private val LOG = LoggerFactory.getLogger(PersonopplysningerService::class.java)
-        private val secureLogger = LoggerFactory.getLogger("secureLogger")
         const val PERSON = "PERSON"
     }
 

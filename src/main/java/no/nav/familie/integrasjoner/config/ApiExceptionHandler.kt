@@ -9,6 +9,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MissingRequestHeaderException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -51,6 +52,14 @@ class ApiExceptionHandler {
 
     @ExceptionHandler(MissingServletRequestParameterException::class)
     fun handleMissingServletRequestParameterException(e: MissingServletRequestParameterException): ResponseEntity<Ressurs<Any>> {
+        logger.warn("Mangler påkrevd request parameter. {}", e.message)
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(failure("Mangler påkrevd request parameter", e))
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleHttpMessageNotReadableException(e: HttpMessageNotReadableException): ResponseEntity<Ressurs<Any>> {
         logger.warn("Mangler påkrevd request parameter. {}", e.message)
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
