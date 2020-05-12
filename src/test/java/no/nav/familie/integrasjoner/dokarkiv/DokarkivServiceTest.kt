@@ -52,7 +52,7 @@ class DokarkivServiceTest {
         every { dokarkivRestClient.oppdaterJournalpost(capture(slot), any()) }
                 .answers { OppdaterJournalpostResponse(JOURNALPOST_ID) }
 
-        val bruker = Bruker(IdType.FNR, "12345678910")
+        val bruker = DokarkivBruker(IdType.FNR, "12345678910")
         val dto = OppdaterJournalpostRequest(bruker = bruker, tema = "tema", sak = Sak("11111111", "fagsaksystem"))
 
         dokarkivService.oppdaterJournalpost(dto, JOURNALPOST_ID)
