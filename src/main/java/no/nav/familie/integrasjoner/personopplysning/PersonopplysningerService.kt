@@ -63,16 +63,17 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
 
     fun hentAktørId(personIdent: String, tema: String): List<String> {
         val hentIdenter = pdlRestClient.hentIdenter(personIdent, tema)
-        return hentIdenter.data.pdlIdenter.identer.filter { it.gruppe == "AKTORID" && !it.historisk }.map { it.ident }
+        return hentIdenter.data.pdlIdenter!!.identer.filter { it.gruppe == "AKTORID" && !it.historisk }.map { it.ident }
     }
 
     fun hentIdenter(personIdent: String, tema: String, historikk: Boolean): List<IdentInformasjon> {
         val hentIdenter = pdlRestClient.hentIdenter(personIdent, tema)
 
+
         return if (historikk) {
-            hentIdenter.data.pdlIdenter.identer.map { it }
+            hentIdenter.data.pdlIdenter!!.identer.map { it }
         } else {
-            hentIdenter.data.pdlIdenter.identer.filter { !it.historisk }.map { it }
+            hentIdenter.data.pdlIdenter!!.identer.filter { !it.historisk }.map { it }
         }
     }
 

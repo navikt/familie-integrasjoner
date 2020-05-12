@@ -139,6 +139,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.body?.melding).contains("Feil ved oppslag på person: Fant ikke person, Ikke tilgang")
     }
 
     @Test
@@ -201,6 +202,25 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+    }
+
+    @Test
+    fun `hentIdenter finner ingen response fra graphql og returnerer errorMelding istedet`() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withPath("/rest/pdl/graphql")
+                                .withBody(gyldigIdenterRequest())
+                )
+                .respond(HttpResponse.response().withBody(readfile("pdlPersonIkkeFunnetResponse.json"))
+                                 .withHeaders(Header("Content-Type", "application/json")))
+        val response: ResponseEntity<Ressurs<List<IdentInformasjon>>> = restTemplate.exchange(uriHentIdenter,
+                                                                                              HttpMethod.POST,
+                                                                                              HttpEntity("12345678901", headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.body?.melding).contains("Fant ikke identer for person: Fant ikke person, Ikke tilgang")
     }
 
     @Test
