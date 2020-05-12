@@ -102,10 +102,12 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         val response = postForEntity<PdlHentIdenterResponse>(pdlUri,
                                                              pdlPersonRequest,
                                                              httpHeaders(tema))
+
+
         if (response != null && !response.harFeil()) {
             return response
         }
-        throw OppslagException("Fant ikke identer for person.",
+        throw OppslagException("Fant ikke identer for person: " + response?.errorMessages(),
                                "PdlRestClient",
                                OppslagException.Level.MEDIUM,
                                HttpStatus.NOT_FOUND,

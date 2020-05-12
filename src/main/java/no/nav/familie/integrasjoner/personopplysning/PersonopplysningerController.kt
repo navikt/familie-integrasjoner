@@ -36,16 +36,23 @@ class PersonopplysningerController(private val personopplysningerService: Person
     }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["aktorId/{tema}"])
-    fun aktørId(@RequestBody personIdent: String,
+    fun aktørId(@RequestBody(required = true) personIdent: String,
                 @PathVariable tema: Tema): ResponseEntity<Ressurs<List<String>>> {
         return ResponseEntity.ok().body(success(data = personopplysningerService.hentAktørId(personIdent, tema.toString()),
                                                 melding = "Hent aktørId OK"))
     }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["identer/{tema}"])
-    fun identer(@RequestBody personIdent: String,
+    fun identer(@RequestBody(required = true) personIdent: String,
                 @PathVariable tema: Tema): ResponseEntity<Ressurs<List<IdentInformasjon>>> {
-        return ResponseEntity.ok().body(success(data = personopplysningerService.hentIdenter(personIdent, tema.toString()),
+        return ResponseEntity.ok().body(success(data = personopplysningerService.hentIdenter(personIdent, tema.toString(), false),
+                                                melding = "Hent aktørId OK"))
+    }
+
+    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["identer/{tema}/historikk"])
+    fun identerHistoriske(@RequestBody(required = true) personIdent: String,
+                @PathVariable tema: Tema): ResponseEntity<Ressurs<List<IdentInformasjon>>> {
+        return ResponseEntity.ok().body(success(data = personopplysningerService.hentIdenter(personIdent, tema.toString(), true),
                                                 melding = "Hent aktørId OK"))
     }
 

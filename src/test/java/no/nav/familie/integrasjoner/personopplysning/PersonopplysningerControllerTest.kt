@@ -33,6 +33,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
     private lateinit var uriHentPersoninfo: String
     private lateinit var uriHentPersoninfoEnkel: String
     private lateinit var uriHentIdenter: String
+    private lateinit var uriHentHistoriskeIdenter: String
     private lateinit var uriHentAktørId: String
 
     @Before
@@ -44,6 +45,8 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         uriHentPersoninfo = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}v1/info/$TEMA").toUriString()
         uriHentPersoninfoEnkel = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}v1/infoEnkel/$TEMA").toUriString()
         uriHentIdenter = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}identer/$TEMA").toUriString()
+        uriHentHistoriskeIdenter = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}identer/$TEMA/historikk")
+                .toUriString()
         uriHentAktørId = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}aktorId/$TEMA").toUriString()
     }
 
@@ -136,6 +139,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.body?.melding).contains("Feil ved oppslag på person: Fant ikke person, Ikke tilgang")
     }
 
     @Test
@@ -174,6 +178,73 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.body?.data)
+                .hasSize(2)
+                .extracting<String> {it.ident}
+                .contains(AKTIV_FNR_IDENT, AKTIV_AKTØR_IDENT)
+    }
+
+    @Test
+    fun `hentIdenter kaster bad request hvis input mangler`() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withPath("/rest/pdl/graphql")
+                                .withBody(gyldigIdenterRequest())
+                )
+                .respond(HttpResponse.response()
+                                 .withBody(readfile("pdlAktorIdResponse.json"))
+                                 .withHeaders(Header("Content-Type", "application/json"))
+                                 .withStatusCode(200))
+        val response: ResponseEntity<Ressurs<List<IdentInformasjon>>> = restTemplate.exchange(uriHentIdenter,
+                                                                                              HttpMethod.POST,
+                                                                                              HttpEntity(null, headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+    }
+
+    @Test
+    fun `hentIdenter finner ingen response fra graphql og returnerer errorMelding istedet`() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withPath("/rest/pdl/graphql")
+                                .withBody(gyldigIdenterRequest())
+                )
+                .respond(HttpResponse.response().withBody(readfile("pdlPersonIkkeFunnetResponse.json"))
+                                 .withHeaders(Header("Content-Type", "application/json")))
+        val response: ResponseEntity<Ressurs<List<IdentInformasjon>>> = restTemplate.exchange(uriHentIdenter,
+                                                                                              HttpMethod.POST,
+                                                                                              HttpEntity("12345678901", headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.body?.melding).contains("Fant ikke identer for person: Fant ikke person, Ikke tilgang")
+    }
+
+    @Test
+    fun `hentIdenterMedHistorikk returnerer identer alle historiske identer fra pdl`() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withPath("/rest/pdl/graphql")
+                                .withBody(gyldigIdenterRequest())
+                )
+                .respond(HttpResponse.response()
+                                 .withBody(readfile("pdlAktorIdResponse.json"))
+                                 .withHeaders(Header("Content-Type", "application/json"))
+                                 .withStatusCode(200))
+        val response: ResponseEntity<Ressurs<List<IdentInformasjon>>> = restTemplate.exchange(uriHentHistoriskeIdenter,
+                                                                                              HttpMethod.POST,
+                                                                                              HttpEntity("12345678901", headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.body?.data)
+                .hasSize(3)
+                .extracting<String> {it.ident}
+                .contains(AKTIV_FNR_IDENT, AKTIV_AKTØR_IDENT, HISTORISK_AKTØR_IDENT)
     }
 
     @Test
@@ -195,6 +266,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.body?.data).containsExactly(AKTIV_AKTØR_IDENT)
     }
 
     private fun gyldigRequest(): String {
@@ -226,5 +298,8 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         const val FAMILIERELASJON_RELASJONSROLLE = "BARN"
         const val PDL_BASE_URL = "/api/personopplysning/"
         const val TEMA = "BAR"
+        const val AKTIV_AKTØR_IDENT = "2872543507203"
+        const val AKTIV_FNR_IDENT = "21127725540"
+        const val HISTORISK_AKTØR_IDENT = "2872543000000"
     }
 }
