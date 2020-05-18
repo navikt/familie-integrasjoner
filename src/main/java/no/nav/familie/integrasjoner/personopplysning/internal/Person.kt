@@ -4,7 +4,8 @@ data class Person(
         val fødselsdato: String,
         val navn: String,
         val kjønn: String,
-        val familierelasjoner: Set<Familierelasjon>)
+        val familierelasjoner: Set<Familierelasjon>,
+        val adressebeskyttelse: Adressebeskyttelse)
 
 data class Familierelasjon(
         val personIdent: Personident,
@@ -14,3 +15,13 @@ data class Familierelasjon(
 data class Personident(
         val id: String
 )
+
+data class Adressebeskyttelse(
+        val gradering: ADRESSEBESKYTTELSEGRADERING
+)
+
+enum class ADRESSEBESKYTTELSEGRADERING {
+    FORTROLIG,
+    STRENGT_FORTROLIG,
+    UGRADERT
+}

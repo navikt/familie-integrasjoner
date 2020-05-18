@@ -14,4 +14,7 @@ query($ident: ID!) {person: hentPerson(ident: $ident) {
         relatertPersonsIdent,
         relatertPersonsRolle
     }
+    adressebeskyttelse {
+        gradering
+    }
 }}
