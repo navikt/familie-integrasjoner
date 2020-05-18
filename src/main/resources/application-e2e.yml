@@ -1,13 +1,13 @@
 no.nav.security.jwt:
   issuer.azuread:
-    discoveryurl: http://host.docker.internal:1111/v2.0/.well-known/openid-configuration
+    discoveryurl: http://mock-oauth2-server:1111/v2.0/.well-known/openid-configuration
     accepted_audience: api://${INTEGRASJONER_CLIENT_ID}/.default
     cookie_name: azure_token
   client:
     registration:
       aad-graph-onbehalfof:
         resource-url: ${AAD_GRAPH_API_URI}
-        token-endpoint-url: http://host.docker.internal:1111/oauth2/v2.0/token
+        token-endpoint-url: http://mock-oauth2-server:1111/oauth2/v2.0/token
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${INTEGRASJONER_AAD_GRAPH_SCOPE}
         authentication:
@@ -34,7 +34,7 @@ no.nav.security.jwt:
           client-auth-method: client_secret_basic
       infotrygd:
         resource-url: ${INFOTRYGD_URL}
-        token-endpoint-url: http://host.docker.internal:1111/oauth2/v2.0/token
+        token-endpoint-url: http://mock-oauth2-server:1111/oauth2/v2.0/token
         grant-type: client_credentials
         scope: ${INTEGRASJONER_INFOTRYGD_KS_SCOPE}
         authentication:
