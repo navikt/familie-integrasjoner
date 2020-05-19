@@ -101,11 +101,7 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
         return dokarkivRestClient.oppdaterJournalpost(supplerDefaultVerdier(request), journalpostId)
     }
 
-    private fun hentNavnForFnr(fnr: String?): String {
-        if (fnr == null) {
-            error("Kan ikke hente navn")
-        }
-
+    private fun hentNavnForFnr(fnr: String): String {
         return personopplysningerService.hentPersoninfo(fnr, Tema.BAR.toString(), PersonInfoQuery.ENKEL).navn
     }
 
