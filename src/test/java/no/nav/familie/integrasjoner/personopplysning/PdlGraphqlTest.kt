@@ -10,8 +10,6 @@ import org.junit.Ignore
 import org.junit.Test
 import org.junit.jupiter.api.Disabled
 
-
-@Ignore // TODO: Enable
 class PdlGraphqlTest {
 
     private val mapper = ObjectMapper()

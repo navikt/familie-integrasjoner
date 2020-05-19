@@ -26,7 +26,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.util.UriComponentsBuilder
 
-@Ignore // TODO: Enable
 @ActiveProfiles("integrasjonstest", "mock-personopplysninger", "mock-sts")
 class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
 
