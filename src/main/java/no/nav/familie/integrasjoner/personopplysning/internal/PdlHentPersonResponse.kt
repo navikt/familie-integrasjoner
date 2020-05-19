@@ -20,7 +20,8 @@ data class PdlPerson(val person: PdlPersonData?)
 data class PdlPersonData(val foedsel: List<PdlFødselsDato>,
                          val navn: List<PdlNavn>,
                          val kjoenn: List<PdlKjoenn>,
-                         val familierelasjoner: List<PdlFamilierelasjon> = emptyList())
+                         val familierelasjoner: List<PdlFamilierelasjon> = emptyList(),
+                         val adressebeskyttelse: List<Adressebeskyttelse>)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlFødselsDato(val foedselsdato: String?)
@@ -48,6 +49,11 @@ data class PdlKjoenn(val kjoenn: KJØNN)
 data class PdlFamilierelasjon(val relatertPersonsIdent: String,
                               val relatertPersonsRolle: FAMILIERELASJONSROLLE)
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Adressebeskyttelse(
+        val gradering: ADRESSEBESKYTTELSEGRADERING
+)
+
 enum class KJØNN {
     MANN,
     KVINNE,
@@ -59,4 +65,11 @@ enum class FAMILIERELASJONSROLLE {
     FAR,
     MEDMOR,
     MOR
+}
+
+enum class ADRESSEBESKYTTELSEGRADERING {
+    STRENGT_FORTROLIG_UTLAND, // Kode 19
+    FORTROLIG, // Kode 7
+    STRENGT_FORTROLIG, // Kode 6
+    UGRADERT
 }
