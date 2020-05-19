@@ -11,14 +11,13 @@ import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
 import no.nav.familie.integrasjoner.dokarkiv.metadata.*
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
-import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
+import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.kontrakter.felles.arkivering.Dokument
 import no.nav.familie.kontrakter.felles.arkivering.FilType
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.Before
 import org.junit.Test
-import java.time.LocalDate
+import kotlin.test.assertTrue
 import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequest
 
 class DokarkivServiceTest {
@@ -69,12 +68,12 @@ class DokarkivServiceTest {
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
                 .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
 
-        every { personopplysningerService.hentPersoninfoFor(FNR) }
+        every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
                 .answers {
-                    Personinfo.Builder().medPersonIdent(PERSON_IDENT)
-                            .medFødselsdato(LocalDate.now())
-                            .medNavn(navn)
-                            .build()
+                    Person(fødselsdato = "1980-05-12",
+                           navn = navn,
+                           kjønn = "KVINNE",
+                           familierelasjoner = emptySet())
                 }
         val dto = DeprecatedArkiverDokumentRequest(FNR,
                                                    false,
@@ -95,12 +94,12 @@ class DokarkivServiceTest {
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
                 .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
 
-        every { personopplysningerService.hentPersoninfoFor(FNR) }
+        every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
                 .answers {
-                    Personinfo.Builder().medPersonIdent(PERSON_IDENT)
-                            .medFødselsdato(LocalDate.now())
-                            .medNavn(navn)
-                            .build()
+                    Person(fødselsdato = "1980-05-12",
+                           navn = navn,
+                           kjønn = "KVINNE",
+                           familierelasjoner = emptySet())
                 }
 
         val dto = DeprecatedArkiverDokumentRequest(FNR,
@@ -121,12 +120,12 @@ class DokarkivServiceTest {
         val slot = slot<OpprettJournalpostRequest>()
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
                 .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
-        every { personopplysningerService.hentPersoninfoFor(FNR) }
+        every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
                 .answers {
-                    Personinfo.Builder().medPersonIdent(PERSON_IDENT)
-                            .medFødselsdato(LocalDate.now())
-                            .medNavn(navn)
-                            .build()
+                    Person(fødselsdato = "1980-05-12",
+                           navn = navn,
+                           kjønn = "KVINNE",
+                           familierelasjoner = emptySet())
                 }
 
         val dto = DeprecatedArkiverDokumentRequest(FNR, false, listOf(Dokument(JSON_DOK,
@@ -152,12 +151,12 @@ class DokarkivServiceTest {
     @Test fun `response fra klient skal returnere arkiverDokumentResponse`() {
         every { dokarkivRestClient.lagJournalpost(any(), any()) }
                 .answers { OpprettJournalpostResponse(journalpostId = JOURNALPOST_ID, journalpostferdigstilt = true) }
-        every { personopplysningerService.hentPersoninfoFor(FNR) }
+        every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
                 .answers {
-                    Personinfo.Builder().medPersonIdent(PERSON_IDENT)
-                            .medFødselsdato(LocalDate.now())
-                            .medNavn(navn)
-                            .build()
+                    Person(fødselsdato = "1980-05-12",
+                           navn = navn,
+                           kjønn = "KVINNE",
+                           familierelasjoner = emptySet())
                 }
 
         val dto = DeprecatedArkiverDokumentRequest(FNR, false, listOf(Dokument(JSON_DOK,
@@ -169,21 +168,7 @@ class DokarkivServiceTest {
         val arkiverDokumentResponse = dokarkivService.lagJournalpostV2(dto)
 
         assertThat(arkiverDokumentResponse.journalpostId).isEqualTo(JOURNALPOST_ID)
-        assertThat(arkiverDokumentResponse.ferdigstilt).isTrue()
-    }
-
-    @Test fun `skal kaste exception hvis navn er null`() {
-        every { personopplysningerService.hentPersoninfoFor(FNR) }
-                .answers { Personinfo.Builder().medNavn(null).build() }
-
-        val dto = DeprecatedArkiverDokumentRequest(FNR,
-                                                   false,
-                                                   listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
-
-        val thrown = catchThrowable { dokarkivService.lagJournalpostV2(dto) }
-
-        assertThat(thrown).isInstanceOf(RuntimeException::class.java)
-                .withFailMessage("Kan ikke hente navn")
+        assertTrue(arkiverDokumentResponse.ferdigstilt)
     }
 
     private fun assertOpprettJournalpostRequest(request: OpprettJournalpostRequest,
