@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.dokarkiv
 
 import no.nav.familie.integrasjoner.client.rest.DokarkivLogiskVedleggRestClient
 import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
+import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.dokarkiv.DokarkivController.LogiskVedleggRequest
 import no.nav.familie.integrasjoner.dokarkiv.DokarkivController.LogiskVedleggResponse
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
@@ -12,6 +13,7 @@ import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentResponse
 import no.nav.familie.kontrakter.felles.arkivering.Dokument
 import no.nav.familie.kontrakter.felles.arkivering.FilType
 import no.nav.familie.kontrakter.felles.arkivering.v2.ArkiverDokumentRequest
+import no.nav.familie.kontrakter.felles.oppgave.Tema
 import org.springframework.stereotype.Service
 import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequest
 
@@ -100,7 +102,11 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
     }
 
     private fun hentNavnForFnr(fnr: String?): String {
-        return personopplysningerService.hentPersoninfoFor(fnr).navn ?: error("Kan ikke hente navn")
+        if (fnr == null) {
+            error("Kan ikke hente navn")
+        }
+
+        return personopplysningerService.hentPersoninfo(fnr, Tema.BAR.toString(), PersonInfoQuery.ENKEL).navn
     }
 
     private fun supplerDefaultVerdier(request: OppdaterJournalpostRequest): OppdaterJournalpostRequest {

@@ -55,8 +55,8 @@ MEDL2_URL: http://vtp:8060/rest/medl2
 SAF_URL: http://vtp:8060/rest/api/saf
 ARBEIDSFORDELING_V1_URL: http://vtp:8060/soap/norg2/ws/Arbeidsfordeling/v1
 
-DOKDIST_URL: http://familie-mock-server:1337/rest/api/dokdist
-DOKARKIV_V1_URL: http://familie-mock-server:1337/rest/api/dokarkiv
+DOKDIST_URL: http://familie-mock-server:1337/rest/api/dokdist/
+DOKARKIV_V1_URL: http://familie-mock-server:1337/rest/api/dokarkiv/
 OPPGAVE_URL: http://familie-mock-server:1337/rest/api/oppgave/
 PDL_URL: http://familie-mock-server:1337/rest/api/pdl
 AKTOERID_URL: http://familie-mock-server:1337/rest/aktoerregister
