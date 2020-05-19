@@ -36,9 +36,10 @@ import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.*
+import kotlin.test.assertFalse
 import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequest
 
-@ActiveProfiles(profiles = ["integrasjonstest", "mock-sts", "mock-aktor", "mock-personopplysninger"])
+@ActiveProfiles(profiles = ["integrasjonstest", "mock-sts", "mock-aktor", "mock-personopplysninger", "mock-pdl"])
 class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
     @get:Rule
@@ -107,7 +108,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
-        assertThat(response.body?.data?.ferdigstilt).isFalse()
+        assertFalse(response.body?.data?.ferdigstilt!!)
     }
 
     @Test
@@ -133,7 +134,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
-        assertThat(response.body?.data?.ferdigstilt).isFalse()
+        assertFalse(response.body?.data?.ferdigstilt!!)
     }
 
     @Test
@@ -159,7 +160,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
-        assertThat(response.body?.data?.ferdigstilt).isFalse()
+        assertFalse(response.body?.data?.ferdigstilt!!)
     }
 
     @Test
