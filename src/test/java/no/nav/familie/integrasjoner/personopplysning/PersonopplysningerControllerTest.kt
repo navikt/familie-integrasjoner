@@ -9,10 +9,8 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.security.token.support.test.JwtTokenGenerator
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
-import org.junit.jupiter.api.Disabled
 import org.mockserver.junit.MockServerRule
 import org.mockserver.model.Header
 import org.mockserver.model.HttpRequest
