@@ -22,6 +22,11 @@
           "relatertPersonsIdent": "12345678910",
           "relatertPersonsRolle": "BARN"
         }
+      ],
+      "adressebeskyttelse": [
+        {
+          "gradering": "UGRADERT"
+        }
       ]
     }
   }

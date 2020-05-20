@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.personopplysning
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
+import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
 import no.nav.familie.integrasjoner.personopplysning.internal.Familierelasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.personopplysning.internal.Personident
@@ -26,7 +27,8 @@ class PdlTestConfig {
                          navn = "Kari Normann",
                          kjønn = "KVINNE",
                          familierelasjoner = setOf(Familierelasjon(personIdent = Personident(id = "12345678910"),
-                                                                   relasjonsrolle = "BARN")))
+                                                                   relasjonsrolle = "BARN")),
+                         adressebeskyttelseGradering = null)
         return klient
     }
 }

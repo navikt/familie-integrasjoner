@@ -11,6 +11,7 @@ import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
 import no.nav.familie.integrasjoner.dokarkiv.metadata.*
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
+import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.kontrakter.felles.arkivering.Dokument
 import no.nav.familie.kontrakter.felles.arkivering.FilType
@@ -73,7 +74,8 @@ class DokarkivServiceTest {
                     Person(fødselsdato = "1980-05-12",
                            navn = navn,
                            kjønn = "KVINNE",
-                           familierelasjoner = emptySet())
+                           familierelasjoner = emptySet(),
+                           adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
                 }
         val dto = DeprecatedArkiverDokumentRequest(FNR,
                                                    false,
@@ -99,7 +101,8 @@ class DokarkivServiceTest {
                     Person(fødselsdato = "1980-05-12",
                            navn = navn,
                            kjønn = "KVINNE",
-                           familierelasjoner = emptySet())
+                           familierelasjoner = emptySet(),
+                           adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
                 }
 
         val dto = DeprecatedArkiverDokumentRequest(FNR,
@@ -125,7 +128,8 @@ class DokarkivServiceTest {
                     Person(fødselsdato = "1980-05-12",
                            navn = navn,
                            kjønn = "KVINNE",
-                           familierelasjoner = emptySet())
+                           familierelasjoner = emptySet(),
+                           adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
                 }
 
         val dto = DeprecatedArkiverDokumentRequest(FNR, false, listOf(Dokument(JSON_DOK,
@@ -156,7 +160,8 @@ class DokarkivServiceTest {
                     Person(fødselsdato = "1980-05-12",
                            navn = navn,
                            kjønn = "KVINNE",
-                           familierelasjoner = emptySet())
+                           familierelasjoner = emptySet(),
+                           adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
                 }
 
         val dto = DeprecatedArkiverDokumentRequest(FNR, false, listOf(Dokument(JSON_DOK,
