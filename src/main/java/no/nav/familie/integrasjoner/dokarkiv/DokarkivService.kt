@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.dokarkiv
 
 import no.nav.familie.integrasjoner.client.rest.DokarkivLogiskVedleggRestClient
 import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
+import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.dokarkiv.DokarkivController.LogiskVedleggRequest
 import no.nav.familie.integrasjoner.dokarkiv.DokarkivController.LogiskVedleggResponse
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
@@ -12,6 +13,7 @@ import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentResponse
 import no.nav.familie.kontrakter.felles.arkivering.Dokument
 import no.nav.familie.kontrakter.felles.arkivering.FilType
 import no.nav.familie.kontrakter.felles.arkivering.v2.ArkiverDokumentRequest
+import no.nav.familie.kontrakter.felles.oppgave.Tema
 import org.springframework.stereotype.Service
 import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequest
 
@@ -50,7 +52,7 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
                 sakstype = "FAGSAK",
                 fagsaksystem = metadata.fagsakSystem) else null
 
-        val navn = hentNavnForFnr(arkiverDokumentRequest.fnr)
+        val navn = hentNavnForFnr(fnr = arkiverDokumentRequest.fnr, behandlingstema = metadata.behandlingstema)
 
         return OpprettJournalpostRequest(journalpostType = metadata.journalpostType,
                                          behandlingstema = metadata.behandlingstema,
@@ -70,10 +72,12 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
     private fun mapTilOpprettJournalpostRequest(deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest)
             : OpprettJournalpostRequest {
 
-        val fnr = deprecatedArkiverDokumentRequest.fnr
-        val navn = hentNavnForFnr(fnr)
 
         val metadata = dokarkivMetadata.getMetadata(deprecatedArkiverDokumentRequest.dokumenter[0])
+
+        val fnr = deprecatedArkiverDokumentRequest.fnr
+        val navn = hentNavnForFnr(fnr = fnr, behandlingstema = metadata.behandlingstema)
+
         val arkivdokumenter = deprecatedArkiverDokumentRequest.dokumenter.map(this::mapTilArkivdokument)
         val jpsak: Sak? = if (deprecatedArkiverDokumentRequest.fagsakId != null) Sak(
                 fagsakId = deprecatedArkiverDokumentRequest.fagsakId,
@@ -99,8 +103,8 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
         return dokarkivRestClient.oppdaterJournalpost(supplerDefaultVerdier(request), journalpostId)
     }
 
-    private fun hentNavnForFnr(fnr: String?): String {
-        return personopplysningerService.hentPersoninfoFor(fnr).navn ?: error("Kan ikke hente navn")
+    private fun hentNavnForFnr(fnr: String, behandlingstema: String?): String {
+        return personopplysningerService.hentPersoninfo(fnr, behandlingstema ?: Tema.BAR.toString(), PersonInfoQuery.ENKEL).navn
     }
 
     private fun supplerDefaultVerdier(request: OppdaterJournalpostRequest): OppdaterJournalpostRequest {
@@ -122,12 +126,11 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
     }
 
     private fun hentVariantformat(dokument: Dokument): String {
-        val variantFormat: String = if (dokument.filType == FilType.PDFA) {
+        return if (dokument.filType == FilType.PDFA) {
             "ARKIV" //ustrukturert dokumentDto
         } else {
             "ORIGINAL" //strukturert dokumentDto
         }
-        return variantFormat
     }
 
     private fun mapTilArkivdokument(dokument: Dokument): ArkivDokument {

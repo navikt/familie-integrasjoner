@@ -1,13 +1,13 @@
 no.nav.security.jwt:
   issuer.azuread:
-    discoveryurl: http://host.docker.internal:1111/v2.0/.well-known/openid-configuration
+    discoveryurl: http://mock-oauth2-server:1111/v2.0/.well-known/openid-configuration
     accepted_audience: api://${INTEGRASJONER_CLIENT_ID}/.default
     cookie_name: azure_token
   client:
     registration:
       aad-graph-onbehalfof:
         resource-url: ${AAD_GRAPH_API_URI}
-        token-endpoint-url: http://host.docker.internal:1111/oauth2/v2.0/token
+        token-endpoint-url: http://mock-oauth2-server:1111/oauth2/v2.0/token
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${INTEGRASJONER_AAD_GRAPH_SCOPE}
         authentication:
@@ -34,7 +34,7 @@ no.nav.security.jwt:
           client-auth-method: client_secret_basic
       infotrygd:
         resource-url: ${INFOTRYGD_URL}
-        token-endpoint-url: http://host.docker.internal:1111/oauth2/v2.0/token
+        token-endpoint-url: http://mock-oauth2-server:1111/oauth2/v2.0/token
         grant-type: client_credentials
         scope: ${INTEGRASJONER_INFOTRYGD_KS_SCOPE}
         authentication:
@@ -48,16 +48,16 @@ AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 STS_URL: http://nav-auth-mock:8200/nais-sts/token
 SECURITYTOKENSERVICE_URL: http://vtp:8060/soap/SecurityTokenServiceProvider/
 PERSON_V3_URL: https://vtp:8063/soap/tpsws/ws/Person/v3
-DOKARKIV_V1_URL: http://vtp:8060/rest/dokarkiv/rest/journalpostapi/v1
-DOKDIST_URL: http://nowhere
 KODEVERK_URL: http://nowhere
 INFOTRYGD_URL: http://vtp:8060/rest/infotrygd-kontantstotte
 EGEN_ANSATT_V1_URL: https://vtp:8063/soap/tpsws/EgenAnsatt_v1
 MEDL2_URL: http://vtp:8060/rest/medl2
 SAF_URL: http://vtp:8060/rest/api/saf
-OPPGAVE_URL: http://vtp:8060/rest/dokarkiv/rest/oppgave-kontantstotte
 ARBEIDSFORDELING_V1_URL: http://vtp:8060/soap/norg2/ws/Arbeidsfordeling/v1
 
+DOKDIST_URL: http://familie-mock-server:1337/rest/api/dokdist/
+DOKARKIV_V1_URL: http://familie-mock-server:1337/rest/api/dokarkiv/
+OPPGAVE_URL: http://familie-mock-server:1337/rest/api/oppgave/
 PDL_URL: http://familie-mock-server:1337/rest/api/pdl
 AKTOERID_URL: http://familie-mock-server:1337/rest/aktoerregister
 
