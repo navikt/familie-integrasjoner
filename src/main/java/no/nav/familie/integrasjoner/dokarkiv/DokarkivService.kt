@@ -61,7 +61,7 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
                                          tema = metadata.tema,
                                          avsenderMottaker = AvsenderMottaker(fnr, IdType.FNR, navn),
                                          bruker = DokarkivBruker(IdType.FNR, fnr),
-                                         dokumenter = vedleggsdokumenter + hoveddokument,
+                                         dokumenter =  listOf(hoveddokument) + vedleggsdokumenter,
                                          eksternReferanseId = MDCOperations.getCallId(),
                                          journalfoerendeEnhet = arkiverDokumentRequest.journalførendeEnhet,
                                          sak = jpsak
