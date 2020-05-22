@@ -219,7 +219,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
     companion object {
 
         private const val PATH_PING = "internal/alive"
-        private const val PATH_OPPGAVE = "api/v1/oppgaver"
+        private const val PATH_OPPGAVE = "/api/v1/oppgaver"
         private val KONTANTSTØTTE_TEMA = Tema.KON
         private const val OPPGAVE_TYPE = "BEH_SAK"
         private const val X_CORRELATION_ID = "X-Correlation-ID"
