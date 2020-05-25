@@ -50,7 +50,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                navn = it.navn.first().fulltNavn(),
                                kjønn = it.kjoenn.first().kjoenn.toString(),
                                familierelasjoner = familierelasjoner,
-                               adressebeskyttelseGradering = it.adressebeskyttelse.first().gradering)
+                               adressebeskyttelseGradering = it.adressebeskyttelse.firstOrNull()?.gradering)
                     }
                 }.fold(
                         onSuccess = { it },
