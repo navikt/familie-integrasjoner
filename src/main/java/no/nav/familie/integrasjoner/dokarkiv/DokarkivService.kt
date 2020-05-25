@@ -52,7 +52,7 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
                 sakstype = "FAGSAK",
                 fagsaksystem = metadata.fagsakSystem) else null
 
-        val navn = hentNavnForFnr(fnr = arkiverDokumentRequest.fnr, behandlingstema = metadata.behandlingstema)
+        val navn = hentNavnForFnr(fnr = arkiverDokumentRequest.fnr, behandlingstema = metadata.tema)
 
         return OpprettJournalpostRequest(journalpostType = metadata.journalpostType,
                                          behandlingstema = metadata.behandlingstema,
@@ -76,7 +76,7 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
         val metadata = dokarkivMetadata.getMetadata(deprecatedArkiverDokumentRequest.dokumenter[0])
 
         val fnr = deprecatedArkiverDokumentRequest.fnr
-        val navn = hentNavnForFnr(fnr = fnr, behandlingstema = metadata.behandlingstema)
+        val navn = hentNavnForFnr(fnr = fnr, behandlingstema = metadata.tema)
 
         val arkivdokumenter = deprecatedArkiverDokumentRequest.dokumenter.map(this::mapTilArkivdokument)
         val jpsak: Sak? = if (deprecatedArkiverDokumentRequest.fagsakId != null) Sak(
