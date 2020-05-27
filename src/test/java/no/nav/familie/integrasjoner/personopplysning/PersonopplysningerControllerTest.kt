@@ -17,10 +17,7 @@ import org.mockserver.model.HttpRequest
 import org.mockserver.model.HttpResponse
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.web.client.exchange
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.http.*
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.util.UriComponentsBuilder
 
@@ -235,9 +232,14 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                                  .withBody(readfile("pdlAktorIdResponse.json"))
                                  .withHeaders(Header("Content-Type", "application/json"))
                                  .withStatusCode(200))
+
+        val httpHeaders = HttpHeaders()
+        httpHeaders.apply {
+            add("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        }.setBearerAuth(JwtTokenGenerator.signedJWTAsString("testbruker"))
         val response: ResponseEntity<Ressurs<List<IdentInformasjon>>> = restTemplate.exchange(uriHentHistoriskeIdenter,
                                                                                               HttpMethod.POST,
-                                                                                              HttpEntity("12345678901", headers))
+                                                                                              HttpEntity("12345678901", httpHeaders))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
