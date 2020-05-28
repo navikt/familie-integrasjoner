@@ -108,6 +108,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
 
 
         if (response != null && !response.harFeil()) {
+            secureLogger.info("Oppslag på identer for $personIdent vellykket!")
             return response
         }
         throw OppslagException("Fant ikke identer for person: " + response?.errorMessages(),
