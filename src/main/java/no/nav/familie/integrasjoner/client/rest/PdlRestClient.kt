@@ -6,7 +6,6 @@ import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.personopplysning.internal.*
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -99,9 +98,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
     }
 
     fun hentIdenter(personIdent: String, tema: String): PdlHentIdenterResponse {
-        val replaced = personIdent.replace("\"", "")
-        secureLogger.info("Henter identer for ident: $personIdent, spør videre med $replaced")
-        val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent.replace("\"", "")),
+        val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
                                                 query = aktørIdQuery)
         val response = postForEntity<PdlHentIdenterResponse>(pdlUri,
                                                              pdlPersonRequest,
@@ -109,7 +106,6 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
 
 
         if (response != null && !response.harFeil()) {
-            secureLogger.info("Oppslag på identer for $personIdent vellykket!")
             return response
         }
         throw OppslagException("Fant ikke identer for person: " + response?.errorMessages(),
@@ -122,7 +118,6 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
 
     companion object {
         private const val PATH_GRAPHQL = "graphql"
-        private val secureLogger = LoggerFactory.getLogger("secureLogger")
     }
 }
 
