@@ -67,6 +67,7 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
     }
 
     fun hentIdenter(personIdent: String, tema: String, historikk: Boolean): List<IdentInformasjon> {
+        //val pid = personIdent.replace("\\\"", "")
         val hentIdenter = pdlRestClient.hentIdenter(personIdent, tema)
 
 

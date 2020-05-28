@@ -6,6 +6,7 @@ import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.personopplysning.internal.*
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -98,6 +99,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
     }
 
     fun hentIdenter(personIdent: String, tema: String): PdlHentIdenterResponse {
+        secureLogger.info("Henter identer for ident: $personIdent")
         val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
                                                 query = aktørIdQuery)
         val response = postForEntity<PdlHentIdenterResponse>(pdlUri,
@@ -118,6 +120,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
 
     companion object {
         private const val PATH_GRAPHQL = "graphql"
+        private val secureLogger = LoggerFactory.getLogger("secureLogger")
     }
 }
 
