@@ -99,8 +99,9 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
     }
 
     fun hentIdenter(personIdent: String, tema: String): PdlHentIdenterResponse {
-        secureLogger.info("Henter identer for ident: $personIdent")
-        val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
+        val replaced = personIdent.replace("\"", "")
+        secureLogger.info("Henter identer for ident: $personIdent, spør videre med $replaced")
+        val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent.replace("\"", "")),
                                                 query = aktørIdQuery)
         val response = postForEntity<PdlHentIdenterResponse>(pdlUri,
                                                              pdlPersonRequest,
