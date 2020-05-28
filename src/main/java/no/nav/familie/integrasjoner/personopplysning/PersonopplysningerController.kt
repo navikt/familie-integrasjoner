@@ -49,7 +49,7 @@ class PersonopplysningerController(private val personopplysningerService: Person
                                                 melding = "Hent aktørId OK"))
     }
 
-    @PostMapping(//consumes = [MediaType.APPLICATION_JSON_VALUE],
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE],
                  produces = [MediaType.APPLICATION_JSON_VALUE],
                  path = ["identer/{tema}/historikk"])
     fun identerHistoriske(@RequestBody(required = true) personIdent: String,
