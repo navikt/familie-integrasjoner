@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.personopplysning
 import ch.qos.logback.classic.Logger
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
+import no.nav.familie.integrasjoner.personopplysning.domene.Ident
 import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.kontrakter.felles.Ressurs
@@ -233,13 +234,9 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                                  .withHeaders(Header("Content-Type", "application/json"))
                                  .withStatusCode(200))
 
-        val httpHeaders = HttpHeaders()
-        httpHeaders.apply {
-            add("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-        }.setBearerAuth(JwtTokenGenerator.signedJWTAsString("testbruker"))
         val response: ResponseEntity<Ressurs<List<IdentInformasjon>>> = restTemplate.exchange(uriHentHistoriskeIdenter,
                                                                                               HttpMethod.POST,
-                                                                                              HttpEntity("12345678901", httpHeaders))
+                                                                                              HttpEntity(Ident("12345678901"), headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)

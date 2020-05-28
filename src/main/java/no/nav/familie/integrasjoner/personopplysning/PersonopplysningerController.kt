@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.personopplysning
 
 import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
+import no.nav.familie.integrasjoner.personopplysning.domene.Ident
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
@@ -49,12 +50,11 @@ class PersonopplysningerController(private val personopplysningerService: Person
                                                 melding = "Hent aktørId OK"))
     }
 
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE],
-                 produces = [MediaType.APPLICATION_JSON_VALUE],
+    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE],
                  path = ["identer/{tema}/historikk"])
-    fun identerHistoriske(@RequestBody(required = true) personIdent: String,
-                @PathVariable tema: Tema): ResponseEntity<Ressurs<List<IdentInformasjon>>> {
-        return ResponseEntity.ok().body(success(data = personopplysningerService.hentIdenter(personIdent, tema.toString(), true),
+    fun identerHistoriske(@RequestBody(required = true) ident: Ident,
+                          @PathVariable tema: Tema): ResponseEntity<Ressurs<List<IdentInformasjon>>> {
+        return ResponseEntity.ok().body(success(data = personopplysningerService.hentIdenter(ident.ident, tema.toString(), true),
                                                 melding = "Hent aktørId OK"))
     }
 
