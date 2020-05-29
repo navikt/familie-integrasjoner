@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.personopplysning
 import ch.qos.logback.classic.Logger
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
+import no.nav.familie.integrasjoner.personopplysning.domene.Ident
 import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.kontrakter.felles.Ressurs
@@ -17,10 +18,7 @@ import org.mockserver.model.HttpRequest
 import org.mockserver.model.HttpResponse
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.web.client.exchange
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.http.*
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.util.UriComponentsBuilder
 
@@ -174,7 +172,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                                  .withStatusCode(200))
         val response: ResponseEntity<Ressurs<List<IdentInformasjon>>> = restTemplate.exchange(uriHentIdenter,
                                                                                               HttpMethod.POST,
-                                                                                              HttpEntity("12345678901", headers))
+                                                                                              HttpEntity(Ident("12345678901"), headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -216,7 +214,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                                  .withHeaders(Header("Content-Type", "application/json")))
         val response: ResponseEntity<Ressurs<List<IdentInformasjon>>> = restTemplate.exchange(uriHentIdenter,
                                                                                               HttpMethod.POST,
-                                                                                              HttpEntity("12345678901", headers))
+                                                                                              HttpEntity(Ident("12345678901"), headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -235,9 +233,10 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                                  .withBody(readfile("pdlAktorIdResponse.json"))
                                  .withHeaders(Header("Content-Type", "application/json"))
                                  .withStatusCode(200))
+
         val response: ResponseEntity<Ressurs<List<IdentInformasjon>>> = restTemplate.exchange(uriHentHistoriskeIdenter,
                                                                                               HttpMethod.POST,
-                                                                                              HttpEntity("12345678901", headers))
+                                                                                              HttpEntity(Ident("12345678901"), headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -262,7 +261,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
 
         val response: ResponseEntity<Ressurs<List<String>>> = restTemplate.exchange(uriHentAktørId,
                                                                                     HttpMethod.POST,
-                                                                                    HttpEntity("12345678901", headers))
+                                                                                    HttpEntity(Ident("12345678901"), headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
