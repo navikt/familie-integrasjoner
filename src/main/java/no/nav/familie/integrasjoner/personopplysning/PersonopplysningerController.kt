@@ -37,25 +37,24 @@ class PersonopplysningerController(private val personopplysningerService: Person
     }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["aktorId/{tema}"])
-    fun aktørId(@RequestBody(required = true) personIdent: String,
+    fun aktørId(@RequestBody(required = true) ident: Ident,
                 @PathVariable tema: Tema): ResponseEntity<Ressurs<List<String>>> {
-        return ResponseEntity.ok().body(success(data = personopplysningerService.hentAktørId(personIdent, tema.toString()),
+        return ResponseEntity.ok().body(success(data = personopplysningerService.hentAktørId(ident.ident, tema.toString()),
                                                 melding = "Hent aktørId OK"))
     }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["identer/{tema}"])
-    fun identer(@RequestBody(required = true) personIdent: String,
+    fun identer(@RequestBody(required = true) ident: Ident,
                 @PathVariable tema: Tema): ResponseEntity<Ressurs<List<IdentInformasjon>>> {
-        return ResponseEntity.ok().body(success(data = personopplysningerService.hentIdenter(personIdent, tema.toString(), false),
-                                                melding = "Hent aktørId OK"))
+        return ResponseEntity.ok().body(success(data = personopplysningerService.hentIdenter(ident.ident, tema.toString(), false),
+                                                melding = "Hent identer OK"))
     }
 
-    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE],
-                 path = ["identer/{tema}/historikk"])
+    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["identer/{tema}/historikk"])
     fun identerHistoriske(@RequestBody(required = true) ident: Ident,
                           @PathVariable tema: Tema): ResponseEntity<Ressurs<List<IdentInformasjon>>> {
         return ResponseEntity.ok().body(success(data = personopplysningerService.hentIdenter(ident.ident, tema.toString(), true),
-                                                melding = "Hent aktørId OK"))
+                                                melding = "Hent historiske identer OK"))
     }
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/historikk"])
