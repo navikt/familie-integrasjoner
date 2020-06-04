@@ -9,11 +9,12 @@ import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.context.ActiveProfiles
 
-@ActiveProfiles("mock-sts", "mock-egenansatt")
+@ActiveProfiles("integrasjonstest", "mock-sts", "mock-egenansatt")
 class EgenAnsattServiceTest : OppslagSpringRunnerTest() {
 
     @Autowired
     lateinit var egenAnsattSoapClient: EgenAnsattSoapClient
+
     @Autowired
     lateinit var egenAnsattService: EgenAnsattService
 
@@ -21,10 +22,11 @@ class EgenAnsattServiceTest : OppslagSpringRunnerTest() {
     fun `skal cachea erEgenAnsatt`() {
         every { egenAnsattSoapClient.erEgenAnsatt(any()) } returns true
         repeat(3) {
-            val erEgenAnsatt = egenAnsattService.erEgenAnsatt("1")
-            assertThat(erEgenAnsatt).isTrue()
+            assertThat(egenAnsattService.erEgenAnsatt("1")).isTrue()
+            egenAnsattService.erEgenAnsatt("2")
         }
 
-        verify(exactly = 1) { egenAnsattSoapClient.erEgenAnsatt(any()) }
+        verify(exactly = 1) { egenAnsattSoapClient.erEgenAnsatt("1") }
+        verify(exactly = 1) { egenAnsattSoapClient.erEgenAnsatt("2") }
     }
 }
