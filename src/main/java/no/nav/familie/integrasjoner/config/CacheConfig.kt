@@ -1,46 +1,29 @@
-package no.nav.familie.integrasjoner.config;
+package no.nav.familie.integrasjoner.config
 
-import org.ehcache.CacheManager;
-import org.ehcache.config.ResourcePools;
-import org.ehcache.config.builders.CacheManagerBuilder;
-import org.ehcache.config.builders.ExpiryPolicyBuilder;
-import org.ehcache.config.builders.ResourcePoolsBuilder;
-import org.ehcache.expiry.ExpiryPolicy;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import java.time.Duration;
-
-import static org.ehcache.config.builders.CacheConfigurationBuilder.newCacheConfigurationBuilder;
+import com.github.benmanes.caffeine.cache.Caffeine
+import org.springframework.cache.Cache
+import org.springframework.cache.CacheManager
+import org.springframework.cache.annotation.EnableCaching
+import org.springframework.cache.concurrent.ConcurrentMapCache
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import java.util.concurrent.TimeUnit
 
 @Configuration
 @EnableCaching
-public class CacheConfig {
+class CacheConfig {
 
     @Bean
-    public CacheManager aktørCacheManager() {
-        ResourcePools pools = ResourcePoolsBuilder.heap(1000).build();
-        ExpiryPolicy<Object, Object> expiryPolicy = ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofHours(1));
-        final CacheManager cacheManager =
-                CacheManagerBuilder.newCacheManagerBuilder()
-                                   .withCache("aktørIdCache",
-                                              newCacheConfigurationBuilder(String.class, String.class, pools).withExpiry(
-                                                      expiryPolicy))
-                                   .withCache("personIdentCache",
-                                              newCacheConfigurationBuilder(String.class, String.class, pools).withExpiry(
-                                                      expiryPolicy))
-                                   .withCache("tilgangtilbruker",
-                                              newCacheConfigurationBuilder(String.class, String.class, pools).withExpiry(
-                                                      expiryPolicy))
-                                   .withCache("tilgangtiltjenesten",
-                                              newCacheConfigurationBuilder(String.class, String.class, pools).withExpiry(
-                                                      expiryPolicy))
-                                   .withCache("tilgangtilenhet",
-                                              newCacheConfigurationBuilder(String.class, String.class, pools).withExpiry(
-                                                      expiryPolicy))
-                                   .build();
-        cacheManager.init();
-        return cacheManager;
+    fun cacheManager(): CacheManager = object : ConcurrentMapCacheManager() {
+        override fun createConcurrentMapCache(name: String): Cache {
+            val concurrentMap = Caffeine
+                    .newBuilder()
+                    .initialCapacity(100)
+                    .maximumSize(250)
+                    .expireAfterWrite(1, TimeUnit.HOURS)
+                    .recordStats().build<Any, Any>().asMap()
+            return ConcurrentMapCache(name, concurrentMap, true)
+        }
     }
 }

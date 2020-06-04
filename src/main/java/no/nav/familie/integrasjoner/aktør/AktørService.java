@@ -5,70 +5,44 @@ import no.nav.familie.integrasjoner.aktør.domene.Ident;
 import no.nav.familie.integrasjoner.client.rest.AktørregisterRestClient;
 import no.nav.familie.integrasjoner.felles.OppslagException;
 import no.nav.familie.integrasjoner.personopplysning.domene.AktørId;
-import org.ehcache.Cache;
-import org.ehcache.CacheManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.requireNonNull;
 import static org.springframework.http.HttpStatus.*;
 
 @Service
 public class AktørService {
 
     private static final Logger secureLogger = LoggerFactory.getLogger("secureLogger");
-    private final CacheManager aktørCacheManager;
-    private AktørregisterRestClient aktørregisterClient;
+    private final AktørregisterRestClient aktørregisterClient;
 
-    @Autowired
-    public AktørService(AktørregisterRestClient aktørregisterClient, CacheManager aktørCacheManager) {
-        this.aktørCacheManager = aktørCacheManager;
+    public AktørService(AktørregisterRestClient aktørregisterClient) {
         this.aktørregisterClient = aktørregisterClient;
     }
 
+    @Cacheable(value = "aktør_personIdent", condition = "#personIdent != null", unless = "#result == null")
     public String getAktørId(String personIdent) {
-        Objects.requireNonNull(personIdent, "personIdent");
-        return Optional.ofNullable(aktørCache().get(personIdent)).orElseGet(() -> {
-            var responseFraRegister = hentAktørIdFraRegister(personIdent);
-            if (responseFraRegister != null) {
-                secureLogger.info("Legger fnr {} med aktørid {} i aktør-cache", personIdent, responseFraRegister);
-                aktørCache().put(personIdent, responseFraRegister);
-            }
-            return responseFraRegister;
-        });
+        requireNonNull(personIdent, "personIdent");
+        String responseFraRegister = fra(personIdent);
+        if (responseFraRegister != null) {
+            secureLogger.info("Legger fnr {} med aktørid {} i aktør-cache", personIdent, responseFraRegister);
+        }
+        return responseFraRegister;
     }
 
+    @Cacheable(value = "aktør_aktørId", condition = "#aktørId != null", unless = "#result == null")
     public String getPersonIdent(AktørId aktørId) {
-        Objects.requireNonNull(aktørId, "aktørId");
-        return Optional.ofNullable(personIdentCache().get(aktørId.getId())).orElseGet(() -> {
-            var responseFraRegister = hentPersonIdentFraRegister(aktørId);
-            if (responseFraRegister != null) {
-                secureLogger.info("Legger aktørid {} med fnr {} i personident-cache", aktørId.getId(), responseFraRegister);
-                personIdentCache().put(aktørId.getId(), responseFraRegister);
-            }
-            return responseFraRegister;
-        });
-    }
-
-    private Cache<String, String> aktørCache() {
-        return aktørCacheManager.getCache("aktørIdCache", String.class, String.class);
-    }
-
-    private Cache<String, String> personIdentCache() {
-        return aktørCacheManager.getCache("personIdentCache", String.class, String.class);
-    }
-
-    private String hentAktørIdFraRegister(String personIdent) {
-        return fra(personIdent);
-    }
-
-    private String hentPersonIdentFraRegister(AktørId aktørId) {
-        return fra(aktørId);
+        requireNonNull(aktørId, "aktørId");
+        String responseFraRegister = fra(aktørId);
+        if (responseFraRegister != null) {
+            secureLogger.info("Legger aktørid {} med fnr {} i personident-cache", aktørId.getId(), responseFraRegister);
+        }
+        return responseFraRegister;
     }
 
     private <T> String fra(T idType) {
