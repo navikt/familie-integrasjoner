@@ -20,7 +20,7 @@ class CacheConfig {
             val concurrentMap = Caffeine
                     .newBuilder()
                     .initialCapacity(100)
-                    .maximumSize(250)
+                    .maximumSize(1000)
                     .expireAfterWrite(1, TimeUnit.HOURS)
                     .recordStats().build<Any, Any>().asMap()
             return ConcurrentMapCache(name, concurrentMap, true)

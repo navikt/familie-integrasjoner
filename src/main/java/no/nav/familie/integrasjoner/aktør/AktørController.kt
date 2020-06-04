@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
 @RestController
@@ -18,7 +19,7 @@ class AktørController(private val aktørService: AktørService) {
 
     @GetMapping("v1")
     fun getAktørIdForPersonIdent(@RequestHeader(name = "Nav-Personident")
-                                 personIdent: @NotNull String?): ResponseEntity<Ressurs<Map<String, String>>> {
+                                 personIdent: @NotNull @NotEmpty String?): ResponseEntity<Ressurs<Map<String, String>>> {
         return ResponseEntity.ok()
                 .body(success(mapOf("aktørId" to aktørService.getAktørId(personIdent)),
                               "Hent aktør for personident OK"))
@@ -26,7 +27,7 @@ class AktørController(private val aktørService: AktørService) {
 
     @GetMapping(path = ["v1/fraaktorid"])
     fun getPersonIdentForAktørId(@RequestHeader(name = "Nav-Aktorid")
-                                 aktørId: @NotNull String?): ResponseEntity<Ressurs<Map<String, String>>> {
+                                 aktørId: @NotNull @NotEmpty String?): ResponseEntity<Ressurs<Map<String, String>>> {
         return ResponseEntity.ok()
                 .body(success(mapOf("personIdent" to aktørService.getPersonIdent(AktørId(aktørId))),
                               "Hent personIdent for aktør OK")

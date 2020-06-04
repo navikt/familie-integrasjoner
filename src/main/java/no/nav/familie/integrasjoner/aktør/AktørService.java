@@ -25,7 +25,7 @@ public class AktørService {
         this.aktørregisterClient = aktørregisterClient;
     }
 
-    @Cacheable(value = "aktør_personIdent", condition = "#personIdent != null", unless = "#result == null")
+    @Cacheable(value = "aktør_personIdent", unless = "#result == null")
     public String getAktørId(String personIdent) {
         requireNonNull(personIdent, "personIdent");
         String responseFraRegister = fra(personIdent);
@@ -35,7 +35,7 @@ public class AktørService {
         return responseFraRegister;
     }
 
-    @Cacheable(value = "aktør_aktørId", condition = "#aktørId != null", unless = "#result == null")
+    @Cacheable(value = "aktør_aktørId", unless = "#result == null")
     public String getPersonIdent(AktørId aktørId) {
         requireNonNull(aktørId, "aktørId");
         String responseFraRegister = fra(aktørId);
