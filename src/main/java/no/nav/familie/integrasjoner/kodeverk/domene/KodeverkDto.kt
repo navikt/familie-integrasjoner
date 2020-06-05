@@ -11,4 +11,6 @@ data class BetydningDto(@JsonProperty("gyldigFra") val gyldigFra: String,
 data class BeskrivelseDto(@JsonProperty("term") val term: String,
                           @JsonProperty("tekst") val tekst: String)
 
-fun KodeverkDto.mapTerm() = betydninger.mapValues { it.value[0].beskrivelser[Språk.BOKMÅL.kode]?.term ?: "" }
+
+fun KodeverkDto.mapTerm(): Map<String, String> =
+        betydninger.mapValues { it.value.single().beskrivelser[Språk.BOKMÅL.kode]?.term ?: "" }
