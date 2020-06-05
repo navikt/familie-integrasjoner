@@ -8,10 +8,8 @@ import org.springframework.stereotype.Service
 @Service
 class EgenAnsattService(private val egenAnsattSoapClient: EgenAnsattSoapClient) {
 
-    @Cacheable("erEgenAnsatt",
-               key = "#fnr",
-               condition = "#fnr != null")
-    fun erEgenAnsatt(fnr: String?): Boolean {
+    @Cacheable("erEgenAnsatt")
+    fun erEgenAnsatt(fnr: String): Boolean {
         return egenAnsattSoapClient.erEgenAnsatt(fnr)
     }
 
