@@ -40,7 +40,7 @@ class EgenAnsattControllerTest : OppslagSpringRunnerTest() {
                                       HttpMethod.POST,
                                       HttpEntity<Any>("{\"ident\": \"1\"}", headers))
 
-        assertThat(response.body.data!!.egenAnsatt).isTrue()
+        assertThat(response.body.data!!.erEgenAnsatt).isTrue()
 
     }
 
