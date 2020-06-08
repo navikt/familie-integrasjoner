@@ -6,7 +6,7 @@ data class Person(
         val kjønn: String,
         val familierelasjoner: Set<Familierelasjon>,
         val adressebeskyttelseGradering: ADRESSEBESKYTTELSEGRADERING?,
-        val bostedsadresse: Bostedsadresse,
+        val bostedsadresse: Bostedsadresse? = null,
         val sivilstand: SIVILSTAND
 )
 

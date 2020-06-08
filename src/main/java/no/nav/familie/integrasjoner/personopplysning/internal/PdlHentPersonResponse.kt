@@ -22,7 +22,7 @@ data class PdlPersonData(val foedsel: List<PdlFødselsDato>,
                          val kjoenn: List<PdlKjoenn>,
                          val familierelasjoner: List<PdlFamilierelasjon> = emptyList(),
                          val adressebeskyttelse: List<Adressebeskyttelse>,
-                         val bostedsadresse: List<Bostedsadresse>,
+                         val bostedsadresse: List<Bostedsadresse>? = null,
                          val sivilstand: List<SIVILSTAND>)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
