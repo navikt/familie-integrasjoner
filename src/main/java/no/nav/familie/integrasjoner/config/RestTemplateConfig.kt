@@ -79,6 +79,17 @@ class RestTemplateConfig(
                 .build()
     }
 
+    @Bean("uten")
+    fun restTemplateUten(stsBearerTokenClientInterceptor: StsBearerTokenClientInterceptor,
+                        consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations {
+
+        return RestTemplateBuilder()
+                .interceptors(consumerIdClientInterceptor,
+                              MdcValuesPropagatingClientInterceptor())
+                .requestFactory(this::requestFactory)
+                .build()
+    }
+
     private fun requestFactory() = HttpComponentsClientHttpRequestFactory()
             .apply {
                 setConnectionRequestTimeout(20 * 1000)

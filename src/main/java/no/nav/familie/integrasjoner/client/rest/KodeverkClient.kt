@@ -11,7 +11,7 @@ import java.net.URI
 
 @Component
 class KodeverkClient(@Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
-                     @Qualifier("sts") private val restTemplate: RestOperations)
+                     @Qualifier("uten") private val restTemplate: RestOperations)
     : AbstractPingableRestClient(restTemplate, "kodeverk") {
 
     override val pingUri: URI = UriUtil.uri(kodeverkUri, PATH_PING)
