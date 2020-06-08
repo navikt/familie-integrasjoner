@@ -5,7 +5,10 @@ data class Person(
         val navn: String,
         val kjønn: String,
         val familierelasjoner: Set<Familierelasjon>,
-        val adressebeskyttelseGradering: ADRESSEBESKYTTELSEGRADERING?)
+        val adressebeskyttelseGradering: ADRESSEBESKYTTELSEGRADERING?,
+        val bostedsadresse: Bostedsadresse,
+        val sivilstand: SIVILSTAND
+)
 
 data class Familierelasjon(
         val personIdent: Personident,
@@ -15,3 +18,6 @@ data class Familierelasjon(
 data class Personident(
         val id: String
 )
+
+
+

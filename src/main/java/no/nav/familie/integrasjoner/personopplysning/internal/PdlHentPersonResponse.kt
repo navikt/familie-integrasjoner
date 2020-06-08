@@ -21,7 +21,9 @@ data class PdlPersonData(val foedsel: List<PdlFødselsDato>,
                          val navn: List<PdlNavn>,
                          val kjoenn: List<PdlKjoenn>,
                          val familierelasjoner: List<PdlFamilierelasjon> = emptyList(),
-                         val adressebeskyttelse: List<Adressebeskyttelse>)
+                         val adressebeskyttelse: List<Adressebeskyttelse>,
+                         val bostedsadresse: List<Bostedsadresse>,
+                         val sivilstand: List<SIVILSTAND>)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlFødselsDato(val foedselsdato: String?)
@@ -54,6 +56,33 @@ data class Adressebeskyttelse(
         val gradering: ADRESSEBESKYTTELSEGRADERING
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Bostedsadresse(
+        val vegadresse: Vegadresse,
+        val matrikkeladresse: Matrikkeladresse
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Vegadresse(
+        val matrikkelId: String,
+        val husnummer: String,
+        val husbokstav: String,
+        val bruksenhetsnummer: String,
+        val adressenavn: String,
+        val kommunenummer: String,
+        val tilleggsnavn: String,
+        val postnummer: String
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Matrikkeladresse(
+        val matrikkelId: String,
+        val bruksenhetsnummer: String,
+        val tilleggsnavn: String,
+        val postnummer: String,
+        val kommunenummer: String
+)
+
 enum class KJØNN {
     MANN,
     KVINNE,
@@ -72,4 +101,17 @@ enum class ADRESSEBESKYTTELSEGRADERING {
     FORTROLIG, // Kode 7
     STRENGT_FORTROLIG, // Kode 6
     UGRADERT
+}
+
+enum class SIVILSTAND {
+    UOPPGITT,
+    UGIFT,
+    ENKE,
+    ENKEMANN,
+    SKILT,
+    SEPARERT,
+    REGISTRERT_PARTNER,
+    SEPARERT_PARTNER,
+    SKILT_PARTNER,
+    GJENLEVENDE_PARTNER
 }
