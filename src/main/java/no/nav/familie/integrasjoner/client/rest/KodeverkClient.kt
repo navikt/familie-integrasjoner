@@ -2,7 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
-import no.nav.familie.integrasjoner.kodeverk.domene.PostnummerDto
+import no.nav.familie.integrasjoner.kodeverk.domene.KodeverkDto
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -16,16 +16,31 @@ class KodeverkClient(@Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
 
     override val pingUri: URI = UriUtil.uri(kodeverkUri, PATH_PING)
 
-    val postnummerUri = UriUtil.uri(kodeverkUri, PATH_POSTNUMMER, QUERY_POSTNUMMER)
+    fun hentPostnummer(): KodeverkDto {
+        return getForEntity(kodeverkUri("Postnummer"))
+    }
 
-    fun hentPostnummerBetydninger(): PostnummerDto {
-        return getForEntity(postnummerUri)
+    fun hentPostnummerMedHistorikk(): KodeverkDto {
+        return getForEntity(UriUtil.uri(kodeverkUri, "Postnummer", QUERY_MED_HISTORIKK))
+    }
+
+    fun hentLandkoder(): KodeverkDto {
+        return getForEntity(kodeverkUri("Landkoder"))
+    }
+
+    fun hentLandkoderMedHistorikk(): KodeverkDto {
+        return getForEntity(UriUtil.uri(kodeverkUri, "Landkoder", QUERY_MED_HISTORIKK))
+    }
+
+    private fun kodeverkUri(kodeverksnavn: String,
+                            medHistorikk: Boolean = false): URI {
+        val query = if (medHistorikk) QUERY_MED_HISTORIKK else QUERY
+        return UriUtil.uri(kodeverkUri, "api/v1/kodeverk/$kodeverksnavn/koder/betydninger", query)
     }
 
     companion object {
-
         private const val PATH_PING = "internal/isAlive"
-        private const val PATH_POSTNUMMER = "api/v1/kodeverk/Postnummer/koder/betydninger"
-        private const val QUERY_POSTNUMMER = "ekskluderUgyldige=true&spraak=nb"
+        private const val QUERY = "ekskluderUgyldige=true&spraak=nb"
+        private const val QUERY_MED_HISTORIKK = "ekskluderUgyldige=false&spraak=nb"
     }
 }
