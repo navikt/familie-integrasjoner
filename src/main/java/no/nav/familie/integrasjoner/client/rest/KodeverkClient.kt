@@ -21,7 +21,7 @@ class KodeverkClient(@Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
     }
 
     fun hentPostnummerMedHistorikk(): KodeverkDto {
-        return getForEntity(UriUtil.uri(kodeverkUri, "Postnummer", QUERY_MED_HISTORIKK))
+        return getForEntity(kodeverkUri("Postnummer", true))
     }
 
     fun hentLandkoder(): KodeverkDto {
@@ -29,7 +29,7 @@ class KodeverkClient(@Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
     }
 
     fun hentLandkoderMedHistorikk(): KodeverkDto {
-        return getForEntity(UriUtil.uri(kodeverkUri, "Landkoder", QUERY_MED_HISTORIKK))
+        return getForEntity(kodeverkUri("Landkoder", true))
     }
 
     private fun kodeverkUri(kodeverksnavn: String,
