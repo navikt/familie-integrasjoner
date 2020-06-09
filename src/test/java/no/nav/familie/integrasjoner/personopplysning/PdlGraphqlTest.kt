@@ -26,6 +26,7 @@ class PdlGraphqlTest {
         assertThat(resp.data.person!!.sivilstand.first().toString()).isEqualTo("UGIFT")
         assertThat(resp.data.person!!.bostedsadresse.first()?.vegadresse?.husnummer).isEqualTo("3")
         assertNull(resp.data.person!!.bostedsadresse.first()?.matrikkeladresse)
+        assertNull(resp.data.person!!.bostedsadresse.first()?.ukjentBosted)
         assertThat(resp.errorMessages()).isEqualTo("")
     }
 
@@ -33,6 +34,18 @@ class PdlGraphqlTest {
     fun testTomAdresse() {
         val resp = mapper.readValue(File(getFile("pdl/pdlTomAdresseOkResponse.json")), PdlHentPersonResponse::class.java)
         assertTrue(resp.data.person!!.bostedsadresse.isEmpty())
+    }
+
+    @Test
+    fun testMatrikkelAdresse() {
+        val resp = mapper.readValue(File(getFile("pdl/pdlMatrikkelAdresseOkResponse.json")), PdlHentPersonResponse::class.java)
+        assertThat(resp.data.person!!.bostedsadresse.first()?.matrikkeladresse?.matrikkelId).isEqualTo("1001")
+    }
+
+    @Test
+    fun testUkjentBostedAdresse() {
+        val resp = mapper.readValue(File(getFile("pdl/pdlUkjentBostedAdresseOkResponse.json")), PdlHentPersonResponse::class.java)
+        assertThat(resp.data.person!!.bostedsadresse.first()?.ukjentBosted?.bostedskommune).isEqualTo("Oslo")
     }
 
     @Test

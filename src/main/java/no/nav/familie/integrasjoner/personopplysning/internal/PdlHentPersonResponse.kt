@@ -59,7 +59,8 @@ data class Adressebeskyttelse(
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Bostedsadresse(
         val vegadresse: Vegadresse? = null,
-        val matrikkeladresse: Matrikkeladresse? = null
+        val matrikkeladresse: Matrikkeladresse? = null,
+        val ukjentBosted: UkjentBosted? = null
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -72,6 +73,11 @@ data class Vegadresse(
         val kommunenummer: String?,
         val tilleggsnavn: String?,
         val postnummer: String?
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class UkjentBosted(
+        val bostedskommune: String
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)

@@ -9,7 +9,6 @@ import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.personopplysning.internal.SIVILSTAND
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.security.token.support.test.JwtTokenGenerator
-import no.nav.tjeneste.virksomhet.person.v3.informasjon.Sivilstand
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -53,20 +52,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `hent personinfo skal returnere persondata og status ok`() {
-        mockServerRule.client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withPath("/rest/pdl/graphql")
-                                .withHeader("Tema", TEMA)
-                                .withBody(gyldigRequest())
-                )
-                .respond(HttpResponse.response().withBody(readfile("pdlOkResponse.json"))
-                                 .withHeaders(Header("Content-Type", "application/json")))
-
-
-        val response: ResponseEntity<Ressurs<Person>> = restTemplate.exchange(uriHentPersoninfo,
-                                                                              HttpMethod.GET,
-                                                                              HttpEntity<String>(headers))
+        val response: ResponseEntity<Ressurs<Person>> = hentPersonInfoFraMockedPdlResponse("pdlOkResponse.json")
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -81,20 +67,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `hent personinfoEnkel skal returnere persondata og status ok`() {
-        mockServerRule.client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withPath("/rest/pdl/graphql")
-                                .withHeader("Tema", TEMA)
-                                .withBody(gyldigRequest())
-                )
-                .respond(HttpResponse.response().withBody(readfile("pdlOkResponseEnkel.json"))
-                                 .withHeaders(Header("Content-Type", "application/json")))
-
-
-        val response: ResponseEntity<Ressurs<Person>> = restTemplate.exchange(uriHentPersoninfo,
-                                                                              HttpMethod.GET,
-                                                                              HttpEntity<String>(headers))
+        val response: ResponseEntity<Ressurs<Person>> = hentPersonInfoFraMockedPdlResponse("pdlOkResponseEnkel.json")
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -104,42 +77,32 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.data?.familierelasjoner).isEmpty()
         assertThat(response.body?.data?.sivilstand).isEqualTo(SIVILSTAND.UGIFT)
         assertThat(response.body?.data?.bostedsadresse?.vegadresse?.husnummer).isEqualTo("3")
+        assertNull(response.body?.data?.bostedsadresse?.matrikkeladresse)
+        assertNull(response.body?.data?.bostedsadresse?.ukjentBosted)
     }
 
     @Test
     fun `hent personinfo skal returnere persondata med tom adresse og status ok`() {
-        mockServerRule.client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withPath("/rest/pdl/graphql")
-                                .withHeader("Tema", TEMA)
-                                .withBody(gyldigRequest())
-                )
-                .respond(HttpResponse.response().withBody(readfile("pdlTomAdresseOkResponse.json"))
-                                 .withHeaders(Header("Content-Type", "application/json")))
-
-
-        val response: ResponseEntity<Ressurs<Person>> = restTemplate.exchange(uriHentPersoninfo,
-                                                                              HttpMethod.GET,
-                                                                              HttpEntity<String>(headers))
-
+        val response: ResponseEntity<Ressurs<Person>> = hentPersonInfoFraMockedPdlResponse("pdlTomAdresseOkResponse.json")
         assertNull(response.body?.data?.bostedsadresse)
     }
 
     @Test
-    fun `hent personinfo returnerer med feil hvis forventede persondata ikke oppgis`() {
-        mockServerRule.client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withPath("/rest/pdl/graphql")
-                                .withBody(gyldigRequest())
-                )
-                .respond(HttpResponse.response().withBody(readfile("pdlManglerFoedselResponse.json"))
-                                 .withHeaders(Header("Content-Type", "application/json")))
+    fun `hent personinfo skal returnere persondata med matrikkel adresse og status ok`() {
+        val response: ResponseEntity<Ressurs<Person>> = hentPersonInfoFraMockedPdlResponse("pdlMatrikkelAdresseOkResponse.json")
+        assertThat(response.body?.data?.bostedsadresse?.matrikkeladresse?.matrikkelId).isEqualTo("1001")
+    }
 
-        val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentPersoninfo,
-                                                                                           HttpMethod.GET,
-                                                                                           HttpEntity<String>(headers))
+    @Test
+    fun `hent personinfo skal returnere persondata med ukjent bosted adresse og status ok`() {
+        val response: ResponseEntity<Ressurs<Person>> = hentPersonInfoFraMockedPdlResponse("pdlUkjentBostedAdresseOkResponse.json")
+        assertThat(response.body?.data?.bostedsadresse?.ukjentBosted?.bostedskommune).isEqualTo("Oslo")
+    }
+
+
+    @Test
+    fun `hent personinfo returnerer med feil hvis forventede persondata ikke oppgis`() {
+        val response: ResponseEntity<Ressurs<Person>> = hentPersonInfoFraMockedPdlResponse("pdlManglerFoedselResponse.json")
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -147,18 +110,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `hent personinfo returnerer med feil hvis person ikke finnes`() {
-        mockServerRule.client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withPath("/rest/pdl/graphql")
-                                .withBody(gyldigRequest())
-                )
-                .respond(HttpResponse.response().withBody(readfile("pdlPersonIkkeFunnetResponse.json"))
-                                 .withHeaders(Header("Content-Type", "application/json")))
-
-        val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentPersoninfo,
-                                                                                           HttpMethod.GET,
-                                                                                           HttpEntity<String>(headers))
+        val response: ResponseEntity<Ressurs<Person>> = hentPersonInfoFraMockedPdlResponse("pdlPersonIkkeFunnetResponse.json")
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -291,6 +243,20 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         assertThat(response.body?.data).containsExactly(AKTIV_AKTØR_IDENT)
+    }
+
+    private fun hentPersonInfoFraMockedPdlResponse(responseFile: String): ResponseEntity<Ressurs<Person>> {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                        .withMethod("POST")
+                        .withPath("/rest/pdl/graphql")
+                        .withHeader("Tema", TEMA)
+                        .withBody(gyldigRequest())
+                )
+                .respond(HttpResponse.response().withBody(readfile(responseFile))
+                        .withHeaders(Header("Content-Type", "application/json")))
+
+        return restTemplate.exchange(uriHentPersoninfo, HttpMethod.GET, HttpEntity<String>(headers))
     }
 
     private fun gyldigRequest(): String {

@@ -31,6 +31,9 @@ query($ident: ID!) {person: hentPerson(ident: $ident) {
             postnummer
             kommunenummer
         }
+        ukjentBosted {
+            bostedskommune
+        }
     }
     sivilstand(historikk: false) {
         type
