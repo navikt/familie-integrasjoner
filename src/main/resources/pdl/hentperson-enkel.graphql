@@ -13,7 +13,7 @@ query($ident: ID!) {person: hentPerson(ident: $ident) {
     adressebeskyttelse {
         gradering
     }
-    bostedsadresse {
+    bostedsadresse(historikk: false) {
         vegadresse {
             matrikkelId
             husnummer

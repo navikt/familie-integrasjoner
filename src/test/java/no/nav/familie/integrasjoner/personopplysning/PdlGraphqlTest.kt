@@ -7,6 +7,8 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlHentPersonRespo
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlNavn
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 
 class PdlGraphqlTest {
 
@@ -21,7 +23,16 @@ class PdlGraphqlTest {
         assertThat(resp.data.person!!.kjoenn.first().kjoenn.toString()).isEqualTo("MANN")
         assertThat(resp.data.person!!.familierelasjoner.first().relatertPersonsIdent).isEqualTo("12345678910")
         assertThat(resp.data.person!!.familierelasjoner.first().relatertPersonsRolle.toString()).isEqualTo("BARN")
+        assertThat(resp.data.person!!.sivilstand.first().toString()).isEqualTo("UGIFT")
+        assertThat(resp.data.person!!.bostedsadresse.first()?.vegadresse?.husnummer).isEqualTo("3")
+        assertNull(resp.data.person!!.bostedsadresse.first()?.matrikkeladresse)
         assertThat(resp.errorMessages()).isEqualTo("")
+    }
+
+    @Test
+    fun testTomAdresse() {
+        val resp = mapper.readValue(File(getFile("pdl/pdlTomAdresseOkResponse.json")), PdlHentPersonResponse::class.java)
+        assertTrue(resp.data.person!!.bostedsadresse.isEmpty())
     }
 
     @Test

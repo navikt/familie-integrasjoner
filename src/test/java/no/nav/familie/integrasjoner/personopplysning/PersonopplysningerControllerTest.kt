@@ -6,8 +6,10 @@ import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.personopplysning.domene.Ident
 import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
+import no.nav.familie.integrasjoner.personopplysning.internal.SIVILSTAND
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.security.token.support.test.JwtTokenGenerator
+import no.nav.tjeneste.virksomhet.person.v3.informasjon.Sivilstand
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -21,6 +23,7 @@ import org.springframework.boot.test.web.client.exchange
 import org.springframework.http.*
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.util.UriComponentsBuilder
+import kotlin.test.assertNull
 
 @ActiveProfiles("integrasjonstest", "mock-personopplysninger", "mock-sts")
 class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
@@ -99,6 +102,28 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.data?.navn).isEqualTo(NAVN)
         assertThat(response.body?.data?.kjønn).isEqualTo(KJØNN)
         assertThat(response.body?.data?.familierelasjoner).isEmpty()
+        assertThat(response.body?.data?.sivilstand).isEqualTo(SIVILSTAND.UGIFT)
+        assertThat(response.body?.data?.bostedsadresse?.vegadresse?.husnummer).isEqualTo("3")
+    }
+
+    @Test
+    fun `hent personinfo skal returnere persondata med tom adresse og status ok`() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withPath("/rest/pdl/graphql")
+                                .withHeader("Tema", TEMA)
+                                .withBody(gyldigRequest())
+                )
+                .respond(HttpResponse.response().withBody(readfile("pdlTomAdresseOkResponse.json"))
+                                 .withHeaders(Header("Content-Type", "application/json")))
+
+
+        val response: ResponseEntity<Ressurs<Person>> = restTemplate.exchange(uriHentPersoninfo,
+                                                                              HttpMethod.GET,
+                                                                              HttpEntity<String>(headers))
+
+        assertNull(response.body?.data?.bostedsadresse)
     }
 
     @Test
