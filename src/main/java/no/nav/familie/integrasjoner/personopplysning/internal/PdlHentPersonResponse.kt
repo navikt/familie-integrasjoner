@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.personopplysning.internal
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.SivilstandType
 
 data class PdlHentPersonResponse(val data: PdlPerson,
                                  val errors: List<PdlError>?) {
@@ -23,7 +24,7 @@ data class PdlPersonData(val foedsel: List<PdlFødselsDato>,
                          val familierelasjoner: List<PdlFamilierelasjon> = emptyList(),
                          val adressebeskyttelse: List<Adressebeskyttelse>,
                          val bostedsadresse: List<Bostedsadresse?>,
-                         val sivilstand: List<SIVILSTAND>)
+                         val sivilstand: List<Sivilstand>)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlFødselsDato(val foedselsdato: String?)
@@ -89,6 +90,11 @@ data class Matrikkeladresse(
         val kommunenummer: String?
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Sivilstand(
+        val type: SIVILSTANDTYPE
+)
+
 enum class KJØNN {
     MANN,
     KVINNE,
@@ -109,7 +115,7 @@ enum class ADRESSEBESKYTTELSEGRADERING {
     UGRADERT
 }
 
-enum class SIVILSTAND {
+enum class SIVILSTANDTYPE {
     UOPPGITT,
     UGIFT,
     GIFT,

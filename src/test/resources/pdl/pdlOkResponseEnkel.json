@@ -34,7 +34,9 @@
         }
       ],
       "sivilstand": [
-        "UGIFT"
+        {
+          "type": "UGIFT"
+        }
       ],
       "adressebeskyttelse": [
         {

@@ -11,10 +11,7 @@ import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
 import no.nav.familie.integrasjoner.dokarkiv.metadata.*
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
-import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
-import no.nav.familie.integrasjoner.personopplysning.internal.Bostedsadresse
-import no.nav.familie.integrasjoner.personopplysning.internal.Person
-import no.nav.familie.integrasjoner.personopplysning.internal.SIVILSTAND
+import no.nav.familie.integrasjoner.personopplysning.internal.*
 import no.nav.familie.kontrakter.felles.arkivering.Dokument
 import no.nav.familie.kontrakter.felles.arkivering.FilType
 import org.assertj.core.api.Assertions.assertThat
@@ -78,7 +75,7 @@ class DokarkivServiceTest {
                            kjønn = "KVINNE",
                            familierelasjoner = emptySet(),
                            adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                            sivilstand =  SIVILSTAND.UGIFT)
+                            sivilstand =  SIVILSTANDTYPE.UGIFT)
                 }
         val dto = DeprecatedArkiverDokumentRequest(FNR,
                                                    false,
@@ -106,7 +103,7 @@ class DokarkivServiceTest {
                            kjønn = "KVINNE",
                            familierelasjoner = emptySet(),
                            adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                            sivilstand = SIVILSTAND.UGIFT)
+                            sivilstand = SIVILSTANDTYPE.UGIFT)
                 }
 
         val dto = DeprecatedArkiverDokumentRequest(FNR,
@@ -134,7 +131,7 @@ class DokarkivServiceTest {
                            kjønn = "KVINNE",
                            familierelasjoner = emptySet(),
                            adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                            sivilstand = SIVILSTAND.UGIFT)
+                            sivilstand = SIVILSTANDTYPE.UGIFT)
                 }
 
         val dto = DeprecatedArkiverDokumentRequest(FNR, false, listOf(Dokument(JSON_DOK,
@@ -167,7 +164,7 @@ class DokarkivServiceTest {
                            kjønn = "KVINNE",
                            familierelasjoner = emptySet(),
                            adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                            sivilstand = SIVILSTAND.UGIFT)
+                            sivilstand = SIVILSTANDTYPE.UGIFT)
                 }
 
         val dto = DeprecatedArkiverDokumentRequest(FNR, false, listOf(Dokument(JSON_DOK,

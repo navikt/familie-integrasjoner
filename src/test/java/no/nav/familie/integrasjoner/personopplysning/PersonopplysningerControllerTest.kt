@@ -6,7 +6,7 @@ import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.personopplysning.domene.Ident
 import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
-import no.nav.familie.integrasjoner.personopplysning.internal.SIVILSTAND
+import no.nav.familie.integrasjoner.personopplysning.internal.SIVILSTANDTYPE
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.security.token.support.test.JwtTokenGenerator
 import org.assertj.core.api.Assertions.assertThat
@@ -75,7 +75,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.data?.navn).isEqualTo(NAVN)
         assertThat(response.body?.data?.kjønn).isEqualTo(KJØNN)
         assertThat(response.body?.data?.familierelasjoner).isEmpty()
-        assertThat(response.body?.data?.sivilstand).isEqualTo(SIVILSTAND.UGIFT)
+        assertThat(response.body?.data?.sivilstand).isEqualTo(SIVILSTANDTYPE.UGIFT)
         assertThat(response.body?.data?.bostedsadresse?.vegadresse?.husnummer).isEqualTo("3")
         assertNull(response.body?.data?.bostedsadresse?.matrikkeladresse)
         assertNull(response.body?.data?.bostedsadresse?.ukjentBosted)

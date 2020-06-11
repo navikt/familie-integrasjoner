@@ -19,7 +19,9 @@
       ],
       "bostedsadresse": [],
       "sivilstand": [
-        "UGIFT"
+        {
+          "type": "UGIFT"
+        }
       ],
       "familierelasjoner": [
         {

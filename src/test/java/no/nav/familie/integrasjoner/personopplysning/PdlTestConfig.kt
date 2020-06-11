@@ -26,7 +26,7 @@ class PdlTestConfig {
                          familierelasjoner = setOf(Familierelasjon(personIdent = Personident(id = "12345678910"),
                                                                    relasjonsrolle = "BARN")),
                          adressebeskyttelseGradering = null,
-                        sivilstand = SIVILSTAND.UGIFT)
+                        sivilstand = SIVILSTANDTYPE.UGIFT)
         return klient
     }
 }

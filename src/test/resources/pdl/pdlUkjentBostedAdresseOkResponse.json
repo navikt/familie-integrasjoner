@@ -25,7 +25,9 @@
         }
       ],
       "sivilstand": [
-        "UGIFT"
+        {
+          "type": "UGIFT"
+        }
       ],
       "familierelasjoner": [
         {

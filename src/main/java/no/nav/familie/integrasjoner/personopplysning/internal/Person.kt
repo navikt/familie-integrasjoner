@@ -7,7 +7,7 @@ data class Person(
         val familierelasjoner: Set<Familierelasjon>,
         val adressebeskyttelseGradering: ADRESSEBESKYTTELSEGRADERING?,
         val bostedsadresse: Bostedsadresse? = null,
-        val sivilstand: SIVILSTAND
+        val sivilstand: SIVILSTANDTYPE
 )
 
 data class Familierelasjon(
