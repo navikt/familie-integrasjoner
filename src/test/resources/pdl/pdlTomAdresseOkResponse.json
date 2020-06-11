@@ -17,22 +17,7 @@
           "kjoenn": "MANN"
         }
       ],
-      "bostedsadresse": [
-        {
-          "vegadresse": {
-            "matrikkelId": null,
-            "husnummer": "3",
-            "husbokstav": null,
-            "bruksenhetsnummer": null,
-            "adressenavn": "OTTO SVERDRUPS VEG",
-            "kommunenummer": "1566",
-            "tilleggsnavn": null,
-            "postnummer": "6650"
-          },
-          "matrikkeladresse": null,
-          "ukjentBosted": null
-        }
-      ],
+      "bostedsadresse": [],
       "sivilstand": [
         {
           "type": "UGIFT"

@@ -5,8 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlHentPersonResponse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlNavn
+import no.nav.familie.integrasjoner.personopplysning.internal.SIVILSTANDTYPE
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertTrue
 
 class PdlGraphqlTest {
 
@@ -21,7 +24,29 @@ class PdlGraphqlTest {
         assertThat(resp.data.person!!.kjoenn.first().kjoenn.toString()).isEqualTo("MANN")
         assertThat(resp.data.person!!.familierelasjoner.first().relatertPersonsIdent).isEqualTo("12345678910")
         assertThat(resp.data.person!!.familierelasjoner.first().relatertPersonsRolle.toString()).isEqualTo("BARN")
+        assertThat(resp.data.person!!.sivilstand.first()?.type).isEqualTo(SIVILSTANDTYPE.UGIFT)
+        assertThat(resp.data.person!!.bostedsadresse.first()?.vegadresse?.husnummer).isEqualTo("3")
+        assertNull(resp.data.person!!.bostedsadresse.first()?.matrikkeladresse)
+        assertNull(resp.data.person!!.bostedsadresse.first()?.ukjentBosted)
         assertThat(resp.errorMessages()).isEqualTo("")
+    }
+
+    @Test
+    fun testTomAdresse() {
+        val resp = mapper.readValue(File(getFile("pdl/pdlTomAdresseOkResponse.json")), PdlHentPersonResponse::class.java)
+        assertTrue(resp.data.person!!.bostedsadresse.isEmpty())
+    }
+
+    @Test
+    fun testMatrikkelAdresse() {
+        val resp = mapper.readValue(File(getFile("pdl/pdlMatrikkelAdresseOkResponse.json")), PdlHentPersonResponse::class.java)
+        assertThat(resp.data.person!!.bostedsadresse.first()?.matrikkeladresse?.matrikkelId).isEqualTo("1001")
+    }
+
+    @Test
+    fun testUkjentBostedAdresse() {
+        val resp = mapper.readValue(File(getFile("pdl/pdlUkjentBostedAdresseOkResponse.json")), PdlHentPersonResponse::class.java)
+        assertThat(resp.data.person!!.bostedsadresse.first()?.ukjentBosted?.bostedskommune).isEqualTo("Oslo")
     }
 
     @Test

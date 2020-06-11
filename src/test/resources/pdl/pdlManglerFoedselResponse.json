@@ -17,6 +17,12 @@
           "kjoenn": "MANN"
         }
       ],
+      "bostedsadresse": [],
+      "sivilstand": [
+        {
+          "type": "UGIFT"
+        }
+      ],
       "familierelasjoner": [],
       "adressebeskyttelse": [
         {

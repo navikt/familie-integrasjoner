@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.personopplysning.internal
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.SivilstandType
 
 data class PdlHentPersonResponse(val data: PdlPerson,
                                  val errors: List<PdlError>?) {
@@ -21,7 +22,9 @@ data class PdlPersonData(val foedsel: List<PdlFødselsDato>,
                          val navn: List<PdlNavn>,
                          val kjoenn: List<PdlKjoenn>,
                          val familierelasjoner: List<PdlFamilierelasjon> = emptyList(),
-                         val adressebeskyttelse: List<Adressebeskyttelse>)
+                         val adressebeskyttelse: List<Adressebeskyttelse>,
+                         val bostedsadresse: List<Bostedsadresse?>,
+                         val sivilstand: List<Sivilstand?>)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlFødselsDato(val foedselsdato: String?)
@@ -54,6 +57,44 @@ data class Adressebeskyttelse(
         val gradering: ADRESSEBESKYTTELSEGRADERING
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Bostedsadresse(
+        val vegadresse: Vegadresse? = null,
+        val matrikkeladresse: Matrikkeladresse? = null,
+        val ukjentBosted: UkjentBosted? = null
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Vegadresse(
+        val matrikkelId: String?,
+        val husnummer: String?,
+        val husbokstav: String?,
+        val bruksenhetsnummer: String?,
+        val adressenavn: String?,
+        val kommunenummer: String?,
+        val tilleggsnavn: String?,
+        val postnummer: String?
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class UkjentBosted(
+        val bostedskommune: String
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Matrikkeladresse(
+        val matrikkelId: String?,
+        val bruksenhetsnummer: String?,
+        val tilleggsnavn: String?,
+        val postnummer: String?,
+        val kommunenummer: String?
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Sivilstand(
+        val type: SIVILSTANDTYPE
+)
+
 enum class KJØNN {
     MANN,
     KVINNE,
@@ -72,4 +113,17 @@ enum class ADRESSEBESKYTTELSEGRADERING {
     FORTROLIG, // Kode 7
     STRENGT_FORTROLIG, // Kode 6
     UGRADERT
+}
+
+enum class SIVILSTANDTYPE {
+    UOPPGITT,
+    UGIFT,
+    GIFT,
+    ENKE_ELLER_ENKEMANN,
+    SKILT,
+    SEPARERT,
+    REGISTRERT_PARTNER,
+    SEPARERT_PARTNER,
+    SKILT_PARTNER,
+    GJENLEVENDE_PARTNER
 }
