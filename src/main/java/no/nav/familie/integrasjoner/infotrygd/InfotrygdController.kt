@@ -32,7 +32,7 @@ class InfotrygdController(private val infotrygdRestClient: InfotrygdRestClient) 
         }
         return ResponseEntity
                 .status(ex.statusCode)
-                .body(failure("Oppslag mot infotrygd-kontanstøtte feilet ${ex.responseBodyAsString}", ex))
+                .body(failure("Oppslag mot infotrygd-kontanstøtte feilet ${ex.responseBodyAsString}", error = ex))
     }
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/harBarnAktivKontantstotte"])

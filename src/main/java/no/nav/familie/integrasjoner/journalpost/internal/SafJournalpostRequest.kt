@@ -7,6 +7,7 @@ val queryString: String = """
             journalposttype
             journalstatus
             tema
+            tittel
             behandlingstema
             sak { arkivsaksystem arkivsaksnummer datoOpprettet fagsakId fagsaksystem }
             bruker { id type }

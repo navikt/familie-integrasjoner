@@ -90,8 +90,8 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
 
     fun opprettOppgave(request: OpprettOppgave): Long {
         val oppgave = Oppgave(
-                aktoerId = if (request.ident.type == IdentType.Aktør) request.ident.ident else null,
-                orgnr = if (request.ident.type == IdentType.Organisasjon) request.ident.ident else null,
+                aktoerId = if (request.ident?.type == IdentType.Aktør) request.ident!!.ident else null,
+                orgnr = if (request.ident?.type == IdentType.Organisasjon) request.ident!!.ident else null,
                 saksreferanse = request.saksId,
                 //TODO oppgave-gjengen mente vi kunne sette denne til vår applikasjon, og så kan de gjøre en filtrering på sin
                 //men da må vi få applikasjonen vår inn i Felles kodeverk ellers så får vi feil: Fant ingen kode 'BA' i felles kodeverk under kodeverk 'Applikasjoner'

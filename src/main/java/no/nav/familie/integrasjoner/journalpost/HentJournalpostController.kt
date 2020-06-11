@@ -25,7 +25,7 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
         }
         LOG.warn(errorBaseMessage, ex)
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(failure(errorBaseMessage + errorExtMessage, ex))
+                .body(failure(errorBaseMessage + errorExtMessage, error = ex))
     }
 
     @ExceptionHandler(RuntimeException::class)
@@ -33,7 +33,7 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
         val errorMessage = "Feil ved henting av journalpost. ${ex.message}"
         LOG.warn(errorMessage, ex)
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(failure(errorMessage, ex))
+                .body(failure(errorMessage, error = ex))
     }
 
     @GetMapping("sak")
