@@ -94,11 +94,11 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `hent personinfo skal returnere persondata med ukjent bosted adresse og status ok`() {
+    fun `hent personinfo skal returnere persondata med ukjent bostedadresse og manglende sivilstand`() {
         val response: ResponseEntity<Ressurs<Person>> = hentPersonInfoFraMockedPdlResponse("pdlUkjentBostedAdresseOkResponse.json")
         assertThat(response.body?.data?.bostedsadresse?.ukjentBosted?.bostedskommune).isEqualTo("Oslo")
+        assertNull(response.body?.data?.sivilstand)
     }
-
 
     @Test
     fun `hent personinfo returnerer med feil hvis forventede persondata ikke oppgis`() {

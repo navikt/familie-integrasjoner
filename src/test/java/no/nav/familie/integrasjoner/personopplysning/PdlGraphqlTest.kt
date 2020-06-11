@@ -24,7 +24,7 @@ class PdlGraphqlTest {
         assertThat(resp.data.person!!.kjoenn.first().kjoenn.toString()).isEqualTo("MANN")
         assertThat(resp.data.person!!.familierelasjoner.first().relatertPersonsIdent).isEqualTo("12345678910")
         assertThat(resp.data.person!!.familierelasjoner.first().relatertPersonsRolle.toString()).isEqualTo("BARN")
-        assertThat(resp.data.person!!.sivilstand.first().type).isEqualTo(SIVILSTANDTYPE.UGIFT)
+        assertThat(resp.data.person!!.sivilstand.first()?.type).isEqualTo(SIVILSTANDTYPE.UGIFT)
         assertThat(resp.data.person!!.bostedsadresse.first()?.vegadresse?.husnummer).isEqualTo("3")
         assertNull(resp.data.person!!.bostedsadresse.first()?.matrikkeladresse)
         assertNull(resp.data.person!!.bostedsadresse.first()?.ukjentBosted)

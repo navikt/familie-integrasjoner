@@ -52,7 +52,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                familierelasjoner = familierelasjoner,
                                adressebeskyttelseGradering = it.adressebeskyttelse.firstOrNull()?.gradering,
                                bostedsadresse = it.bostedsadresse.firstOrNull(),
-                               sivilstand = it.sivilstand.first().type)
+                               sivilstand = it.sivilstand.firstOrNull()?.type)
                     }
                 }.fold(
                         onSuccess = { it },
