@@ -185,6 +185,30 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
+    fun `skal opprette oppgave uten ident, returnere oppgaveid og 201 Created`() {
+
+        stubFor(post("/api/v1/oppgaver").willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
+
+        val opprettOppgave = OpprettOppgave(
+                ident = null,
+                fristFerdigstillelse = LocalDate.now().plusDays(3),
+                behandlingstema = "behandlingstema",
+                enhetsnummer = "enhetsnummer",
+                tema = Tema.BAR,
+                oppgavetype = Oppgavetype.BehandleSak,
+                saksId = "saksid",
+                beskrivelse = "Oppgavetekst"
+        )
+        val response: ResponseEntity<Ressurs<OppgaveResponse>> =
+                restTemplate.exchange(localhost(OPPGAVE_URL),
+                                      HttpMethod.POST,
+                                      HttpEntity(opprettOppgave, headers))
+
+        assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
+    }
+
+    @Test
     fun `kall mot oppgave ved opprett feiler med bad request, tjenesten vår returernerer 500 og med info om feil i response `() {
 
         stubFor(post("/api/v1/oppgaver")

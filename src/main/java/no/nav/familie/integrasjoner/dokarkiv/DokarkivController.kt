@@ -36,13 +36,13 @@ class DokarkivController(private val journalføringService: DokarkivService) {
             errors[fieldName] = errorMessage
         })
         LOG.warn("Valideringsfeil av input ved arkivering: $errors")
-        return ResponseEntity.badRequest().body(failure("Valideringsfeil av input ved arkivering $errors", ex))
+        return ResponseEntity.badRequest().body(failure("Valideringsfeil av input ved arkivering $errors", error = ex))
     }
 
     @ExceptionHandler(KanIkkeFerdigstilleJournalpostException::class)
     fun handleKanIkkeFerdigstilleException(ex: KanIkkeFerdigstilleJournalpostException): ResponseEntity<Ressurs<Any>> {
         LOG.warn("Feil ved ferdigstilling {}", ex.message)
-        return ResponseEntity.badRequest().body(failure(ex.message, ex))
+        return ResponseEntity.badRequest().body(failure(ex.message, error = ex))
     }
 
     @PostMapping(path = ["/v2"], produces = [MediaType.APPLICATION_JSON_VALUE])
