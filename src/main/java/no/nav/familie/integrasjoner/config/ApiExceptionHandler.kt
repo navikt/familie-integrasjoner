@@ -26,7 +26,7 @@ class ApiExceptionHandler {
         logger.warn("Kan ikke logget inn.", e)
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(failure("Du er ikke logget inn.", e))
+                .body(failure(errorMessage = "Du er ikke logget inn.", frontendFeilmelding = "Du er ikke logget inn", error = e))
     }
 
     @ExceptionHandler(RestClientResponseException::class)
@@ -38,8 +38,8 @@ class ApiExceptionHandler {
                      ExceptionUtils.getStackTrace(e))
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(failure("Feil mot ekstern tjeneste. ${e.rawStatusCode} ${e.responseBodyAsString} Message=${e.message}",
-                              e))
+                .body(failure(errorMessage = "Feil mot ekstern tjeneste. ${e.rawStatusCode} ${e.responseBodyAsString} Message=${e.message}",
+                              error = e))
     }
 
     @ExceptionHandler(MissingRequestHeaderException::class)
@@ -47,7 +47,7 @@ class ApiExceptionHandler {
         logger.warn("Mangler påkrevd request header. {}", e.message)
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(failure("Mangler påkrevd request header", e))
+                .body(failure("Mangler påkrevd request header", error = e))
     }
 
     @ExceptionHandler(MissingServletRequestParameterException::class)
@@ -55,7 +55,7 @@ class ApiExceptionHandler {
         logger.warn("Mangler påkrevd request parameter. {}", e.message)
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(failure("Mangler påkrevd request parameter", e))
+                .body(failure("Mangler påkrevd request parameter", error = e))
     }
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
@@ -63,7 +63,7 @@ class ApiExceptionHandler {
         logger.warn("Mangler påkrevd request parameter. {}", e.message)
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(failure("Mangler påkrevd request parameter", e))
+                .body(failure("Mangler påkrevd request parameter", error = e))
     }
 
     @ExceptionHandler(OAuth2ClientException::class)
@@ -71,7 +71,7 @@ class ApiExceptionHandler {
         logger.error("OAuth2ClientException : {} ", ExceptionUtils.getStackTrace(e))
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(failure("Feil mot azure. Message=${e.message}", e))
+                .body(failure("Feil mot azure. Message=${e.message}", error = e))
     }
 
     @ExceptionHandler(Exception::class)
@@ -80,7 +80,7 @@ class ApiExceptionHandler {
         logger.error("Exception : {} {}", e.javaClass.name, e.message, e)
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(failure("""Det oppstod en feil. ${e.message}""", e))
+                .body(failure("""Det oppstod en feil. ${e.message}""", error = e))
     }
 
     @ExceptionHandler(OppslagException::class)
@@ -109,7 +109,7 @@ class ApiExceptionHandler {
         }
         return ResponseEntity
                 .status(e.httpStatus)
-                .body(failure(feilmelding, e))
+                .body(failure(feilmelding, error =e))
     }
 
     companion object {

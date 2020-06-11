@@ -18,7 +18,7 @@ class DokdistController(private val dokdistService: DokdistService) {
     @ExceptionHandler(KanIkkeDistribuereJournalpostException::class)
     fun handleKanIkkeDistribuereException(ex: KanIkkeDistribuereJournalpostException): ResponseEntity<Ressurs<Any>> {
         LOG.warn("Feil ved distribusjon {}", ex.message)
-        return ResponseEntity.badRequest().body(Ressurs.failure(null, ex))
+        return ResponseEntity.badRequest().body(Ressurs.failure(null, error = ex))
     }
 
 

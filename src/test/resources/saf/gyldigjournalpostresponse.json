@@ -5,6 +5,7 @@
       "journalposttype": "I",
       "journalstatus": "JOURNALFOERT",
       "tema": "BAR",
+      "tittel": "En tittel",
       "behandlingstema": null,
       "sak": {
         "arkivsaksystem": "GSAK",

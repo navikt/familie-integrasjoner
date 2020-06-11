@@ -26,6 +26,7 @@ class HentJournalpostTestConfig {
                     journalposttype = Journalposttype.I,
                     journalstatus = Journalstatus.JOURNALFOERT,
                     tema = "BAR",
+                    tittel = "Ent tittel",
                     behandlingstema = null,
                     sak = Sak("1111" + slot.captured,
                               "GSAK",
