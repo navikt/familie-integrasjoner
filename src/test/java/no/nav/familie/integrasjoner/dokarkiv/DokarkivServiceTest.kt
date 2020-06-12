@@ -14,6 +14,7 @@ import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
 import no.nav.familie.integrasjoner.personopplysning.internal.*
 import no.nav.familie.kontrakter.felles.arkivering.Dokument
 import no.nav.familie.kontrakter.felles.arkivering.FilType
+import no.nav.familie.kontrakter.felles.personinfo.SIVILSTAND
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -75,7 +76,7 @@ class DokarkivServiceTest {
                            kjønn = "KVINNE",
                            familierelasjoner = emptySet(),
                            adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                            sivilstand =  SIVILSTANDTYPE.UGIFT)
+                            sivilstand =  SIVILSTAND.UGIFT)
                 }
         val dto = DeprecatedArkiverDokumentRequest(FNR,
                                                    false,
@@ -103,7 +104,7 @@ class DokarkivServiceTest {
                            kjønn = "KVINNE",
                            familierelasjoner = emptySet(),
                            adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                            sivilstand = SIVILSTANDTYPE.UGIFT)
+                            sivilstand = SIVILSTAND.UGIFT)
                 }
 
         val dto = DeprecatedArkiverDokumentRequest(FNR,
@@ -131,7 +132,7 @@ class DokarkivServiceTest {
                            kjønn = "KVINNE",
                            familierelasjoner = emptySet(),
                            adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                            sivilstand = SIVILSTANDTYPE.UGIFT)
+                            sivilstand = SIVILSTAND.UGIFT)
                 }
 
         val dto = DeprecatedArkiverDokumentRequest(FNR, false, listOf(Dokument(JSON_DOK,
@@ -164,7 +165,7 @@ class DokarkivServiceTest {
                            kjønn = "KVINNE",
                            familierelasjoner = emptySet(),
                            adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                            sivilstand = SIVILSTANDTYPE.UGIFT)
+                            sivilstand = SIVILSTAND.UGIFT)
                 }
 
         val dto = DeprecatedArkiverDokumentRequest(FNR, false, listOf(Dokument(JSON_DOK,
