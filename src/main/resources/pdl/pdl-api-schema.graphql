@@ -236,7 +236,6 @@ type Matrikkeladresse {
     bruksenhetsnummer: String
     kommunenummer: String
     koordinater: Koordinater
-    matrikkelId: Int
     postnummer: String
     tilleggsnavn: String
 }
@@ -424,7 +423,6 @@ type Vegadresse {
     husnummer: String
     kommunenummer: String
     koordinater: Koordinater
-    matrikkelId: Int
     postnummer: String
     tilleggsnavn: String
 }

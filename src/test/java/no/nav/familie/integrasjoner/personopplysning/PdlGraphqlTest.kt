@@ -40,7 +40,7 @@ class PdlGraphqlTest {
     @Test
     fun testMatrikkelAdresse() {
         val resp = mapper.readValue(File(getFile("pdl/pdlMatrikkelAdresseOkResponse.json")), PdlHentPersonResponse::class.java)
-        assertThat(resp.data.person!!.bostedsadresse.first()?.matrikkeladresse?.matrikkelId).isEqualTo("1001")
+        assertThat(resp.data.person!!.bostedsadresse.first()?.matrikkeladresse?.postnummer).isEqualTo("0274")
     }
 
     @Test

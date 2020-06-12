@@ -19,7 +19,6 @@ query($ident: ID!) {person: hentPerson(ident: $ident) {
     }
     bostedsadresse {
         vegadresse {
-            matrikkelId
             husnummer
             husbokstav
             bruksenhetsnummer
@@ -29,7 +28,6 @@ query($ident: ID!) {person: hentPerson(ident: $ident) {
             postnummer
         }
         matrikkeladresse {
-            matrikkelId
             bruksenhetsnummer
             tilleggsnavn
             postnummer
