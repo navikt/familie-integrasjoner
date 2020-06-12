@@ -24,11 +24,7 @@
           }
         }
       ],
-      "sivilstand": [
-        {
-          "type": "UGIFT"
-        }
-      ],
+      "sivilstand": [],
       "familierelasjoner": [
         {
           "relatertPersonsIdent": "12345678910",
