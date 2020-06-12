@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlHentPersonResponse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlNavn
-import no.nav.familie.integrasjoner.personopplysning.internal.SIVILSTANDTYPE
+import no.nav.familie.kontrakter.felles.personinfo.SIVILSTAND
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertNull
@@ -24,7 +24,7 @@ class PdlGraphqlTest {
         assertThat(resp.data.person!!.kjoenn.first().kjoenn.toString()).isEqualTo("MANN")
         assertThat(resp.data.person!!.familierelasjoner.first().relatertPersonsIdent).isEqualTo("12345678910")
         assertThat(resp.data.person!!.familierelasjoner.first().relatertPersonsRolle.toString()).isEqualTo("BARN")
-        assertThat(resp.data.person!!.sivilstand.first().type).isEqualTo(SIVILSTANDTYPE.UGIFT)
+        assertThat(resp.data.person!!.sivilstand.first().type).isEqualTo(SIVILSTAND.UGIFT)
         assertThat(resp.data.person!!.bostedsadresse.first()?.vegadresse?.husnummer).isEqualTo("3")
         assertNull(resp.data.person!!.bostedsadresse.first()?.matrikkeladresse)
         assertNull(resp.data.person!!.bostedsadresse.first()?.ukjentBosted)
