@@ -90,7 +90,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `hent personinfo skal returnere persondata med matrikkel adresse og status ok`() {
         val response: ResponseEntity<Ressurs<Person>> = hentPersonInfoFraMockedPdlResponse("pdlMatrikkelAdresseOkResponse.json")
-        assertThat(response.body?.data?.bostedsadresse?.matrikkeladresse?.matrikkelId).isEqualTo("1001")
+        assertThat(response.body?.data?.bostedsadresse?.matrikkeladresse?.postnummer).isEqualTo("0274")
     }
 
     @Test
