@@ -26,6 +26,7 @@ class PdlGraphqlTest {
         assertThat(resp.data.person!!.familierelasjoner.first().relatertPersonsRolle.toString()).isEqualTo("BARN")
         assertThat(resp.data.person!!.sivilstand.first()!!.type).isEqualTo(SIVILSTAND.UGIFT)
         assertThat(resp.data.person!!.bostedsadresse.first()?.vegadresse?.husnummer).isEqualTo("3")
+        assertThat(resp.data.person!!.bostedsadresse.first()?.vegadresse?.matrikkelId).isEqualTo(1234)
         assertNull(resp.data.person!!.bostedsadresse.first()?.matrikkeladresse)
         assertNull(resp.data.person!!.bostedsadresse.first()?.ukjentBosted)
         assertThat(resp.errorMessages()).isEqualTo("")
@@ -41,6 +42,7 @@ class PdlGraphqlTest {
     fun testMatrikkelAdresse() {
         val resp = mapper.readValue(File(getFile("pdl/pdlMatrikkelAdresseOkResponse.json")), PdlHentPersonResponse::class.java)
         assertThat(resp.data.person!!.bostedsadresse.first()?.matrikkeladresse?.postnummer).isEqualTo("0274")
+        assertThat(resp.data.person!!.bostedsadresse.first()?.matrikkeladresse?.matrikkelId).isEqualTo(2147483649)
     }
 
     @Test

@@ -20,6 +20,7 @@
       "bostedsadresse": [
         {
           "vegadresse": {
+            "matrikkelId": "1234",
             "husnummer": "3",
             "husbokstav": null,
             "bruksenhetsnummer": null,
