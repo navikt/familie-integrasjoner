@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 
 /**
  * UNPROTECTED
- * Hvis man legger til noe her må man vurde om det er riktig att den fortsatt er unprotected
+ * Hvis man legger til noe her må man vurdere at det er greit å hente informasjonen uten ProtectedWithClaims
  */
 @Unprotected
 @RestController
