@@ -6,7 +6,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.familie.integrasjoner.client.rest.KodeverkClient
-import no.nav.familie.integrasjoner.kodeverk.domene.KodeverkDto
+import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 import org.springframework.context.annotation.Bean
