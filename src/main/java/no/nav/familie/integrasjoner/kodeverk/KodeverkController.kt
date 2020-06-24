@@ -10,8 +10,12 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-@RestController
+/**
+ * UNPROTECTED
+ * Hvis man legger til noe her må man vurde om det er riktig att den fortsatt er unprotected
+ */
 @Unprotected
+@RestController
 @RequestMapping(path = ["/api/selvbetjening/kodeverk", "/api/kodeverk"], produces = [MediaType.APPLICATION_JSON_VALUE])
 class KodeverkController(val kodeverkService: KodeverkService) {
 
