@@ -1,6 +1,5 @@
 package no.nav.familie.integrasjoner.kodeverk
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.familie.integrasjoner.client.rest.KodeverkClient
@@ -8,7 +7,6 @@ import no.nav.familie.kontrakter.felles.kodeverk.BeskrivelseDto
 import no.nav.familie.kontrakter.felles.kodeverk.BetydningDto
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkSpråk
-import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.time.LocalDate
@@ -17,16 +15,6 @@ class KodeverkServiceTest {
 
     private val kodeverkClientMock: KodeverkClient = mockk()
     private val kodeverkService = KodeverkService(kodeverkClientMock)
-
-    @Test
-    fun name() {
-        val kodeverkDto =
-                objectMapper.readValue<KodeverkDto>((KodeverkServiceTest::class as Any).javaClass.classLoader.getResourceAsStream(
-                        "kodeverk/kodeverk.json"))
-        every { kodeverkClientMock.hentPostnummer() } returns kodeverkDto
-        val hentPoststed = kodeverkService.hentPoststed("0575")
-        println(hentPoststed)
-    }
 
     @Test
     fun `skal returnere poststed`() {
