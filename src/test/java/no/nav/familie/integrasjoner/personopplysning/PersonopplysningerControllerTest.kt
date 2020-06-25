@@ -247,6 +247,24 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.data).containsExactly(AKTIV_AKTØR_IDENT)
     }
 
+    fun `hentDødsfall skal returnere et dødsfall med dødsdato`() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                        .withMethod("POST")
+                        .withPath("/rest/pdl/graphql")
+                        .withBody(gyldigIdenterRequest())
+                )
+                .respond(HttpResponse.response().withBody(readfile("pdlDoedsfallResponse.json"))
+                        .withHeaders(Header("Content-Type", "application/json")))
+
+        val response: ResponseEntity<Ressurs<DødsfallResponse>> = restTemplate.exchange(uriHentIdenter,
+                HttpMethod.POST,
+                HttpEntity(Ident("12345678901"), headers))
+
+        assertThat(response.body?.data!!.dødsdato).isEqualTo("2019-07-02")
+        assertThat(response.body?.data!!.erDød).isTrue()
+    }
+
     private fun hentPersonInfoFraMockedPdlResponse(responseFile: String): ResponseEntity<Ressurs<Person>> {
         mockServerRule.client
                 .`when`(HttpRequest.request()
