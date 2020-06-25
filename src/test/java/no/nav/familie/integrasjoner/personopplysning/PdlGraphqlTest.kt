@@ -3,8 +3,10 @@ package no.nav.familie.integrasjoner.personopplysning
 import java.io.File
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlDødsfallResponse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlHentPersonResponse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlNavn
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlVergeResponse
 import no.nav.familie.kontrakter.felles.personinfo.SIVILSTAND
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -68,6 +70,21 @@ class PdlGraphqlTest {
                 .isEqualTo("For Mellom Etter")
         assertThat(PdlNavn(fornavn = "For", etternavn = "Etter").fulltNavn())
                 .isEqualTo("For Etter")
+    }
+
+    @Test
+    fun testDoedsfall() {
+        val resp = mapper.readValue(File(getFile("pdl/pdlDoedsfallResponse.json")), PdlDødsfallResponse::class.java)
+        assertThat(resp.data.person.doedsfall.size == 2)
+        assertThat(resp.data.person.doedsfall[0].doedsdato == "2019-07-02")
+        assertThat(resp.data.person.doedsfall[1].doedsdato == null)
+    }
+
+    @Test
+    fun testVerge() {
+        val resp = mapper.readValue(File(getFile("pdl/pdlVergeResponse.json")), PdlVergeResponse::class.java)
+        assertThat(resp.data.person.vergemaalEllerFremtidsfullmakt.size == 2)
+        assertThat(resp.data.person.vergemaalEllerFremtidsfullmakt[0].type == "midlertidigForVoksen")
     }
 
     private fun getFile(name: String): String {
