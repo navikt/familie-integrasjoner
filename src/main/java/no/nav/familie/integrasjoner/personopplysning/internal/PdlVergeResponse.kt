@@ -11,11 +11,11 @@ data class PdlVergeResponse(val data: Data,
         return errors?.joinToString { it -> it.message } ?: ""
     }
 
-    class Data(val person: Person)
+    class Data(val person: Person?)
     class Person(val vergemaalEllerFremtidsfullmakt: List<VergemaalEllerFremtidsfullmakt>)
-    class VergemaalEllerFremtidsfullmakt(val type: String?)
 }
 
+class VergemaalEllerFremtidsfullmakt(val type: String?)
 
 
 

@@ -77,7 +77,7 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
     }
 
     fun hentDødsfall(personIdent: String, tema: String): DødsfallResponse {
-        val doedsfall = pdlRestClient.hentDødsfall(personIdent, tema).data.person.doedsfall
+        val doedsfall = pdlRestClient.hentDødsfall(personIdent, tema)
         return DødsfallResponse(erDød = doedsfall.isNotEmpty(),
                                 dødsdato = doedsfall.filter { it.doedsdato != null }
                                         .map { it.doedsdato }
@@ -86,7 +86,7 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
 
     fun harVergeEllerFullmektig(personIdent: String, tema: String): VergeResponse {
         val harVerge =
-                pdlRestClient.hentVergemaalEllerFremtidsfullmakt(personIdent, tema).data.person.vergemaalEllerFremtidsfullmakt
+                pdlRestClient.hentVergemaalEllerFremtidsfullmakt(personIdent, tema)
                         .filter { it.type != "stadfestetFremtidsfullmakt" }
                         .isNotEmpty()
         return VergeResponse(harVerge)
@@ -95,7 +95,6 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
     companion object {
         const val PERSON = "PERSON"
     }
-
 }
 
 data class DødsfallResponse(val erDød: Boolean,

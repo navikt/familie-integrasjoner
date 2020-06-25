@@ -102,7 +102,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                   feilmelding = "Fant ikke identer for person: " + response?.errorMessages())
     }
 
-    fun hentDødsfall(personIdent: String, tema: String): PdlDødsfallResponse {
+    fun hentDødsfall(personIdent: String, tema: String): List<Doedsfall> {
         val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
                                                 query = hentGraphqlQuery("doedsfall"))
         val response = try {
@@ -117,10 +117,10 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                       feilmelding = "Fant ikke data på person: " + response?.errorMessages())
         }
 
-        return response
+        return response.data.person!!.doedsfall
     }
 
-    fun hentVergemaalEllerFremtidsfullmakt(personIdent: String, tema: String): PdlVergeResponse {
+    fun hentVergemaalEllerFremtidsfullmakt(personIdent: String, tema: String): List<VergemaalEllerFremtidsfullmakt> {
         val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
                                                 query = hentGraphqlQuery("verge"))
         val response = try {
@@ -135,7 +135,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                       feilmelding = "Fant ikke data på person: " + response?.errorMessages())
         }
 
-        return response
+        return response.data.person!!.vergemaalEllerFremtidsfullmakt
     }
 
     private fun pdlOppslagException(personIdent: String,

@@ -11,11 +11,11 @@ data class PdlDødsfallResponse(val data: Data,
         return errors?.joinToString { it -> it.message } ?: ""
     }
 
-    class Data(val person: Person)
+    class Data(val person: Person?)
     class Person(val doedsfall: List<Doedsfall>)
-    class Doedsfall(val doedsdato: String?)
 }
 
+class Doedsfall(val doedsdato: String?)
 
 
 
