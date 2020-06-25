@@ -13,7 +13,7 @@ data class PdlVergeResponse(val data: Data,
 
     class Data(val person: Person)
     class Person(val vergemaalEllerFremtidsfullmakt: List<VergemaalEllerFremtidsfullmakt>)
-    class VergemaalEllerFremtidsfullmakt(val type: String)
+    class VergemaalEllerFremtidsfullmakt(val type: String?)
 }
 
 
