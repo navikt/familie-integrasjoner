@@ -85,8 +85,8 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
     }
 
     fun harVergeEllerFullmektig(personIdent: String, tema: String): Boolean {
-        return pdlRestClient.hentVergemaalEllerFremtidsfullmakt(personIdent,
-                                                                tema).data.person.vergemaalEllerFremtidsfullmakt.isNotEmpty()
+        return pdlRestClient.hentVergemaalEllerFremtidsfullmakt(personIdent, tema).data.person.vergemaalEllerFremtidsfullmakt.
+            filter { it.type != "stadfestetFremtidsfullmakt" }.isNotEmpty()
     }
 
     companion object {
