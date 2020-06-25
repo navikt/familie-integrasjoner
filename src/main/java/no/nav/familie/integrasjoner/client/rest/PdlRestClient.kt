@@ -23,7 +23,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
 
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
 
-    private val aktørIdQuery = this::class.java.getResource("/pdl/hentIdenter.graphql").readText().graphqlCompatible()
+    private val hentIdenterQuery = hentGraphqlQuery("hentIdenter")
 
     fun hentPerson(personIdent: String, tema: String, personInfoQuery: PersonInfoQuery): Person {
 
@@ -66,26 +66,13 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                         }
                 )
             } else {
-                responsFailure.increment()
-                throw OppslagException("Feil ved oppslag på person: ${response?.errorMessages()}",
-                                       "PdlRestClient",
-                                       OppslagException.Level.MEDIUM,
-                                       HttpStatus.INTERNAL_SERVER_ERROR,
-                                       null,
-                                       personIdent)
+                throw pdlOppslagException(feilmelding = "Feil ved oppslag på person: ${response?.errorMessages()}",
+                                          personIdent = personIdent)
             }
         } catch (e: Exception) {
             when (e) {
                 is OppslagException -> throw e
-                else -> {
-                    responsFailure.increment()
-                    throw OppslagException("Feil ved oppslag på person. Gav feil: ${e.message}",
-                                           "PdlRestClient",
-                                           OppslagException.Level.MEDIUM,
-                                           HttpStatus.INTERNAL_SERVER_ERROR,
-                                           e,
-                                           personIdent)
-                }
+                else -> throw pdlOppslagException(personIdent, error = e)
             }
         }
     }
@@ -101,7 +88,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
 
     fun hentIdenter(personIdent: String, tema: String): PdlHentIdenterResponse {
         val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
-                                                query = aktørIdQuery)
+                                                query = hentIdenterQuery)
         val response = postForEntity<PdlHentIdenterResponse>(pdlUri,
                                                              pdlPersonRequest,
                                                              httpHeaders(tema))
@@ -110,12 +97,64 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         if (response != null && !response.harFeil()) {
             return response
         }
-        throw OppslagException("Fant ikke identer for person: " + response?.errorMessages(),
-                               "PdlRestClient",
-                               OppslagException.Level.MEDIUM,
-                               HttpStatus.NOT_FOUND,
-                               null,
-                               personIdent)
+        throw pdlOppslagException(personIdent,
+                                  HttpStatus.NOT_FOUND,
+                                  feilmelding = "Fant ikke identer for person: " + response?.errorMessages())
+    }
+
+    fun hentDødsfall(personIdent: String, tema: String): PdlDødsfallResponse {
+        val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
+                                                query = hentGraphqlQuery("doedsfall"))
+        val response = try {
+            postForEntity<PdlDødsfallResponse>(pdlUri,
+                                               pdlPersonRequest,
+                                               httpHeaders(tema))
+        } catch (e: Exception) {
+            throw pdlOppslagException(personIdent, error = e)
+        }
+
+        if (response == null || response.harFeil()) {
+            throw pdlOppslagException(personIdent,
+                                      HttpStatus.NOT_FOUND,
+                                      feilmelding = "Fant ikke data på person: " + response?.errorMessages())
+        }
+
+        return response
+    }
+
+    fun hentVergemaalEllerFremtidsfullmakt(personIdent: String, tema: String): PdlVergeResponse {
+        val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
+                                                query = hentGraphqlQuery("verge"))
+        return Result.runCatching {
+            postForEntity<PdlVergeResponse>(pdlUri,
+                                               pdlPersonRequest,
+                                               httpHeaders(tema))
+        }.fold(
+                onFailure = { throw pdlOppslagException(personIdent, error = it) },
+                onSuccess = {
+                    if (it == null || it.harFeil()) {
+                        throw pdlOppslagException(personIdent,
+                                                  HttpStatus.NOT_FOUND,
+                                                  feilmelding = "Fant ikke data på person: " + it?.errorMessages())
+                    }
+                    it
+                }
+        )
+    }
+
+    private fun pdlOppslagException(personIdent: String,
+                                    httpStatus: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
+                                    error: Throwable? = null,
+                                    feilmelding: String = "Feil ved oppslag på person. Gav feil: ${error?.message}")
+            : OppslagException {
+
+        responsFailure.increment()
+        return OppslagException(feilmelding,
+                                "PdlRestClient",
+                                OppslagException.Level.MEDIUM,
+                                httpStatus,
+                                error,
+                                personIdent)
     }
 
     companion object {
@@ -124,6 +163,11 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
 }
 
 enum class PersonInfoQuery(val graphQL: String) {
-    ENKEL(this::class.java.getResource("/pdl/hentperson-enkel.graphql").readText().graphqlCompatible()),
-    MED_RELASJONER(this::class.java.getResource("/pdl/hentperson-med-relasjoner.graphql").readText().graphqlCompatible())
+    ENKEL(hentGraphqlQuery("hentperson-enkel")),
+    MED_RELASJONER(hentGraphqlQuery("hentperson-med-relasjoner"))
 }
+
+private fun hentGraphqlQuery(pdlResource: String): String {
+    return PersonInfoQuery::class.java.getResource("/pdl/$pdlResource.graphql").readText().graphqlCompatible()
+}
+

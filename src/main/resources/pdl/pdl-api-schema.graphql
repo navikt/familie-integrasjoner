@@ -10,9 +10,15 @@ type AdresseNode {
 }
 
 type Adressebeskyttelse {
-    folkeregistermetadata: Folkeregistermetadata!
+    folkeregistermetadata: Folkeregistermetadata
     gradering: AdressebeskyttelseGradering!
     metadata: Metadata!
+}
+
+type BolkResult {
+    code: String!
+    ident: String!
+    person: Person
 }
 
 type Bostedsadresse {
@@ -37,6 +43,12 @@ type DeltBosted {
     vegadresse: Vegadresse
 }
 
+type DoedfoedtBarn {
+    dato: Date
+    folkeregistermetadata: Folkeregistermetadata!
+    metadata: Metadata!
+}
+
 type Doedsfall {
     doedsdato: Date
     metadata: Metadata!
@@ -47,8 +59,7 @@ type Endring {
     """
 
     Opphavet til informasjonen. I NAV blir dette satt i forbindelse med registrering (f.eks: Sykehuskassan).
-    Fra Folkeregisteret fÃ¥r vi opphaven til dems opplysning, altsÃ¥ NAV, UDI, Politiet, Skatteetaten o.l.. Fra Folkeregisteret
-    kan det ogsÃ¥ vÃ¦re tekniske navn som: DSF_MIGRERING, m.m..
+    Fra Folkeregisteret fÃ¥r vi opphaven til dems opplysning, altsÃ¥ NAV, UDI, Politiet, Skatteetaten o.l.. Fra Folkeregisteret kan det ogsÃ¥ vÃ¦re tekniske navn som: DSF_MIGRERING, m.m..
     """
     kilde: String!
     " Tidspunktet for registrering."
@@ -117,6 +128,14 @@ type Folkeregisterpersonstatus {
     status: String!
 }
 
+type Foreldreansvar {
+    ansvar: String
+    ansvarlig: String
+    ansvarligUtenIdentifikator: RelatertBiPerson
+    folkeregistermetadata: Folkeregistermetadata
+    metadata: Metadata!
+}
+
 type Fullmakt {
     gyldigFraOgMed: Date!
     gyldigTilOgMed: Date!
@@ -149,25 +168,6 @@ type InnflyttingTilNorge {
     metadata: Metadata!
 }
 
-type InternasjonalAdresse {
-    adressenavn: String
-    byEllerStedsnavn: String
-    bygningsinformasjon: String
-    distriktEllerRegion: String
-    landkode: String!
-    postboks: String
-    postkode: String
-}
-
-type InternasjonalAdresseIFrittFormat {
-    adresselinje1: String
-    adresselinje2: String
-    adresselinje3: String
-    byEllerStedsnavn: String
-    landkode: String!
-    postkode: String
-}
-
 type Kjoenn {
     folkeregistermetadata: Folkeregistermetadata
     kjoenn: KjoennType
@@ -183,9 +183,9 @@ type Kontaktadresse {
     postadresseIFrittFormat: PostadresseIFrittFormat
     postboksadresse: Postboksadresse
     type: KontaktadresseType!
-    utenlandskAdresse: InternasjonalAdresse
-    utenlandskAdresseIFrittFormat: InternasjonalAdresseIFrittFormat
-    vegadresseForPost: Vegadresse
+    utenlandskAdresse: UtenlandskAdresse
+    utenlandskAdresseIFrittFormat: UtenlandskAdresseIFrittFormat
+    vegadresse: Vegadresse
 }
 
 type KontaktinformasjonForDoedsbo {
@@ -236,6 +236,7 @@ type Matrikkeladresse {
     bruksenhetsnummer: String
     kommunenummer: String
     koordinater: Koordinater
+    matrikkelId: Int
     postnummer: String
     tilleggsnavn: String
 }
@@ -248,6 +249,13 @@ type Metadata {
     Det kan ogsÃ¥ ved svÃ¦rt fÃ¥ tilfeller skje at opprett blir fjernet. F.eks ved splitt tilfeller av identer. Dette skal skje i svÃ¦rt fÃ¥ tilfeller. Dersom man Ã¸nsker Ã¥ presentere opprettet tidspunktet, sÃ¥ blir det tidspunktet pÃ¥ den fÃ¸rste endringen.
     """
     endringer: [Endring!]!
+    """
+
+    Feltet betegner hvorvidt dette er en funksjonelt historisk opplysning, for eksempel en tidligere fraflyttet adresse eller et foreldreansvar som er utlÃ¸pt fordi barnet har fylt 18 Ã¥r.
+    I de fleste tilfeller kan dette utledes ved Ã¥ se pÃ¥ de andre feltene i opplysningen. Dette er imidlertid ikke alltid tilfellet, blant annet for foreldreansvar.
+    Feltet bÃ¸r brukes av konsumenter som henter informasjon fra GraphQL med historikk, men som ogsÃ¥ trenger Ã¥ utlede gjeldende informasjon.
+    """
+    historisk: Boolean!
     " Master refererer til hvem som eier opplysningen, f.eks sÃ¥ har PDL en kopi av Folkeregisteret, da vil master vÃ¦re FREG og eventuelle endringer pÃ¥ dette mÃ¥ gÃ¥ via Folkeregisteret (API mot dem eller andre rutiner)."
     master: String!
     """
@@ -284,7 +292,7 @@ type Oppholdsadresse {
     metadata: Metadata!
     oppholdAnnetSted: String
     oppholdsadressedato: Date
-    utenlandskAdresse: InternasjonalAdresse
+    utenlandskAdresse: UtenlandskAdresse
     vegadresse: Vegadresse
 }
 
@@ -298,12 +306,14 @@ type Person {
     adressebeskyttelse(historikk: Boolean = false): [Adressebeskyttelse!]!
     bostedsadresse(historikk: Boolean = false): [Bostedsadresse!]!
     deltBosted(historikk: Boolean = false): [DeltBosted!]!
+    doedfoedtBarn: [DoedfoedtBarn!]!
     doedsfall: [Doedsfall!]!
     falskIdentitet: FalskIdentitet
     familierelasjoner: [Familierelasjon!]!
     foedsel: [Foedsel!]!
     folkeregisteridentifikator(historikk: Boolean = false): [Folkeregisteridentifikator!]!
     folkeregisterpersonstatus(historikk: Boolean = false): [Folkeregisterpersonstatus!]!
+    foreldreansvar(historikk: Boolean = false): [Foreldreansvar!]!
     fullmakt(historikk: Boolean = false): [Fullmakt!]!
     identitetsgrunnlag(historikk: Boolean = false): [Identitetsgrunnlag!]!
     innflyttingTilNorge: [InnflyttingTilNorge!]!
@@ -320,6 +330,7 @@ type Person {
     tilrettelagtKommunikasjon: [TilrettelagtKommunikasjon!]!
     utenlandskIdentifikasjonsnummer(historikk: Boolean = false): [UtenlandskIdentifikasjonsnummer!]!
     utflyttingFraNorge: [UtflyttingFraNorge!]!
+    vergemaalEllerFremtidsfullmakt(historikk: Boolean = false): [VergemaalEllerFremtidsfullmakt!]!
 }
 
 type Personnavn {
@@ -344,6 +355,22 @@ type Postboksadresse {
 type Query {
     hentIdenter(grupper: [IdentGruppe!], historikk: Boolean = false, ident: ID!): Identliste
     hentPerson(ident: ID!): Person
+    hentPersonBolk(identer: [ID!]!): [BolkResult!]!
+    sokPerson(criteria: [Criterion], paging: Paging): SearchResult
+}
+
+type RelatertBiPerson {
+    foedselsdato: Date
+    kjoenn: KjoennType
+    navn: Personnavn
+    statsborgerskap: String
+}
+
+type SearchResult {
+    hits: [searchHit!]!
+    pageNumber: Int
+    totalHits: Int
+    totalPages: Int
 }
 
 type Sikkerhetstiltak {
@@ -402,6 +429,25 @@ type UkjentBosted {
     bostedskommune: String
 }
 
+type UtenlandskAdresse {
+    adressenavnNummer: String
+    bySted: String
+    bygningEtasjeLeilighet: String
+    landkode: String!
+    postboksNummerNavn: String
+    postkode: String
+    regionDistriktOmraade: String
+}
+
+type UtenlandskAdresseIFrittFormat {
+    adresselinje1: String
+    adresselinje2: String
+    adresselinje3: String
+    byEllerStedsnavn: String
+    landkode: String!
+    postkode: String
+}
+
 type UtenlandskIdentifikasjonsnummer {
     identifikasjonsnummer: String!
     metadata: Metadata!
@@ -423,13 +469,35 @@ type Vegadresse {
     husnummer: String
     kommunenummer: String
     koordinater: Koordinater
+    matrikkelId: Int
     postnummer: String
     tilleggsnavn: String
+}
+
+type VergeEllerFullmektig {
+    motpartsPersonident: String
+    navn: Personnavn
+    omfang: String
+    omfangetErInnenPersonligOmraade: Boolean!
+}
+
+type VergemaalEllerFremtidsfullmakt {
+    embete: String
+    folkeregistermetadata: Folkeregistermetadata
+    metadata: Metadata!
+    type: String
+    vergeEllerFullmektig: VergeEllerFullmektig!
+}
+
+type searchHit {
+    person: Person
+    score: Float
 }
 
 enum AdressebeskyttelseGradering {
     FORTROLIG
     STRENGT_FORTROLIG
+    STRENGT_FORTROLIG_UTLAND
     UGRADERT
 }
 
@@ -496,6 +564,33 @@ enum Sivilstandstype {
     SKILT_PARTNER
     UGIFT
     UOPPGITT
+}
+
+input Criterion {
+    fieldName: String!
+    includeHistorical: Boolean
+    searchRule: SearchRule!
+}
+
+input Paging {
+    pageNumber: Int = 1
+    resultsPerPage: Int = 10
+}
+
+input SearchRule {
+    after: String
+    before: String
+    contains: String
+    equals: String
+    from: String
+    fromExcluding: String
+    fuzzy: String
+    greaterThan: String
+    lessThan: String
+    notEquals: String
+    regex: String
+    to: String
+    toExcluding: String
 }
 
 

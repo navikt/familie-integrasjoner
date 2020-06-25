@@ -1,0 +1,7 @@
+query($ident: ID!) {person: hentPerson(ident: $ident) {
+    vergemaalEllerFremtidsfullmakt(historikk: false) {
+        vergeEllerFullmektig {
+            omfangetErInnenPersonligOmraade
+        }
+    }
+}}

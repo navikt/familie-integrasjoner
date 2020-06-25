@@ -76,8 +76,24 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
         }
     }
 
+    fun hentDødsfall(personIdent: String, tema: String): DødsfallResponse {
+        val doedsfall = pdlRestClient.hentDødsfall(personIdent, tema).data.person.doedsfall
+        return DødsfallResponse(erDød = doedsfall.isNotEmpty(),
+                                dødsdato = doedsfall.filter { it.doedsdato != null }
+                                        .map { it.doedsdato }
+                                        .firstOrNull())
+    }
+
+    fun harVergeEllerFullmektig(personIdent: String, tema: String): Boolean {
+        return pdlRestClient.hentVergemaalEllerFremtidsfullmakt(personIdent,
+                                                                tema).data.person.vergemaalEllerFremtidsfullmakt.isNotEmpty()
+    }
+
     companion object {
         const val PERSON = "PERSON"
     }
 
 }
+
+data class DødsfallResponse(val erDød: Boolean,
+                            val dødsdato: String?)
