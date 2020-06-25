@@ -74,21 +74,6 @@ class PdlGraphqlTest {
                 .isEqualTo("For Etter")
     }
 
-    @Test
-    fun testDoedsfall() {
-        val resp = mapper.readValue(File(getFile("pdl/pdlDoedsfallResponse.json")), PdlDødsfallResponse::class.java)
-        assertThat(resp.data.person.doedsfall.size == 2)
-        assertThat(resp.data.person.doedsfall[0].doedsdato == "2019-07-02")
-        assertThat(resp.data.person.doedsfall[1].doedsdato == null)
-    }
-
-    @Test
-    fun testVerge() {
-        val resp = mapper.readValue(File(getFile("pdl/pdlVergeResponse.json")), PdlVergeResponse::class.java)
-        assertThat(resp.data.person.vergemaalEllerFremtidsfullmakt.size == 2)
-        assertThat(resp.data.person.vergemaalEllerFremtidsfullmakt[0].type == "midlertidigForVoksen")
-    }
-
     private fun getFile(name: String): String {
         return javaClass.classLoader?.getResource(name)?.file ?: error("Testkonfigurasjon feil")
     }

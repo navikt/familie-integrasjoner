@@ -4,9 +4,6 @@
       "vergemaalEllerFremtidsfullmakt": [
         {
           "type": "midlertidigForVoksen"
-        },
-        {
-          "type": "stadfestetFremtidsfullmakt"
         }
       ]
     }
