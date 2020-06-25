@@ -287,7 +287,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `harVergeEllerFullmektig returnerer true`() {
+    fun `harVerge returnerer true`() {
         val uri = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}harVerge/$TEMA").toUriString()
         lagMockForPdl("verge.graphql", "pdlVergeFinnesResponse.json")
 
@@ -299,7 +299,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `harVergeEllerFullmektig returnerer false`() {
+    fun `harVerge returnerer false`() {
         val uri = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}harVerge/$TEMA").toUriString()
         lagMockForPdl("verge.graphql", "pdlVergeFinnesIkkeResponse.json")
 

@@ -96,9 +96,9 @@ class PersonopplysningerController(private val personopplysningerService: Person
     }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["harVerge/{tema}"])
-    fun harVergeEllerFullmektig(@RequestBody(required = true) ident: Ident,
+    fun harVerge(@RequestBody(required = true) ident: Ident,
                                 @PathVariable tema: Tema): ResponseEntity<Ressurs<VergeResponse>> {
-        return ResponseEntity.ok().body(success(personopplysningerService.harVergeEllerFullmektig(ident.ident, tema.toString()),
+        return ResponseEntity.ok().body(success(personopplysningerService.harVerge(ident.ident, tema.toString()),
                                                 "Hent vergeopplysninger OK"))
     }
 

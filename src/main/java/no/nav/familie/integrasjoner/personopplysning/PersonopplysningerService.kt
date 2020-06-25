@@ -84,7 +84,7 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
                                         .firstOrNull())
     }
 
-    fun harVergeEllerFullmektig(personIdent: String, tema: String): VergeResponse {
+    fun harVerge(personIdent: String, tema: String): VergeResponse {
         val harVerge =
                 pdlRestClient.hentVergemaalEllerFremtidsfullmakt(personIdent, tema)
                         .filter { it.type != "stadfestetFremtidsfullmakt" }
