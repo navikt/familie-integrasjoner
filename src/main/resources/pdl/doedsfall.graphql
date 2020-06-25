@@ -2,4 +2,7 @@ query($ident: ID!) {person: hentPerson(ident: $ident) {
     doedsfall {
         doedsdato
     }
-}}
+    vergemaalEllerFremtidsfullmakt(historikk: false) {
+        vergeEllerFullmektig
+    }
+}
