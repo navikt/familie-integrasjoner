@@ -26,6 +26,7 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
     fun personV3Port(): PersonV3 =
             CXFClient(PersonV3::class.java)
                     .address(personV3Url)
+                    .timeout(20000, 20000)
                     .configureStsForSystemUser()
                     .build()
 
