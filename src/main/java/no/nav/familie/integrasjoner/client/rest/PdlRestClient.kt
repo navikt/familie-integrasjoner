@@ -106,9 +106,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
                                                 query = hentGraphqlQuery("doedsfall"))
         val response = try {
-            postForEntity<PdlDødsfallResponse>(pdlUri,
-                                               pdlPersonRequest,
-                                               httpHeaders(tema))
+            postForEntity<PdlDødsfallResponse>(pdlUri, pdlPersonRequest, httpHeaders(tema))
         } catch (e: Exception) {
             throw pdlOppslagException(personIdent, error = e)
         }
@@ -125,21 +123,19 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
     fun hentVergemaalEllerFremtidsfullmakt(personIdent: String, tema: String): PdlVergeResponse {
         val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
                                                 query = hentGraphqlQuery("verge"))
-        return Result.runCatching {
-            postForEntity<PdlVergeResponse>(pdlUri,
-                                               pdlPersonRequest,
-                                               httpHeaders(tema))
-        }.fold(
-                onFailure = { throw pdlOppslagException(personIdent, error = it) },
-                onSuccess = {
-                    if (it == null || it.harFeil()) {
-                        throw pdlOppslagException(personIdent,
-                                                  HttpStatus.NOT_FOUND,
-                                                  feilmelding = "Fant ikke data på person: " + it?.errorMessages())
-                    }
-                    it
-                }
-        )
+        val response = try {
+            postForEntity<PdlVergeResponse>(pdlUri, pdlPersonRequest, httpHeaders(tema))
+        } catch (e: Exception) {
+            throw pdlOppslagException(personIdent, error = e)
+        }
+
+        if (response == null || response.harFeil()) {
+            throw pdlOppslagException(personIdent,
+                                      HttpStatus.NOT_FOUND,
+                                      feilmelding = "Fant ikke data på person: " + response?.errorMessages())
+        }
+
+        return response
     }
 
     private fun pdlOppslagException(personIdent: String,
