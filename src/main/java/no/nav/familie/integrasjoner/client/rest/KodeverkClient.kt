@@ -2,7 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
-import no.nav.familie.integrasjoner.kodeverk.domene.KodeverkDto
+import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -32,7 +32,7 @@ class KodeverkClient(@Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
         return getForEntity(kodeverkUri("Landkoder", true))
     }
 
-    private fun kodeverkUri(kodeverksnavn: String,
+    fun kodeverkUri(kodeverksnavn: String,
                             medHistorikk: Boolean = false): URI {
         val query = if (medHistorikk) QUERY_MED_HISTORIKK else QUERY
         return UriUtil.uri(kodeverkUri, "api/v1/kodeverk/$kodeverksnavn/koder/betydninger", query)

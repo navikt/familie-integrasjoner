@@ -1,11 +1,11 @@
 package no.nav.familie.integrasjoner.kodeverk
 
 import no.nav.familie.integrasjoner.client.rest.KodeverkClient
-import no.nav.familie.integrasjoner.kodeverk.domene.KodeverkDto
-import no.nav.familie.integrasjoner.kodeverk.domene.mapTerm
+import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
+import no.nav.familie.kontrakter.felles.kodeverk.KodeverkSpråk
+import no.nav.familie.kontrakter.felles.kodeverk.hentGjelende
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
-import org.springframework.web.client.HttpClientErrorException
 
 @Service
 class KodeverkService(val kodeverkClient: KodeverkClient) {
