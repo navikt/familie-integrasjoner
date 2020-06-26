@@ -77,6 +77,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.data?.familierelasjoner).isEmpty()
         assertThat(response.body?.data?.sivilstand).isEqualTo(SIVILSTAND.UGIFT)
         assertThat(response.body?.data?.bostedsadresse?.vegadresse?.husnummer).isEqualTo("3")
+        assertThat(response.body?.data?.bostedsadresse?.vegadresse?.matrikkelId).isEqualTo(1234)
         assertNull(response.body?.data?.bostedsadresse?.matrikkeladresse)
         assertNull(response.body?.data?.bostedsadresse?.ukjentBosted)
     }
@@ -91,6 +92,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
     fun `hent personinfo skal returnere persondata med matrikkel adresse og status ok`() {
         val response: ResponseEntity<Ressurs<Person>> = hentPersonInfoFraMockedPdlResponse("pdlMatrikkelAdresseOkResponse.json")
         assertThat(response.body?.data?.bostedsadresse?.matrikkeladresse?.postnummer).isEqualTo("0274")
+        assertThat(response.body?.data?.bostedsadresse?.matrikkeladresse?.matrikkelId).isEqualTo(2147483649)
     }
 
     @Test
