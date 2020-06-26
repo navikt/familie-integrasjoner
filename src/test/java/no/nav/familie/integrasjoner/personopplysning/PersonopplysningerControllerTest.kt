@@ -3,10 +3,10 @@ package no.nav.familie.integrasjoner.personopplysning
 import ch.qos.logback.classic.Logger
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
-import no.nav.familie.integrasjoner.personopplysning.domene.Ident
 import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.personinfo.Ident
 import no.nav.familie.kontrakter.felles.personinfo.SIVILSTAND
 import no.nav.security.token.support.test.JwtTokenGenerator
 import org.assertj.core.api.Assertions.assertThat
