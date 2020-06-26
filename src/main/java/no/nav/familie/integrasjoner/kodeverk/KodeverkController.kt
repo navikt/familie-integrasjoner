@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 @Unprotected
 @RestController
 @RequestMapping(path = ["/api/selvbetjening/kodeverk", "/api/kodeverk"], produces = [MediaType.APPLICATION_JSON_VALUE])
-class KodeverkController(val kodeverkService: KodeverkService) {
+class KodeverkController(private val kodeverkService: CachedKodeverkService) {
 
     @GetMapping("/poststed")
     fun hentPoststed(): ResponseEntity<Ressurs<KodeverkDto>> {
@@ -26,7 +26,7 @@ class KodeverkController(val kodeverkService: KodeverkService) {
 
     @GetMapping("/poststed/{postnummer}")
     fun hentPoststed(@PathVariable postnummer: String): ResponseEntity<Ressurs<String>> {
-        return ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentPoststed(postnummer)))
+        return ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentPostnummer().getOrDefault(postnummer, "")))
     }
 
     @GetMapping("/landkoder")
@@ -36,6 +36,6 @@ class KodeverkController(val kodeverkService: KodeverkService) {
 
     @GetMapping("/landkoder/{landkode}")
     fun hentLandkod(@PathVariable landkode: String): ResponseEntity<Ressurs<String>> {
-        return ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentLandkode(landkode)))
+        return ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentLandkoder().getOrDefault(landkode, "")))
     }
 }

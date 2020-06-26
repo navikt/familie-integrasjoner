@@ -11,10 +11,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.time.LocalDate
 
-class KodeverkServiceTest {
+class CachedKodeverkServiceTest {
 
     private val kodeverkClientMock: KodeverkClient = mockk()
-    private val kodeverkService = KodeverkService(kodeverkClientMock)
+    private val kodeverkService = CachedKodeverkService(kodeverkClientMock)
 
     @Test
     fun `skal returnere poststed`() {
@@ -24,7 +24,7 @@ class KodeverkServiceTest {
 
         every { kodeverkClientMock.hentPostnummer() } returns kodeverk
 
-        val poststedTest = kodeverkService.hentPoststed(POSTNUMMER)
+        val poststedTest = kodeverkService.hentPostnummer()[POSTNUMMER]
         assertThat(poststedTest).isEqualTo(POSTSTED)
     }
 
@@ -32,8 +32,8 @@ class KodeverkServiceTest {
     fun `skal returnere tom poststed hvis den ikke finnes`() {
         every { kodeverkClientMock.hentPostnummer() } returns KodeverkDto(emptyMap())
 
-        val poststedTest = kodeverkService.hentPoststed(POSTNUMMER)
-        assertThat(poststedTest).isEmpty()
+        val poststedTest = kodeverkService.hentPostnummer()[POSTNUMMER]
+        assertThat(poststedTest).isNull()
     }
 
     @Test
@@ -44,7 +44,7 @@ class KodeverkServiceTest {
 
         every { kodeverkClientMock.hentLandkoder() } returns kodeverk
 
-        val land = kodeverkService.hentLandkode(LANDKODE)
+        val land = kodeverkService.hentLandkoder()[LANDKODE]
         assertThat(land).isEqualTo(LAND)
     }
 
@@ -52,8 +52,8 @@ class KodeverkServiceTest {
     fun `skal returnere tom land hvis den ikke finnes`() {
         every { kodeverkClientMock.hentLandkoder() } returns KodeverkDto(emptyMap())
 
-        val land = kodeverkService.hentLandkode(LANDKODE)
-        assertThat(land).isEmpty()
+        val land = kodeverkService.hentLandkoder()[LANDKODE]
+        assertThat(land).isNull()
     }
 
     companion object {
