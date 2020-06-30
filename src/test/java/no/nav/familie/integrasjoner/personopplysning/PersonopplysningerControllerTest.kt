@@ -125,7 +125,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/pdl/graphql")
-                                .withBody(gyldigRequest())
+                                .withBody(gyldigRequest("hentperson-med-relasjoner.graphql"))
                 )
                 .respond(HttpResponse.response().withStatusCode(500))
 
@@ -143,7 +143,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/pdl/graphql")
-                                .withBody(gyldigIdenterRequest())
+                                .withBody(gyldigRequest("hentIdenter.graphql"))
                 )
                 .respond(HttpResponse.response()
                                  .withBody(readfile("pdlAktorIdResponse.json"))
@@ -167,7 +167,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/pdl/graphql")
-                                .withBody(gyldigIdenterRequest())
+                                .withBody(gyldigRequest("hentIdenter.graphql"))
                 )
                 .respond(HttpResponse.response()
                                  .withBody(readfile("pdlAktorIdResponse.json"))
@@ -187,7 +187,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/pdl/graphql")
-                                .withBody(gyldigIdenterRequest())
+                                .withBody(gyldigRequest("hentIdenter.graphql"))
                 )
                 .respond(HttpResponse.response().withBody(readfile("pdlPersonIkkeFunnetResponse.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
@@ -206,7 +206,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/pdl/graphql")
-                                .withBody(gyldigIdenterRequest())
+                                .withBody(gyldigRequest("hentIdenter.graphql"))
                 )
                 .respond(HttpResponse.response()
                                  .withBody(readfile("pdlAktorIdResponse.json"))
@@ -231,7 +231,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/pdl/graphql")
-                                .withBody(gyldigIdenterRequest())
+                                .withBody(gyldigRequest("hentIdenter.graphql"))
                 )
                 .respond(HttpResponse.response()
                                  .withBody(readfile("pdlAktorIdResponse.json"))
@@ -247,13 +247,88 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.data).containsExactly(AKTIV_AKTØR_IDENT)
     }
 
+    @Test
+    fun `hentDødsfall returnerer et dødsfall med dødsdato`() {
+        val uri = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}doedsfall/$TEMA").toUriString()
+        lagMockForPdl("doedsfall.graphql", "pdlDoedsfallResponse.json")
+
+        val response: ResponseEntity<Ressurs<DødsfallResponse>> = restTemplate.exchange(uri,
+                HttpMethod.POST,
+                HttpEntity(Ident("12345678901"), headers))
+
+        assertThat(response.body?.data!!.dødsdato).isEqualTo("2019-07-02")
+        assertThat(response.body?.data!!.erDød).isTrue()
+    }
+
+    @Test
+    fun `hentDødsfall skal returnere et dødsfall uten dødsdato`() {
+        val uri = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}doedsfall/$TEMA").toUriString()
+        lagMockForPdl("doedsfall.graphql", "pdlDoedsfallUtenDatoResponse.json")
+
+        val response: ResponseEntity<Ressurs<DødsfallResponse>> = restTemplate.exchange(uri,
+                                                                                        HttpMethod.POST,
+                                                                                        HttpEntity(Ident("12345678901"), headers))
+
+        assertThat(response.body?.data!!.dødsdato).isEqualTo(null)
+        assertThat(response.body?.data!!.erDød).isTrue()
+    }
+
+    @Test
+    fun `hentDødsfall returnerer ikke et dødsfall`() {
+        val uri = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}doedsfall/$TEMA").toUriString()
+        lagMockForPdl("doedsfall.graphql", "pdlDoedsfallIkkeDoedResponse.json")
+
+        val response: ResponseEntity<Ressurs<DødsfallResponse>> = restTemplate.exchange(uri,
+                                                                                        HttpMethod.POST,
+                                                                                        HttpEntity(Ident("12345678901"), headers))
+
+        assertThat(response.body?.data!!.dødsdato).isEqualTo(null)
+        assertThat(response.body?.data!!.erDød).isFalse()
+    }
+
+    @Test
+    fun `harVerge returnerer true`() {
+        val uri = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}harVerge/$TEMA").toUriString()
+        lagMockForPdl("verge.graphql", "pdlVergeFinnesResponse.json")
+
+        val response: ResponseEntity<Ressurs<VergeResponse>> = restTemplate.exchange(uri,
+                                                                                        HttpMethod.POST,
+                                                                                        HttpEntity(Ident("12345678901"), headers))
+
+        assertThat(response.body?.data!!.harVerge).isTrue()
+    }
+
+    @Test
+    fun `harVerge returnerer false`() {
+        val uri = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}harVerge/$TEMA").toUriString()
+        lagMockForPdl("verge.graphql", "pdlVergeFinnesIkkeResponse.json")
+
+        val response: ResponseEntity<Ressurs<VergeResponse>> = restTemplate.exchange(uri,
+                                                                                     HttpMethod.POST,
+                                                                                     HttpEntity(Ident("12345678901"), headers))
+
+        assertThat(response.body?.data!!.harVerge).isFalse()
+    }
+
+    private fun lagMockForPdl(graphqlQueryFilnavn: String, jsonResponseFilnavn: String) {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withPath("/rest/pdl/graphql")
+                                .withBody(gyldigRequest(graphqlQueryFilnavn))
+                )
+                .respond(HttpResponse.response().withBody(readfile(jsonResponseFilnavn))
+                                 .withHeaders(Header("Content-Type", "application/json")))
+    }
+
+
     private fun hentPersonInfoFraMockedPdlResponse(responseFile: String): ResponseEntity<Ressurs<Person>> {
         mockServerRule.client
                 .`when`(HttpRequest.request()
                         .withMethod("POST")
                         .withPath("/rest/pdl/graphql")
                         .withHeader("Tema", TEMA)
-                        .withBody(gyldigRequest())
+                        .withBody(gyldigRequest("hentperson-med-relasjoner.graphql"))
                 )
                 .respond(HttpResponse.response().withBody(readfile(responseFile))
                         .withHeaders(Header("Content-Type", "application/json")))
@@ -261,19 +336,11 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         return restTemplate.exchange(uriHentPersoninfo, HttpMethod.GET, HttpEntity<String>(headers))
     }
 
-    private fun gyldigRequest(): String {
+    private fun gyldigRequest(filnavn: String): String {
         return readfile("pdlGyldigRequest.json")
                 .replace(
                         "GRAPHQL-PLACEHOLDER",
-                        readfile("hentperson-med-relasjoner.graphql").graphqlCompatible()
-                )
-    }
-
-    private fun gyldigIdenterRequest(): String {
-        return readfile("pdlGyldigRequest.json")
-                .replace(
-                        "GRAPHQL-PLACEHOLDER",
-                        readfile("hentIdenter.graphql").graphqlCompatible()
+                        readfile(filnavn).graphqlCompatible()
                 )
     }
 

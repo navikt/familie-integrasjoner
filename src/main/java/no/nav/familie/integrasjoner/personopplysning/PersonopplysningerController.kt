@@ -88,6 +88,20 @@ class PersonopplysningerController(private val personopplysningerService: Person
                 "Hent personinfo OK"))
     }
 
+    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["doedsfall/{tema}"])
+    fun dødsfall(@RequestBody(required = true) ident: Ident,
+                 @PathVariable tema: Tema): ResponseEntity<Ressurs<DødsfallResponse>> {
+        return ResponseEntity.ok().body(success(personopplysningerService.hentDødsfall(ident.ident, tema.toString()),
+                                                "Hent dødsfall OK"))
+    }
+
+    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["harVerge/{tema}"])
+    fun harVerge(@RequestBody(required = true) ident: Ident,
+                                @PathVariable tema: Tema): ResponseEntity<Ressurs<VergeResponse>> {
+        return ResponseEntity.ok().body(success(personopplysningerService.harVerge(ident.ident, tema.toString()),
+                                                "Hent vergeopplysninger OK"))
+    }
+
     enum class Tema {
         KON,
         BAR,
