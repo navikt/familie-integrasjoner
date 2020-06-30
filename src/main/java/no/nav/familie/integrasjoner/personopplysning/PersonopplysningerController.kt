@@ -57,18 +57,8 @@ class PersonopplysningerController(private val personopplysningerService: Person
                                                 melding = "Hent historiske identer OK"))
     }
 
-    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/historikk"])
-    @Deprecated("bruk v2")
-    fun historikk(@RequestHeader(name = "Nav-Personident") personIdent: String,
-                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) fomDato: LocalDate,
-                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) tomDato: LocalDate)
-            : ResponseEntity<Ressurs<PersonhistorikkInfo>> {
-        return ResponseEntity.ok().body(success(personopplysningerService.hentHistorikkFor(personIdent, fomDato, tomDato),
-                                                "Hent personhistorikk OK"))
-    }
-
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v2/historikk"])
-    fun historikkV2(@RequestBody(required = true) ident: Ident,
+    fun historikk(@RequestBody(required = true) ident: Ident,
                   @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) fomDato: LocalDate,
                   @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) tomDato: LocalDate)
             : ResponseEntity<Ressurs<PersonhistorikkInfo>> {
@@ -76,15 +66,8 @@ class PersonopplysningerController(private val personopplysningerService: Person
                                                 "Hent personhistorikk OK"))
     }
 
-    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/info"])
-    @Deprecated("bruk v2")
-    fun personInfo(@RequestHeader(name = "Nav-Personident") personIdent: String): ResponseEntity<Ressurs<Personinfo>> {
-        return ResponseEntity.ok().body(success(personopplysningerService.hentPersoninfoFor(personIdent),
-                                                "Hent personinfo OK"))
-    }
-
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v2/info"])
-    fun personInfoV2(@RequestBody(required = true) ident: Ident): ResponseEntity<Ressurs<Personinfo>> {
+    fun personInfo(@RequestBody(required = true) ident: Ident): ResponseEntity<Ressurs<Personinfo>> {
         return ResponseEntity.ok().body(success(personopplysningerService.hentPersoninfoFor(ident.ident),
                                                 "Hent personinfo OK"))
     }
