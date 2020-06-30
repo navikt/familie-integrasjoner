@@ -85,10 +85,9 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
     }
 
     fun harVerge(personIdent: String, tema: String): VergeResponse {
-        val harVerge =
-                pdlRestClient.hentVergemaalEllerFremtidsfullmakt(personIdent, tema)
-                        .filter { it.type != "stadfestetFremtidsfullmakt" }
-                        .isNotEmpty()
+        val harVerge = pdlRestClient.hentVergemaalEllerFremtidsfullmakt(personIdent, tema)
+                .any { it.type != "stadfestetFremtidsfullmakt" }
+
         return VergeResponse(harVerge)
     }
 
