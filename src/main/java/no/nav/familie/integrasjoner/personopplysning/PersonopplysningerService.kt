@@ -10,7 +10,7 @@ import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter
 import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
-import no.nav.familie.integrasjoner.personopplysning.internal.Statsborgerskap
+import no.nav.familie.kontrakter.felles.personinfo.Statsborgerskap
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Periode
@@ -92,9 +92,9 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
         return VergeResponse(harVerge)
     }
 
-    fun hentStatsborgerskap(ident: String, tema: String): List<Statsborgerskap> {
-        return pdlRestClient.hentStatsborgerskap(ident, tema)
-    }
+    fun hentStatsborgerskap(ident: String, tema: String): List<Statsborgerskap> =
+            pdlRestClient.hentStatsborgerskap(ident, tema)
+
 
     companion object {
         const val PERSON = "PERSON"

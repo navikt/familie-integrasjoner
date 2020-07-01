@@ -1,9 +1,9 @@
 package no.nav.familie.integrasjoner.personopplysning.internal
 
-import java.time.LocalDate
+import no.nav.familie.kontrakter.felles.personinfo.Statsborgerskap
 
 data class PdlStatsborgerskapResponse(val data: Data,
-                            val errors: List<PdlError>?) {
+                                      val errors: List<PdlError>?) {
 
     fun harFeil(): Boolean {
         return errors != null && errors.isNotEmpty()
@@ -16,10 +16,6 @@ data class PdlStatsborgerskapResponse(val data: Data,
     class Data(val person: Person?)
     class Person(val statsborgerskap: List<Statsborgerskap>)
 }
-
-data class Statsborgerskap(val land: String,
-                           val gyldigFraOgMed: LocalDate?,
-                           val gyldigTilOgMed: LocalDate?)
 
 
 
