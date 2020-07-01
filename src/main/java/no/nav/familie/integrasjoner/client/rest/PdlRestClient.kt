@@ -153,6 +153,28 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                 personIdent)
     }
 
+    fun hentStatsborgerskap(ident: String, tema: String): List<Statsborgerskap> {
+
+        val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(ident),
+                                                query = hentGraphqlQuery("statsborgerskap"))
+        val response = try {
+            postForEntity<PdlStatsborgerskapResponse>(pdlUri, pdlPersonRequest, httpHeaders(tema))
+        } catch (e: Exception) {
+            throw pdlOppslagException(ident, error = e)
+        }
+
+        if (response == null || response.harFeil()) {
+            throw pdlOppslagException(ident,
+                                      HttpStatus.NOT_FOUND,
+                                      feilmelding = "Fant ikke data på person: " + response?.errorMessages())
+        }
+
+
+
+        return response.data.person!!.statsborgerskap
+
+    }
+
     companion object {
         private const val PATH_GRAPHQL = "graphql"
     }

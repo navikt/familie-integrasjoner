@@ -5,6 +5,7 @@ import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
+import no.nav.familie.integrasjoner.personopplysning.internal.Statsborgerskap
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.ikkeTilgang
@@ -100,6 +101,13 @@ class PersonopplysningerController(private val personopplysningerService: Person
                                 @PathVariable tema: Tema): ResponseEntity<Ressurs<VergeResponse>> {
         return ResponseEntity.ok().body(success(personopplysningerService.harVerge(ident.ident, tema.toString()),
                                                 "Hent vergeopplysninger OK"))
+    }
+
+    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["statsborgerskap/{tema}"])
+    fun hentStatsborgerskap(@RequestBody(required = true) ident: Ident,
+                 @PathVariable tema: Tema): ResponseEntity<Ressurs<List<Statsborgerskap>>> {
+        return ResponseEntity.ok().body(success(personopplysningerService.hentStatsborgerskap(ident.ident, tema.toString()),
+                                                "Hent statsborgerskap OK"))
     }
 
     enum class Tema {
