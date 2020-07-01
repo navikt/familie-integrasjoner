@@ -1,3 +1,7 @@
 *.iml
 .idea
 target/
+
+# genereres av intellijs graphql-plugin.
+pdl-api-schema.graphql
+.graphqlconfig
