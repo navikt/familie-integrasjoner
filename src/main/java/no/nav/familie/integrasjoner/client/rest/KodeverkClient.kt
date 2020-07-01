@@ -33,9 +33,13 @@ class KodeverkClient(@Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
     }
 
     fun kodeverkUri(kodeverksnavn: String,
-                            medHistorikk: Boolean = false): URI {
+                    medHistorikk: Boolean = false): URI {
         val query = if (medHistorikk) QUERY_MED_HISTORIKK else QUERY
         return UriUtil.uri(kodeverkUri, "api/v1/kodeverk/$kodeverksnavn/koder/betydninger", query)
+    }
+
+    fun hentEEALandkoder(): KodeverkDto {
+        return getForEntity(kodeverkUri("EEAFreg"))
     }
 
     companion object {
