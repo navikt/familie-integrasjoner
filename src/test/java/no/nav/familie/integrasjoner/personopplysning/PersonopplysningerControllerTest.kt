@@ -8,6 +8,7 @@ import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.personinfo.Ident
 import no.nav.familie.kontrakter.felles.personinfo.SIVILSTAND
+import no.nav.familie.kontrakter.felles.personinfo.Statsborgerskap
 import no.nav.security.token.support.test.JwtTokenGenerator
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -308,6 +309,30 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                                                                                      HttpEntity(Ident("12345678901"), headers))
 
         assertThat(response.body?.data!!.harVerge).isFalse()
+    }
+
+    @Test
+    fun `skal returnere statsborgerskap`() {
+        val uri = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}statsborgerskap/$TEMA").toUriString()
+        lagMockForPdl("statsborgerskap.graphql", "pdlStatsborgerskap.json")
+
+        val response: ResponseEntity<Ressurs<List<Statsborgerskap>>> = restTemplate.exchange(uri,
+                                                                                     HttpMethod.POST,
+                                                                                     HttpEntity(Ident("12345678901"), headers))
+
+        assertThat(response.body?.data!!).hasSize(1).extracting("land").contains("NOR")
+    }
+
+    @Test
+    fun `skal returnere statsborgerskap tom`() {
+        val uri = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}statsborgerskap/$TEMA").toUriString()
+        lagMockForPdl("statsborgerskap.graphql", "pdlStatsborgerskapTom.json")
+
+        val response: ResponseEntity<Ressurs<List<Statsborgerskap>>> = restTemplate.exchange(uri,
+                                                                                             HttpMethod.POST,
+                                                                                             HttpEntity(Ident("12345678901"), headers))
+
+        assertThat(response.body?.data!!).isEmpty()
     }
 
     private fun lagMockForPdl(graphqlQueryFilnavn: String, jsonResponseFilnavn: String) {
