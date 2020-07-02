@@ -9,7 +9,11 @@ import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkSpråk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.springframework.cache.annotation.Cacheable
+import java.lang.reflect.Modifier
 import java.time.LocalDate
+import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.jvm.javaMethod
 
 class CachedKodeverkServiceTest {
 
@@ -54,6 +58,14 @@ class CachedKodeverkServiceTest {
 
         val land = kodeverkService.hentLandkoder()[LANDKODE]
         assertThat(land).isNull()
+    }
+
+    @Test
+    fun `alle public metoder skal være annotert med @Cacheable`() {
+        val publikMetoderUtenCacheable = CachedKodeverkService::class.declaredMemberFunctions
+                .filter { Modifier.isPublic(it.javaMethod!!.modifiers) }
+                .filter { it.annotations.none { it.annotationClass == Cacheable::class } }
+        assertThat(publikMetoderUtenCacheable).isEmpty()
     }
 
     companion object {
