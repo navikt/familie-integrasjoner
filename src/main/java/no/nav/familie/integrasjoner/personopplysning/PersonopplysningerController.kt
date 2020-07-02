@@ -10,6 +10,7 @@ import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.ikkeTilgang
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.personinfo.Ident
+import no.nav.familie.kontrakter.felles.personinfo.Statsborgerskap
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.MediaType
@@ -97,10 +98,17 @@ class PersonopplysningerController(private val personopplysningerService: Person
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["harVerge/{tema}"])
     fun harVerge(@RequestBody(required = true) ident: Ident,
-                                @PathVariable tema: Tema): ResponseEntity<Ressurs<VergeResponse>> {
+                 @PathVariable tema: Tema): ResponseEntity<Ressurs<VergeResponse>> {
         return ResponseEntity.ok().body(success(personopplysningerService.harVerge(ident.ident, tema.toString()),
                                                 "Hent vergeopplysninger OK"))
     }
+
+    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["statsborgerskap/{tema}"])
+    fun hentStatsborgerskap(@RequestBody(required = true) ident: Ident,
+                            @PathVariable tema: Tema): ResponseEntity<Ressurs<List<Statsborgerskap>>> = ResponseEntity.ok()
+            .body(success(personopplysningerService.hentStatsborgerskap(ident.ident, tema.toString()),
+                          "Hent statsborgerskap OK"))
+
 
     enum class Tema {
         KON,

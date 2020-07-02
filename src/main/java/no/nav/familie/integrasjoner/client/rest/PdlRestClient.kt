@@ -6,6 +6,7 @@ import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.personopplysning.internal.*
+import no.nav.familie.kontrakter.felles.personinfo.Statsborgerskap
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -151,6 +152,28 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                 httpStatus,
                                 error,
                                 personIdent)
+    }
+
+    fun hentStatsborgerskap(ident: String, tema: String): List<Statsborgerskap> {
+
+        val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(ident),
+                                                query = hentGraphqlQuery("statsborgerskap"))
+        val response = try {
+            postForEntity<PdlStatsborgerskapResponse>(pdlUri, pdlPersonRequest, httpHeaders(tema))
+        } catch (e: Exception) {
+            throw pdlOppslagException(ident, error = e)
+        }
+
+        if (response == null || response.harFeil()) {
+            throw pdlOppslagException(ident,
+                                      HttpStatus.NOT_FOUND,
+                                      feilmelding = "Fant ikke data på person: " + response?.errorMessages())
+        }
+
+
+
+        return response.data.person!!.statsborgerskap
+
     }
 
     companion object {
