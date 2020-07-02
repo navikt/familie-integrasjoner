@@ -9,12 +9,16 @@ import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkSpråk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.springframework.cache.annotation.Cacheable
+import java.lang.reflect.Modifier
 import java.time.LocalDate
+import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.jvm.javaMethod
 
-class KodeverkServiceTest {
+class CachedKodeverkServiceTest {
 
     private val kodeverkClientMock: KodeverkClient = mockk()
-    private val kodeverkService = KodeverkService(kodeverkClientMock)
+    private val kodeverkService = CachedKodeverkService(kodeverkClientMock)
 
     @Test
     fun `skal returnere poststed`() {
@@ -24,7 +28,7 @@ class KodeverkServiceTest {
 
         every { kodeverkClientMock.hentPostnummer() } returns kodeverk
 
-        val poststedTest = kodeverkService.hentPoststed(POSTNUMMER)
+        val poststedTest = kodeverkService.hentPostnummer()[POSTNUMMER]
         assertThat(poststedTest).isEqualTo(POSTSTED)
     }
 
@@ -32,8 +36,8 @@ class KodeverkServiceTest {
     fun `skal returnere tom poststed hvis den ikke finnes`() {
         every { kodeverkClientMock.hentPostnummer() } returns KodeverkDto(emptyMap())
 
-        val poststedTest = kodeverkService.hentPoststed(POSTNUMMER)
-        assertThat(poststedTest).isEmpty()
+        val poststedTest = kodeverkService.hentPostnummer()[POSTNUMMER]
+        assertThat(poststedTest).isNull()
     }
 
     @Test
@@ -44,7 +48,7 @@ class KodeverkServiceTest {
 
         every { kodeverkClientMock.hentLandkoder() } returns kodeverk
 
-        val land = kodeverkService.hentLandkode(LANDKODE)
+        val land = kodeverkService.hentLandkoder()[LANDKODE]
         assertThat(land).isEqualTo(LAND)
     }
 
@@ -52,8 +56,16 @@ class KodeverkServiceTest {
     fun `skal returnere tom land hvis den ikke finnes`() {
         every { kodeverkClientMock.hentLandkoder() } returns KodeverkDto(emptyMap())
 
-        val land = kodeverkService.hentLandkode(LANDKODE)
-        assertThat(land).isEmpty()
+        val land = kodeverkService.hentLandkoder()[LANDKODE]
+        assertThat(land).isNull()
+    }
+
+    @Test
+    fun `alle public metoder skal være annotert med @Cacheable`() {
+        val publikMetoderUtenCacheable = CachedKodeverkService::class.declaredMemberFunctions
+                .filter { Modifier.isPublic(it.javaMethod!!.modifiers) }
+                .filter { it.annotations.none { it.annotationClass == Cacheable::class } }
+        assertThat(publikMetoderUtenCacheable).isEmpty()
     }
 
     companion object {

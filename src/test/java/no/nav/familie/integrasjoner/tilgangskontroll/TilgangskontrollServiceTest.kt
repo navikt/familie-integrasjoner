@@ -30,9 +30,10 @@ class TilgangskontrollServiceTest {
     private val tilgangConfig: TilgangConfig = mockk(relaxed = true)
     private val personopplysningerService: PersonopplysningerService = mockk(relaxed = true)
 
-    private var tilgangskontrollService: TilgangskontrollService = TilgangskontrollService(egenAnsattService,
-                                                                                           personopplysningerService,
-                                                                                           tilgangConfig)
+    private val cachedTilgangskontrollService = CachedTilgangskontrollService(egenAnsattService,
+                                                                              personopplysningerService,
+                                                                              tilgangConfig)
+    private var tilgangskontrollService: TilgangskontrollService = TilgangskontrollService(cachedTilgangskontrollService)
 
     @Test
     fun `tilgang til egen ansatt gir ikke tilgang hvis saksbehandler mangler rollen`() {
@@ -157,7 +158,7 @@ class TilgangskontrollServiceTest {
         return Personinfo.Builder().medPersonIdent(PERSON_IDENT)
                 .medFødselsdato(LocalDate.now())
                 .medNavn(NAVN)
-                .medDiskresjonsKode(TilgangskontrollService.DISKRESJONSKODE_KODE6)
+                .medDiskresjonsKode(CachedTilgangskontrollService.DISKRESJONSKODE_KODE6)
                 .build()
     }
 
@@ -165,7 +166,7 @@ class TilgangskontrollServiceTest {
         return Personinfo.Builder().medPersonIdent(PERSON_IDENT)
                 .medFødselsdato(LocalDate.now())
                 .medNavn(NAVN)
-                .medDiskresjonsKode(TilgangskontrollService.DISKRESJONSKODE_KODE7)
+                .medDiskresjonsKode(CachedTilgangskontrollService.DISKRESJONSKODE_KODE7)
                 .build()
     }
 
