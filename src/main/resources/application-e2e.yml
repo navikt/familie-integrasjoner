@@ -48,7 +48,6 @@ AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 STS_URL: http://nav-auth-mock:8200/nais-sts/token
 SECURITYTOKENSERVICE_URL: http://vtp:8060/soap/SecurityTokenServiceProvider/
 PERSON_V3_URL: https://vtp:8063/soap/tpsws/ws/Person/v3
-KODEVERK_URL: http://nowhere
 INFOTRYGD_URL: http://vtp:8060/rest/infotrygd-kontantstotte
 EGEN_ANSATT_V1_URL: https://vtp:8063/soap/tpsws/EgenAnsatt_v1
 MEDL2_URL: http://vtp:8060/rest/medl2
@@ -60,6 +59,7 @@ OPPGAVE_URL: http://familie-mock-server:1337/rest/api/oppgave/
 PDL_URL: http://familie-mock-server:1337/rest/api/pdl
 AKTOERID_URL: http://familie-mock-server:1337/rest/aktoerregister
 SAF_URL: http://familie-mock-server:1337/rest/api/saf
+KODEVERK_URL: http://familie-mock-server:1337/rest/api/kodeverk
 
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw
