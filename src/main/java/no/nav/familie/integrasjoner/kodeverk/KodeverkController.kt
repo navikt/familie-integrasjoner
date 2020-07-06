@@ -40,7 +40,7 @@ class KodeverkController(private val kodeverkService: CachedKodeverkService) {
     }
 
     @GetMapping("/landkoder/eea")
-    fun hentEEALand(): ResponseEntity<Ressurs<Set<String>>> =
-            ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentEEALandkoder().betydninger.keys))
+    fun hentEEALand(): ResponseEntity<Ressurs<KodeverkDto>> =
+            ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentEEALandkoder()))
 
 }

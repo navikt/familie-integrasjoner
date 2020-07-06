@@ -39,7 +39,7 @@ class KodeverkClient(@Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
     }
 
     fun hentEEALandkoder(): KodeverkDto {
-        return getForEntity(kodeverkUri("EEAFreg"))
+        return getForEntity(kodeverkUri("EEAFreg", medHistorikk = true))
     }
 
     companion object {

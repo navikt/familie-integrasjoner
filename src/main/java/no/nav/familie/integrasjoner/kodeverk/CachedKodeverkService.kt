@@ -21,7 +21,7 @@ class CachedKodeverkService(private val kodeverkClient: KodeverkClient) {
     @Cacheable("kodeverk_landkoderMedHistorikk")
     fun hentLandkoderMedHistorikk(): KodeverkDto = kodeverkClient.hentLandkoderMedHistorikk()
 
-    @Cacheable("kodeverk_eeafreg")
+    @Cacheable("kodeverk_eeafregMedHistorikk")
     fun hentEEALandkoder(): KodeverkDto = kodeverkClient.hentEEALandkoder()
 
 }
