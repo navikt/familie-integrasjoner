@@ -39,17 +39,19 @@ class KodeverkControllerTest : OppslagSpringRunnerTest() {
                                                                  .withHeader("Content-Type", "application/json")
                                                                  .withBody(objectMapper.writeValueAsString(kodeverk))))
 
-        val response: ResponseEntity<Ressurs<Set<String>>> = restTemplate.exchange(localhost(KODEVERL_EEARG_URL),
+        val response: ResponseEntity<Ressurs<KodeverkDto>> = restTemplate.exchange(localhost(KODEVERL_EEARG_URL),
                                                                                    HttpMethod.GET, null)
 
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(response.body.data).hasSize(2).contains("FOO", "BAR")
+        assertThat(response.body.data!!.betydninger).hasSize(2)
+        assertThat(response.body.data!!.betydninger["FOO"]).contains(betydningFoo)
+        assertThat(response.body.data!!.betydninger["BAR"]).contains(betydningBar)
     }
 
     companion object {
         private const val KODEVERK_URL = "/api/kodeverk/"
         private const val KODEVERL_EEARG_URL = "${KODEVERK_URL}/landkoder/eea"
-        private const val GET_KODEVERK_EEAFREG_URL = "/api/v1/kodeverk/EEAFreg/koder/betydninger?ekskluderUgyldige=true&spraak=nb"
+        private const val GET_KODEVERK_EEAFREG_URL = "/api/v1/kodeverk/EEAFreg/koder/betydninger?ekskluderUgyldige=false&spraak=nb"
     }
 }
