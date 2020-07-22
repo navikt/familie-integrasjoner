@@ -26,21 +26,20 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Deprecated("Bruk v2 endepunktet")
     fun finnOppgaver(@RequestParam("tema") tema: String,
                      @RequestParam("behandlingstema", required = false) behandlingstema: String?,
                      @RequestParam("oppgavetype", required = false) oppgavetype: String?,
                      @RequestParam("enhet", required = false) enhet: String?,
                      @RequestParam("saksbehandler", required = false) saksbehandler: String?,
-                     @RequestParam("tilordnetRessurs", required = false) tilordnetRessurs: Boolean?,
-                     @RequestParam("tildeltRessurs", required = false) tildeltRessurs: String?,
                      @RequestParam("journalpostId", required = false) journalpostId: String?)
             : ResponseEntity<Ressurs<List<Oppgave>>> {
         val oppgaver = oppgaveService.finnOppgaver(tema,
                                                    behandlingstema,
                                                    oppgavetype,
                                                    enhet,
-                                                   tildeltRessurs ?: saksbehandler,
-                                                   tilordnetRessurs,
+                                                   saksbehandler,
+                                                   null,
                                                    journalpostId)
         return ResponseEntity.ok().body(success(oppgaver, "Finn oppgaver OK"))
     }
@@ -100,6 +99,8 @@ class FinnOppgaveRequest(val tema: String? = null,
                          val enhet: String? = null,
                          val saksbehandler: String? = null,
                          val journalpostId: String? = null,
+                         val tilordnetRessurs: Boolean? = null,
+                         val tildeltRessurs: String? = null,
                          val opprettetFomTidspunkt: String? = null,
                          val opprettetTomTidspunkt: String? = null,
                          val fristFomDato: String? = null,

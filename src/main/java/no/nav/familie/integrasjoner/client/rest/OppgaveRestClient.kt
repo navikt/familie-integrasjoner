@@ -70,7 +70,6 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
             oppgavetype?.apply { uriBuilder.queryParam("oppgavetype", this) }
             tildeltEnhetsnr?.apply { uriBuilder.queryParam("tildeltEnhetsnr", this) }
             tildeltRessurs?.apply { uriBuilder.queryParam("tildeltRessurs", this) }
-            tilordnetRessurs?.apply { uriBuilder.queryParam("tilordnetRessurs", if (this) "true" else "false") }
             journalpostId?.apply { uriBuilder.queryParam("journalpostId", this) }
 
             val uri = uriBuilder
@@ -109,7 +108,11 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
                 behandlingstema?.apply { uriBuilder.queryParam("behandlingstema", this) }
                 oppgavetype?.apply { uriBuilder.queryParam("oppgavetype", this) }
                 enhet?.apply { uriBuilder.queryParam("tildeltEnhetsnr", this) }
-                saksbehandler?.apply { uriBuilder.queryParam("tilordnetRessurs", this) }
+                tilordnetRessurs?.apply { uriBuilder.queryParam("tilordnetRessurs", if (this) "true" else "false") }
+                if (tildeltRessurs != null)
+                    tildeltRessurs.apply { uriBuilder.queryParam("tildeltRessurs", this) }
+                else
+                    saksbehandler?.apply { uriBuilder.queryParam("tildeltRessurs", this) }
                 journalpostId?.apply { uriBuilder.queryParam("journalpostId", this) }
                 opprettetFomTidspunkt?.apply { uriBuilder.queryParam("opprettetFom", this) }
                 opprettetTomTidspunkt?.apply { uriBuilder.queryParam("opprettetTom", this) }
