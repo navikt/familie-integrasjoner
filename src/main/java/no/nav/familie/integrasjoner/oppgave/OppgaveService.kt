@@ -22,10 +22,10 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
                      behandlingstema: String?,
                      oppgaveType: String?,
                      enhet: String?,
-                     tildeltRessurs: String?,
+                     saksbehandler: String?,
                      tilordnetRessurs: Boolean?,
                      journalpostId: String?): List<Oppgave> {
-        return oppgaveRestClient.finnOppgaver(tema, behandlingstema, oppgaveType, enhet, tildeltRessurs, tilordnetRessurs, journalpostId)
+        return oppgaveRestClient.finnOppgaver(tema, behandlingstema, oppgaveType, enhet, saksbehandler, journalpostId)
     }
 
     fun finnOppgaverV2(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {

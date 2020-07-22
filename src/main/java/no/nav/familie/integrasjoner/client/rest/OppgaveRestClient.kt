@@ -53,8 +53,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
                      behandlingstema: String?,
                      oppgavetype: String?,
                      tildeltEnhetsnr: String?,
-                     tildeltRessurs: String?,
-                     tilordnetRessurs: Boolean?,
+                     tilordnetRessurs: String?,
                      journalpostId: String?): List<Oppgave> {
 
         tailrec fun finnAlleOppgaver(oppgaver: List<Oppgave> = listOf()): List<Oppgave> {
@@ -69,7 +68,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
             behandlingstema?.apply { uriBuilder.queryParam("behandlingstema", this) }
             oppgavetype?.apply { uriBuilder.queryParam("oppgavetype", this) }
             tildeltEnhetsnr?.apply { uriBuilder.queryParam("tildeltEnhetsnr", this) }
-            tildeltRessurs?.apply { uriBuilder.queryParam("tildeltRessurs", this) }
+            tilordnetRessurs?.apply { uriBuilder.queryParam("tilordnetRessurs", this) }
             journalpostId?.apply { uriBuilder.queryParam("journalpostId", this) }
 
             val uri = uriBuilder
@@ -108,9 +107,9 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
                 behandlingstema?.apply { uriBuilder.queryParam("behandlingstema", this) }
                 oppgavetype?.apply { uriBuilder.queryParam("oppgavetype", this) }
                 enhet?.apply { uriBuilder.queryParam("tildeltEnhetsnr", this) }
-                tilordnetRessurs?.apply { uriBuilder.queryParam("tilordnetRessurs", if (this) "true" else "false") }
-                if (tildeltRessurs != null)
-                    tildeltRessurs.apply { uriBuilder.queryParam("tildeltRessurs", this) }
+                tildeltRessurs?.apply { uriBuilder.queryParam("tildeltRessurs", if (this) "true" else "false") }
+                if (tilordnetRessurs != null)
+                    tilordnetRessurs.apply { uriBuilder.queryParam("tilordnetRessurs", this) }
                 else
                     saksbehandler?.apply { uriBuilder.queryParam("tildeltRessurs", this) }
                 journalpostId?.apply { uriBuilder.queryParam("journalpostId", this) }
