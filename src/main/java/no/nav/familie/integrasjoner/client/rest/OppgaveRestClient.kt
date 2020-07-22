@@ -111,7 +111,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
                 if (tilordnetRessurs != null)
                     tilordnetRessurs.apply { uriBuilder.queryParam("tilordnetRessurs", this) }
                 else
-                    saksbehandler?.apply { uriBuilder.queryParam("tildeltRessurs", this) }
+                    saksbehandler?.apply { uriBuilder.queryParam("tilordnetRessurs", this) }
                 journalpostId?.apply { uriBuilder.queryParam("journalpostId", this) }
                 opprettetFomTidspunkt?.apply { uriBuilder.queryParam("opprettetFom", this) }
                 opprettetTomTidspunkt?.apply { uriBuilder.queryParam("opprettetTom", this) }
