@@ -39,7 +39,6 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
                                                    oppgavetype,
                                                    enhet,
                                                    saksbehandler,
-                                                   null,
                                                    journalpostId)
         return ResponseEntity.ok().body(success(oppgaver, "Finn oppgaver OK"))
     }

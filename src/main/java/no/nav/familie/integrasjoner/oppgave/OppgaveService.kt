@@ -23,7 +23,6 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
                      oppgaveType: String?,
                      enhet: String?,
                      saksbehandler: String?,
-                     tilordnetRessurs: Boolean?,
                      journalpostId: String?): List<Oppgave> {
         return oppgaveRestClient.finnOppgaver(tema, behandlingstema, oppgaveType, enhet, saksbehandler, journalpostId)
     }
