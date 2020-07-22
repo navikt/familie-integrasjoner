@@ -26,6 +26,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
+    @Deprecated("Bruk v2 endepunktet")
     fun finnOppgaver(@RequestParam("tema") tema: String,
                      @RequestParam("behandlingstema", required = false) behandlingstema: String?,
                      @RequestParam("oppgavetype", required = false) oppgavetype: String?,
@@ -97,6 +98,8 @@ class FinnOppgaveRequest(val tema: String? = null,
                          val enhet: String? = null,
                          val saksbehandler: String? = null,
                          val journalpostId: String? = null,
+                         val tilordnetRessurs: String? = null,
+                         val tildeltRessurs: Boolean? = null,
                          val opprettetFomTidspunkt: String? = null,
                          val opprettetTomTidspunkt: String? = null,
                          val fristFomDato: String? = null,

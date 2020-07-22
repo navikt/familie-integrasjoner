@@ -107,7 +107,11 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
                 behandlingstema?.apply { uriBuilder.queryParam("behandlingstema", this) }
                 oppgavetype?.apply { uriBuilder.queryParam("oppgavetype", this) }
                 enhet?.apply { uriBuilder.queryParam("tildeltEnhetsnr", this) }
-                saksbehandler?.apply { uriBuilder.queryParam("tilordnetRessurs", this) }
+                tildeltRessurs?.apply { uriBuilder.queryParam("tildeltRessurs", if (this) "true" else "false") }
+                if (tilordnetRessurs != null)
+                    tilordnetRessurs.apply { uriBuilder.queryParam("tilordnetRessurs", this) }
+                else
+                    saksbehandler?.apply { uriBuilder.queryParam("tilordnetRessurs", this) }
                 journalpostId?.apply { uriBuilder.queryParam("journalpostId", this) }
                 opprettetFomTidspunkt?.apply { uriBuilder.queryParam("opprettetFom", this) }
                 opprettetTomTidspunkt?.apply { uriBuilder.queryParam("opprettetTom", this) }
