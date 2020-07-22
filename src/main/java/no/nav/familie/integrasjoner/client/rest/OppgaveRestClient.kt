@@ -53,7 +53,8 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
                      behandlingstema: String?,
                      oppgavetype: String?,
                      tildeltEnhetsnr: String?,
-                     tilordnetRessurs: String?,
+                     tildeltRessurs: String?,
+                     tilordnetRessurs: Boolean?,
                      journalpostId: String?): List<Oppgave> {
 
         tailrec fun finnAlleOppgaver(oppgaver: List<Oppgave> = listOf()): List<Oppgave> {
@@ -68,7 +69,8 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
             behandlingstema?.apply { uriBuilder.queryParam("behandlingstema", this) }
             oppgavetype?.apply { uriBuilder.queryParam("oppgavetype", this) }
             tildeltEnhetsnr?.apply { uriBuilder.queryParam("tildeltEnhetsnr", this) }
-            tilordnetRessurs?.apply { uriBuilder.queryParam("tilordnetRessurs", this) }
+            tildeltRessurs?.apply { uriBuilder.queryParam("tildeltRessurs", this) }
+            tilordnetRessurs?.apply { uriBuilder.queryParam("tilordnetRessurs", if (this) "true" else "false") }
             journalpostId?.apply { uriBuilder.queryParam("journalpostId", this) }
 
             val uri = uriBuilder

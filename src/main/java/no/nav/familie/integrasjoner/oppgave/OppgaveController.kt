@@ -31,13 +31,16 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
                      @RequestParam("oppgavetype", required = false) oppgavetype: String?,
                      @RequestParam("enhet", required = false) enhet: String?,
                      @RequestParam("saksbehandler", required = false) saksbehandler: String?,
+                     @RequestParam("tilordnetRessurs", required = false) tilordnetRessurs: Boolean?,
+                     @RequestParam("tildeltRessurs", required = false) tildeltRessurs: String?,
                      @RequestParam("journalpostId", required = false) journalpostId: String?)
             : ResponseEntity<Ressurs<List<Oppgave>>> {
         val oppgaver = oppgaveService.finnOppgaver(tema,
                                                    behandlingstema,
                                                    oppgavetype,
                                                    enhet,
-                                                   saksbehandler,
+                                                   tildeltRessurs ?: saksbehandler,
+                                                   tilordnetRessurs,
                                                    journalpostId)
         return ResponseEntity.ok().body(success(oppgaver, "Finn oppgaver OK"))
     }
