@@ -59,6 +59,7 @@ class PersonopplysningerController(private val personopplysningerService: Person
     }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v2/historikk"])
+    @Deprecated("Tps er markert for utfasing. PDL er master.")
     fun historikk(@RequestBody(required = true) ident: Ident,
                   @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) fomDato: LocalDate,
                   @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) tomDato: LocalDate)
@@ -68,6 +69,7 @@ class PersonopplysningerController(private val personopplysningerService: Person
     }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v2/info"])
+    @Deprecated("Tps er markert for utfasing. PDL er master.")
     fun personInfo(@RequestBody(required = true) ident: Ident): ResponseEntity<Ressurs<Personinfo>> {
         return ResponseEntity.ok().body(success(personopplysningerService.hentPersoninfoFor(ident.ident),
                                                 "Hent personinfo OK"))
