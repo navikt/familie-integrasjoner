@@ -12,9 +12,8 @@ import no.nav.familie.integrasjoner.dokarkiv.metadata.*
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
 import no.nav.familie.integrasjoner.personopplysning.internal.*
-import no.nav.familie.kontrakter.felles.arkivering.Dokument
-import no.nav.familie.kontrakter.felles.arkivering.FilType
-import no.nav.familie.kontrakter.felles.personinfo.SIVILSTAND
+import no.nav.familie.kontrakter.felles.dokarkiv.*
+import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test

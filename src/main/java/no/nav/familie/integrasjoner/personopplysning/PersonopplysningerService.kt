@@ -10,7 +10,7 @@ import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter
 import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
-import no.nav.familie.kontrakter.felles.personinfo.Statsborgerskap
+import no.nav.familie.kontrakter.felles.personopplysning.Statsborgerskap
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Periode

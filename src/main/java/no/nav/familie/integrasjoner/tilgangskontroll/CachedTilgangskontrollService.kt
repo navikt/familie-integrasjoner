@@ -4,7 +4,7 @@ import no.nav.familie.integrasjoner.config.TilgangConfig
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
-import no.nav.familie.integrasjoner.tilgangskontroll.domene.Tilgang
+import no.nav.familie.kontrakter.felles.tilgangskontroll.Tilgang
 import no.nav.security.token.support.core.jwt.JwtToken
 import org.slf4j.LoggerFactory
 import org.springframework.cache.annotation.Cacheable

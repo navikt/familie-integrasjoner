@@ -5,7 +5,6 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.config.ApiExceptionHandler
-import no.nav.familie.integrasjoner.oppgave.domene.FinnOppgaveResponseDto
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppgave.*

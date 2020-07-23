@@ -1,9 +1,9 @@
 package no.nav.familie.integrasjoner.dokdist
 
 import no.nav.familie.integrasjoner.client.rest.DokdistRestClient
-import no.nav.familie.integrasjoner.dokdist.api.DistribuerJournalpostRequest
 import no.nav.familie.integrasjoner.dokdist.domene.DistribuerJournalpostRequestTo
 import no.nav.familie.integrasjoner.dokdist.domene.DistribuerJournalpostResponseTo
+import no.nav.familie.kontrakter.felles.dokdist.DistribuerJournalpostRequest
 import org.springframework.stereotype.Service
 
 @Service

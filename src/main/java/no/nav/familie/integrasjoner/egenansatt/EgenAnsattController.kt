@@ -1,9 +1,9 @@
 package no.nav.familie.integrasjoner.egenansatt
 
-import no.nav.familie.integrasjoner.egenansatt.domene.EgenAnsattResponse
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
-import no.nav.familie.kontrakter.felles.personinfo.Ident
+import no.nav.familie.kontrakter.felles.egenansatt.EgenAnsattResponse
+import no.nav.familie.kontrakter.felles.personopplysning.Ident
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity

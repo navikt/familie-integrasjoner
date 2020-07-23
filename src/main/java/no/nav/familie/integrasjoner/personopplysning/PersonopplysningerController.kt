@@ -9,8 +9,8 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.ikkeTilgang
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
-import no.nav.familie.kontrakter.felles.personinfo.Ident
-import no.nav.familie.kontrakter.felles.personinfo.Statsborgerskap
+import no.nav.familie.kontrakter.felles.personopplysning.Ident
+import no.nav.familie.kontrakter.felles.personopplysning.Statsborgerskap
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.MediaType

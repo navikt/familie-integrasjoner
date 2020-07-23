@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.personopplysning.internal.*
-import no.nav.familie.kontrakter.felles.personinfo.SIVILSTAND
+import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary

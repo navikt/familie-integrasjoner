@@ -6,9 +6,9 @@ import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.familie.kontrakter.felles.personinfo.Ident
-import no.nav.familie.kontrakter.felles.personinfo.SIVILSTAND
-import no.nav.familie.kontrakter.felles.personinfo.Statsborgerskap
+import no.nav.familie.kontrakter.felles.personopplysning.Ident
+import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
+import no.nav.familie.kontrakter.felles.personopplysning.Statsborgerskap
 import no.nav.security.token.support.test.JwtTokenGenerator
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before

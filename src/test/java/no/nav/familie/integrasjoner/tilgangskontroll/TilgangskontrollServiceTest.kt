@@ -11,7 +11,7 @@ import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
-import no.nav.familie.integrasjoner.tilgangskontroll.domene.Tilgang
+import no.nav.familie.kontrakter.felles.tilgangskontroll.Tilgang
 import no.nav.security.token.support.core.jwt.JwtToken
 import no.nav.security.token.support.core.jwt.JwtTokenClaims
 import org.assertj.core.api.Assertions.assertThat

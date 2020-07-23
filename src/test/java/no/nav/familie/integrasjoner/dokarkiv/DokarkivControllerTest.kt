@@ -4,18 +4,8 @@ import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
-import no.nav.familie.integrasjoner.dokarkiv.DokarkivController.LogiskVedleggRequest
-import no.nav.familie.integrasjoner.dokarkiv.DokarkivController.LogiskVedleggResponse
-import no.nav.familie.integrasjoner.dokarkiv.api.Sak
-import no.nav.familie.integrasjoner.dokarkiv.api.TilknyttFagsakRequest
-import no.nav.familie.integrasjoner.dokarkiv.client.domene.DokarkivBruker
-import no.nav.familie.integrasjoner.dokarkiv.client.domene.IdType
-import no.nav.familie.integrasjoner.dokarkiv.client.domene.OppdaterJournalpostResponse
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentResponse
-import no.nav.familie.kontrakter.felles.arkivering.Dokument
-import no.nav.familie.kontrakter.felles.arkivering.FilType
-import no.nav.familie.kontrakter.felles.arkivering.v2.ArkiverDokumentRequest
+import no.nav.familie.kontrakter.felles.dokarkiv.*
 import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -204,9 +194,9 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                  .withHeader("Content-Type", "application/json;charset=UTF-8")
                                  .withBody(gyldigDokarkivResponse()))
 
-        val body = TilknyttFagsakRequest(bruker = DokarkivBruker(IdType.FNR, "12345678910"),
-                                         tema = "tema",
-                                         sak = Sak("11111111", "fagsaksystem"))
+        val body = OppdaterJournalpostRequest(bruker = DokarkivBruker(IdType.FNR, "12345678910"),
+                                              tema = "tema",
+                                              sak = Sak("11111111", "fagsaksystem"))
 
         val response: ResponseEntity<Ressurs<OppdaterJournalpostResponse>> =
                 restTemplate.exchange(localhost("$DOKARKIV_URL_V2/12345678"),
@@ -230,9 +220,9 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                  .withHeader("Content-Type", "application/json;charset=UTF-8")
                                  .withBody(gyldigDokarkivResponse(500)))
 
-        val body = TilknyttFagsakRequest(bruker = DokarkivBruker(IdType.FNR, "12345678910"),
-                                         tema = "tema",
-                                         sak = Sak("11111111", "fagsaksystem"))
+        val body = OppdaterJournalpostRequest(bruker = DokarkivBruker(IdType.FNR, "12345678910"),
+                                              tema = "tema",
+                                              sak = Sak("11111111", "fagsaksystem"))
 
         val response: ResponseEntity<Ressurs<OppdaterJournalpostResponse>> =
                 restTemplate.exchange(localhost("$DOKARKIV_URL_V2/12345678"),

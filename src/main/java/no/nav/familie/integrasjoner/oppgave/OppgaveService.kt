@@ -3,11 +3,7 @@ package no.nav.familie.integrasjoner.oppgave
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.OppslagException.Level
-import no.nav.familie.integrasjoner.oppgave.domene.FinnOppgaveResponseDto
-import no.nav.familie.kontrakter.felles.oppgave.IdentType
-import no.nav.familie.kontrakter.felles.oppgave.Oppgave
-import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgave
-import no.nav.familie.kontrakter.felles.oppgave.StatusEnum
+import no.nav.familie.kontrakter.felles.oppgave.*
 import no.nav.sbl.util.StringUtils
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -94,8 +90,9 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
                 orgnr = if (request.ident?.type == IdentType.Organisasjon) request.ident!!.ident else null,
                 saksreferanse = request.saksId,
                 //TODO oppgave-gjengen mente vi kunne sette denne til vår applikasjon, og så kan de gjøre en filtrering på sin
-                //men da må vi få applikasjonen vår inn i Felles kodeverk ellers så får vi feil: Fant ingen kode 'BA' i felles kodeverk under kodeverk 'Applikasjoner'
-//              behandlesAvApplikasjon = request.tema.fagsaksystem,
+                //men da må vi få applikasjonen vår inn i Felles kodeverk ellers så får vi feil: Fant ingen kode 'BA' i felles
+                // kodeverk under kodeverk 'Applikasjoner'
+                // behandlesAvApplikasjon = request.tema.fagsaksystem,
                 journalpostId = request.journalpostId,
                 prioritet = request.prioritet,
                 tema = request.tema,
@@ -134,7 +131,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         }
 
     }
-    
+
     companion object {
         private val LOG = LoggerFactory.getLogger(OppgaveService::class.java)
     }
