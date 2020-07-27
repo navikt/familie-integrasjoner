@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.tilgangskontroll
 
-import no.nav.familie.integrasjoner.tilgangskontroll.domene.Tilgang
+import no.nav.familie.kontrakter.felles.tilgangskontroll.Tilgang
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.context.annotation.Profile
 import org.springframework.web.bind.annotation.*

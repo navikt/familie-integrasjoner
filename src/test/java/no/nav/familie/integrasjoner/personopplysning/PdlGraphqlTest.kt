@@ -7,7 +7,7 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlDødsfallRespon
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlHentPersonResponse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlNavn
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlVergeResponse
-import no.nav.familie.kontrakter.felles.personinfo.SIVILSTAND
+import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertNull

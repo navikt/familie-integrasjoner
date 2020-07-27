@@ -1,8 +1,8 @@
 package no.nav.familie.integrasjoner.dokdist
 
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
-import no.nav.familie.integrasjoner.dokdist.api.DistribuerJournalpostRequest
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.dokdist.DistribuerJournalpostRequest
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Rule

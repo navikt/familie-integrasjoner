@@ -5,7 +5,7 @@ import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.oppgave.FinnOppgaveRequest
-import no.nav.familie.integrasjoner.oppgave.domene.FinnOppgaveResponseDto
+import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.kontrakter.felles.oppgave.Tema
 import no.nav.familie.log.mdc.MDCConstants
@@ -32,7 +32,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
     private val returnerteIngenOppgaver = Metrics.counter("oppslag.oppgave.response", "antall.oppgaver", "ingen")
     private val returnerteMerEnnEnOppgave = Metrics.counter("oppslag.oppgave.response", "antall.oppgaver", "flerEnnEn")
 
-    private val LOG = LoggerFactory.getLogger(OppgaveRestClient::class.java)
+    private val logger = LoggerFactory.getLogger(OppgaveRestClient::class.java)
 
     fun finnOppgave(request: Oppgave): Oppgave {
         request.takeUnless { it.aktoerId == null } ?: error("Finner ikke aktør id på request")
@@ -127,10 +127,8 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         var offset = finnOppgaveRequest.offset ?: 0
         val oppgaverOgAntall = getForEntity<FinnOppgaveResponseDto>(uriMotOppgave(offset), httpHeaders())
         val oppgaver: MutableList<Oppgave> = oppgaverOgAntall.oppgaver.toMutableList()
-        val grense = when (finnOppgaveRequest.limit == null) {
-            true -> oppgaverOgAntall.antallTreffTotalt
-            false -> offset + finnOppgaveRequest.limit
-        }
+        val grense =
+                if (finnOppgaveRequest.limit == null) oppgaverOgAntall.antallTreffTotalt else offset + finnOppgaveRequest.limit!!
         offset += limitMotOppgave
 
         while (offset < grense) {
@@ -211,7 +209,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         }
         if (finnOppgaveResponseDto.oppgaver.size > 1) {
             returnerteMerEnnEnOppgave.increment()
-            LOG.warn("Returnerte mer enn 1 oppgave, antall: ${finnOppgaveResponseDto.oppgaver.size}, oppgave: $requestUrl")
+            logger.warn("Returnerte mer enn 1 oppgave, antall: ${finnOppgaveResponseDto.oppgaver.size}, oppgave: $requestUrl")
         }
         return finnOppgaveResponseDto.oppgaver[0]
     }

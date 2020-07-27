@@ -1,9 +1,8 @@
 package no.nav.familie.integrasjoner.oppgave
 
-import no.nav.familie.integrasjoner.oppgave.domene.FinnOppgaveResponseDto
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
+import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.kontrakter.felles.oppgave.OppgaveResponse
 import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgave
@@ -44,8 +43,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 
     @PostMapping(path = ["/v2"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun finnOppgaverV2(@RequestBody finnOppgaveRequest: FinnOppgaveRequest)
-            : ResponseEntity<Ressurs<FinnOppgaveResponseDto>> {
+    fun finnOppgaverV2(@RequestBody finnOppgaveRequest: FinnOppgaveRequest): ResponseEntity<Ressurs<FinnOppgaveResponseDto>> {
         return when {
             finnOppgaveRequest.tema == null -> ResponseEntity.ok().body(Ressurs.failure("påkrevd felt 'tema' mangler"))
             else -> ResponseEntity.ok().body(success(oppgaveService.finnOppgaverV2(finnOppgaveRequest), "Finn oppgaver OK"))
@@ -54,16 +52,15 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
 
     @PostMapping(path = ["/{oppgaveId}/fordel"])
     fun fordelOppgave(@PathVariable(name = "oppgaveId") oppgaveId: Long,
-                      @RequestParam("saksbehandler") saksbehandler: String?
-    ): ResponseEntity<Ressurs<OppgaveResponse>> {
+                      @RequestParam("saksbehandler") saksbehandler: String?): ResponseEntity<Ressurs<OppgaveResponse>> {
         Result.runCatching {
             if (saksbehandler == null) oppgaveService.tilbakestillFordelingPåOppgave(oppgaveId)
             else oppgaveService.fordelOppgave(oppgaveId, saksbehandler)
         }.fold(
                 onSuccess = {
                     return ResponseEntity.ok(success(OppgaveResponse(oppgaveId = oppgaveId),
-                            if (saksbehandler !== null) "Oppgaven ble tildelt saksbehandler $saksbehandler"
-                            else "Fordeling på oppgaven ble tilbakestilt"
+                                                     if (saksbehandler !== null) "Oppgaven ble tildelt saksbehandler $saksbehandler"
+                                                     else "Fordeling på oppgaven ble tilbakestilt"
                     ))
                 },
                 onFailure = {

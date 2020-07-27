@@ -1,6 +1,9 @@
 package no.nav.familie.integrasjoner.dokarkiv.client.domene
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import no.nav.familie.kontrakter.felles.dokarkiv.AvsenderMottaker
+import no.nav.familie.kontrakter.felles.dokarkiv.DokarkivBruker
+import no.nav.familie.kontrakter.felles.dokarkiv.Sak
 import java.util.*
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

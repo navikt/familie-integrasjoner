@@ -1,8 +1,8 @@
 package no.nav.familie.integrasjoner.dokdist
 
-import no.nav.familie.integrasjoner.dokdist.api.DistribuerJournalpostRequest
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
+import no.nav.familie.kontrakter.felles.dokdist.DistribuerJournalpostRequest
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
