@@ -2,7 +2,10 @@ package no.nav.familie.integrasjoner.oppgave
 
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
-import no.nav.familie.kontrakter.felles.oppgave.*
+import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
+import no.nav.familie.kontrakter.felles.oppgave.Oppgave
+import no.nav.familie.kontrakter.felles.oppgave.OppgaveResponse
+import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgave
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -85,3 +88,20 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         return ResponseEntity.ok(success(OppgaveResponse(oppgaveId = oppgaveId), "ferdigstill OK"))
     }
 }
+
+class FinnOppgaveRequest(val tema: String? = null,
+                         val behandlingstema: String? = null,
+                         val oppgavetype: String? = null,
+                         val enhet: String? = null,
+                         val saksbehandler: String? = null,
+                         val journalpostId: String? = null,
+                         val tilordnetRessurs: String? = null,
+                         val tildeltRessurs: Boolean? = null,
+                         val opprettetFomTidspunkt: String? = null,
+                         val opprettetTomTidspunkt: String? = null,
+                         val fristFomDato: String? = null,
+                         val fristTomDato: String? = null,
+                         val aktivFomDato: String? = null,
+                         val aktivTomDato: String? = null,
+                         val limit: Long? = null,
+                         val offset: Long? = null)
