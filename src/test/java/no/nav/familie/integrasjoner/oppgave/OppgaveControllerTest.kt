@@ -67,21 +67,6 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-
-    @Test
-    fun skalTTakleKonvertringFraQuery() {
-        val finnOppgaveRequest = FinnOppgaveRequest(Tema.ENF)
-        val fromHttpUrl = UriComponentsBuilder.fromHttpUrl(localhost("/api/oppgave/v3"))
-                .queryParams(finnOppgaveRequest.toQueryParams()).build().toUri()
-
-        val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
-                restTemplate.exchange(fromHttpUrl,
-                                      HttpMethod.GET,
-                                      HttpEntity(null, headers))
-        print(response)
-
-    }
-
     @Test
     fun `skal logge og returnere internal server error ved restClientException`() {
         stubFor(get(GET_OPPGAVER_URL).willReturn(status(404)))
