@@ -4,7 +4,11 @@ import io.micrometer.core.instrument.Metrics
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.familie.integrasjoner.oppgave.FinnOppgaveRequest
+import no.nav.familie.integrasjoner.oppgave.DeprecatedFinnOppgaveRequest
+import no.nav.familie.integrasjoner.oppgave.domene.OppgaveRequest
+import no.nav.familie.integrasjoner.oppgave.domene.limitMotOppgave
+import no.nav.familie.integrasjoner.oppgave.domene.toDto
+import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.kontrakter.felles.oppgave.Tema
@@ -21,6 +25,7 @@ import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 import java.time.LocalDate
+import kotlin.math.min
 
 @Component
 class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: URI,
@@ -89,12 +94,12 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         return finnAlleOppgaver()
     }
 
-    fun finnOppgaverV2(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {
+    fun finnOppgaverV2(deprecatedFinnOppgaveRequest: DeprecatedFinnOppgaveRequest): FinnOppgaveResponseDto {
 
         val limitMotOppgave = 50
 
         fun uriMotOppgave(offset: Long): URI {
-            return finnOppgaveRequest.run {
+            return deprecatedFinnOppgaveRequest.run {
                 val uriBuilder = UriComponentsBuilder.fromUri(oppgaveBaseUrl)
                         .path(PATH_OPPGAVE)
                         .queryParam("statuskategori", "AAPEN")
@@ -124,15 +129,50 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
             }
         }
 
-        var offset = finnOppgaveRequest.offset ?: 0
+        var offset = deprecatedFinnOppgaveRequest.offset ?: 0
         val oppgaverOgAntall = getForEntity<FinnOppgaveResponseDto>(uriMotOppgave(offset), httpHeaders())
         val oppgaver: MutableList<Oppgave> = oppgaverOgAntall.oppgaver.toMutableList()
         val grense =
-                if (finnOppgaveRequest.limit == null) oppgaverOgAntall.antallTreffTotalt else offset + finnOppgaveRequest.limit!!
+                if (deprecatedFinnOppgaveRequest.limit == null) oppgaverOgAntall.antallTreffTotalt
+                else offset + deprecatedFinnOppgaveRequest.limit
         offset += limitMotOppgave
 
         while (offset < grense) {
             val nyeOppgaver = getForEntity<FinnOppgaveResponseDto>(uriMotOppgave(offset), httpHeaders())
+            oppgaver.addAll(nyeOppgaver.oppgaver)
+            offset += limitMotOppgave
+        }
+
+        return FinnOppgaveResponseDto(oppgaverOgAntall.antallTreffTotalt, oppgaver)
+    }
+
+    fun buildOppgaveRequestUri(oppgaveRequest: OppgaveRequest) =
+            UriComponentsBuilder.fromUri(oppgaveBaseUrl)
+                    .path(PATH_OPPGAVE)
+                    .queryParams(oppgaveRequest.toQueryParams())
+                    .build()
+                    .toUri()
+
+    fun finnOppgaver(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {
+
+        val oppgaveRequest = finnOppgaveRequest.toDto()
+        var offset = oppgaveRequest.offset
+
+        val oppgaverOgAntall =
+                getForEntity<FinnOppgaveResponseDto>(buildOppgaveRequestUri(oppgaveRequest), httpHeaders())
+        val oppgaver: MutableList<Oppgave> = oppgaverOgAntall.oppgaver.toMutableList()
+        val grense =
+                if (finnOppgaveRequest.limit == null) oppgaverOgAntall.antallTreffTotalt
+                else oppgaveRequest.offset + finnOppgaveRequest.limit!!
+        offset += limitMotOppgave
+
+        while (offset < grense) {
+            val nyeOppgaver =
+                    getForEntity<FinnOppgaveResponseDto>(buildOppgaveRequestUri(oppgaveRequest
+                                                                                        .copy(offset = offset,
+                                                                                              limit = min((grense - offset),
+                                                                                                          limitMotOppgave))),
+                                                         httpHeaders())
             oppgaver.addAll(nyeOppgaver.oppgaver)
             offset += limitMotOppgave
         }

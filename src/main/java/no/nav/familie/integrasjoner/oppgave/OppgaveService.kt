@@ -23,8 +23,12 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         return oppgaveRestClient.finnOppgaver(tema, behandlingstema, oppgaveType, enhet, saksbehandler, journalpostId)
     }
 
-    fun finnOppgaverV2(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {
-        return oppgaveRestClient.finnOppgaverV2(finnOppgaveRequest)
+    fun finnOppgaver(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {
+        return oppgaveRestClient.finnOppgaver(finnOppgaveRequest)
+    }
+
+    fun finnOppgaverV2(deprecatedFinnOppgaveRequest: DeprecatedFinnOppgaveRequest): FinnOppgaveResponseDto {
+        return oppgaveRestClient.finnOppgaverV2(deprecatedFinnOppgaveRequest)
     }
 
     fun hentOppgave(oppgaveId: String): Oppgave {

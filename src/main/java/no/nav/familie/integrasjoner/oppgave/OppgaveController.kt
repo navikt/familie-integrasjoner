@@ -2,11 +2,9 @@ package no.nav.familie.integrasjoner.oppgave
 
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
-import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
-import no.nav.familie.kontrakter.felles.oppgave.Oppgave
-import no.nav.familie.kontrakter.felles.oppgave.OppgaveResponse
-import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgave
+import no.nav.familie.kontrakter.felles.oppgave.*
 import no.nav.security.token.support.core.api.ProtectedWithClaims
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -25,7 +23,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
-    @Deprecated("Bruk v2 endepunktet")
+    @Deprecated("Bruk v3 endepunktet")
     fun finnOppgaver(@RequestParam("tema") tema: String,
                      @RequestParam("behandlingstema", required = false) behandlingstema: String?,
                      @RequestParam("oppgavetype", required = false) oppgavetype: String?,
@@ -43,29 +41,36 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 
     @PostMapping(path = ["/v2"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun finnOppgaverV2(@RequestBody finnOppgaveRequest: FinnOppgaveRequest): ResponseEntity<Ressurs<FinnOppgaveResponseDto>> {
-        return when {
-            finnOppgaveRequest.tema == null -> ResponseEntity.ok().body(Ressurs.failure("påkrevd felt 'tema' mangler"))
-            else -> ResponseEntity.ok().body(success(oppgaveService.finnOppgaverV2(finnOppgaveRequest), "Finn oppgaver OK"))
+    @Deprecated("Bruk v3 endepunktet")
+    fun finnOppgaverV2(@RequestBody deprecatedFinnOppgaveRequest: DeprecatedFinnOppgaveRequest)
+            : ResponseEntity<Ressurs<FinnOppgaveResponseDto>> {
+        return when (deprecatedFinnOppgaveRequest.tema) {
+            null -> ResponseEntity.ok().body(Ressurs.failure("påkrevd felt 'tema' mangler"))
+            else -> ResponseEntity.ok()
+                    .body(success(oppgaveService.finnOppgaverV2(deprecatedFinnOppgaveRequest), "Finn oppgaver OK"))
         }
     }
 
+    @GetMapping(path = ["/v3"])
+    fun finnOppgaverV3(finnOppgaveRequest: FinnOppgaveRequest): Ressurs<FinnOppgaveResponseDto> {
+        return success(oppgaveService.finnOppgaver(finnOppgaveRequest))
+    }
+
+    @DateTimeFormat
     @PostMapping(path = ["/{oppgaveId}/fordel"])
     fun fordelOppgave(@PathVariable(name = "oppgaveId") oppgaveId: Long,
                       @RequestParam("saksbehandler") saksbehandler: String?): ResponseEntity<Ressurs<OppgaveResponse>> {
         Result.runCatching {
             if (saksbehandler == null) oppgaveService.tilbakestillFordelingPåOppgave(oppgaveId)
             else oppgaveService.fordelOppgave(oppgaveId, saksbehandler)
-        }.fold(
-                onSuccess = {
-                    return ResponseEntity.ok(success(OppgaveResponse(oppgaveId = oppgaveId),
-                                                     if (saksbehandler !== null) "Oppgaven ble tildelt saksbehandler $saksbehandler"
-                                                     else "Fordeling på oppgaven ble tilbakestilt"
-                    ))
-                },
-                onFailure = {
-                    return ResponseEntity.badRequest().body(Ressurs.failure(errorMessage = it.message))
-                }
+        }.fold(onSuccess = {
+            return ResponseEntity.ok(success(OppgaveResponse(oppgaveId = oppgaveId),
+                                             if (saksbehandler !== null) "Oppgaven ble tildelt saksbehandler $saksbehandler"
+                                             else "Fordeling på oppgaven ble tilbakestilt"))
+        },
+               onFailure = {
+                   return ResponseEntity.badRequest().body(Ressurs.failure(errorMessage = it.message))
+               }
         )
     }
 
@@ -89,19 +94,19 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 }
 
-class FinnOppgaveRequest(val tema: String? = null,
-                         val behandlingstema: String? = null,
-                         val oppgavetype: String? = null,
-                         val enhet: String? = null,
-                         val saksbehandler: String? = null,
-                         val journalpostId: String? = null,
-                         val tilordnetRessurs: String? = null,
-                         val tildeltRessurs: Boolean? = null,
-                         val opprettetFomTidspunkt: String? = null,
-                         val opprettetTomTidspunkt: String? = null,
-                         val fristFomDato: String? = null,
-                         val fristTomDato: String? = null,
-                         val aktivFomDato: String? = null,
-                         val aktivTomDato: String? = null,
-                         val limit: Long? = null,
-                         val offset: Long? = null)
+class DeprecatedFinnOppgaveRequest(val tema: String? = null,
+                                   val behandlingstema: String? = null,
+                                   val oppgavetype: String? = null,
+                                   val enhet: String? = null,
+                                   val saksbehandler: String? = null,
+                                   val journalpostId: String? = null,
+                                   val tilordnetRessurs: String? = null,
+                                   val tildeltRessurs: Boolean? = null,
+                                   val opprettetFomTidspunkt: String? = null,
+                                   val opprettetTomTidspunkt: String? = null,
+                                   val fristFomDato: String? = null,
+                                   val fristTomDato: String? = null,
+                                   val aktivFomDato: String? = null,
+                                   val aktivTomDato: String? = null,
+                                   val limit: Long? = null,
+                                   val offset: Long? = null)
