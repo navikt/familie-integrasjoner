@@ -2,28 +2,23 @@ package no.nav.familie.integrasjoner.tilgangskontroll
 
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.familie.integrasjoner.azure.domene.Gruppe
-import no.nav.familie.integrasjoner.azure.domene.Grupper
-import no.nav.familie.integrasjoner.client.rest.AzureGraphRestClient
 import no.nav.familie.integrasjoner.config.TilgangConfig
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
-import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
+import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
+import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
+import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import no.nav.familie.kontrakter.felles.tilgangskontroll.Tilgang
 import no.nav.security.token.support.core.jwt.JwtToken
 import no.nav.security.token.support.core.jwt.JwtTokenClaims
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.springframework.test.context.junit4.SpringRunner
-import java.time.LocalDate
+import org.junit.jupiter.api.Test
 
-@RunWith(SpringRunner::class)
+
 class TilgangskontrollServiceTest {
 
-    private val azureGraphRestClient: AzureGraphRestClient = mockk(relaxed = true)
     private val saksbehandler: JwtToken = mockk(relaxed = true)
     private val jwtTokenClaims: JwtTokenClaims = mockk()
     private val egenAnsattService: EgenAnsattService = mockk(relaxed = true)
@@ -40,7 +35,7 @@ class TilgangskontrollServiceTest {
         every { egenAnsattService.erEgenAnsatt(any()) }
                 .returns(true)
         every { tilgangConfig.grupper["utvidetTilgang"] }
-                .returns(AdRolle("8796", "Mangler tilgang egen ansatt"))
+                .returns(AdRolle("8796", "NAV-Ansatt"))
         every { saksbehandler.jwtTokenClaims }
                 .returns(jwtTokenClaims)
         every { jwtTokenClaims.getAsList(any()) }
@@ -58,7 +53,7 @@ class TilgangskontrollServiceTest {
         every { egenAnsattService.erEgenAnsatt(any()) }
                 .returns(true)
         every { tilgangConfig.grupper["utvidetTilgang"] }
-                .returns(AdRolle("8796", "Mangler tilgang egen ansatt"))
+                .returns(AdRolle("8796", "NAV-Ansatt"))
         every { saksbehandler.jwtTokenClaims }
                 .returns(jwtTokenClaims)
         every { jwtTokenClaims.getAsList(any()) }
@@ -75,6 +70,10 @@ class TilgangskontrollServiceTest {
     fun `tilgang til egen ansatt gir ok hvis søker ikke er egen ansatt`() {
         every { egenAnsattService.erEgenAnsatt(any()) }
                 .returns(false)
+        every { tilgangConfig.grupper["utvidetTilgang"] }
+                .returns(AdRolle("8796", "NAV-Ansatt"))
+        every { personopplysningerService.hentPersoninfo("123", "BAR", any()) }
+                .returns(personMedAdressebeskyttelse(null))
 
         assertThat(tilgangskontrollService.sjekkTilgang("123",
                                                         saksbehandler).harTilgang)
@@ -86,15 +85,15 @@ class TilgangskontrollServiceTest {
         every { egenAnsattService.erEgenAnsatt(any()) }
                 .returns(false)
         every { tilgangConfig.grupper["kode6"] }
-                .returns(AdRolle("8796", "Mangler tilgang egen ansatt"))
+                .returns(AdRolle("8796", "Strengt fortrolig adresse"))
         every { saksbehandler.jwtTokenClaims }
                 .returns(jwtTokenClaims)
         every { jwtTokenClaims.getAsList(any()) }
                 .returns(listOf("id1"))
         every { jwtTokenClaims.get("preferred_username") }
                 .returns(listOf("bob"))
-        every { personopplysningerService.hentPersoninfo("123") }
-                .returns(personinfoMedKode6())
+        every { personopplysningerService.hentPersoninfo("123", "BAR", any()) }
+                .returns(personMedAdressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG))
 
         assertThat(tilgangskontrollService.sjekkTilgang("123",
                                                         saksbehandler).harTilgang)
@@ -106,15 +105,15 @@ class TilgangskontrollServiceTest {
         every { egenAnsattService.erEgenAnsatt(any()) }
                 .returns(false)
         every { tilgangConfig.grupper["kode7"] }
-                .returns(AdRolle("8796", "Mangler tilgang egen ansatt"))
+                .returns(AdRolle("8796", "Fortrolig adresse"))
         every { saksbehandler.jwtTokenClaims }
                 .returns(jwtTokenClaims)
         every { jwtTokenClaims.getAsList(any()) }
                 .returns(listOf("id1"))
         every { jwtTokenClaims.get("preferred_username") }
                 .returns(listOf("bob"))
-        every { personopplysningerService.hentPersoninfo("123") }
-                .returns(personinfoMedKode7())
+        every { personopplysningerService.hentPersoninfo("123", "BAR", any()) }
+                .returns(personMedAdressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.FORTROLIG))
 
         assertThat(tilgangskontrollService.sjekkTilgang("123",
                                                         saksbehandler).harTilgang)
@@ -125,9 +124,16 @@ class TilgangskontrollServiceTest {
     fun `hvis kode6 har saksbehandler med rollen tilgang`() {
         every { egenAnsattService.erEgenAnsatt(any()) }
                 .returns(false)
-        every { azureGraphRestClient.hentGrupper() }
-                .returns(Grupper(listOf(Gruppe("1", "0000-GA-GOSYS_KODE6"))))
-
+        every { saksbehandler.jwtTokenClaims }
+                .returns(jwtTokenClaims)
+        every { jwtTokenClaims.get("preferred_username") }
+                .returns(listOf("bob"))
+        every { jwtTokenClaims.getAsList(any()) }
+                .returns(listOf("8796"))
+        every { personopplysningerService.hentPersoninfo("123", "BAR", any()) }
+                .returns(personMedAdressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG))
+        every { tilgangConfig.grupper["kode6"] }
+                .returns(AdRolle("8796", "Strengt fortrolig adresse"))
 
         assertThat(tilgangskontrollService.sjekkTilgang("123",
                                                         saksbehandler).harTilgang)
@@ -138,36 +144,29 @@ class TilgangskontrollServiceTest {
     fun `hvis kode7 har saksbehandler med rollen tilgang`() {
         every { egenAnsattService.erEgenAnsatt(any()) }
                 .returns(false)
-        every { azureGraphRestClient.hentGrupper() }
-                .returns(Grupper(listOf(Gruppe("1", "0000-GA-GOSYS_KODE7"))))
+        every { saksbehandler.jwtTokenClaims }
+                .returns(jwtTokenClaims)
+        every { jwtTokenClaims.get("preferred_username") }
+                .returns(listOf("bob"))
+        every { jwtTokenClaims.getAsList(any()) }
+                .returns(listOf("8796"))
+        every { personopplysningerService.hentPersoninfo("123", "BAR", any()) }
+                .returns(personMedAdressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.FORTROLIG))
+        every { tilgangConfig.grupper["kode7"] }
+                .returns(AdRolle("8796", "Fortrolig adresse"))
 
         assertThat(tilgangskontrollService.sjekkTilgang("123",
                                                         saksbehandler).harTilgang)
                 .isEqualTo(Tilgang(true).harTilgang)
     }
 
-    private fun personinfoUtenKode6og7(): Personinfo {
-        return Personinfo.Builder().medPersonIdent(PERSON_IDENT)
-                .medFødselsdato(LocalDate.now())
-                .medNavn(NAVN)
-                .medDiskresjonsKode("VANLIG_PERSON")
-                .build()
-    }
-
-    private fun personinfoMedKode6(): Personinfo {
-        return Personinfo.Builder().medPersonIdent(PERSON_IDENT)
-                .medFødselsdato(LocalDate.now())
-                .medNavn(NAVN)
-                .medDiskresjonsKode(CachedTilgangskontrollService.DISKRESJONSKODE_KODE6)
-                .build()
-    }
-
-    private fun personinfoMedKode7(): Personinfo {
-        return Personinfo.Builder().medPersonIdent(PERSON_IDENT)
-                .medFødselsdato(LocalDate.now())
-                .medNavn(NAVN)
-                .medDiskresjonsKode(CachedTilgangskontrollService.DISKRESJONSKODE_KODE7)
-                .build()
+    private fun personMedAdressebeskyttelse(adressebeskyttelsegradering: ADRESSEBESKYTTELSEGRADERING?): Person {
+        return Person(navn = NAVN,
+                      fødselsdato = "1980-01-01",
+                      kjønn = "KVINNE",
+                      familierelasjoner = emptySet(),
+                      adressebeskyttelseGradering = adressebeskyttelsegradering,
+                      sivilstand = SIVILSTAND.UGIFT)
     }
 
     companion object {
