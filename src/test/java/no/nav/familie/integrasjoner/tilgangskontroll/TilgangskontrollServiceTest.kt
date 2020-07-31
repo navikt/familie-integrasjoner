@@ -5,7 +5,6 @@ import io.mockk.mockk
 import no.nav.familie.integrasjoner.config.TilgangConfig
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
-import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
@@ -72,7 +71,7 @@ class TilgangskontrollServiceTest {
                 .returns(false)
         every { tilgangConfig.grupper["utvidetTilgang"] }
                 .returns(AdRolle("8796", "NAV-Ansatt"))
-        every { personopplysningerService.hentPersoninfo("123", "BAR", any()) }
+        every { personopplysningerService.hentPersoninfo("123", any(), any()) }
                 .returns(personMedAdressebeskyttelse(null))
 
         assertThat(tilgangskontrollService.sjekkTilgang("123",
@@ -92,7 +91,7 @@ class TilgangskontrollServiceTest {
                 .returns(listOf("id1"))
         every { jwtTokenClaims.get("preferred_username") }
                 .returns(listOf("bob"))
-        every { personopplysningerService.hentPersoninfo("123", "BAR", any()) }
+        every { personopplysningerService.hentPersoninfo("123", any(), any()) }
                 .returns(personMedAdressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG))
 
         assertThat(tilgangskontrollService.sjekkTilgang("123",
@@ -112,7 +111,7 @@ class TilgangskontrollServiceTest {
                 .returns(listOf("id1"))
         every { jwtTokenClaims.get("preferred_username") }
                 .returns(listOf("bob"))
-        every { personopplysningerService.hentPersoninfo("123", "BAR", any()) }
+        every { personopplysningerService.hentPersoninfo("123", any(), any()) }
                 .returns(personMedAdressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.FORTROLIG))
 
         assertThat(tilgangskontrollService.sjekkTilgang("123",
@@ -130,7 +129,7 @@ class TilgangskontrollServiceTest {
                 .returns(listOf("bob"))
         every { jwtTokenClaims.getAsList(any()) }
                 .returns(listOf("8796"))
-        every { personopplysningerService.hentPersoninfo("123", "BAR", any()) }
+        every { personopplysningerService.hentPersoninfo("123", any(), any()) }
                 .returns(personMedAdressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG))
         every { tilgangConfig.grupper["kode6"] }
                 .returns(AdRolle("8796", "Strengt fortrolig adresse"))
@@ -150,7 +149,7 @@ class TilgangskontrollServiceTest {
                 .returns(listOf("bob"))
         every { jwtTokenClaims.getAsList(any()) }
                 .returns(listOf("8796"))
-        every { personopplysningerService.hentPersoninfo("123", "BAR", any()) }
+        every { personopplysningerService.hentPersoninfo("123", any(), any()) }
                 .returns(personMedAdressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.FORTROLIG))
         every { tilgangConfig.grupper["kode7"] }
                 .returns(AdRolle("8796", "Fortrolig adresse"))
@@ -161,17 +160,11 @@ class TilgangskontrollServiceTest {
     }
 
     private fun personMedAdressebeskyttelse(adressebeskyttelsegradering: ADRESSEBESKYTTELSEGRADERING?): Person {
-        return Person(navn = NAVN,
+        return Person(navn = "Navn Navnesen",
                       fødselsdato = "1980-01-01",
                       kjønn = "KVINNE",
                       familierelasjoner = emptySet(),
                       adressebeskyttelseGradering = adressebeskyttelsegradering,
                       sivilstand = SIVILSTAND.UGIFT)
-    }
-
-    companion object {
-        private const val NAVN = "Navn Navnesen"
-        private const val FNR = "fnr"
-        private val PERSON_IDENT = PersonIdent(FNR)
     }
 }
