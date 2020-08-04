@@ -10,7 +10,7 @@ import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter
 import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
-import no.nav.familie.kontrakter.felles.personinfo.Statsborgerskap
+import no.nav.familie.kontrakter.felles.personopplysning.Statsborgerskap
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Periode
@@ -29,6 +29,7 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
                                 private val oversetter: TpsOversetter,
                                 private val pdlRestClient: PdlRestClient) {
 
+    @Deprecated("Tps er markert for utfasing. PDL er master.")
     fun hentHistorikkFor(personIdent: String, fom: LocalDate, tom: LocalDate): PersonhistorikkInfo {
         val request = HentPersonhistorikkRequest()
         request.aktoer = TpsPersonIdent().withIdent(NorskIdent().withIdent(personIdent))
@@ -38,6 +39,7 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
         return oversetter.tilPersonhistorikkInfo(PersonIdent(personIdent), response)
     }
 
+    @Deprecated("Tps er markert for utfasing. PDL er master.")
     fun hentPersoninfoFor(personIdent: String?): Personinfo {
         val request: HentPersonRequest = HentPersonRequest()
                 .withAktoer(TpsPersonIdent().withIdent(NorskIdent().withIdent(personIdent)))
@@ -47,6 +49,7 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
     }
 
     @Cacheable(cacheNames = [PERSON], key = "#personIdent", condition = "#personIdent != null")
+    @Deprecated("Tps er markert for utfasing. PDL er master.")
     fun hentPersoninfo(personIdent: String): Personinfo {
         val request: HentPersonRequest =
                 HentPersonRequest().withAktoer(TpsPersonIdent().withIdent(NorskIdent().withIdent(personIdent)))

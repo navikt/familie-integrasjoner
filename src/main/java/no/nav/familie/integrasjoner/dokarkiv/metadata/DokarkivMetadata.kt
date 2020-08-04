@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.dokarkiv.metadata
 
-import no.nav.familie.kontrakter.felles.arkivering.Dokument
+import no.nav.familie.kontrakter.felles.dokarkiv.Dokument
 import org.springframework.stereotype.Component
 
 @Component

@@ -1,13 +1,10 @@
 package no.nav.familie.integrasjoner.dokarkiv
 
 import no.nav.familie.integrasjoner.dokarkiv.client.KanIkkeFerdigstilleJournalpostException
-import no.nav.familie.integrasjoner.dokarkiv.client.domene.OppdaterJournalpostRequest
-import no.nav.familie.integrasjoner.dokarkiv.client.domene.OppdaterJournalpostResponse
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
-import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentResponse
-import no.nav.familie.kontrakter.felles.arkivering.v2.ArkiverDokumentRequest
+import no.nav.familie.kontrakter.felles.dokarkiv.*
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -99,11 +96,6 @@ class DokarkivController(private val journalføringService: DokarkivService) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(success(LogiskVedleggResponse(logiskVedleggId.toLong()), "logisk vedlegg slettet"))
     }
-
-    data class LogiskVedleggRequest(val tittel: String)
-
-    data class LogiskVedleggResponse(val logiskVedleggId: Long)
-
 
     companion object {
         private val LOG = LoggerFactory.getLogger(DokarkivController::class.java)

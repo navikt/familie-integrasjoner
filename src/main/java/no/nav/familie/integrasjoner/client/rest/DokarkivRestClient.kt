@@ -3,8 +3,12 @@ package no.nav.familie.integrasjoner.client.rest
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.integrasjoner.dokarkiv.client.KanIkkeFerdigstilleJournalpostException
-import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.FerdigstillJournalPost
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
+import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostResponse
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -79,7 +83,8 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
                 patchForEntity<String>(uri, FerdigstillJournalPost(journalførendeEnhet))
             } catch (e: RestClientResponseException) {
                 if (e.rawStatusCode == HttpStatus.BAD_REQUEST.value()) {
-                    throw KanIkkeFerdigstilleJournalpostException("Kan ikke ferdigstille journalpost $journalpostId body ${e.responseBodyAsString}")
+                    throw KanIkkeFerdigstilleJournalpostException("Kan ikke ferdigstille journalpost " +
+                                                                  "$journalpostId body ${e.responseBodyAsString}")
                 }
                 throw e
             }

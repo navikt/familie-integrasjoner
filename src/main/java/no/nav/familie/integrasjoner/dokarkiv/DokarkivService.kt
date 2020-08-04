@@ -3,16 +3,11 @@ package no.nav.familie.integrasjoner.dokarkiv
 import no.nav.familie.integrasjoner.client.rest.DokarkivLogiskVedleggRestClient
 import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
 import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
-import no.nav.familie.integrasjoner.dokarkiv.DokarkivController.LogiskVedleggRequest
-import no.nav.familie.integrasjoner.dokarkiv.DokarkivController.LogiskVedleggResponse
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
 import no.nav.familie.integrasjoner.dokarkiv.metadata.DokarkivMetadata
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
-import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentResponse
-import no.nav.familie.kontrakter.felles.arkivering.Dokument
-import no.nav.familie.kontrakter.felles.arkivering.FilType
-import no.nav.familie.kontrakter.felles.arkivering.v2.ArkiverDokumentRequest
+import no.nav.familie.kontrakter.felles.dokarkiv.*
 import no.nav.familie.kontrakter.felles.oppgave.Tema
 import org.springframework.stereotype.Service
 import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequest
@@ -108,7 +103,7 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
     }
 
     private fun supplerDefaultVerdier(request: OppdaterJournalpostRequest): OppdaterJournalpostRequest {
-        return request.copy(sak = request.sak?.copy(sakstype = request.sak.sakstype ?: "FAGSAK"))
+        return request.copy(sak = request.sak?.copy(sakstype = request.sak?.sakstype ?: "FAGSAK"))
     }
 
     private fun mapHoveddokument(dokumenter: List<Dokument>): ArkivDokument {

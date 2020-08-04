@@ -3,8 +3,8 @@ package no.nav.familie.integrasjoner.egenansatt
 import io.mockk.every
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.client.soap.EgenAnsattSoapClient
-import no.nav.familie.integrasjoner.egenansatt.domene.EgenAnsattResponse
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.egenansatt.EgenAnsattResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test

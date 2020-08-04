@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.personopplysning
 
 import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
+import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
@@ -9,8 +10,8 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.ikkeTilgang
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
-import no.nav.familie.kontrakter.felles.personinfo.Ident
-import no.nav.familie.kontrakter.felles.personinfo.Statsborgerskap
+import no.nav.familie.kontrakter.felles.personopplysning.Ident
+import no.nav.familie.kontrakter.felles.personopplysning.Statsborgerskap
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.MediaType
@@ -59,6 +60,7 @@ class PersonopplysningerController(private val personopplysningerService: Person
     }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v2/historikk"])
+    @Deprecated("Tps er markert for utfasing. PDL er master.")
     fun historikk(@RequestBody(required = true) ident: Ident,
                   @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) fomDato: LocalDate,
                   @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) tomDato: LocalDate)
@@ -68,6 +70,7 @@ class PersonopplysningerController(private val personopplysningerService: Person
     }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v2/info"])
+    @Deprecated("Tps er markert for utfasing. PDL er master.")
     fun personInfo(@RequestBody(required = true) ident: Ident): ResponseEntity<Ressurs<Personinfo>> {
         return ResponseEntity.ok().body(success(personopplysningerService.hentPersoninfoFor(ident.ident),
                                                 "Hent personinfo OK"))
@@ -108,12 +111,5 @@ class PersonopplysningerController(private val personopplysningerService: Person
                             @PathVariable tema: Tema): ResponseEntity<Ressurs<List<Statsborgerskap>>> = ResponseEntity.ok()
             .body(success(personopplysningerService.hentStatsborgerskap(ident.ident, tema.toString()),
                           "Hent statsborgerskap OK"))
-
-
-    enum class Tema {
-        KON,
-        BAR,
-        ENF
-    }
 
 }

@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.personopplysning.internal
 
-import no.nav.familie.kontrakter.felles.personinfo.Bostedsadresse
-import no.nav.familie.kontrakter.felles.personinfo.SIVILSTAND
+import no.nav.familie.kontrakter.felles.personopplysning.Bostedsadresse
+import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 
 data class Person(
         val fødselsdato: String,

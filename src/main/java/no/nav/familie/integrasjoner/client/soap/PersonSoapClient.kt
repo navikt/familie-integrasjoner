@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component
 import javax.xml.ws.soap.SOAPFaultException
 
 @Component
+@Deprecated("Tps er markert for utfasing. PDL er master.")
 class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV3"), Pingable {
 
     private val secureLogger = LoggerFactory.getLogger("secureLogger")

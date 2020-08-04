@@ -5,7 +5,6 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.config.ApiExceptionHandler
-import no.nav.familie.integrasjoner.oppgave.domene.FinnOppgaveResponseDto
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppgave.*
@@ -22,9 +21,11 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
+import org.springframework.web.util.UriComponentsBuilder
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @ActiveProfiles("integrasjonstest", "mock-sts")
 @TestPropertySource(properties = ["OPPGAVE_URL=http://localhost:28085"])
@@ -230,7 +231,8 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 restTemplate.exchange(localhost(OPPGAVE_URL),
                                       HttpMethod.POST,
                                       HttpEntity(opprettOppgave, headers))
-        assertThat(response.body?.melding).contains("Feil ved oppretting av oppgave for 123456789012. Response fra oppgave = body")
+        assertThat(response.body?.melding)
+                .contains("Feil ved oppretting av oppgave for 123456789012. Response fra oppgave = body")
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
@@ -345,11 +347,14 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `finnOppgaverV2 skal fungere ved retur av 0 oppgaver`() {
-        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT&sorteringsrekkefolge=DESC&limit=50&offset=0")
-                .willReturn(okJson(gyldigOppgaveResponse("tom_response.json"))))
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT" +
+                    "&sorteringsrekkefolge=DESC&limit=50&offset=0")
+                        .willReturn(okJson(gyldigOppgaveResponse("tom_response.json"))))
 
         val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
-                restTemplate.exchange(localhost("/api/oppgave/v2"), HttpMethod.POST, HttpEntity(FinnOppgaveRequest("BAR"), headers))
+                restTemplate.exchange(localhost("/api/oppgave/v2"),
+                                      HttpMethod.POST,
+                                      HttpEntity(DeprecatedFinnOppgaveRequest("BAR"), headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.data?.oppgaver).isEmpty()
@@ -357,11 +362,14 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `finnOppgaverV2 skal fungere ved retur av 1 oppgave`() {
-        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT&sorteringsrekkefolge=DESC&limit=50&offset=0")
-                .willReturn(okJson(gyldigOppgaveResponse("oppgave.json"))))
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT" +
+                    "&sorteringsrekkefolge=DESC&limit=50&offset=0")
+                        .willReturn(okJson(gyldigOppgaveResponse("oppgave.json"))))
 
         val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
-                restTemplate.exchange(localhost("/api/oppgave/v2"), HttpMethod.POST, HttpEntity(FinnOppgaveRequest("BAR"), headers))
+                restTemplate.exchange(localhost("/api/oppgave/v2"),
+                                      HttpMethod.POST,
+                                      HttpEntity(DeprecatedFinnOppgaveRequest("BAR"), headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.data?.oppgaver).hasSize(1)
@@ -372,14 +380,18 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         val oppgaver50stk = FinnOppgaveResponseDto(51, List(50) { Oppgave() })
         val oppgaver1stk = FinnOppgaveResponseDto(51, List(1) { Oppgave() })
 
-        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT&sorteringsrekkefolge=DESC&limit=50&offset=0")
-                .willReturn(okJson(objectMapper.writeValueAsString(oppgaver50stk))))
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT" +
+                    "&sorteringsrekkefolge=DESC&limit=50&offset=0")
+                        .willReturn(okJson(objectMapper.writeValueAsString(oppgaver50stk))))
 
-        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT&sorteringsrekkefolge=DESC&limit=50&offset=50")
-                .willReturn(okJson(objectMapper.writeValueAsString(oppgaver1stk))))
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT" +
+                    "&sorteringsrekkefolge=DESC&limit=50&offset=50")
+                        .willReturn(okJson(objectMapper.writeValueAsString(oppgaver1stk))))
 
         val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
-                restTemplate.exchange(localhost("/api/oppgave/v2"), HttpMethod.POST, HttpEntity(FinnOppgaveRequest("BAR"), headers))
+                restTemplate.exchange(localhost("/api/oppgave/v2"),
+                                      HttpMethod.POST,
+                                      HttpEntity(DeprecatedFinnOppgaveRequest("BAR"), headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.data?.oppgaver).hasSize(51)
@@ -388,29 +400,174 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `finnOppgaverV2 skal feile hvis tema ikke er angitt`() {
         val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
-                restTemplate.exchange(localhost("/api/oppgave/v2"), HttpMethod.POST, HttpEntity(FinnOppgaveRequest(), headers))
+                restTemplate.exchange(localhost("/api/oppgave/v2"),
+                                      HttpMethod.POST,
+                                      HttpEntity(DeprecatedFinnOppgaveRequest(), headers))
 
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
     @Test
+    fun `finnOppgaverV3 skal fungere ved retur av 0 oppgaver`() {
+        val finnOppgaveRequest = FinnOppgaveRequest(Tema.BAR)
+        val url = UriComponentsBuilder.fromHttpUrl(localhost("/api/oppgave/v3"))
+                .queryParams(finnOppgaveRequest.toQueryParams()).build().toUri()
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT" +
+                    "&sorteringsrekkefolge=DESC&limit=50&offset=0")
+                        .willReturn(okJson(gyldigOppgaveResponse("tom_response.json"))))
+
+        val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
+                restTemplate.exchange(url,
+                                      HttpMethod.GET,
+                                      HttpEntity(DeprecatedFinnOppgaveRequest("BAR"), headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.data?.oppgaver).isEmpty()
+    }
+
+    @Test
+    fun `finnOppgaverV3 skal fungere ved retur av 1 oppgave`() {
+        val finnOppgaveRequest = FinnOppgaveRequest(Tema.BAR)
+        val url = UriComponentsBuilder.fromHttpUrl(localhost("/api/oppgave/v3"))
+                .queryParams(finnOppgaveRequest.toQueryParams()).build().toUri()
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT" +
+                    "&sorteringsrekkefolge=DESC&limit=50&offset=0")
+                        .willReturn(okJson(gyldigOppgaveResponse("oppgave.json"))))
+
+        val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
+                restTemplate.exchange(url,
+                                      HttpMethod.GET,
+                                      HttpEntity(DeprecatedFinnOppgaveRequest("BAR"), headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.data?.oppgaver).hasSize(1)
+    }
+
+    @Test
+    fun `finnOppgaverV3 skal fungere ved retur av 51 oppgaver`() {
+        val finnOppgaveRequest = FinnOppgaveRequest(Tema.BAR)
+        val url = UriComponentsBuilder.fromHttpUrl(localhost("/api/oppgave/v3"))
+                .queryParams(finnOppgaveRequest.toQueryParams()).build().toUri()
+        val oppgaver50stk = FinnOppgaveResponseDto(51, List(50) { Oppgave() })
+        val oppgaver1stk = FinnOppgaveResponseDto(51, List(1) { Oppgave() })
+
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT" +
+                    "&sorteringsrekkefolge=DESC&limit=50&offset=0")
+                        .willReturn(okJson(objectMapper.writeValueAsString(oppgaver50stk))))
+
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT" +
+                    "&sorteringsrekkefolge=DESC&limit=1&offset=50")
+                        .willReturn(okJson(objectMapper.writeValueAsString(oppgaver1stk))))
+
+        val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
+                restTemplate.exchange(url,
+                                      HttpMethod.GET,
+                                      HttpEntity(DeprecatedFinnOppgaveRequest("BAR"), headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.data?.oppgaver).hasSize(51)
+    }
+
+    @Test
+    fun `finnOppgaverV3 skal fungere begrenset til 16 oppgaver`() {
+        val finnOppgaveRequest = FinnOppgaveRequest(tema = Tema.BAR, limit = 16)
+        val url = UriComponentsBuilder.fromHttpUrl(localhost("/api/oppgave/v3"))
+                .queryParams(finnOppgaveRequest.toQueryParams()).build().toUri()
+        val oppgaver16stk = FinnOppgaveResponseDto(51, List(16) { Oppgave() })
+
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT" +
+                    "&sorteringsrekkefolge=DESC&limit=16&offset=0")
+                        .willReturn(okJson(objectMapper.writeValueAsString(oppgaver16stk))))
+
+
+        val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
+                restTemplate.exchange(url,
+                                      HttpMethod.GET,
+                                      HttpEntity(DeprecatedFinnOppgaveRequest("BAR"), headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.data?.oppgaver).hasSize(16)
+    }
+
+    @Test
+    fun `finnOppgaverV3 skal fungere begrenset til 58 oppgaver`() {
+        val finnOppgaveRequest = FinnOppgaveRequest(tema = Tema.BAR, limit = 58)
+        val url = UriComponentsBuilder.fromHttpUrl(localhost("/api/oppgave/v3"))
+                .queryParams(finnOppgaveRequest.toQueryParams()).build().toUri()
+        val oppgaver50stk = FinnOppgaveResponseDto(116, List(50) { Oppgave() })
+        val oppgaver8stk = FinnOppgaveResponseDto(116, List(8) { Oppgave() })
+
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT" +
+                    "&sorteringsrekkefolge=DESC&limit=50&offset=0")
+                        .willReturn(okJson(objectMapper.writeValueAsString(oppgaver50stk))))
+
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT" +
+                    "&sorteringsrekkefolge=DESC&limit=8&offset=50")
+                        .willReturn(okJson(objectMapper.writeValueAsString(oppgaver8stk))))
+
+        val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
+                restTemplate.exchange(url,
+                                      HttpMethod.GET,
+                                      HttpEntity(DeprecatedFinnOppgaveRequest("BAR"), headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.data?.oppgaver).hasSize(58)
+    }
+
+    @Test
+    fun `finnOppgaverV3 deserialiserer komplett objekt riktig`() {
+        val finnOppgaveRequest = FinnOppgaveRequest(Tema.BAR,
+                                                    Behandlingstema.Barnetrygd,
+                                                    Oppgavetype.BehandleSak,
+                                                    "enhet",
+                                                    "sb",
+                                                    "jpId",
+                                                    "tilordnetRessurs",
+                                                    true,
+                                                    LocalDateTime.of(2015, 10, 1, 12, 10),
+                                                    LocalDateTime.of(2016, 11, 2, 13, 11),
+                                                    LocalDate.of(2017, 12, 3),
+                                                    LocalDate.of(2018, 1, 4),
+                                                    LocalDate.of(2019, 2, 5),
+                                                    LocalDate.of(2020, 3, 6),
+                                                    16,
+                                                    46)
+        val url = UriComponentsBuilder.fromHttpUrl(localhost("/api/oppgave/v3"))
+                .queryParams(finnOppgaveRequest.toQueryParams()).build().toUri()
+        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT" +
+                    "&sorteringsrekkefolge=DESC&limit=16&offset=46&behandlingstema=ab0270&oppgavetype=BEH_SAK" +
+                    "&tildeltEnhetsnr=enhet&tildeltRessurs=true&tilordnetRessurs=tilordnetRessurs&journalpostId=jpId" +
+                    "&opprettetFom=2015-10-01T12:10:00&opprettetTom=2016-11-02T13:11:00&fristFom=2017-12-03" +
+                    "&fristTom=2018-01-04&aktivDatoFom=2019-02-05&aktivDatoTom=2020-03-06")
+                        .willReturn(okJson(gyldigOppgaveResponse("oppgave.json"))))
+
+        val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
+                restTemplate.exchange(url,
+                                      HttpMethod.GET,
+                                      HttpEntity(DeprecatedFinnOppgaveRequest("BAR"), headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.data?.oppgaver).hasSize(1)
+    }
+
+    @Test
     fun `fordelOppgave skal tilordne oppgave til saksbehandler når saksbehandler er satt på requesten`() {
-        val SAKSBEHANDLER_ID = "Z999999"
+        val saksbehandlerId = "Z999999"
         stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
         stubFor(patch(urlEqualTo("/api/v1/oppgaver/${OPPGAVE_ID}"))
-                .willReturn(aResponse()
-                        .withStatus(201)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(gyldigOppgaveResponse("oppgave.json"))))
+                        .willReturn(aResponse()
+                                            .withStatus(201)
+                                            .withHeader("Content-Type", "application/json")
+                                            .withBody(gyldigOppgaveResponse("oppgave.json"))))
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> = restTemplate.exchange(
-                localhost("/api/oppgave/$OPPGAVE_ID/fordel?saksbehandler=$SAKSBEHANDLER_ID"),
+                localhost("/api/oppgave/$OPPGAVE_ID/fordel?saksbehandler=$saksbehandlerId"),
                 HttpMethod.POST,
                 HttpEntity(null, headers)
         )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(response.body?.melding).isEqualTo("Oppgaven ble tildelt saksbehandler $SAKSBEHANDLER_ID")
+        assertThat(response.body?.melding).isEqualTo("Oppgaven ble tildelt saksbehandler $saksbehandlerId")
         assertThat(response.body?.data).isEqualTo(OppgaveResponse(oppgaveId = OPPGAVE_ID))
     }
 
@@ -418,10 +575,10 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     fun `fordelOppgave skal tilbakestille tilordning på oppgave når saksbehandler ikke er satt på requesten`() {
         stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
         stubFor(patch(urlEqualTo("/api/v1/oppgaver/${OPPGAVE_ID}"))
-                .willReturn(aResponse()
-                        .withStatus(201)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(gyldigOppgaveResponse("oppgave.json"))))
+                        .willReturn(aResponse()
+                                            .withStatus(201)
+                                            .withHeader("Content-Type", "application/json")
+                                            .withBody(gyldigOppgaveResponse("oppgave.json"))))
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> = restTemplate.exchange(
                 localhost("/api/oppgave/$OPPGAVE_ID/fordel"),
@@ -440,10 +597,10 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID, status = StatusEnum.FERDIGSTILT))
         )))
         stubFor(patch(urlEqualTo("/api/v1/oppgaver/${OPPGAVE_ID}"))
-                .willReturn(aResponse()
-                        .withStatus(201)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(gyldigOppgaveResponse("oppgave.json"))))
+                        .willReturn(aResponse()
+                                            .withStatus(201)
+                                            .withHeader("Content-Type", "application/json")
+                                            .withBody(gyldigOppgaveResponse("oppgave.json"))))
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> = restTemplate.exchange(
                 localhost("/api/oppgave/$OPPGAVE_ID/fordel?saksbehandler=Z999999"),
