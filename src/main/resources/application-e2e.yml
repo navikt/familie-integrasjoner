@@ -60,6 +60,7 @@ PDL_URL: http://familie-mock-server:1337/rest/api/pdl
 AKTOERID_URL: http://familie-mock-server:1337/rest/aktoerregister
 SAF_URL: http://familie-mock-server:1337/rest/api/saf
 KODEVERK_URL: http://familie-mock-server:1337/rest/api/kodeverk
+AAREG_URL: http://familie-mock-server:1337/rest/api/aareg
 
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw

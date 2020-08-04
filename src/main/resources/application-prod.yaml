@@ -71,6 +71,7 @@ KODEVERK_URL: http://kodeverk
 DOKDIST_URL: http://dokdistfordeling
 ARBEIDSFORDELING_V1_URL: https://app.adeo.no/norg2/ws/Arbeidsfordeling/v1
 PDL_URL: http://pdl-api
+AAREG_URL: https://modapp.adeo.no/aareg-core/api/
 
 # Appdynamics
 APPDYNAMICS_CONTROLLER_HOST_NAME: appdynamics.adeo.no
