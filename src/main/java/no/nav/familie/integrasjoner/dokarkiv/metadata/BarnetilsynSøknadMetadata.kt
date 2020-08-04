@@ -10,7 +10,7 @@ object BarnetilsynSøknadMetadata : DokumentMetadata {
     override val tema: String = "ENF"
     override val behandlingstema: String? = "ab0028" // https://confluence.adeo.no/display/BOA/Behandlingstema
     override val kanal: String? = "NAV_NO"
-    override val dokumentTypeId: String = "BARNETILSYNSTØNAD"
+    override val dokumentTypeId: String = "BARNETILSYNSTØNAD_SØKNAD"
     override val tittel: String? = "Søknad om stønad til barnetilsyn - enslig mor eller far i arbeid"
     override val brevkode: String? = "NAV 15-00.02"
     override val dokumentKategori: String = "SOK"
