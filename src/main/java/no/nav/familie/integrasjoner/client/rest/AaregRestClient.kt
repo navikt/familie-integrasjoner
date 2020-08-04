@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractPingableRestClient
+import no.nav.familie.integrasjoner.aareg.domene.ArbeidsforholdResponse
 import no.nav.familie.log.NavHttpHeaders
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -20,7 +21,7 @@ class AaregRestClient(@Value("\${AAREG_URL}")
     override val pingUri: URI = URI.create("$aaregUrl/$PATH_PING")
     private val hentArbeidsforholdUri = URI.create("$aaregUrl/$PATH_ARBEIDSFORHOLD/?sporingsinformasjon=false")
 
-    fun hentArbeidsforhold(personIdent: String): String {
+    fun hentArbeidsforhold(personIdent: String): ArbeidsforholdResponse {
         return getForEntity(hentArbeidsforholdUri, httpHeaders(personIdent))
     }
 
