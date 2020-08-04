@@ -77,7 +77,9 @@ class DokdistControllerTest : OppslagSpringRunnerTest() {
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/v1/distribuerjournalpost"))
-                .respond(HttpResponse.response().withStatusCode(400).withBody(badRequestResponse()))
+                .respond(HttpResponse.response().withStatusCode(400)
+                                 .withHeader("Content-Type", "application/json; charset=utf-8")
+                                 .withBody(badRequestResponse()))
 
         val body = DistribuerJournalpostRequest(JOURNALPOST_ID, "IT", "ba-sak")
         val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(localhost(DOKDIST_URL),
@@ -91,8 +93,7 @@ class DokdistControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Throws(IOException::class) private fun badRequestResponse(): String {
-        return Files.readString(ClassPathResource("dokdist/badrequest.json").file.toPath(),
-                                StandardCharsets.UTF_8)
+        return Files.readString(ClassPathResource("dokdist/badrequest.json").file.toPath(), StandardCharsets.UTF_8)
     }
 
     companion object {

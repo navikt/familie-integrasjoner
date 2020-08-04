@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.personopplysning
 
 import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
+import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
@@ -110,12 +111,5 @@ class PersonopplysningerController(private val personopplysningerService: Person
                             @PathVariable tema: Tema): ResponseEntity<Ressurs<List<Statsborgerskap>>> = ResponseEntity.ok()
             .body(success(personopplysningerService.hentStatsborgerskap(ident.ident, tema.toString()),
                           "Hent statsborgerskap OK"))
-
-
-    enum class Tema {
-        KON,
-        BAR,
-        ENF
-    }
 
 }
