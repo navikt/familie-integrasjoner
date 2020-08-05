@@ -1,0 +1,24 @@
+query journalposterForBruker($brukerId: BrukerIdInput!,
+                             $foerste: Int!,
+                             $tema: [Tema],
+                             $journalposttype: [Journalposttype]) {
+    dokumentoversiktBruker(brukerId: $brukerId,
+        foerste: $foerste,
+        tema: $tema,
+        journalposttyper: $journalposttype) {
+        journalposter {
+            journalpostId
+            journalposttype
+            journalstatus
+            tema
+            tittel
+            behandlingstema
+            sak { arkivsaksystem arkivsaksnummer datoOpprettet fagsakId fagsaksystem }
+            bruker { id type }
+            journalforendeEnhet
+            kanal
+            dokumenter { dokumentInfoId tittel brevkode dokumentstatus dokumentvarianter { variantformat } logiskeVedlegg { logiskVedleggId tittel } }
+            relevanteDatoer { dato datotype }
+        }
+    }
+}
