@@ -15,7 +15,7 @@ import java.time.LocalDate
 class AaregController(val aaregService: AaregService) {
 
     @PostMapping(path = ["/arbeidsforhold"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun finnOppgaverV3(arbeidsforholdRequest: ArbeidsforholdRequest): Ressurs<List<Arbeidsforhold>> {
+    fun hentArbeidsforhold(arbeidsforholdRequest: ArbeidsforholdRequest): Ressurs<List<Arbeidsforhold>> {
         val arbeidsforhold = aaregService.hentArbeidsforhold(arbeidsforholdRequest.personIdent, arbeidsforholdRequest.ansettelsesperiodeFom)
         return success(arbeidsforhold)
     }
