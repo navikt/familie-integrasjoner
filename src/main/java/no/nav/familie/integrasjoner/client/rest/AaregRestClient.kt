@@ -2,7 +2,9 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.integrasjoner.aareg.domene.Arbeidsforhold
+import no.nav.familie.integrasjoner.dokarkiv.DokarkivController
 import no.nav.familie.log.NavHttpHeaders
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -29,6 +31,7 @@ class AaregRestClient(@Value("\${AAREG_URL}")
                 .queryParam("ansettelsesperiodeFom", ansettelsesperiodeFom.toString())
                 .queryParam("historikk", "true")
                 .build().toUri()
+        LOG.info("URI: " + uri.toString())
         return getForEntity(uri, httpHeaders(personIdent))
     }
 
@@ -42,5 +45,6 @@ class AaregRestClient(@Value("\${AAREG_URL}")
     companion object {
         private const val PATH_PING = "ping"
         private const val PATH_ARBEIDSFORHOLD = "v1/arbeidstaker/arbeidsforhold"
+        private val LOG = LoggerFactory.getLogger(AaregRestClient::class.java)
     }
 }
