@@ -3,7 +3,6 @@ package no.nav.familie.integrasjoner.client.rest
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.sts.StsRestClient
 import no.nav.familie.integrasjoner.aareg.domene.Arbeidsforhold
-import no.nav.familie.integrasjoner.dokarkiv.DokarkivController
 import no.nav.familie.log.NavHttpHeaders
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier

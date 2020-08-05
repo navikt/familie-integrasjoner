@@ -7,8 +7,8 @@ class Arbeidsforhold(val navArbeidsforholdId: Long? = null,
                      val opplysningspliktig: Opplysningspliktig? = null,
                      val type: String? = null,
                      val ansettelsesperiode: Ansettelsesperiode? = null,
-                     val arbeidsavtaler: Arbeidsavtaler? = null,
-                     val varsler: Varsler? = null)
+                     val arbeidsavtaler: List<Arbeidsavtaler>? = null,
+                     val varsler: List<Varsler>? = null)
 
 class Arbeidstaker(val type: String? = null,
                    val offentligIdent: String? = null,
