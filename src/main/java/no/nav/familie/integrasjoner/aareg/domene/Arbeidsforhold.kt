@@ -1,14 +1,14 @@
 package no.nav.familie.integrasjoner.aareg.domene
 
-class ArbeidsforholdResponse(val navArbeidsforholdId: Long? = null,
-                                 val arbeidsforholdId: String? = null,
-                                 val arbeidstaker: Arbeidstaker? = null,
-                                 val arbeidsgiver: Arbeidsgiver? = null,
-                                 val opplysningspliktig: Opplysningspliktig? = null,
-                                 val type: String? = null,
-                                 val ansettelsesperiode: Ansettelsesperiode? = null,
-                                 val arbeidsavtaler: Arbeidsavtaler? = null,
-                                 val varsler: Varsler? = null)
+class Arbeidsforhold(val navArbeidsforholdId: Long? = null,
+                     val arbeidsforholdId: String? = null,
+                     val arbeidstaker: Arbeidstaker? = null,
+                     val arbeidsgiver: Arbeidsgiver? = null,
+                     val opplysningspliktig: Opplysningspliktig? = null,
+                     val type: String? = null,
+                     val ansettelsesperiode: Ansettelsesperiode? = null,
+                     val arbeidsavtaler: Arbeidsavtaler? = null,
+                     val varsler: Varsler? = null)
 
 class Arbeidstaker(val type: String? = null,
                    val offentligIdent: String? = null,
