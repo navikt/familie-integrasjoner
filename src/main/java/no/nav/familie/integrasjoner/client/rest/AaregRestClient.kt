@@ -44,7 +44,7 @@ class AaregRestClient(@Value("\${AAREG_URL}")
 
     companion object {
         private const val PATH_PING = "ping"
-        private const val PATH_ARBEIDSFORHOLD = "v1/arbeidstaker/arbeidsforhold"
+        private const val PATH_ARBEIDSFORHOLD = "/v1/arbeidstaker/arbeidsforhold"
         private val LOG = LoggerFactory.getLogger(AaregRestClient::class.java)
     }
 }
