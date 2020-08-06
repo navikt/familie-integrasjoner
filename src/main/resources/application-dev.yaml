@@ -52,6 +52,7 @@ DOKDIST_URL: http://localhost:18321
 EGEN_ANSATT_V1_URL: #Mockes ut lokalt
 KODEVERK_URL: #Mockes lokalt
 ARBEIDSFORDELING_V1_URL: #Mockes lokalt
+AAREG_URL: #Mockes lokalt
 
 MEDL2_URL: #Denne er ikke i bruk da Medl2 mockes ut lokalt
 SAF_URL: http://localhost:18321/rest/saf

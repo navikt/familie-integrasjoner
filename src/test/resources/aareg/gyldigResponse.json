@@ -1,0 +1,52 @@
+[
+  {
+    "navArbeidsforholdId": 3059134,
+    "arbeidsforholdId": "1",
+    "arbeidstaker": {
+      "type": "Person",
+      "offentligIdent": "01012012345",
+      "aktoerId": "2364077210183"
+    },
+    "arbeidsgiver": {
+      "type": "Organisasjon",
+      "organisasjonsnummer": "998877665"
+    },
+    "opplysningspliktig": {
+      "type": "Organisasjon",
+      "organisasjonsnummer": "998877665"
+    },
+    "type": "ordinaertArbeidsforhold",
+    "ansettelsesperiode": {
+      "periode": {
+        "fom": "2000-08-04"
+      },
+      "bruksperiode": {
+        "fom": "2020-08-04T14:05:28.558"
+      }
+    },
+    "arbeidsavtaler": [
+      {
+        "arbeidstidsordning": "ikkeSkift",
+        "yrke": "2521106",
+        "stillingsprosent": 100,
+        "antallTimerPrUke": 37.5,
+        "beregnetAntallTimerPrUke": 37.5,
+        "bruksperiode": {
+          "fom": "2020-08-04T14:05:28.558"
+        },
+        "gyldighetsperiode": {
+          "fom": "2000-08-01"
+        }
+      }
+    ],
+    "varsler": [
+      {
+        "entitet": "ARBEIDSFORHOLD",
+        "varslingskode": "NAVEND"
+      }
+    ],
+    "innrapportertEtterAOrdningen": true,
+    "registrert": "2020-08-04T14:05:28.53",
+    "sistBekreftet": "2020-08-04T14:05:28"
+  }
+]
