@@ -52,13 +52,14 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
                                                           graphqlQuery("/saf/journalposterForBruker.graphql"))
         try {
             val response =
-                    postForEntity<SafJournalpostResponse<SafJournalpostlisteData>>(safUri,
-                                                                                   safJournalpostRequest,
-                                                                                   httpHeaders())
+                    postForEntity<SafJournalpostResponse<SafJournalpostBrukerData>>(safUri,
+                                                                                    safJournalpostRequest,
+                                                                                    httpHeaders())
             if (response != null && !response.harFeil()) {
-                return response.data?.journalposter ?: throw JournalpostForBrukerException("Kan ikke hente journalposter",
-                                                                                           null,
-                                                                                           journalposterForBrukerRequest)
+                return response.data?.dokumentoversiktBruker?.journalposter
+                       ?: throw JournalpostForBrukerException("Kan ikke hente journalposter",
+                                                              null,
+                                                              journalposterForBrukerRequest)
             } else {
                 responsFailure.increment()
                 throw JournalpostForBrukerException("Kan ikke hente journalposter " + response?.errors?.toString(),

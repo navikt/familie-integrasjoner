@@ -4,12 +4,10 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.familie.kontrakter.felles.journalpost.Journalpost
-import no.nav.familie.kontrakter.felles.journalpost.Journalposttype
-import no.nav.familie.kontrakter.felles.journalpost.Journalstatus
+import no.nav.familie.kontrakter.felles.journalpost.*
 import no.nav.security.token.support.test.JwtTokenGenerator
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -27,14 +25,13 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.util.UriComponentsBuilder
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
 import java.time.LocalDateTime
 
 @ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
 class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
 
     private val testLogger = LoggerFactory.getLogger(HentJournalpostController::class.java) as Logger
+
     @get:Rule
     val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
     private lateinit var uriHentSaksnummer: String
@@ -58,9 +55,9 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/saf/graphql")
-                                .withBody(testdata("gyldigrequest.json"))
+                                .withBody(gyldigJournalPostIdRequest())
                 )
-                .respond(HttpResponse.response().withBody(testdata("gyldigsakresponse.json"))
+                .respond(HttpResponse.response().withBody(lesFil("gyldigsakresponse.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
@@ -76,12 +73,12 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
     fun `hent journalpost skal returnere journalpost og status ok`() {
         mockServerRule.client
                 .`when`(HttpRequest.request()
-                        .withMethod("POST")
-                        .withPath("/rest/saf/graphql")
-                        .withBody(testdata("gyldigrequest.json"))
+                                .withMethod("POST")
+                                .withPath("/rest/saf/graphql")
+                                .withBody(gyldigJournalPostIdRequest())
                 )
-                .respond(HttpResponse.response().withBody(testdata("gyldigjournalpostresponse.json"))
-                        .withHeaders(Header("Content-Type", "application/json")))
+                .respond(HttpResponse.response().withBody(lesFil("gyldigjournalpostresponse.json"))
+                                 .withHeaders(Header("Content-Type", "application/json")))
 
         val response: ResponseEntity<Ressurs<Journalpost>> = restTemplate.exchange(uriHentJournalpost,
                                                                                    HttpMethod.GET,
@@ -91,21 +88,48 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         assertThat(response.body?.data?.journalposttype).isEqualTo(Journalposttype.I)
         assertThat(response.body?.data?.journalstatus).isEqualTo(Journalstatus.JOURNALFOERT)
-        assertThat(response.body?.data?.datoMottatt).isEqualTo(LocalDateTime.of(2020,3,26,1,0))
+        assertThat(response.body?.data?.datoMottatt).isEqualTo(LocalDateTime.of(2020, 3, 26, 1, 0))
+    }
+
+    @Test
+    fun `hent journalpostForBruker skal returnere journalposter og status ok`() {
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withPath("/rest/saf/graphql")
+                                .withBody(gyldigBrukerRequest())
+                )
+                .respond(HttpResponse.response().withBody(lesFil("gyldigJournalposterResponse.json"))
+                                 .withHeaders(Header("Content-Type", "application/json")))
+
+        val response: ResponseEntity<Ressurs<List<Journalpost>>> =
+                restTemplate.exchange(uriHentJournalpost,
+                                      HttpMethod.POST,
+                                      HttpEntity(JournalposterForBrukerRequest(Bruker("12345678901", BrukerIdType.FNR),
+                                                                               10,
+                                                                               listOf(Tema.BAR),
+                                                                               listOf(Journalposttype.I)),
+                                                 headers))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.body?.data?.first()?.journalposttype).isEqualTo(Journalposttype.I)
+        assertThat(response.body?.data?.first()?.journalstatus).isEqualTo(Journalstatus.JOURNALFOERT)
+        assertThat(response.body?.data?.first()?.datoMottatt).isEqualTo(LocalDateTime.parse("2020-01-31T08:00:17"))
     }
 
     @Test
     fun `hent dokument skal returnere dokument og status ok`() {
         mockServerRule.client
-            .`when`(HttpRequest.request()
-                .withMethod("GET")
-                .withPath("/rest/saf/rest/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID/ARKIV")
-            )
-            .respond(HttpResponse().withBody("pdf".toByteArray()).withHeaders(Header("Content-Type", "application/pdf")))
+                .`when`(HttpRequest.request()
+                                .withMethod("GET")
+                                .withPath("/rest/saf/rest/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID/ARKIV")
+                )
+                .respond(HttpResponse().withBody("pdf".toByteArray()).withHeaders(Header("Content-Type", "application/pdf")))
 
         val response: ResponseEntity<Ressurs<ByteArray>> = restTemplate.exchange(uriHentDokument,
-                                                                                   HttpMethod.GET,
-                                                                                   HttpEntity<String>(headers))
+                                                                                 HttpMethod.GET,
+                                                                                 HttpEntity<String>(headers))
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
     }
@@ -117,7 +141,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                                 .withMethod("POST")
                                 .withHeader(Header("Content-Type", "application/json"))
                                 .withPath("/rest/saf/graphql"))
-                .respond(HttpResponse.response().withBody(testdata("mangler_sak.json"))
+                .respond(HttpResponse.response().withBody(lesFil("mangler_sak.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
@@ -136,7 +160,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                                 .withMethod("POST")
                                 .withHeader(Header("Content-Type", "application/json"))
                                 .withPath("/rest/saf/graphql"))
-                .respond(HttpResponse.response().withBody(testdata("feil_arkivsaksystem.json"))
+                .respond(HttpResponse.response().withBody(lesFil("feil_arkivsaksystem.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
@@ -155,7 +179,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                                 .withMethod("POST")
                                 .withHeader(Header("Content-Type", "application/json"))
                                 .withPath("/rest/saf/graphql"))
-                .respond(HttpResponse.response().withBody(testdata("error_fra_saf.json"))
+                .respond(HttpResponse.response().withBody(lesFil("error_fra_saf.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
@@ -195,8 +219,20 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                 .containsExactly(Level.WARN)
     }
 
-    private fun testdata(filnavn: String): String {
-        return Files.readString(ClassPathResource("saf/$filnavn").file.toPath(), StandardCharsets.UTF_8)
+    private fun gyldigJournalPostIdRequest(): String {
+        return lesFil("gyldigJournalpostIdRequest.json")
+                .replace("GRAPHQL-PLACEHOLDER",
+                         lesFil("journalpostForId.graphql").graphqlCompatible())
+    }
+
+    private fun gyldigBrukerRequest(): String {
+        return lesFil("gyldigBrukerRequest.json")
+                .replace("GRAPHQL-PLACEHOLDER",
+                         lesFil("journalposterForBruker.graphql").graphqlCompatible())
+    }
+
+    private fun lesFil(filnavn: String): String {
+        return ClassPathResource("saf/$filnavn").url.readText()
     }
 
     companion object {

@@ -1,9 +1,9 @@
 query journalposterForBruker($brukerId: BrukerIdInput!,
-                             $foerste: Int!,
+                             $antall: Int!,
                              $tema: [Tema],
                              $journalposttype: [Journalposttype]) {
     dokumentoversiktBruker(brukerId: $brukerId,
-        foerste: $foerste,
+        foerste: $antall,
         tema: $tema,
         journalposttyper: $journalposttype) {
         journalposter {
