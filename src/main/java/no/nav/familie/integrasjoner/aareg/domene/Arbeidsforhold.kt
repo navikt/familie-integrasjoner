@@ -1,5 +1,7 @@
 package no.nav.familie.integrasjoner.aareg.domene
 
+import java.time.LocalDate
+
 class Arbeidsforhold(val navArbeidsforholdId: Long? = null,
                      val arbeidsforholdId: String? = null,
                      val arbeidstaker: Arbeidstaker? = null,
@@ -34,5 +36,5 @@ class Arbeidsavtaler(val arbeidstidsordning: String? = null,
 class Varsler(val entitet: String? = null,
               val varslingskode: String? = null)
 
-class Periode(val fom: String? = null,
-              val tom: String? = null)
+class Periode(val fom: LocalDate? = null,
+              val tom: LocalDate? = null)
