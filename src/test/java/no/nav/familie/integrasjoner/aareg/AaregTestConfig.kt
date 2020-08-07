@@ -20,10 +20,10 @@ class AaregTestConfig {
     fun AaregMockRestClient(): AaregRestClient {
         val klient: AaregRestClient = mockk(relaxed = true)
 
-        var arbeidsforhold = Arbeidsforhold(
+        val arbeidsforhold = Arbeidsforhold(
                 navArbeidsforholdId = Random.Default.nextLong(),
                 arbeidstaker = Arbeidstaker("Person", "01012012345", "2364077210183"),
-                arbeidsgiver = Arbeidsgiver("Organisasjon", "998877665"),
+                arbeidsgiver = Arbeidsgiver(ArbeidsgiverType.Organisasjon, "998877665"),
                 ansettelsesperiode = Ansettelsesperiode(Periode(fom = LocalDate.now().minusYears(1)))
         )
 
