@@ -1,0 +1,285 @@
+{
+  "data": {
+    "dokumentoversiktBruker": {
+      "journalposter": [
+        {
+          "journalpostId": "453492634",
+          "journalposttype": "I",
+          "journalstatus": "JOURNALFOERT",
+          "tema": "ENF",
+          "tittel": "Søknad om overgangsstønad - enslig mor eller far",
+          "behandlingstema": null,
+          "sak": {
+            "arkivsaksystem": "GSAK",
+            "arkivsaksnummer": "140259389",
+            "datoOpprettet": "2020-03-11T08:08:45",
+            "fagsakId": "3007A01",
+            "fagsaksystem": "IT01"
+          },
+          "bruker": {
+            "id": "2557381234833",
+            "type": "AKTOERID"
+          },
+          "journalforendeEnhet": "1871",
+          "kanal": "NAV_NO",
+          "dokumenter": [
+            {
+              "dokumentInfoId": "453871494",
+              "tittel": "Søknad om overgangsstønad - enslig mor eller far",
+              "brevkode": "NAV 15-00.01",
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871485",
+              "tittel": "Avtale om samvær",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871486",
+              "tittel": "flyktningdokumentasjon",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871487",
+              "tittel": "separertEllerSkiltIUtlandetDokumentasjon",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871488",
+              "tittel": "Legeattest for egen sykdom eller sykt barn",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871489",
+              "tittel": "Dokumentasjon av arbeidsforhold",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871490",
+              "tittel": "Erklæring om samlivsbrudd",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871491",
+              "tittel": "Bekreftelse på ventet fødselsdato",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871492",
+              "tittel": "giftIUtlandetDokumentasjon",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871493",
+              "tittel": "Legeerklæring",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871495",
+              "tittel": "Avtale om samvær",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871496",
+              "tittel": "Dokumentasjon av særlig tilsynsbehov",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871497",
+              "tittel": "Dokumentasjon av studieopptak",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871498",
+              "tittel": "Avtale om delt bosted for barna",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871499",
+              "tittel": "Skilsmisse- eller separasjonsbevilling",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871500",
+              "tittel": "Erklæring om samlivsbrudd",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871501",
+              "tittel": "Avtale om samvær",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871502",
+              "tittel": "Avslag på søknad om barnehageplass, skolefritidsordning e.l.",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871503",
+              "tittel": "Dokumentasjon av jobbtilbud",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            },
+            {
+              "dokumentInfoId": "453871504",
+              "tittel": "Erklæring om samlivsbrudd",
+              "brevkode": null,
+              "dokumentstatus": null,
+              "dokumentvarianter": [
+                {
+                  "variantformat": "ARKIV"
+                }
+              ],
+              "logiskeVedlegg": []
+            }
+          ],
+          "relevanteDatoer": [
+            {
+              "dato": "2020-01-31T08:00:17",
+              "datotype": "DATO_DOKUMENT"
+            },
+            {
+              "dato": "2020-03-11T09:09:15",
+              "datotype": "DATO_JOURNALFOERT"
+            },
+            {
+              "dato": "2020-01-31T08:00:17",
+              "datotype": "DATO_REGISTRERT"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

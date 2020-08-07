@@ -4,6 +4,7 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.journalpost.Journalpost
+import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -14,18 +15,33 @@ import org.springframework.web.client.HttpStatusCodeException
 @RestController @RequestMapping("/api/journalpost") @ProtectedWithClaims(issuer = "azuread")
 class HentJournalpostController(private val journalpostService: JournalpostService) {
 
+    private val secureLogger = LoggerFactory.getLogger("secureLogger")
+
     @ExceptionHandler(JournalpostRestClientException::class)
     fun handleRestClientException(ex: JournalpostRestClientException): ResponseEntity<Ressurs<Any>> {
         val errorBaseMessage = "Feil ved henting av journalpost=${ex.journalpostId}"
-        val errorExtMessage = if (ex.cause is HttpStatusCodeException) {
-            val cex = ex.cause
+        val errorExtMessage = byggFeilmelding(ex)
+        LOG.warn(errorBaseMessage, ex)
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(failure(errorBaseMessage + errorExtMessage, error = ex))
+    }
+
+    @ExceptionHandler(JournalpostForBrukerException::class)
+    fun handleJournalpostForBrukerException(ex: JournalpostForBrukerException): ResponseEntity<Ressurs<Any>> {
+        val errorBaseMessage = "Feil ved henting av journalpost for ${ex.journalposterForBrukerRequest}"
+        val errorExtMessage = byggFeilmelding(ex)
+        secureLogger.warn(errorBaseMessage, ex)
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(failure(errorBaseMessage + errorExtMessage, error = ex))
+    }
+
+    private fun byggFeilmelding(ex: RuntimeException): String {
+        return if (ex.cause is HttpStatusCodeException) {
+            val cex = ex.cause as HttpStatusCodeException
             " statuscode=${cex.statusCode} body=${cex.responseBodyAsString}"
         } else {
             " klientfeilmelding=${ex.message}"
         }
-        LOG.warn(errorBaseMessage, ex)
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(failure(errorBaseMessage + errorExtMessage, error = ex))
     }
 
     @ExceptionHandler(RuntimeException::class)
@@ -50,6 +66,12 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
     fun hentJournalpost(@RequestParam(name = "journalpostId") journalpostId: String)
             : ResponseEntity<Ressurs<Journalpost>> {
         return ResponseEntity.ok(success(journalpostService.hentJournalpost(journalpostId), "OK"))
+    }
+
+    @PostMapping
+    fun hentJournalpostForBruker(@RequestBody journalposterForBrukerRequest: JournalposterForBrukerRequest)
+            : ResponseEntity<Ressurs<List<Journalpost>>> {
+        return ResponseEntity.ok(success(journalpostService.finnJournalposter(journalposterForBrukerRequest), "OK"))
     }
 
     @GetMapping("hentdokument/{journalpostId}/{dokumentInfoId}")
