@@ -1,17 +1,15 @@
 package no.nav.familie.integrasjoner.personopplysning
 
-import java.io.File
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
-import no.nav.familie.integrasjoner.personopplysning.internal.PdlDødsfallResponse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlHentPersonResponse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlNavn
-import no.nav.familie.integrasjoner.personopplysning.internal.PdlVergeResponse
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
+import java.io.File
 
 class PdlGraphqlTest {
 

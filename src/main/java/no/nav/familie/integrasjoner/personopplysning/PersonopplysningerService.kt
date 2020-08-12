@@ -88,13 +88,6 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
                                         .firstOrNull())
     }
 
-    fun harVerge(personIdent: String, tema: String): VergeResponse {
-        val harVerge = pdlRestClient.hentVergemaalEllerFremtidsfullmakt(personIdent, tema)
-                .any { it.type != "stadfestetFremtidsfullmakt" }
-
-        return VergeResponse(harVerge)
-    }
-
     fun hentStatsborgerskap(ident: String, tema: String): List<Statsborgerskap> =
             pdlRestClient.hentStatsborgerskap(ident, tema)
 
@@ -107,4 +100,3 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
 data class DødsfallResponse(val erDød: Boolean,
                             val dødsdato: String?)
 
-data class VergeResponse(val harVerge: Boolean)

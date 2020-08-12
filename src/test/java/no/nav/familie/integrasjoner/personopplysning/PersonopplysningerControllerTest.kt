@@ -288,30 +288,6 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `harVerge returnerer true`() {
-        val uri = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}harVerge/$TEMA").toUriString()
-        lagMockForPdl("verge.graphql", "pdlVergeFinnesResponse.json")
-
-        val response: ResponseEntity<Ressurs<VergeResponse>> = restTemplate.exchange(uri,
-                                                                                        HttpMethod.POST,
-                                                                                        HttpEntity(Ident("12345678901"), headers))
-
-        assertThat(response.body?.data!!.harVerge).isTrue()
-    }
-
-    @Test
-    fun `harVerge returnerer false`() {
-        val uri = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}harVerge/$TEMA").toUriString()
-        lagMockForPdl("verge.graphql", "pdlVergeFinnesIkkeResponse.json")
-
-        val response: ResponseEntity<Ressurs<VergeResponse>> = restTemplate.exchange(uri,
-                                                                                     HttpMethod.POST,
-                                                                                     HttpEntity(Ident("12345678901"), headers))
-
-        assertThat(response.body?.data!!.harVerge).isFalse()
-    }
-
-    @Test
     fun `skal returnere statsborgerskap`() {
         val uri = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}statsborgerskap/$TEMA").toUriString()
         lagMockForPdl("statsborgerskap.graphql", "pdlStatsborgerskap.json")

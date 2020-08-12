@@ -121,24 +121,6 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         return response.data.person!!.doedsfall
     }
 
-    fun hentVergemaalEllerFremtidsfullmakt(personIdent: String, tema: String): List<VergemaalEllerFremtidsfullmakt> {
-        val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
-                                                query = hentGraphqlQuery("verge"))
-        val response = try {
-            postForEntity<PdlVergeResponse>(pdlUri, pdlPersonRequest, httpHeaders(tema))
-        } catch (e: Exception) {
-            throw pdlOppslagException(personIdent, error = e)
-        }
-
-        if (response == null || response.harFeil()) {
-            throw pdlOppslagException(personIdent,
-                                      HttpStatus.NOT_FOUND,
-                                      feilmelding = "Fant ikke data på person: " + response?.errorMessages())
-        }
-
-        return response.data.person!!.vergemaalEllerFremtidsfullmakt
-    }
-
     private fun pdlOppslagException(personIdent: String,
                                     httpStatus: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
                                     error: Throwable? = null,
