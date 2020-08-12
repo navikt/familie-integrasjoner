@@ -1,9 +1,0 @@
-query($ident: ID!) {
-    person: hentPerson(ident: $ident) {
-        statsborgerskap {
-            land
-            gyldigFraOgMed
-            gyldigTilOgMed
-        }
-    }
-}

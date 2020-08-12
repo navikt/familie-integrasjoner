@@ -8,7 +8,6 @@ import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.personopplysning.Ident
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
-import no.nav.familie.kontrakter.felles.personopplysning.Statsborgerskap
 import no.nav.security.token.support.test.JwtTokenGenerator
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -20,7 +19,10 @@ import org.mockserver.model.HttpRequest
 import org.mockserver.model.HttpResponse
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.web.client.exchange
-import org.springframework.http.*
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.util.UriComponentsBuilder
 import kotlin.test.assertNull
@@ -247,42 +249,6 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         assertThat(response.body?.data).containsExactly(AKTIV_AKTØR_IDENT)
     }
-
-    @Test
-    fun `skal returnere statsborgerskap`() {
-        val uri = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}statsborgerskap/$TEMA").toUriString()
-        lagMockForPdl("statsborgerskap.graphql", "pdlStatsborgerskap.json")
-
-        val response: ResponseEntity<Ressurs<List<Statsborgerskap>>> = restTemplate.exchange(uri,
-                                                                                     HttpMethod.POST,
-                                                                                     HttpEntity(Ident("12345678901"), headers))
-
-        assertThat(response.body?.data!!).hasSize(1).extracting("land").contains("NOR")
-    }
-
-    @Test
-    fun `skal returnere statsborgerskap tom`() {
-        val uri = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}statsborgerskap/$TEMA").toUriString()
-        lagMockForPdl("statsborgerskap.graphql", "pdlStatsborgerskapTom.json")
-
-        val response: ResponseEntity<Ressurs<List<Statsborgerskap>>> = restTemplate.exchange(uri,
-                                                                                             HttpMethod.POST,
-                                                                                             HttpEntity(Ident("12345678901"), headers))
-
-        assertThat(response.body?.data!!).isEmpty()
-    }
-
-    private fun lagMockForPdl(graphqlQueryFilnavn: String, jsonResponseFilnavn: String) {
-        mockServerRule.client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withPath("/rest/pdl/graphql")
-                                .withBody(gyldigRequest(graphqlQueryFilnavn))
-                )
-                .respond(HttpResponse.response().withBody(readfile(jsonResponseFilnavn))
-                                 .withHeaders(Header("Content-Type", "application/json")))
-    }
-
 
     private fun hentPersonInfoFraMockedPdlResponse(responseFile: String): ResponseEntity<Ressurs<Person>> {
         mockServerRule.client
