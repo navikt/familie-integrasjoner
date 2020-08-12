@@ -92,13 +92,6 @@ class PersonopplysningerController(private val personopplysningerService: Person
                 "Hent personinfo OK"))
     }
 
-    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["doedsfall/{tema}"])
-    fun dødsfall(@RequestBody(required = true) ident: Ident,
-                 @PathVariable tema: Tema): ResponseEntity<Ressurs<DødsfallResponse>> {
-        return ResponseEntity.ok().body(success(personopplysningerService.hentDødsfall(ident.ident, tema.toString()),
-                                                "Hent dødsfall OK"))
-    }
-
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["statsborgerskap/{tema}"])
     fun hentStatsborgerskap(@RequestBody(required = true) ident: Ident,
                             @PathVariable tema: Tema): ResponseEntity<Ressurs<List<Statsborgerskap>>> = ResponseEntity.ok()

@@ -249,45 +249,6 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `hentDødsfall returnerer et dødsfall med dødsdato`() {
-        val uri = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}doedsfall/$TEMA").toUriString()
-        lagMockForPdl("doedsfall.graphql", "pdlDoedsfallResponse.json")
-
-        val response: ResponseEntity<Ressurs<DødsfallResponse>> = restTemplate.exchange(uri,
-                HttpMethod.POST,
-                HttpEntity(Ident("12345678901"), headers))
-
-        assertThat(response.body?.data!!.dødsdato).isEqualTo("2019-07-02")
-        assertThat(response.body?.data!!.erDød).isTrue()
-    }
-
-    @Test
-    fun `hentDødsfall skal returnere et dødsfall uten dødsdato`() {
-        val uri = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}doedsfall/$TEMA").toUriString()
-        lagMockForPdl("doedsfall.graphql", "pdlDoedsfallUtenDatoResponse.json")
-
-        val response: ResponseEntity<Ressurs<DødsfallResponse>> = restTemplate.exchange(uri,
-                                                                                        HttpMethod.POST,
-                                                                                        HttpEntity(Ident("12345678901"), headers))
-
-        assertThat(response.body?.data!!.dødsdato).isEqualTo(null)
-        assertThat(response.body?.data!!.erDød).isTrue()
-    }
-
-    @Test
-    fun `hentDødsfall returnerer ikke et dødsfall`() {
-        val uri = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}doedsfall/$TEMA").toUriString()
-        lagMockForPdl("doedsfall.graphql", "pdlDoedsfallIkkeDoedResponse.json")
-
-        val response: ResponseEntity<Ressurs<DødsfallResponse>> = restTemplate.exchange(uri,
-                                                                                        HttpMethod.POST,
-                                                                                        HttpEntity(Ident("12345678901"), headers))
-
-        assertThat(response.body?.data!!.dødsdato).isEqualTo(null)
-        assertThat(response.body?.data!!.erDød).isFalse()
-    }
-
-    @Test
     fun `skal returnere statsborgerskap`() {
         val uri = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}statsborgerskap/$TEMA").toUriString()
         lagMockForPdl("statsborgerskap.graphql", "pdlStatsborgerskap.json")
