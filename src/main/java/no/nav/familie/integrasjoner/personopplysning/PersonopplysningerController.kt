@@ -4,7 +4,6 @@ import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
-import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
@@ -35,27 +34,6 @@ class PersonopplysningerController(private val personopplysningerService: Person
     fun handleRestClientResponseException(e: Forbidden): ResponseEntity<Ressurs<Any>> {
         return ResponseEntity.status(e.rawStatusCode)
                 .body(ikkeTilgang("Ikke tilgang mot personopplysning ${e.message}"))
-    }
-
-    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["aktorId/{tema}"])
-    fun aktørId(@RequestBody(required = true) ident: Ident,
-                @PathVariable tema: Tema): ResponseEntity<Ressurs<List<String>>> {
-        return ResponseEntity.ok().body(success(data = personopplysningerService.hentAktørId(ident.ident, tema.toString()),
-                                                melding = "Hent aktørId OK"))
-    }
-
-    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["identer/{tema}"])
-    fun identer(@RequestBody(required = true) ident: Ident,
-                @PathVariable tema: Tema): ResponseEntity<Ressurs<List<IdentInformasjon>>> {
-        return ResponseEntity.ok().body(success(data = personopplysningerService.hentIdenter(ident.ident, tema.toString(), false),
-                                                melding = "Hent identer OK"))
-    }
-
-    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["identer/{tema}/historikk"])
-    fun identerHistoriske(@RequestBody(required = true) ident: Ident,
-                          @PathVariable tema: Tema): ResponseEntity<Ressurs<List<IdentInformasjon>>> {
-        return ResponseEntity.ok().body(success(data = personopplysningerService.hentIdenter(ident.ident, tema.toString(), true),
-                                                melding = "Hent historiske identer OK"))
     }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v2/historikk"])
