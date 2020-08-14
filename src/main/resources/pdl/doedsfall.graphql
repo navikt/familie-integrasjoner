@@ -1,5 +1,0 @@
-query($ident: ID!) {person: hentPerson(ident: $ident) {
-    doedsfall {
-        doedsdato
-    }
-}}

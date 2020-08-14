@@ -4,14 +4,12 @@ import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
-import no.nav.familie.integrasjoner.personopplysning.internal.IdentInformasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.ikkeTilgang
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.personopplysning.Ident
-import no.nav.familie.kontrakter.felles.personopplysning.Statsborgerskap
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.MediaType
@@ -36,27 +34,6 @@ class PersonopplysningerController(private val personopplysningerService: Person
     fun handleRestClientResponseException(e: Forbidden): ResponseEntity<Ressurs<Any>> {
         return ResponseEntity.status(e.rawStatusCode)
                 .body(ikkeTilgang("Ikke tilgang mot personopplysning ${e.message}"))
-    }
-
-    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["aktorId/{tema}"])
-    fun aktørId(@RequestBody(required = true) ident: Ident,
-                @PathVariable tema: Tema): ResponseEntity<Ressurs<List<String>>> {
-        return ResponseEntity.ok().body(success(data = personopplysningerService.hentAktørId(ident.ident, tema.toString()),
-                                                melding = "Hent aktørId OK"))
-    }
-
-    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["identer/{tema}"])
-    fun identer(@RequestBody(required = true) ident: Ident,
-                @PathVariable tema: Tema): ResponseEntity<Ressurs<List<IdentInformasjon>>> {
-        return ResponseEntity.ok().body(success(data = personopplysningerService.hentIdenter(ident.ident, tema.toString(), false),
-                                                melding = "Hent identer OK"))
-    }
-
-    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["identer/{tema}/historikk"])
-    fun identerHistoriske(@RequestBody(required = true) ident: Ident,
-                          @PathVariable tema: Tema): ResponseEntity<Ressurs<List<IdentInformasjon>>> {
-        return ResponseEntity.ok().body(success(data = personopplysningerService.hentIdenter(ident.ident, tema.toString(), true),
-                                                melding = "Hent historiske identer OK"))
     }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v2/historikk"])
@@ -91,25 +68,4 @@ class PersonopplysningerController(private val personopplysningerService: Person
                 personopplysningerService.hentPersoninfo(personIdent, tema.toString(), PersonInfoQuery.ENKEL),
                 "Hent personinfo OK"))
     }
-
-    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["doedsfall/{tema}"])
-    fun dødsfall(@RequestBody(required = true) ident: Ident,
-                 @PathVariable tema: Tema): ResponseEntity<Ressurs<DødsfallResponse>> {
-        return ResponseEntity.ok().body(success(personopplysningerService.hentDødsfall(ident.ident, tema.toString()),
-                                                "Hent dødsfall OK"))
-    }
-
-    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["harVerge/{tema}"])
-    fun harVerge(@RequestBody(required = true) ident: Ident,
-                 @PathVariable tema: Tema): ResponseEntity<Ressurs<VergeResponse>> {
-        return ResponseEntity.ok().body(success(personopplysningerService.harVerge(ident.ident, tema.toString()),
-                                                "Hent vergeopplysninger OK"))
-    }
-
-    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["statsborgerskap/{tema}"])
-    fun hentStatsborgerskap(@RequestBody(required = true) ident: Ident,
-                            @PathVariable tema: Tema): ResponseEntity<Ressurs<List<Statsborgerskap>>> = ResponseEntity.ok()
-            .body(success(personopplysningerService.hentStatsborgerskap(ident.ident, tema.toString()),
-                          "Hent statsborgerskap OK"))
-
 }

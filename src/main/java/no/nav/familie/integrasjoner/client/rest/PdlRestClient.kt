@@ -6,7 +6,6 @@ import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.personopplysning.internal.*
-import no.nav.familie.kontrakter.felles.personopplysning.Statsborgerskap
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -23,8 +22,6 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
     : AbstractRestClient(restTemplate, "pdl.personinfo") {
 
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
-
-    private val hentIdenterQuery = hentGraphqlQuery("hentIdenter")
 
     fun hentPerson(personIdent: String, tema: String, personInfoQuery: PersonInfoQuery): Person {
 
@@ -87,58 +84,6 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         }
     }
 
-    fun hentIdenter(personIdent: String, tema: String): PdlHentIdenterResponse {
-        val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
-                                                query = hentIdenterQuery)
-        val response = postForEntity<PdlHentIdenterResponse>(pdlUri,
-                                                             pdlPersonRequest,
-                                                             httpHeaders(tema))
-
-
-        if (response != null && !response.harFeil()) {
-            return response
-        }
-        throw pdlOppslagException(personIdent,
-                                  HttpStatus.NOT_FOUND,
-                                  feilmelding = "Fant ikke identer for person: " + response?.errorMessages())
-    }
-
-    fun hentDødsfall(personIdent: String, tema: String): List<Doedsfall> {
-        val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
-                                                query = hentGraphqlQuery("doedsfall"))
-        val response = try {
-            postForEntity<PdlDødsfallResponse>(pdlUri, pdlPersonRequest, httpHeaders(tema))
-        } catch (e: Exception) {
-            throw pdlOppslagException(personIdent, error = e)
-        }
-
-        if (response == null || response.harFeil()) {
-            throw pdlOppslagException(personIdent,
-                                      HttpStatus.NOT_FOUND,
-                                      feilmelding = "Fant ikke data på person: " + response?.errorMessages())
-        }
-
-        return response.data.person!!.doedsfall
-    }
-
-    fun hentVergemaalEllerFremtidsfullmakt(personIdent: String, tema: String): List<VergemaalEllerFremtidsfullmakt> {
-        val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
-                                                query = hentGraphqlQuery("verge"))
-        val response = try {
-            postForEntity<PdlVergeResponse>(pdlUri, pdlPersonRequest, httpHeaders(tema))
-        } catch (e: Exception) {
-            throw pdlOppslagException(personIdent, error = e)
-        }
-
-        if (response == null || response.harFeil()) {
-            throw pdlOppslagException(personIdent,
-                                      HttpStatus.NOT_FOUND,
-                                      feilmelding = "Fant ikke data på person: " + response?.errorMessages())
-        }
-
-        return response.data.person!!.vergemaalEllerFremtidsfullmakt
-    }
-
     private fun pdlOppslagException(personIdent: String,
                                     httpStatus: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
                                     error: Throwable? = null,
@@ -152,28 +97,6 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                 httpStatus,
                                 error,
                                 personIdent)
-    }
-
-    fun hentStatsborgerskap(ident: String, tema: String): List<Statsborgerskap> {
-
-        val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(ident),
-                                                query = hentGraphqlQuery("statsborgerskap"))
-        val response = try {
-            postForEntity<PdlStatsborgerskapResponse>(pdlUri, pdlPersonRequest, httpHeaders(tema))
-        } catch (e: Exception) {
-            throw pdlOppslagException(ident, error = e)
-        }
-
-        if (response == null || response.harFeil()) {
-            throw pdlOppslagException(ident,
-                                      HttpStatus.NOT_FOUND,
-                                      feilmelding = "Fant ikke data på person: " + response?.errorMessages())
-        }
-
-
-
-        return response.data.person!!.statsborgerskap
-
     }
 
     companion object {
