@@ -12,9 +12,9 @@ object BarnetrygdInnhenteOpplysningerMetadata : DokumentMetadata {
     override val behandlingstema: String? = null
     override val kanal: String? = null
     override val dokumentTypeId: String = "BARNETRYGD_INNHENTE_OPPLYSNINGER"
-    override val tittel: String? = null
-    override val brevkode: String? = null
-    override val dokumentKategori: String = "VB"
+    override val tittel: String? = "Brev for innhenting av opplysninger"
+    override val brevkode: String? = "innhente-opplysninger"
+    override val dokumentKategori: String = ""
 
 
 }
