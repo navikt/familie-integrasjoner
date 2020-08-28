@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.infotrygdsak
 
-import java.util.*
+import java.time.LocalDate
 
 class OpprettInfotrygdSakRequest(var fnr: String,
                                  var fagomrade: String,
@@ -10,7 +10,7 @@ class OpprettInfotrygdSakRequest(var fnr: String,
                                  var opprettetAv: String? = null,
                                  var opprettetAvOrganisasjonsEnhetsId: String? = null,
                                  var mottakerOrganisasjonsEnhetsId: String? = null,
-                                 var motattdato: Calendar? = null,
+                                 var motattdato: LocalDate? = null,
                                  var sendBekreftelsesbrev: Boolean? = null,
                                  var oppgaveId: String? = null,
                                  var oppgaveOrganisasjonsenhetId: String? = null)
