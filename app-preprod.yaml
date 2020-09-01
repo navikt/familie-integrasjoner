@@ -38,8 +38,9 @@ spec:
       memory: 1Gi
       cpu: 200m
   ingresses: # Optional. List of ingress URLs that will route HTTP traffic to the application.
-    - https://familie-integrasjoner.nais.preprod.local
-    - https://familie-integrasjoner.dev-fss.nais.io
+    - https://familie-integrasjoner.nais.preprod.local # Deprecated! Erstattes av https://familie-integrasjoner.dev.adeo.no
+    - https://familie-integrasjoner.dev-fss.nais.io # Deprecated! Erstattes av  https://familie-integrasjoner.dev.adeo.no
+    - https://familie-integrasjoner.dev.adeo.no
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: preprod
