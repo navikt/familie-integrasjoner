@@ -88,7 +88,8 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         return oppgave.id!!
     }
 
-    fun opprettOppgave(request: OpprettOppgave): Long {
+    @Deprecated("Bruk v2")
+    fun opprettOppgaveV1(request: OpprettOppgave): Long {
         val oppgave = Oppgave(
                 aktoerId = if (request.ident?.type == IdentType.Aktør) request.ident!!.ident else null,
                 orgnr = if (request.ident?.type == IdentType.Organisasjon) request.ident!!.ident else null,
@@ -97,6 +98,27 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
                 //men da må vi få applikasjonen vår inn i Felles kodeverk ellers så får vi feil: Fant ingen kode 'BA' i felles
                 // kodeverk under kodeverk 'Applikasjoner'
                 // behandlesAvApplikasjon = request.tema.fagsaksystem,
+                journalpostId = request.journalpostId,
+                prioritet = request.prioritet,
+                tema = request.tema,
+                tildeltEnhetsnr = request.enhetsnummer,
+                behandlingstema = request.behandlingstema,
+                fristFerdigstillelse = request.fristFerdigstillelse.format(DateTimeFormatter.ISO_DATE),
+                aktivDato = request.aktivFra.format(DateTimeFormatter.ISO_DATE),
+                oppgavetype = request.oppgavetype.value,
+                beskrivelse = request.beskrivelse,
+                eksisterendeOppgaveId = null,
+                behandlingstype = request.behandlingstype
+        )
+
+        return oppgaveRestClient.opprettOppgave(oppgave)
+    }
+
+    fun opprettOppgave(request: OpprettOppgaveRequest): Long {
+        val oppgave = Oppgave(
+                aktoerId = if (request.ident?.gruppe == IdentGruppe.AKTOERID) request.ident!!.ident else null,
+                orgnr = if (request.ident?.gruppe == IdentGruppe.ORGNR) request.ident!!.ident else null,
+                saksreferanse = request.saksId,
                 journalpostId = request.journalpostId,
                 prioritet = request.prioritet,
                 tema = request.tema,

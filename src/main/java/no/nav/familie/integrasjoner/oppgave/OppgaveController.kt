@@ -81,7 +81,15 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun opprettOppgave(@RequestBody oppgave: OpprettOppgave): ResponseEntity<Ressurs<OppgaveResponse>> {
+    @Deprecated("Bruk v2-endepunkt")
+    fun opprettOppgaveV1(@RequestBody oppgave: OpprettOppgave): ResponseEntity<Ressurs<OppgaveResponse>> {
+        val oppgaveId = oppgaveService.opprettOppgaveV1(oppgave)
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(success(OppgaveResponse(oppgaveId = oppgaveId), "Opprett oppgave OK"))
+    }
+
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/v2"])
+    fun opprettOppgaveV2(@RequestBody oppgave: OpprettOppgaveRequest): ResponseEntity<Ressurs<OppgaveResponse>> {
         val oppgaveId = oppgaveService.opprettOppgave(oppgave)
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(success(OppgaveResponse(oppgaveId = oppgaveId), "Opprett oppgave OK"))
