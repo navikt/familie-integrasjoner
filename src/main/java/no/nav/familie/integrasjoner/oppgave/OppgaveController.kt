@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.oppgave
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.oppgave.*
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import javax.validation.constraints.Pattern
 
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
@@ -52,7 +54,13 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 
     @GetMapping(path = ["/v3"])
-    fun finnOppgaverV3(finnOppgaveRequest: FinnOppgaveRequest): Ressurs<FinnOppgaveResponseDto> {
+    @Deprecated("Bruk v4 endepunktet")
+    fun finnOppgaverV3(finnOppgaveRequest: FinnOppgaveRequest): Ressurs<DeprecatedFinnOppgaveResponseDto> {
+        return success(oppgaveService.finnOppgaverV3(finnOppgaveRequest))
+    }
+
+    @GetMapping(path = ["/v4"])
+    fun finnOppgaverV4(finnOppgaveRequest: FinnOppgaveRequest): Ressurs<FinnOppgaveResponseDto> {
         return success(oppgaveService.finnOppgaver(finnOppgaveRequest))
     }
 
@@ -118,3 +126,43 @@ class DeprecatedFinnOppgaveRequest(val tema: String? = null,
                                    val aktivTomDato: String? = null,
                                    val limit: Long? = null,
                                    val offset: Long? = null)
+
+@Deprecated("Benytt kontrakt")
+data class DeprecatedFinnOppgaveResponseDto(val antallTreffTotalt: Long,
+                                            val oppgaver: List<DeprecatedOppgave>)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Deprecated("Benytt kontrakt")
+data class DeprecatedOppgave(val id: Long? = null,
+                             val tildeltEnhetsnr: String? = null,
+                             val endretAvEnhetsnr: String? = null,
+                             val eksisterendeOppgaveId: String? = null,
+                             val opprettetAvEnhetsnr: String? = null,
+                             val journalpostId: String? = null,
+                             val journalpostkilde: String? = null,
+                             val behandlesAvApplikasjon: String? = null,
+                             val saksreferanse: String? = null,
+                             val bnr: String? = null,
+                             val samhandlernr: String? = null,
+                             @field:Pattern(regexp = "[0-9]{13}")
+                             val aktoerId: String? = null,
+                             val orgnr: String? = null,
+                             val tilordnetRessurs: String? = null,
+                             val beskrivelse: String? = null,
+                             val temagruppe: String? = null,
+                             val tema: Tema? = null,
+                             val behandlingstema: String? = null,
+                             val oppgavetype: String? = null,
+                             val behandlingstype: String? = null,
+                             val versjon: Int? = null,
+                             val mappeId: Long? = null,
+                             val fristFerdigstillelse: String? = null,
+                             val aktivDato: String? = null,
+                             val opprettetTidspunkt: String? = null,
+                             val opprettetAv: String? = null,
+                             val endretAv: String? = null,
+                             val ferdigstiltTidspunkt: String? = null,
+                             val endretTidspunkt: String? = null,
+                             val prioritet: OppgavePrioritet? = null,
+                             val status: StatusEnum? = null,
+                             private var metadata: MutableMap<String, String>? = null)

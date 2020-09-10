@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.context.annotation.ApplicationScope
 import java.time.format.DateTimeFormatter
+import javax.validation.constraints.Pattern
 
 @Service @ApplicationScope
 class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClient) {
@@ -27,8 +28,14 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         return oppgaveRestClient.finnOppgaver(finnOppgaveRequest)
     }
 
+    @Deprecated("Bruk finnOppgaver")
     fun finnOppgaverV2(deprecatedFinnOppgaveRequest: DeprecatedFinnOppgaveRequest): FinnOppgaveResponseDto {
         return oppgaveRestClient.finnOppgaverV2(deprecatedFinnOppgaveRequest)
+    }
+
+    @Deprecated("Bruk finnOppgaver")
+    fun finnOppgaverV3(finnOppgaveRequest: FinnOppgaveRequest): DeprecatedFinnOppgaveResponseDto {
+        return oppgaveRestClient.finnOppgaverV3(finnOppgaveRequest)
     }
 
     fun hentOppgave(oppgaveId: String): Oppgave {
