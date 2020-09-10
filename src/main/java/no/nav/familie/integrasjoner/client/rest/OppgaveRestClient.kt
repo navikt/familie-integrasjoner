@@ -56,14 +56,15 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         return getForEntity(requestUrl(oppgaveId.toLong()), httpHeaders())
     }
 
+    @Deprecated("Bruk finnOppgaver med FinnOppgaveRequest")
     fun finnOppgaver(tema: String,
                      behandlingstema: String?,
                      oppgavetype: String?,
                      tildeltEnhetsnr: String?,
                      tilordnetRessurs: String?,
-                     journalpostId: String?): List<Oppgave> {
+                     journalpostId: String?): List<DeprecatedOppgave> {
 
-        tailrec fun finnAlleOppgaver(oppgaver: List<Oppgave> = listOf()): List<Oppgave> {
+        tailrec fun finnAlleOppgaver(oppgaver: List<DeprecatedOppgave> = listOf()): List<DeprecatedOppgave> {
             val limit = 50
 
             val uriBuilder = UriComponentsBuilder.fromUri(oppgaveBaseUrl)
@@ -84,7 +85,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
                     .build()
                     .toUri()
 
-            val finnOppgaveResponseDto = getForEntity<FinnOppgaveResponseDto>(uri, httpHeaders())
+            val finnOppgaveResponseDto = getForEntity<DeprecatedFinnOppgaveResponseDto>(uri, httpHeaders())
             val nyeOppgaver = oppgaver + finnOppgaveResponseDto.oppgaver
 
             return when (nyeOppgaver.size < finnOppgaveResponseDto.antallTreffTotalt) {
@@ -96,7 +97,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         return finnAlleOppgaver()
     }
 
-    fun finnOppgaverV2(deprecatedFinnOppgaveRequest: DeprecatedFinnOppgaveRequest): FinnOppgaveResponseDto {
+    fun finnOppgaverV2(deprecatedFinnOppgaveRequest: DeprecatedFinnOppgaveRequest): DeprecatedFinnOppgaveResponseDto {
 
         val limitMotOppgave = 50
 
@@ -132,20 +133,20 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         }
 
         var offset = deprecatedFinnOppgaveRequest.offset ?: 0
-        val oppgaverOgAntall = getForEntity<FinnOppgaveResponseDto>(uriMotOppgave(offset), httpHeaders())
-        val oppgaver: MutableList<Oppgave> = oppgaverOgAntall.oppgaver.toMutableList()
+        val oppgaverOgAntall = getForEntity<DeprecatedFinnOppgaveResponseDto>(uriMotOppgave(offset), httpHeaders())
+        val oppgaver: MutableList<DeprecatedOppgave> = oppgaverOgAntall.oppgaver.toMutableList()
         val grense =
                 if (deprecatedFinnOppgaveRequest.limit == null) oppgaverOgAntall.antallTreffTotalt
                 else offset + deprecatedFinnOppgaveRequest.limit
         offset += limitMotOppgave
 
         while (offset < grense) {
-            val nyeOppgaver = getForEntity<FinnOppgaveResponseDto>(uriMotOppgave(offset), httpHeaders())
+            val nyeOppgaver = getForEntity<DeprecatedFinnOppgaveResponseDto>(uriMotOppgave(offset), httpHeaders())
             oppgaver.addAll(nyeOppgaver.oppgaver)
             offset += limitMotOppgave
         }
 
-        return FinnOppgaveResponseDto(oppgaverOgAntall.antallTreffTotalt, oppgaver)
+        return DeprecatedFinnOppgaveResponseDto(oppgaverOgAntall.antallTreffTotalt, oppgaver)
     }
 
     @Deprecated("Bruk finnOppgaver")
@@ -181,8 +182,6 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
                     .queryParams(oppgaveRequest.toQueryParams())
                     .build()
                     .toUri()
-
-
 
     fun finnOppgaver(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {
 

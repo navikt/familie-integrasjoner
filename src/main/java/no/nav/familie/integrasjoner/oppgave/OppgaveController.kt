@@ -32,7 +32,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
                      @RequestParam("enhet", required = false) enhet: String?,
                      @RequestParam("saksbehandler", required = false) saksbehandler: String?,
                      @RequestParam("journalpostId", required = false) journalpostId: String?)
-            : ResponseEntity<Ressurs<List<Oppgave>>> {
+            : ResponseEntity<Ressurs<List<DeprecatedOppgave>>> {
         val oppgaver = oppgaveService.finnOppgaver(tema,
                                                    behandlingstema,
                                                    oppgavetype,
@@ -45,7 +45,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     @PostMapping(path = ["/v2"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Deprecated("Bruk v3 endepunktet")
     fun finnOppgaverV2(@RequestBody deprecatedFinnOppgaveRequest: DeprecatedFinnOppgaveRequest)
-            : ResponseEntity<Ressurs<FinnOppgaveResponseDto>> {
+            : ResponseEntity<Ressurs<DeprecatedFinnOppgaveResponseDto>> {
         return when (deprecatedFinnOppgaveRequest.tema) {
             null -> ResponseEntity.ok().body(Ressurs.failure("påkrevd felt 'tema' mangler"))
             else -> ResponseEntity.ok()

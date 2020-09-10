@@ -10,17 +10,17 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.context.annotation.ApplicationScope
 import java.time.format.DateTimeFormatter
-import javax.validation.constraints.Pattern
 
 @Service @ApplicationScope
 class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClient) {
 
+    @Deprecated("Bruk finnOppgaver med FinnOppgaveRequest")
     fun finnOppgaver(tema: String,
                      behandlingstema: String?,
                      oppgaveType: String?,
                      enhet: String?,
                      saksbehandler: String?,
-                     journalpostId: String?): List<Oppgave> {
+                     journalpostId: String?): List<DeprecatedOppgave> {
         return oppgaveRestClient.finnOppgaver(tema, behandlingstema, oppgaveType, enhet, saksbehandler, journalpostId)
     }
 
@@ -29,7 +29,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
     }
 
     @Deprecated("Bruk finnOppgaver")
-    fun finnOppgaverV2(deprecatedFinnOppgaveRequest: DeprecatedFinnOppgaveRequest): FinnOppgaveResponseDto {
+    fun finnOppgaverV2(deprecatedFinnOppgaveRequest: DeprecatedFinnOppgaveRequest): DeprecatedFinnOppgaveResponseDto {
         return oppgaveRestClient.finnOppgaverV2(deprecatedFinnOppgaveRequest)
     }
 
@@ -95,7 +95,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         return oppgave.id!!
     }
 
-    @Deprecated("Bruk v2")
+    @Deprecated("Bruk opprettOppgave")
     fun opprettOppgaveV1(request: OpprettOppgave): Long {
         val oppgave = Oppgave(
                 aktoerId = if (request.ident?.type == IdentType.Aktør) request.ident!!.ident else null,
