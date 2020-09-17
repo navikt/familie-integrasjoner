@@ -23,7 +23,7 @@
         <springfox.version>2.9.2</springfox.version>
         <common-java-modules.version>1.2019.11.06-15.14-6ca860e6cead</common-java-modules.version>
         <felles.version>1.20200429152039_3c601a5</felles.version>
-        <kontrakt.version>2.0_20200914135927_01277d6</kontrakt.version>
+        <kontrakt.version>2.0_20200915114026_cc396ea</kontrakt.version>
         <fasterxml.version>2.10.1</fasterxml.version>
         <cxf.version>3.3.4</cxf.version>
         <token-validation-spring.version>1.1.2</token-validation-spring.version>
