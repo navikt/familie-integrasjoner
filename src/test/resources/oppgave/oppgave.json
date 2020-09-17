@@ -7,6 +7,16 @@
       "endretAvEnhetsnr": "4812",
       "opprettetAvEnhetsnr": "9999",
       "journalpostId": "123456789",
+      "identer": [
+        {
+          "ident": "1111111111",
+          "gruppe": "FOLKEREGISTERIDENT"
+        },
+        {
+          "ident": "1234567891011",
+          "gruppe": "AKTOERID"
+        }
+      ],
       "aktoerId": "1234567891011",
       "beskrivelse": "Behandle sak",
       "tema": "KON",
