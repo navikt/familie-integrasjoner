@@ -60,7 +60,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 
     @PostMapping(path = ["/v4"])
-    fun finnOppgaverV4(finnOppgaveRequest: FinnOppgaveRequest): Ressurs<FinnOppgaveResponseDto> {
+    fun finnOppgaverV4(@RequestBody finnOppgaveRequest: FinnOppgaveRequest): Ressurs<FinnOppgaveResponseDto> {
         return success(oppgaveService.finnOppgaver(finnOppgaveRequest))
     }
 
