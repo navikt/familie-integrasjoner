@@ -52,7 +52,29 @@ class ArbeidsfordelingControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `skal returnere fornuftig feilmelding ved feil`() {
+    fun `skal hente diskresjonskode, mangler geografisk tilknytning for ident og kalle arbeidsfordelingklient sin hent enhet`() {
+
+        stubFor(post("/graphql")
+                        .willReturn(aResponse()
+                                            .withStatus(200)
+                                            .withHeader("Content-Type", "application/json")
+                                            .withBody(readfile("pdlEnhetManglerKommuneResponse.json"))))
+
+        val response: ResponseEntity<Ressurs<List<ArbeidsfordelingClient.Enhet>>> = restTemplate.exchange(localhost(ENHET_URL),
+                                                                                                          HttpMethod.GET,
+                                                                                                          HttpEntity(null,
+                                                                                                                     headers))
+
+
+
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body.data).hasSize(1)
+        assertThat(response.body.data!!.first().enhetId).isEqualTo("4820")
+    }
+
+    @Test
+    fun `skal returnere not valid json feilmelding ved feil`() {
 
         stubFor(post("/graphql")
                         .willReturn(aResponse()

@@ -17,7 +17,7 @@ class ArbeidsfordelingService(
     fun finnBehandlendeEnhetForPerson(personIdent: String, tema: String): List<ArbeidsfordelingClient.Enhet> {
 
         val behandlendeEnhetData = pdlRestClient.hentBehandlendeEnhetData(personIdent, tema)
-        val geografiskTilknytning = behandlendeEnhetData.geografiskTilknytning.gtKommune
+        val geografiskTilknytning = behandlendeEnhetData.geografiskTilknytning?.gtKommune
         val diskresjonskode = when (behandlendeEnhetData.adressebeskyttelse.firstOrNull()?.gradering) {
             ADRESSEBESKYTTELSEGRADERING.FORTROLIG -> Diskresjonskode.KODE7.kode
             ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG -> Diskresjonskode.KODE6.kode

@@ -19,4 +19,4 @@ data class PdlBehandlendeEnhetForPerson(val person: PdlPdlBehandlendeEnhetForPer
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlPdlBehandlendeEnhetForPersonData(
         val adressebeskyttelse: List<Adressebeskyttelse>,
-        val geografiskTilknytning: GeografiskTilknytning)
+        val geografiskTilknytning: GeografiskTilknytning?)
