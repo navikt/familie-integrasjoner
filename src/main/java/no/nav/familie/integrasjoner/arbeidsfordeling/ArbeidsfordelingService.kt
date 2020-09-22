@@ -17,15 +17,21 @@ class ArbeidsfordelingService(
     fun finnBehandlendeEnhetForPerson(personIdent: String, tema: String): List<ArbeidsfordelingClient.Enhet> {
 
         val behandlendeEnhetData = pdlRestClient.hentBehandlendeEnhetData(personIdent, tema)
-        val geografiskTilknytning = behandlendeEnhetData.geografiskTilknytning?.gtKommune
+        val geografiskTilknytning = behandlendeEnhetData.geografiskTilknytning.gtKommune
         val diskresjonskode = when (behandlendeEnhetData.adressebeskyttelse.firstOrNull()?.gradering) {
-            ADRESSEBESKYTTELSEGRADERING.FORTROLIG -> "7"
-            ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG -> "6"
-            ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG_UTLAND -> "6" // TODO trenger avklaring
+            ADRESSEBESKYTTELSEGRADERING.FORTROLIG -> Diskresjonskode.KODE7.kode
+            ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG -> Diskresjonskode.KODE6.kode
+            ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG_UTLAND -> Diskresjonskode.KODE6.kode
             else -> null
         }
 
         return klient.finnBehandlendeEnhet(tema, geografiskTilknytning, diskresjonskode)
+    }
+
+
+    enum class Diskresjonskode(val kode: String) {
+        KODE6("SPSF"),
+        KODE7("SPFO")
     }
 
 }

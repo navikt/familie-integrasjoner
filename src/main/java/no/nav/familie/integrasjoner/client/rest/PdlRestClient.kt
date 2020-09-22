@@ -8,6 +8,7 @@ import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.personopplysning.internal.*
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.NestedExceptionUtils
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -75,6 +76,31 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         }
     }
 
+    fun hentBehandlendeEnhetData(ident: String, tema: String): PdlPdlBehandlendeEnhetForPersonData {
+
+        val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(ident),
+                                                query = hentGraphqlQuery("hentBehandlendeEnhetData"))
+        val response = try {
+            postForEntity<PdlBehandlendeEnhetForPersonResponse>(pdlUri,
+                                                                pdlPersonRequest,
+                                                                httpHeaders(tema))
+
+        } catch (e: Exception) {
+            throw pdlOppslagException(ident,
+                                      error = e,
+                                      feilmelding = "Feil ved oppslag på person for henting av behandlende enhet data. Gav feil: ${
+                                          NestedExceptionUtils.getMostSpecificCause(e).message}")
+        }
+
+        if (response == null || response.harFeil()) {
+            throw pdlOppslagException(ident,
+                                      HttpStatus.NOT_FOUND,
+                                      feilmelding = "Fant ikke data på person for henting av behandlende enhet data: " + response?.errorMessages())
+        }
+
+        return response.data.person!!
+    }
+
     private fun httpHeaders(tema: String): HttpHeaders {
         return HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
@@ -99,30 +125,9 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                 personIdent)
     }
 
-    fun hentBehandlendeEnhetData(ident: String, tema: String): PdlPersonData {
-
-        val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(ident),
-                                                query = hentGraphqlQuery("hentBehandlendeEnhetData"))
-        val response = try {
-            postForEntity<PdlHentPersonResponse>(pdlUri,
-                                                 pdlPersonRequest,
-                                                 httpHeaders(tema))
-
-        } catch (e: Exception) {
-            throw pdlOppslagException(ident, error = e)
-        }
-
-        if (response == null || response.harFeil()) {
-            throw pdlOppslagException(ident,
-                                      HttpStatus.NOT_FOUND,
-                                      feilmelding = "Fant ikke data på person: " + response?.errorMessages())
-        }
-
-        return response.data.person!!
-    }
-
 
     companion object {
+
         private const val PATH_GRAPHQL = "graphql"
     }
 }
