@@ -1,7 +1,9 @@
 package no.nav.familie.integrasjoner.oppgave
 
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
 import no.nav.familie.kontrakter.felles.oppgave.*
 import org.springframework.context.annotation.Bean
@@ -55,6 +57,8 @@ class OppgaveRestClientTestConfig {
         every {
             klient.opprettOppgave(any())
         } returns 42
+
+        every { klient.oppdaterOppgave(any()) } just runs
 
         return klient
     }
