@@ -20,3 +20,15 @@ data class PdlBehandlendeEnhetForPerson(val person: PdlPdlBehandlendeEnhetForPer
 data class PdlPdlBehandlendeEnhetForPersonData(
         val adressebeskyttelse: List<Adressebeskyttelse>,
         val geografiskTilknytning: GeografiskTilknytning?)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class GeografiskTilknytning(
+        val gtKommune: String?
+)
+
+enum class GtType {
+    KOMMUNE,
+    BYDEL,
+    UTLAND,
+    UDEFINERT
+}

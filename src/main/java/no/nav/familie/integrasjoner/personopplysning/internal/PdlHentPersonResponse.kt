@@ -25,8 +25,7 @@ data class PdlPersonData(val foedsel: List<PdlFødselsDato>,
                          val familierelasjoner: List<PdlFamilierelasjon> = emptyList(),
                          val adressebeskyttelse: List<Adressebeskyttelse>,
                          val bostedsadresse: List<Bostedsadresse?>,
-                         val sivilstand: List<Sivilstand?>,
-                         val geografiskTilknytning: GeografiskTilknytning?)
+                         val sivilstand: List<Sivilstand?>)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlFødselsDato(val foedselsdato: String?)
@@ -60,21 +59,9 @@ data class Adressebeskyttelse(
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class GeografiskTilknytning(
-        val gtKommune: String?
-)
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 data class Sivilstand(
         val type: SIVILSTAND
 )
-
-enum class GtType {
-    KOMMUNE,
-    BYDEL,
-    UTLAND,
-    UDEFINERT
-}
 
 enum class KJØNN {
     MANN,
