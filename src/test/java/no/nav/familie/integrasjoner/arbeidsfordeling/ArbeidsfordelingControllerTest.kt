@@ -63,6 +63,7 @@ class ArbeidsfordelingControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body.data).hasSize(1)
         assertThat(response.body.data!!.first().enhetId).isEqualTo("4820")
+        assertThat(headers.containsKey("Nav-Personident")).isFalse()
     }
 
     @Test
