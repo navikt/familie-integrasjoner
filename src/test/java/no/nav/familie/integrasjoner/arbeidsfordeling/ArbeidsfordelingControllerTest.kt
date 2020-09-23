@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.arbeidsfordeling
 
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.kontrakter.felles.PersonIdent
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.security.token.support.test.JwtTokenGenerator
 import org.assertj.core.api.Assertions.assertThat
@@ -24,14 +25,12 @@ class ArbeidsfordelingControllerTest : OppslagSpringRunnerTest() {
 
     @Before
     fun setUp() {
-        headers.apply {
-            add("Nav-Personident", "12345678901")
-        }.setBearerAuth(JwtTokenGenerator.signedJWTAsString("testbruker"))
+        headers.setBearerAuth(JwtTokenGenerator.signedJWTAsString("testbruker"))
     }
 
     @Test
     fun `skal hente geografisk tilknytning og diskresjonskode for ident og kalle arbeidsfordelingklient sin hent enhet`() {
-
+        headers.add("Nav-Personident", PERSON_IDENT)
         stubFor(post("/graphql")
                         .willReturn(aResponse()
                                             .withStatus(200)
@@ -43,8 +42,23 @@ class ArbeidsfordelingControllerTest : OppslagSpringRunnerTest() {
                                                                                                           HttpEntity(null,
                                                                                                                      headers))
 
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body.data).hasSize(1)
+        assertThat(response.body.data!!.first().enhetId).isEqualTo("4820")
+    }
 
+    @Test
+    fun `skal hente geografisk tilknytning og diskresjonskode for ident og kalle arbeidsfordelingklient sin hent enhet - post ident`() {
+        stubFor(post("/graphql")
+                        .willReturn(aResponse()
+                                            .withStatus(200)
+                                            .withHeader("Content-Type", "application/json")
+                                            .withBody(readfile("pdlEnhetResponse.json"))))
 
+        val response: ResponseEntity<Ressurs<List<ArbeidsfordelingClient.Enhet>>> =
+                restTemplate.exchange(localhost(ENHET_URL),
+                                      HttpMethod.POST,
+                                      HttpEntity(PersonIdent(PERSON_IDENT), headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body.data).hasSize(1)
@@ -53,7 +67,7 @@ class ArbeidsfordelingControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal hente diskresjonskode, mangler geografisk tilknytning for ident og kalle arbeidsfordelingklient sin hent enhet`() {
-
+        headers.add("Nav-Personident", PERSON_IDENT)
         stubFor(post("/graphql")
                         .willReturn(aResponse()
                                             .withStatus(200)
@@ -65,9 +79,6 @@ class ArbeidsfordelingControllerTest : OppslagSpringRunnerTest() {
                                                                                                           HttpEntity(null,
                                                                                                                      headers))
 
-
-
-
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body.data).hasSize(1)
         assertThat(response.body.data!!.first().enhetId).isEqualTo("4820")
@@ -75,7 +86,7 @@ class ArbeidsfordelingControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal returnere not valid json feilmelding ved feil`() {
-
+        headers.add("Nav-Personident", PERSON_IDENT)
         stubFor(post("/graphql")
                         .willReturn(aResponse()
                                             .withStatus(200)
@@ -86,9 +97,6 @@ class ArbeidsfordelingControllerTest : OppslagSpringRunnerTest() {
                                                                                                           HttpMethod.GET,
                                                                                                           HttpEntity(null,
                                                                                                                      headers))
-
-
-
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body.status).isEqualTo(Ressurs.Status.FEILET)
@@ -102,5 +110,6 @@ class ArbeidsfordelingControllerTest : OppslagSpringRunnerTest() {
     companion object {
 
         private const val ENHET_URL = "/api/arbeidsfordeling/enhet/BAR"
+        private const val PERSON_IDENT = "12345678901"
     }
 }
