@@ -1,0 +1,18 @@
+{
+  "data": {
+    "person": {
+      "navn": [
+        {
+          "fornavn": "ENGASJERT",
+          "etternavn": "FYR"
+        }
+      ],
+      "adressebeskyttelse": [
+        {
+          "gradering": "STRENGT_FORTROLIG"
+        }
+      ],
+      "geografiskTilknytning": null
+    }
+  }
+}
