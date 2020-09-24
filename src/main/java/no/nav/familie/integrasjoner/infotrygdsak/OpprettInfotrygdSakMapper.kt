@@ -1,10 +1,8 @@
 package no.nav.familie.integrasjoner.infotrygdsak
 
-import no.nav.familie.integrasjoner.felles.ws.DateUtil
-import no.nav.familie.integrasjoner.infotrygdsak.OpprettInfotrygdSakRequest
-import no.nav.familie.integrasjoner.infotrygdsak.OpprettInfotrygdSakResponse
 import no.nav.gosys.asbo.infotrygdsak.ASBOGOSYSBestillInfotrygdSakRequest
 import no.nav.gosys.asbo.infotrygdsak.ASBOGOSYSBestillInfotrygdSakResponse
+import java.time.LocalDate
 import java.time.ZoneId
 import java.util.*
 
@@ -14,7 +12,8 @@ object OpprettInfotrygdSakMapper {
         val asboRequest = ASBOGOSYSBestillInfotrygdSakRequest()
         asboRequest.fagomrade = opprettInfotrygdSakRequest.fagomrade
         asboRequest.fnr = opprettInfotrygdSakRequest.fnr
-        asboRequest.motattdato = GregorianCalendar.from(opprettInfotrygdSakRequest.motattdato?.atStartOfDay(ZoneId.systemDefault()))
+        asboRequest.motattdato = GregorianCalendar.from((opprettInfotrygdSakRequest.motattdato ?: LocalDate.now())
+                                                                .atStartOfDay(ZoneId.systemDefault()))
         asboRequest.mottakerOrganisasjonsEnhetsId = opprettInfotrygdSakRequest.mottakerOrganisasjonsEnhetsId
         asboRequest.oppgaveId = opprettInfotrygdSakRequest.oppgaveId
         asboRequest.oppgaveOrganisasjonsenhetId = opprettInfotrygdSakRequest.oppgaveOrganisasjonsenhetId

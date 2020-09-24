@@ -21,7 +21,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 
 @ActiveProfiles("integrasjonstest", "mock-oauth")
-class InfotrygdsakControllerTest : OppslagSpringRunnerTest() {
+class InfotrygdControllerTest : OppslagSpringRunnerTest() {
 
     @Autowired
     lateinit var infotrygdRestClient: InfotrygdRestClient
