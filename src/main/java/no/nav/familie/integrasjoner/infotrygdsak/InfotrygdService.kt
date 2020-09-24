@@ -1,6 +1,8 @@
 package no.nav.familie.integrasjoner.infotrygdsak
 
 import no.nav.familie.integrasjoner.client.soap.InfotrygdsakSoapClient
+import no.nav.familie.kontrakter.felles.infotrygdsak.OpprettInfotrygdSakRequest
+import no.nav.familie.kontrakter.felles.infotrygdsak.OpprettInfotrygdSakResponse
 import org.springframework.stereotype.Service
 
 @Service

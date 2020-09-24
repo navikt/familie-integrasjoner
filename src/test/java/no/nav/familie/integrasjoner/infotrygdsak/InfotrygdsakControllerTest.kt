@@ -1,20 +1,18 @@
 package no.nav.familie.integrasjoner.infotrygdsak
 
-import io.mockk.every
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.client.soap.InfotrygdsakSoapClient
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.familie.kontrakter.felles.egenansatt.EgenAnsattResponse
+import no.nav.familie.kontrakter.felles.infotrygdsak.OpprettInfotrygdSakRequest
+import no.nav.familie.kontrakter.felles.infotrygdsak.OpprettInfotrygdSakResponse
 import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions
 import org.junit.Before
-
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource

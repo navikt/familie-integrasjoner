@@ -1,5 +1,7 @@
 package no.nav.familie.integrasjoner.infotrygdsak
 
+import no.nav.familie.kontrakter.felles.infotrygdsak.OpprettInfotrygdSakRequest
+import no.nav.familie.kontrakter.felles.infotrygdsak.OpprettInfotrygdSakResponse
 import no.nav.gosys.asbo.infotrygdsak.ASBOGOSYSBestillInfotrygdSakRequest
 import no.nav.gosys.asbo.infotrygdsak.ASBOGOSYSBestillInfotrygdSakResponse
 import java.time.LocalDate
@@ -21,8 +23,8 @@ object OpprettInfotrygdSakMapper {
         asboRequest.opprettetAvOrganisasjonsEnhetsId = opprettInfotrygdSakRequest.opprettetAvOrganisasjonsEnhetsId
         asboRequest.sendBekreftelsesbrev = opprettInfotrygdSakRequest.sendBekreftelsesbrev
         asboRequest.type = opprettInfotrygdSakRequest.type
-        asboRequest.stonadsklassifisering2 = opprettInfotrygdSakRequest.stonadsklassifisering_2
-        asboRequest.stonadsklassifisering3 = opprettInfotrygdSakRequest.stonadsklassifisering_3
+        asboRequest.stonadsklassifisering2 = opprettInfotrygdSakRequest.stonadsklassifisering2
+        asboRequest.stonadsklassifisering3 = opprettInfotrygdSakRequest.stonadsklassifisering3
         return asboRequest
     }
 
