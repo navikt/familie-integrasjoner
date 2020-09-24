@@ -60,7 +60,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 
     @PostMapping(path = ["/v4"])
-    fun finnOppgaverV4(finnOppgaveRequest: FinnOppgaveRequest): Ressurs<FinnOppgaveResponseDto> {
+    fun finnOppgaverV4(@RequestBody finnOppgaveRequest: FinnOppgaveRequest): Ressurs<FinnOppgaveResponseDto> {
         return success(oppgaveService.finnOppgaver(finnOppgaveRequest))
     }
 
@@ -96,7 +96,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
                 .body(success(OppgaveResponse(oppgaveId = oppgaveId), "Opprett oppgave OK"))
     }
 
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/v2"])
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/opprett"])
     fun opprettOppgaveV2(@RequestBody oppgave: OpprettOppgaveRequest): ResponseEntity<Ressurs<OppgaveResponse>> {
         val oppgaveId = oppgaveService.opprettOppgave(oppgave)
         return ResponseEntity.status(HttpStatus.CREATED)

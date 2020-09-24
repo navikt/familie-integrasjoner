@@ -1,0 +1,23 @@
+{
+  "data": {
+    "person": {
+      "navn": [
+        {
+          "fornavn": "ENGASJERT",
+          "etternavn": "FYR"
+        }
+      ],
+      "adressebeskyttelse": [
+        {
+          "gradering": "STRENGT_FORTROLIG"
+        }
+      ],
+      "geografiskTilknytning": {
+        "gtType": "KOMMUNE",
+        "gtKommune": "0128",
+        "gtLand": null,
+        "gtBydel": null
+      }
+    }
+  }
+}
