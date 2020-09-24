@@ -1,7 +1,6 @@
 package no.nav.familie.integrasjoner.config
 
 import no.nav.inf.GOSYSInfotrygdSak
-import no.nav.infotrygd.sb.opprettsak.OpprettSak
 import no.nav.sbl.dialogarena.common.cxf.CXFClient
 import no.nav.tjeneste.pip.egen.ansatt.v1.EgenAnsattV1
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
@@ -17,8 +16,7 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
                     @Value("\${PERSON_V3_URL}") private val personV3Url: String,
                     @Value("\${ARBEIDSFORDELING_V1_URL}") private val arbeidsfordelingUrl: String,
                     @Value("\${EGEN_ANSATT_V1_URL}") private val egenAnsattUrl: String,
-                    @Value("\${GOSYS_INFOTRYGDSAK_URL}") private val gosysInfotrygdSakUrl: String,
-                    @Value("\${OPPRETT_SAK_URL}") private val opprettSakUrl: String) {
+                    @Value("\${GOSYS_INFOTRYGDSAK_URL}") private val gosysInfotrygdSakUrl: String) {
 
     init {
         System.setProperty("no.nav.modig.security.sts.url", stsUrl)
@@ -38,13 +36,6 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
     fun gosysInfotrygdsakPort(): GOSYSInfotrygdSak =
             CXFClient(GOSYSInfotrygdSak::class.java)
                     .address(gosysInfotrygdSakUrl)
-                    .configureStsForSystemUser()
-                    .build()
-
-    @Bean
-    fun oppretttSakPort(): OpprettSak =
-            CXFClient(OpprettSak::class.java)
-                    .address(opprettSakUrl)
                     .configureStsForSystemUser()
                     .build()
 

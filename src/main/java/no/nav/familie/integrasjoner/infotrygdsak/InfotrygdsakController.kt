@@ -3,7 +3,6 @@ package no.nav.familie.integrasjoner.infotrygdsak
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
-import no.nav.infotrygd.sb.opprettsak.OpprettSakResponse
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
@@ -32,16 +31,10 @@ class InfotrygdsakController(private val infotrygdService: InfotrygdService) {
                 .body(failure("Oppslag mot infotrygd-kontanstøtte feilet ${ex.responseBodyAsString}", error = ex))
     }
 
-    @PostMapping(path = ["gosys"])
+    @PostMapping
     fun oppretttInfotrygdsakForGosys(@RequestBody opprettInfotrygdSakRequest: OpprettInfotrygdSakRequest)
             : Ressurs<OpprettInfotrygdSakResponse> {
         return success(infotrygdService.opprettInfotrygdsakGosys(opprettInfotrygdSakRequest))
-    }
-
-    @PostMapping(path = ["infotrygd"])
-    fun oppretttInfotrygdsakMedOpprettsak(@RequestBody opprettSakRequest: OpprettSakRequest)
-            : Ressurs<OpprettSakResponse> {
-        return success(infotrygdService.opprettInfotrygdsak(opprettSakRequest))
     }
 
 }

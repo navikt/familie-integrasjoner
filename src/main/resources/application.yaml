@@ -40,7 +40,6 @@ CLIENT_SECRET: "dummy-klient-secret"
 INFOTRYGD_KS_SCOPE: "dummy-scope"
 SAF_SCOPE: "dummy-scope"
 GOSYS_INFOTRYGDSAK_URL: "dummy"
-OPPRETT_SAK_URL: "dummy"
 
 STS_URL: http://security-token-service.default.svc.nais.local/rest/v1/sts/token
 INFOTRYGD_URL: http://infotrygd-kontantstotte
