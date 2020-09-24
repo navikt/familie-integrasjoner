@@ -78,7 +78,6 @@ class RestTemplateConfig(
                         bearerTokenClientInterceptor,
                         MdcValuesPropagatingClientInterceptor())
                 .requestFactory(this::requestFactory)
-                .additionalMessageConverters(MappingJackson2HttpMessageConverter(objectMapper))
                 .also {
                     if (trengerProxy()) it.additionalCustomizers(NaisProxyCustomizer())
                 }
