@@ -1,20 +1,22 @@
 package no.nav.familie.integrasjoner.config
 
-import no.nav.familie.http.interceptor.BearerTokenClientInterceptor
-import no.nav.familie.http.interceptor.ConsumerIdClientInterceptor
-import no.nav.familie.http.interceptor.MdcValuesPropagatingClientInterceptor
-import no.nav.familie.http.interceptor.StsBearerTokenClientInterceptor
+import no.nav.familie.http.interceptor.*
+import no.nav.familie.kontrakter.felles.objectMapper
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.core.env.Environment
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.web.client.RestOperations
 import org.springframework.web.client.RestTemplate
 
 @Configuration
-@Import(ConsumerIdClientInterceptor::class, BearerTokenClientInterceptor::class, StsBearerTokenClientInterceptor::class)
+@Import(ConsumerIdClientInterceptor::class,
+        BearerTokenClientInterceptor::class,
+        StsBearerTokenClientInterceptor::class,
+        BearerTokenWithSTSFallbackClientInterceptor::class)
 class RestTemplateConfig(
         private val environment: Environment
 ) {
@@ -65,6 +67,22 @@ class RestTemplateConfig(
                     .requestFactory(this::requestFactory)
                     .build()
         }
+    }
+
+    @Bean("jwt-sts")
+    fun restTemplateJwtBearerFallbackSts(bearerTokenClientInterceptor: BearerTokenWithSTSFallbackClientInterceptor,
+                                         consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations {
+
+        return RestTemplateBuilder()
+                .interceptors(consumerIdClientInterceptor,
+                        bearerTokenClientInterceptor,
+                        MdcValuesPropagatingClientInterceptor())
+                .requestFactory(this::requestFactory)
+                .additionalMessageConverters(MappingJackson2HttpMessageConverter(objectMapper))
+                .also {
+                    if (trengerProxy()) it.additionalCustomizers(NaisProxyCustomizer())
+                }
+                .build()
     }
 
     @Bean("sts")

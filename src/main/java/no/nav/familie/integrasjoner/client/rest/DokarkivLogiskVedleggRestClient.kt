@@ -15,7 +15,7 @@ import java.net.URI
 
 @Component
 class DokarkivLogiskVedleggRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
-                                      @Qualifier("sts") private val restOperations: RestOperations)
+                                      @Qualifier("jwt-sts") private val restOperations: RestOperations)
     : AbstractRestClient(restOperations, "dokarkiv.logiskvedlegg.opprett") {
 
     private val slettVedleggClient = SlettLogiskVedleggClient(restOperations)
@@ -27,7 +27,7 @@ class DokarkivLogiskVedleggRestClient(@Value("\${DOKARKIV_V1_URL}") private val 
                 .buildAndExpand(dokumentInfoId)
                 .toUri()
         try {
-            return postForEntity(uri, request)!!
+            return postForEntity(uri, request)
         } catch (e: RuntimeException) {
             val responsebody = if (e is HttpStatusCodeException) e.responseBodyAsString else ""
             val message = "Kan ikke opprette logisk vedlegg for dokumentinfo $dokumentInfoId $responsebody"

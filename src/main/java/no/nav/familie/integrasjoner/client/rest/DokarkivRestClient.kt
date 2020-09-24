@@ -21,7 +21,7 @@ import java.net.URI
 
 @Component
 class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
-                         @Qualifier("sts") private val restOperations: RestOperations)
+                         @Qualifier("jwt-sts") private val restOperations: RestOperations)
     : AbstractPingableRestClient(restOperations, "dokarkiv.opprett") {
 
     override val pingUri: URI = UriComponentsBuilder.fromUri(dokarkivUrl).path(PATH_PING).build().toUri()
@@ -35,7 +35,7 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
                        ferdigstill: Boolean): OpprettJournalpostResponse {
         val uri = lagJournalpostUri(ferdigstill)
         try {
-            return postForEntity(uri, jp)!!
+            return postForEntity(uri, jp)
         } catch (e: RuntimeException) {
             throw oppslagExceptionVed("opprettelse", e, jp.bruker?.id)
         }
@@ -44,7 +44,7 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
     fun oppdaterJournalpost(jp: OppdaterJournalpostRequest, journalpostId: String): OppdaterJournalpostResponse {
         val uri = UriComponentsBuilder.fromUri(dokarkivUrl).pathSegment(PATH_JOURNALPOST, journalpostId).build().toUri()
         try {
-            return putForEntity(uri, jp)!!
+            return putForEntity(uri, jp)
         } catch (e: RuntimeException) {
             throw oppslagExceptionVed("oppdatering", e, jp.bruker?.id)
         }
@@ -54,7 +54,7 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
         ferdigstillJournalPostClient.ferdigstillJournalpost(journalpostId, journalførendeEnhet)
     }
 
-    private fun oppslagExceptionVed(requestType: String, e: RuntimeException, brukerId: String?): Throwable {
+    private fun oppslagExceptionVed(requestType: String, e: RuntimeException, brukerId: String?): OppslagException {
         val message = "Feil ved $requestType av journalpost "
         val sensitiveInfo = if (e is HttpStatusCodeException) e.responseBodyAsString else "$message for bruker $brukerId "
         return OppslagException(message,
