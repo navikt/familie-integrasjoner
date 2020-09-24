@@ -4,6 +4,9 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import no.nav.familie.integrasjoner.client.rest.SafRestClient
+import no.nav.familie.integrasjoner.dokarkiv.DokarkivServiceTest
+import no.nav.familie.kontrakter.felles.dokarkiv.Dokument
+import no.nav.familie.kontrakter.felles.dokarkiv.FilType
 import no.nav.familie.kontrakter.felles.journalpost.*
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -24,7 +27,7 @@ class HentJournalpostTestConfig {
             Journalpost(
                     journalpostId = slot.captured,
                     journalposttype = Journalposttype.I,
-                    journalstatus = Journalstatus.JOURNALFOERT,
+                    journalstatus = Journalstatus.MOTTATT,
                     tema = "BAR",
                     tittel = "Ent tittel",
                     behandlingstema = null,
@@ -35,7 +38,16 @@ class HentJournalpostTestConfig {
                     bruker = Bruker("1234567890123", BrukerIdType.AKTOERID),
                     journalforendeEnhet = "9999",
                     kanal = "EIA",
-                    dokumenter = emptyList(),
+                    dokumenter = listOf(DokumentInfo(
+                            dokumentInfoId = "1234",
+                            tittel = "Søknad om ytelse",
+                            dokumentstatus = Dokumentstatus.FERDIGSTILT,
+                            dokumentvarianter = emptyList(),
+                            logiskeVedlegg = listOf(LogiskVedlegg(
+                                    logiskVedleggId = "0987",
+                                    tittel = "Oppholdstillatelse"
+                            ))
+                    )),
                     relevanteDatoer = emptyList())
         }
 

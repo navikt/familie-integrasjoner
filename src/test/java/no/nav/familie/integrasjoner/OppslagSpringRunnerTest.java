@@ -33,6 +33,7 @@ public abstract class OppslagSpringRunnerTest {
     @After
     public void reset() {
         loggingEvents.clear();
+        headers.clear();
     }
 
     protected String getPort() {

@@ -14,12 +14,13 @@ import java.time.format.DateTimeFormatter
 @Service @ApplicationScope
 class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClient) {
 
+    @Deprecated("Bruk finnOppgaver med FinnOppgaveRequest")
     fun finnOppgaver(tema: String,
                      behandlingstema: String?,
                      oppgaveType: String?,
                      enhet: String?,
                      saksbehandler: String?,
-                     journalpostId: String?): List<Oppgave> {
+                     journalpostId: String?): List<DeprecatedOppgave> {
         return oppgaveRestClient.finnOppgaver(tema, behandlingstema, oppgaveType, enhet, saksbehandler, journalpostId)
     }
 
@@ -27,8 +28,14 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         return oppgaveRestClient.finnOppgaver(finnOppgaveRequest)
     }
 
-    fun finnOppgaverV2(deprecatedFinnOppgaveRequest: DeprecatedFinnOppgaveRequest): FinnOppgaveResponseDto {
+    @Deprecated("Bruk finnOppgaver")
+    fun finnOppgaverV2(deprecatedFinnOppgaveRequest: DeprecatedFinnOppgaveRequest): DeprecatedFinnOppgaveResponseDto {
         return oppgaveRestClient.finnOppgaverV2(deprecatedFinnOppgaveRequest)
+    }
+
+    @Deprecated("Bruk finnOppgaver")
+    fun finnOppgaverV3(finnOppgaveRequest: FinnOppgaveRequest): DeprecatedFinnOppgaveResponseDto {
+        return oppgaveRestClient.finnOppgaverV3(finnOppgaveRequest)
     }
 
     fun hentOppgave(oppgaveId: String): Oppgave {
@@ -88,7 +95,8 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         return oppgave.id!!
     }
 
-    fun opprettOppgave(request: OpprettOppgave): Long {
+    @Deprecated("Bruk opprettOppgave")
+    fun opprettOppgaveV1(request: OpprettOppgave): Long {
         val oppgave = Oppgave(
                 aktoerId = if (request.ident?.type == IdentType.Aktør) request.ident!!.ident else null,
                 orgnr = if (request.ident?.type == IdentType.Organisasjon) request.ident!!.ident else null,
@@ -97,6 +105,28 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
                 //men da må vi få applikasjonen vår inn i Felles kodeverk ellers så får vi feil: Fant ingen kode 'BA' i felles
                 // kodeverk under kodeverk 'Applikasjoner'
                 // behandlesAvApplikasjon = request.tema.fagsaksystem,
+                journalpostId = request.journalpostId,
+                prioritet = request.prioritet,
+                tema = request.tema,
+                tildeltEnhetsnr = request.enhetsnummer,
+                behandlingstema = request.behandlingstema,
+                fristFerdigstillelse = request.fristFerdigstillelse.format(DateTimeFormatter.ISO_DATE),
+                aktivDato = request.aktivFra.format(DateTimeFormatter.ISO_DATE),
+                oppgavetype = request.oppgavetype.value,
+                beskrivelse = request.beskrivelse,
+                eksisterendeOppgaveId = null,
+                behandlingstype = request.behandlingstype
+        )
+
+        return oppgaveRestClient.opprettOppgave(oppgave)
+    }
+
+    fun opprettOppgave(request: OpprettOppgaveRequest): Long {
+        val oppgave = Oppgave(
+                identer = if (request.ident != null) listOf(request.ident!!) else null,
+                aktoerId = if (request.ident?.gruppe == IdentGruppe.AKTOERID) request.ident!!.ident else null,
+                orgnr = if (request.ident?.gruppe == IdentGruppe.ORGNR) request.ident!!.ident else null,
+                saksreferanse = request.saksId,
                 journalpostId = request.journalpostId,
                 prioritet = request.prioritet,
                 tema = request.tema,
@@ -137,6 +167,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
     }
 
     companion object {
+
         private val LOG = LoggerFactory.getLogger(OppgaveService::class.java)
     }
 }
