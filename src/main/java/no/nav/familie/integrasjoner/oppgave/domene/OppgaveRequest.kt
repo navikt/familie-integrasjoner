@@ -25,7 +25,8 @@ data class OppgaveRequest(val statuskategori: String = "AAPEN",
                           val fristFom: LocalDate?,
                           val fristTom: LocalDate?,
                           val aktivDatoFom: LocalDate?,
-                          val aktivDatoTom: LocalDate?) : QueryObject()
+                          val aktivDatoTom: LocalDate?,
+                          val mappeId: Long?) : QueryObject()
 
 fun FinnOppgaveRequest.toDto() =
         OppgaveRequest(offset = this.offset ?: 0,
@@ -42,4 +43,5 @@ fun FinnOppgaveRequest.toDto() =
                        fristFom = this.fristFomDato,
                        fristTom = this.fristTomDato,
                        aktivDatoFom = this.aktivFomDato,
-                       aktivDatoTom = this.aktivTomDato)
+                       aktivDatoTom = this.aktivTomDato,
+                       mappeId = this.enhetsmappe?.value)
