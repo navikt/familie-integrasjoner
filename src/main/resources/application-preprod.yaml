@@ -62,3 +62,4 @@ DOKDIST_URL: http://dokdistfordeling.q2
 PDL_URL: http://pdl-api
 ARBEIDSFORDELING_V1_URL: https://app-q1.adeo.no/norg2/ws/Arbeidsfordeling/v1
 AAREG_URL: https://modapp-q2.adeo.no/aareg-services/api
+GOSYS_INFOTRYGDSAK_URL: https://tjenestebuss-q2.adeo.no/nav-cons-sak-gosys-3.0.0Web/sca/GOSYSInfotrygdSakWSEXP
