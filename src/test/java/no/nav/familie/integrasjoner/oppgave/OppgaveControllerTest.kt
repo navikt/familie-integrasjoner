@@ -530,6 +530,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                                                     LocalDate.of(2018, 1, 4),
                                                     LocalDate.of(2019, 2, 5),
                                                     LocalDate.of(2020, 3, 6),
+                                                    Enhetsmappe.SøknaderKlarTilBehandling,
                                                     16,
                                                     46)
         val url = UriComponentsBuilder.fromHttpUrl(localhost("/api/oppgave/v3"))
@@ -538,7 +539,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                     "&sorteringsrekkefolge=DESC&limit=16&offset=46&behandlingstema=ab0270&oppgavetype=BEH_SAK" +
                     "&tildeltEnhetsnr=enhet&tildeltRessurs=true&tilordnetRessurs=tilordnetRessurs&journalpostId=jpId" +
                     "&opprettetFom=2015-10-01T12:10:00&opprettetTom=2016-11-02T13:11:00&fristFom=2017-12-03" +
-                    "&fristTom=2018-01-04&aktivDatoFom=2019-02-05&aktivDatoTom=2020-03-06")
+                    "&fristTom=2018-01-04&aktivDatoFom=2019-02-05&aktivDatoTom=2020-03-06&mappeId=100000035")
                         .willReturn(okJson(gyldigOppgaveResponse("oppgave.json"))))
 
         val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
