@@ -108,4 +108,4 @@ class InfotrygdControllerTest : OppslagSpringRunnerTest() {
         const val MOCK_SERVER_PORT = 18321
         const val HAR_BARN_AKTIV_KONTANTSTØTTE = "/api/infotrygd/v1/harBarnAktivKontantstotte"
     }
-}
+}/* commit for å trigge master-bygg */
