@@ -49,7 +49,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal logge stack trace og returnere internal server error ved IllegalStateException`() {
-        stubFor(get(GET_OPPGAVER_URL).willReturn(ok()))
+        stubFor(get(GET_OPPGAVER_URL).willReturn(ok().withBody("{}")))
 
         val oppgave = Oppgave(aktoerId = "1234567891011",
                               journalpostId = "1",
@@ -63,7 +63,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(loggingEvents)
                 .extracting<String, RuntimeException> { obj: ILoggingEvent -> obj.formattedMessage }
-                .anyMatch { s: String -> s.contains("Exception : java.lang.IllegalStateException") }
+                .anyMatch { s: String -> s.contains("Exception : java.lang.RuntimeException") }
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 

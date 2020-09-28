@@ -14,11 +14,12 @@ import org.mockserver.model.HttpRequest
 import org.mockserver.model.HttpResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.exchange
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import org.springframework.boot.web.client.RestTemplateBuilder
+import org.springframework.http.*
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.web.client.*
+import java.net.URI
+import java.util.concurrent.TimeUnit
 
 @ActiveProfiles("integrasjonstest", "mock-oauth")
 class InfotrygdControllerTest : OppslagSpringRunnerTest() {
@@ -80,14 +81,6 @@ class InfotrygdControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `skal feile når respons mangler`() {
-        spesifiserResponsFraInfotrygd("")
-
-        assertThatThrownBy { infotrygdRestClient.hentAktivKontantstøtteFor("12345678901") }
-                .isInstanceOf(IllegalStateException::class.java)
-    }
-
-    @Test
     fun `skal returnere false når returobjekt er tomt`() {
         spesifiserResponsFraInfotrygd("{}")
 
@@ -95,6 +88,7 @@ class InfotrygdControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(aktivKontantstøtteInfo.harAktivKontantstotte).isEqualTo(false)
     }
+
 
     private fun spesifiserResponsFraInfotrygd(respons: String) {
         mockServerRule.client
