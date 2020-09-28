@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.*
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.kontrakter.felles.PersonIdent
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.arbeidsfordeling.Enhet
 import no.nav.security.token.support.test.JwtTokenGenerator
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -37,9 +38,9 @@ class ArbeidsfordelingControllerTest : OppslagSpringRunnerTest() {
                                             .withHeader("Content-Type", "application/json")
                                             .withBody(readfile("pdlEnhetResponse.json"))))
 
-        val response: ResponseEntity<Ressurs<List<ArbeidsfordelingClient.Enhet>>> = restTemplate.exchange(localhost(ENHET_URL),
-                                                                                                          HttpMethod.GET,
-                                                                                                          HttpEntity(null,
+        val response: ResponseEntity<Ressurs<List<Enhet>>> = restTemplate.exchange(localhost(ENHET_URL),
+                                                                                   HttpMethod.GET,
+                                                                                   HttpEntity(null,
                                                                                                                      headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
@@ -55,7 +56,7 @@ class ArbeidsfordelingControllerTest : OppslagSpringRunnerTest() {
                                             .withHeader("Content-Type", "application/json")
                                             .withBody(readfile("pdlEnhetResponse.json"))))
 
-        val response: ResponseEntity<Ressurs<List<ArbeidsfordelingClient.Enhet>>> =
+        val response: ResponseEntity<Ressurs<List<Enhet>>> =
                 restTemplate.exchange(localhost(ENHET_URL),
                                       HttpMethod.POST,
                                       HttpEntity(PersonIdent(PERSON_IDENT), headers))
@@ -75,7 +76,7 @@ class ArbeidsfordelingControllerTest : OppslagSpringRunnerTest() {
                                             .withHeader("Content-Type", "application/json")
                                             .withBody(readfile("pdlEnhetManglerKommuneResponse.json"))))
 
-        val response: ResponseEntity<Ressurs<List<ArbeidsfordelingClient.Enhet>>> = restTemplate.exchange(localhost(ENHET_URL),
+        val response: ResponseEntity<Ressurs<List<Enhet>>> = restTemplate.exchange(localhost(ENHET_URL),
                                                                                                           HttpMethod.GET,
                                                                                                           HttpEntity(null,
                                                                                                                      headers))
@@ -94,7 +95,7 @@ class ArbeidsfordelingControllerTest : OppslagSpringRunnerTest() {
                                             .withHeader("Content-Type", "application/json")
                                             .withBody("{}")))
 
-        val response: ResponseEntity<Ressurs<List<ArbeidsfordelingClient.Enhet>>> = restTemplate.exchange(localhost(ENHET_URL),
+        val response: ResponseEntity<Ressurs<List<Enhet>>> = restTemplate.exchange(localhost(ENHET_URL),
                                                                                                           HttpMethod.GET,
                                                                                                           HttpEntity(null,
                                                                                                                      headers))

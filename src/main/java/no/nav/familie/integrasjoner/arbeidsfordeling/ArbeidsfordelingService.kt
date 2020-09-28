@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.arbeidsfordeling
 
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
+import no.nav.familie.kontrakter.felles.arbeidsfordeling.Enhet
 import org.springframework.stereotype.Service
 
 @Service
@@ -11,10 +12,10 @@ class ArbeidsfordelingService(
 
     fun finnBehandlendeEnhet(tema: String,
                              geografi: String?,
-                             diskresjonskode: String?): List<ArbeidsfordelingClient.Enhet> =
+                             diskresjonskode: String?): List<Enhet> =
             klient.finnBehandlendeEnhet(tema, geografi, diskresjonskode)
 
-    fun finnBehandlendeEnhetForPerson(personIdent: String, tema: String): List<ArbeidsfordelingClient.Enhet> {
+    fun finnBehandlendeEnhetForPerson(personIdent: String, tema: String): List<Enhet> {
 
         val behandlendeEnhetData = pdlRestClient.hentBehandlendeEnhetData(personIdent, tema)
         val geografiskTilknytning = behandlendeEnhetData.geografiskTilknytning?.gtKommune
