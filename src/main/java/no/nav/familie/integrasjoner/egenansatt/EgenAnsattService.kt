@@ -10,13 +10,5 @@ import org.springframework.stereotype.Service
 class EgenAnsattService(private val egenAnsattRestClient: EgenAnsattRestClient) {
 
     @Cacheable("erEgenAnsatt")
-    fun erEgenAnsatt(fnr: String): Boolean {
-        LOG.info("Er egen ansatt")
-        val erEgenAnsatt = egenAnsattRestClient.erEgenAnsatt(fnr)
-        LOG.info("Er egenansatt: $erEgenAnsatt")
-        return egenAnsattRestClient.erEgenAnsatt(fnr)
-    }
-    companion object {
-        private val LOG = LoggerFactory.getLogger(EgenAnsattService::class.java)
-    }
+    fun erEgenAnsatt(fnr: String): Boolean = egenAnsattRestClient.erEgenAnsatt(fnr)
 }
