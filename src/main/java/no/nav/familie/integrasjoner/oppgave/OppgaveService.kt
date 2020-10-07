@@ -38,15 +38,15 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         return oppgaveRestClient.finnOppgaverV3(finnOppgaveRequest)
     }
 
-    fun hentOppgave(oppgaveId: String): Oppgave {
+    fun hentOppgave(oppgaveId: Long): Oppgave {
         return oppgaveRestClient.finnOppgaveMedId(oppgaveId)
     }
 
     fun oppdaterOppgave(request: Oppgave): Long {
-        val oppgave: Oppgave = if (StringUtils.nullOrEmpty(request.eksisterendeOppgaveId)) {
+        val oppgave: Oppgave = if (request.id == null) {
             oppgaveRestClient.finnOppgave(request)
         } else {
-            oppgaveRestClient.finnOppgaveMedId(request.eksisterendeOppgaveId!!)
+            oppgaveRestClient.finnOppgaveMedId(request.id!!)
         }
         if (oppgave.status === StatusEnum.FERDIGSTILT) {
             LOG.info("Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId={} journalpostId={} oppgaveId={}",
@@ -64,8 +64,12 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         return oppgave.id!!
     }
 
+    fun patchOppgave(patchOppgave: Oppgave): Long {
+        return oppgaveRestClient.oppdaterOppgave(patchOppgave)?.id!!
+    }
+
     fun fordelOppgave(oppgaveId: Long, saksbehandler: String): Long {
-        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId.toString())
+        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
         if (oppgave.status === StatusEnum.FERDIGSTILT) {
             error("Kan ikke fordele oppgave med id $oppgaveId som allerede er ferdigstilt")
@@ -80,7 +84,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
     }
 
     fun tilbakestillFordelingPåOppgave(oppgaveId: Long): Long {
-        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId.toString())
+        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
         if (oppgave.status === StatusEnum.FERDIGSTILT) {
             error("Kan ikke tilbakestille fordeling på oppgave med id $oppgaveId som allerede er ferdigstilt")
@@ -114,7 +118,6 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
                 aktivDato = request.aktivFra.format(DateTimeFormatter.ISO_DATE),
                 oppgavetype = request.oppgavetype.value,
                 beskrivelse = request.beskrivelse,
-                eksisterendeOppgaveId = null,
                 behandlingstype = request.behandlingstype
         )
 
@@ -136,7 +139,6 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
                 aktivDato = request.aktivFra.format(DateTimeFormatter.ISO_DATE),
                 oppgavetype = request.oppgavetype.value,
                 beskrivelse = request.beskrivelse,
-                eksisterendeOppgaveId = null,
                 behandlingstype = request.behandlingstype
         )
 
@@ -144,7 +146,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
     }
 
     fun ferdigstill(oppgaveId: Long) {
-        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId.toString())
+        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
         when (oppgave.status) {
             StatusEnum.OPPRETTET, StatusEnum.AAPNET, StatusEnum.UNDER_BEHANDLING -> {
