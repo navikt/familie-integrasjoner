@@ -53,7 +53,6 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
         val oppgave = Oppgave(aktoerId = "1234567891011",
                               journalpostId = "1",
-                              eksisterendeOppgaveId = null,
                               beskrivelse = "test NPE",
                               tema = Tema.KON)
 
@@ -73,7 +72,6 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
         val oppgave = Oppgave(aktoerId = "1234567891011",
                               journalpostId = "1",
-                              eksisterendeOppgaveId = null,
                               beskrivelse = "test RestClientException",
                               tema = Tema.KON)
 
@@ -94,7 +92,6 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
         val oppgave = Oppgave(aktoerId = "1234567891011",
                               journalpostId = "1",
-                              eksisterendeOppgaveId = null,
                               beskrivelse = "test oppgave ikke funnet",
                               tema = Tema.KON)
 
@@ -117,7 +114,6 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
         val oppgave = Oppgave(aktoerId = "1234567891011",
                               journalpostId = "1",
-                              eksisterendeOppgaveId = null,
                               beskrivelse = "test oppgave ikke funnet",
                               tema = null)
 
@@ -148,7 +144,6 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
         val oppgave = Oppgave(aktoerId = "1234567891011",
                               journalpostId = "1",
-                              eksisterendeOppgaveId = null,
                               beskrivelse = EKSTRA_BESKRIVELSE,
                               tema = null)
 
