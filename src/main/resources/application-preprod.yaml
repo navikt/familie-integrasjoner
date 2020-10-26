@@ -57,6 +57,7 @@ MEDL2_URL: https://app-q2.adeo.no/medl2
 SAF_URL: http://saf.q2
 OPPGAVE_URL: http://oppgave.q2
 KODEVERK_URL: http://kodeverk
+FOERSTESIDEGENERATOR_URL: https://foerstesidegenerator-q2.dev.adeo.no
 EGEN_ANSATT_URL: https://skjermede-personer-pip.nais.preprod.local
 DOKDIST_URL: http://dokdistfordeling.q2
 PDL_URL: http://pdl-api
