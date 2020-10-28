@@ -26,9 +26,9 @@ class FørstesideGeneratorClient (@Value("\${FOERSTESIDEGENERATOR_URL}") private
     override val pingUri: URI = UriUtil.uri(foerstesidegeneratorURI, FørstesideGeneratorClient.PATH_PING)
 
 
-    fun genererFørsteside(dto: PostFoerstesideRequest): PostFoerstesideResponse? {
+    fun genererFørsteside(dto: PostFoerstesideRequest): PostFoerstesideResponse {
         val uri = UriComponentsBuilder.fromUri(foerstesidegeneratorURI).path(PATH_GENERER).build().toUri()
-        return Result.runCatching { postForEntity<PostFoerstesideResponse>(uri, dto, httpHeaders()) }
+        return Result.runCatching { postForEntity<PostFoerstesideResponse>(uri, dto, httpHeaders())!! }
                 .onFailure {
                     var feilmelding = "Feil ved oppretting av førsteside for ${dto.foerstesidetype}."
                     if (it is HttpStatusCodeException) {

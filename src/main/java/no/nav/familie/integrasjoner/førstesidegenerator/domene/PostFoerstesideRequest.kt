@@ -1,6 +1,5 @@
 package no.nav.familie.integrasjoner.førstesidegenerator.domene
 
-import no.nav.familie.integrasjoner.personopplysning.domene.adresse.AdressePeriode.Adresse
 import java.util.*
 
 
