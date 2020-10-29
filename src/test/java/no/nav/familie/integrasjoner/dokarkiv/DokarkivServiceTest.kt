@@ -7,11 +7,16 @@ import io.mockk.slot
 import io.mockk.verify
 import no.nav.familie.integrasjoner.client.rest.DokarkivLogiskVedleggRestClient
 import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
-import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
+import no.nav.familie.integrasjoner.client.rest.FørstesideGeneratorClient
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.JournalpostType
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
 import no.nav.familie.integrasjoner.dokarkiv.metadata.*
+import no.nav.familie.integrasjoner.førstesidegenerator.FørstesideGeneratorService
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
-import no.nav.familie.integrasjoner.personopplysning.internal.*
+import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
+import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.kontrakter.felles.dokarkiv.*
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import org.assertj.core.api.Assertions.assertThat
@@ -26,6 +31,12 @@ class DokarkivServiceTest {
 
     @MockK
     lateinit var dokarkivRestClient: DokarkivRestClient
+
+    @MockK
+    lateinit var førstesideGeneratorClient: FørstesideGeneratorClient
+
+    @MockK
+    lateinit var førstesideGeneratorService: FørstesideGeneratorService
 
     @MockK
     lateinit var dokarkivLogiskVedleggRestClient: DokarkivLogiskVedleggRestClient
@@ -43,7 +54,8 @@ class DokarkivServiceTest {
                                                            KontanstøtteSøknadVedleggMetadata,
                                                            BarnetrygdVedtakMetadata,
                                                            BarnetrygdVedleggMetadata),
-                                          dokarkivLogiskVedleggRestClient)
+                                          dokarkivLogiskVedleggRestClient,
+                                          førstesideGeneratorService)
     }
 
     @Test fun `oppdaterJournalpost skal legge til default sakstype`() {
@@ -88,6 +100,71 @@ class DokarkivServiceTest {
             dokarkivRestClient.lagJournalpost(slot.captured, false)
         }
         assertOpprettJournalpostRequest(request, "PDFA", PDF_DOK, ARKIV_VARIANTFORMAT)
+    }
+
+    @Test fun `skal generere førsteside hvis førsteside er med i request`() {
+        val slot = slot<OpprettJournalpostRequest>()
+
+        every { førstesideGeneratorService.genererForside(any()) }
+                .answers { PDF_DOK }
+
+        every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
+                .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
+
+        every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
+                .answers {
+                    Person(fødselsdato = "1980-05-12",
+                            navn = navn,
+                            kjønn = "KVINNE",
+                            familierelasjoner = emptySet(),
+                            adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
+                            sivilstand =  SIVILSTAND.UGIFT)
+                }
+        val dto = ArkiverDokumentRequest(FNR,
+                false,
+                listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")),
+                førsteside = Førsteside(maalform = "NB",navSkjemaId = "123",overskriftsTittel = "Testoverskrift"))
+
+        dokarkivService.lagJournalpostV3(dto)
+
+        val request = slot.captured
+        verify {
+            dokarkivRestClient.lagJournalpost(slot.captured, false)
+        }
+
+        assertThat(request.dokumenter.find { it.tittel == "Testoverskrift" }).isNotNull
+    }
+
+    @Test fun `skal ikke generere førsteside hvis førsteside mangler i request`() {
+        val slot = slot<OpprettJournalpostRequest>()
+
+        every { førstesideGeneratorService.genererForside(any()) }
+                .answers { PDF_DOK }
+
+        every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
+                .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
+
+        every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
+                .answers {
+                    Person(fødselsdato = "1980-05-12",
+                            navn = navn,
+                            kjønn = "KVINNE",
+                            familierelasjoner = emptySet(),
+                            adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
+                            sivilstand =  SIVILSTAND.UGIFT)
+                }
+        val dto = ArkiverDokumentRequest(FNR,
+                false,
+                listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
+
+        dokarkivService.lagJournalpostV3(dto)
+
+        val request = slot.captured
+        verify {
+            dokarkivRestClient.lagJournalpost(slot.captured, false)
+        }
+
+        assertThat(request.dokumenter.find { it.tittel == "Testoverskrift" }).isNull()
     }
 
     @Test fun `skal mappe request til opprettJournalpostRequest for barnetrygd vedtak`() {

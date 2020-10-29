@@ -53,6 +53,7 @@ DOKDIST_URL: http://localhost:18321
 INFOTRYGD_URL: http://localhost:18321
 EGEN_ANSATT_URL: #Mockes ut lokalt
 KODEVERK_URL: #Mockes lokalt
+FOERSTESIDEGENERATOR_URL: #Mockes lokalt
 ARBEIDSFORDELING_V1_URL: #Mockes lokalt
 AAREG_URL: #Mockes lokalt
 
