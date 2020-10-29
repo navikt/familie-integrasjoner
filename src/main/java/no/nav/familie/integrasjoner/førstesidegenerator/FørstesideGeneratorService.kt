@@ -30,7 +30,11 @@ class FørstesideGeneratorService constructor(private val førstesideGeneratorCl
                 overskriftstittel = førsteside.overskriftsTittel,//"Søknad om barnetrygd ved fødsel - NAV 33.00-07, Ettersendelse til søknad om barnetrygd ved fødsel - NAV 33.00-07",
                 dokumentlisteFoersteside = arrayListOf(
                         if (førsteside.maalform == "NN") "Sjå vedlagte brev" else "Se vedlagte brev"
+                ),
+                vedleggsliste = arrayListOf(
+                        if (førsteside.maalform == "NN") "Sjå vedlagte brev" else "Se vedlagte brev"
                 )
+        
         )
         return førstesideGeneratorClient.genererFørsteside(postFoerstesideRequest).foersteside
     }
