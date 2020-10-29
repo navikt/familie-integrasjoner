@@ -62,8 +62,8 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
             vedleggsdokumenter += ArkivDokument(brevkode = metadata.brevkode,
                     dokumentKategori = metadata.dokumentKategori,
                     tittel = arkiverDokumentRequest.førsteside?.overskriftsTittel,
-                    dokumentvarianter = listOf(DokumentVariant(filtype = "Førsteside",
-                            variantformat = "pdf",
+                    dokumentvarianter = listOf(DokumentVariant(filtype = "PDFA",
+                            variantformat = "ARKIV",
                             fysiskDokument = førsteside,
                             filnavn = "førsteside.pdf")))
         }
