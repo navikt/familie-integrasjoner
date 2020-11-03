@@ -48,6 +48,13 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
                                            HttpStatus.INTERNAL_SERVER_ERROR,
                                            e)
                 }
+                sjekkConnectionReset(e) -> {
+                    throw OppslagException("Connection reset mot TPS.",
+                                           "TPS.hentPerson",
+                                           OppslagException.Level.MEDIUM,
+                                           HttpStatus.INTERNAL_SERVER_ERROR,
+                                           e)
+                }
                 else -> {
                     throw OppslagException("Ukjent feil fra TPS",
                                            "TPS.hentPerson",
@@ -115,5 +122,9 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
             }
             else -> false
         }
+    }
+
+    private fun sjekkConnectionReset(e: Exception): Boolean {
+        return e.message != null && e.message!!.contains("Connection reset")
     }
 }
