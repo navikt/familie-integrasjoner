@@ -15,8 +15,6 @@ import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import java.io.PrintWriter
 import java.io.StringWriter
-import java.lang.IllegalStateException
-import java.net.SocketException
 import javax.xml.ws.soap.SOAPFaultException
 
 @Component
@@ -132,19 +130,5 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
         val sw = StringWriter()
         e.printStackTrace(PrintWriter(sw))
         return sw.toString().contains("Connection reset")
-    }
-}
-
-
-fun main() {
-    try {
-        val e = SocketException("Connection reset")
-        val illegalE = IllegalStateException("En feil", e)
-        throw RuntimeException("En stor feil ", illegalE)
-    } catch (e : Exception) {
-        e.printStackTrace()
-        val sw = StringWriter()
-        e.printStackTrace(PrintWriter(sw))
-        println(sw?.toString().contains("Connection reset"))
     }
 }
