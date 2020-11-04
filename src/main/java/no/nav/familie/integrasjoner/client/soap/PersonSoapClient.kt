@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
+import java.io.PrintWriter
+import java.io.StringWriter
 import javax.xml.ws.soap.SOAPFaultException
 
 @Component
@@ -24,7 +26,7 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
     @Retryable(value = [OppslagException::class], maxAttempts = 3, backoff = Backoff(delay = 4000))
     fun hentPersonResponse(request: HentPersonRequest?): HentPersonResponse {
         return try {
-            executeMedMetrics { port.hentPerson(request) }
+            port.hentPerson(request)
         } catch (e: Exception) {
             when {
                 e is HentPersonSikkerhetsbegrensning -> {
@@ -125,6 +127,8 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
     }
 
     private fun sjekkConnectionReset(e: Exception): Boolean {
-        return e.message != null && e.message!!.contains("Connection reset")
+        val sw = StringWriter()
+        e.printStackTrace(PrintWriter(sw))
+        return sw.toString().contains("Connection reset")
     }
 }
