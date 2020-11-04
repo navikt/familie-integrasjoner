@@ -270,6 +270,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
 
     private fun requestOppgaveJson(requestUrl: URI): Oppgave {
         val finnOppgaveResponseDto = getForEntity<FinnOppgaveResponseDto>(requestUrl, httpHeaders())
+        if (finnOppgaveResponseDto == null) error("Response fra FinnOppgave er null")
         if (finnOppgaveResponseDto.oppgaver.isEmpty()) {
             returnerteIngenOppgaver.increment()
             throw OppslagException("Ingen oppgaver funnet for $requestUrl",

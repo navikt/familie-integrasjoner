@@ -30,6 +30,7 @@
     </root>
 
     <logger name="no.nav" level="INFO"/>
+    <logger name="no.nav.familie.http.sts" level="DEBUG"/>
     <logger name="org.apache" level="INFO"/>
     <logger name="org.apache.cxf" level="ERROR"/>
     <logger name="org.apache.http.client.protocol.ResponseProcessCookies" level="ERROR"/>
