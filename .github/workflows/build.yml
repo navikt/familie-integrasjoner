@@ -6,7 +6,7 @@ env:
   IMAGE: docker.pkg.github.com/${{ github.repository }}/familie-integrasjoner:${{ github.sha }}
 jobs:
   deploy-to-dev:
-    if: ${{ github.event.label.name != 'dependencies' }}
+    if: ${{ !contains(github.event.pull_request.labels.*.name,'dependencies') }}
     name: Build, push and deploy to dev-fss
     runs-on: ubuntu-latest
     steps:
