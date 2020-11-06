@@ -21,7 +21,7 @@ class TilgangskontrollServiceTest {
     private val saksbehandler: JwtToken = mockk(relaxed = true)
     private val jwtTokenClaims: JwtTokenClaims = mockk()
     private val egenAnsattService: EgenAnsattService = mockk(relaxed = true)
-    private val tilgangConfig: TilgangConfig = mockk(relaxed = true)
+    private val tilgangConfig: TilgangConfig = TilgangConfig(mockk(relaxed = true))
     private val personopplysningerService: PersonopplysningerService = mockk(relaxed = true)
 
     private val cachedTilgangskontrollService = CachedTilgangskontrollService(egenAnsattService,
