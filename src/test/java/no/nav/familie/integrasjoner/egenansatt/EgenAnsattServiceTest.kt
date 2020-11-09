@@ -1,32 +1,18 @@
 package no.nav.familie.integrasjoner.egenansatt
 
 import io.mockk.every
-import io.mockk.verify
-import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
-import no.nav.familie.integrasjoner.client.soap.EgenAnsattSoapClient
+import io.mockk.mockk
+import no.nav.familie.integrasjoner.client.rest.EgenAnsattRestClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.context.ActiveProfiles
 
-@ActiveProfiles("integrasjonstest", "mock-sts", "mock-egenansatt")
-class EgenAnsattServiceTest : OppslagSpringRunnerTest() {
-
-    @Autowired
-    lateinit var egenAnsattSoapClient: EgenAnsattSoapClient
-
-    @Autowired
-    lateinit var egenAnsattService: EgenAnsattService
+class EgenAnsattServiceTest {
+    private val egenAnsattRestClientMock: EgenAnsattRestClient = mockk()
+    private val egenAnsattService = EgenAnsattService(egenAnsattRestClientMock)
 
     @Test
-    fun `skal cachea erEgenAnsatt`() {
-        every { egenAnsattSoapClient.erEgenAnsatt(any()) } returns true
-        repeat(3) {
-            assertThat(egenAnsattService.erEgenAnsatt("1")).isTrue()
-            egenAnsattService.erEgenAnsatt("2")
-        }
-
-        verify(exactly = 1) { egenAnsattSoapClient.erEgenAnsatt("1") }
-        verify(exactly = 1) { egenAnsattSoapClient.erEgenAnsatt("2") }
+    fun `Er egen ansatt`() {
+        every { egenAnsattRestClientMock.erEgenAnsatt(any()) } returns true
+        assertThat(egenAnsattService.erEgenAnsatt("1")).isTrue
     }
 }

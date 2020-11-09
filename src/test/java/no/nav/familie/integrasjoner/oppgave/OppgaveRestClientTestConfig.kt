@@ -58,7 +58,7 @@ class OppgaveRestClientTestConfig {
             klient.opprettOppgave(any())
         } returns 42
 
-        every { klient.oppdaterOppgave(any()) } just runs
+        every { klient.oppdaterOppgave(any()) } returns response
 
         return klient
     }

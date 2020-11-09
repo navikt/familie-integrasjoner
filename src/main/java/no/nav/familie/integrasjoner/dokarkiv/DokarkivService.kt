@@ -3,9 +3,13 @@ package no.nav.familie.integrasjoner.dokarkiv
 import no.nav.familie.integrasjoner.client.rest.DokarkivLogiskVedleggRestClient
 import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
 import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
-import no.nav.familie.integrasjoner.dokarkiv.client.domene.*
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.ArkivDokument
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.DokumentVariant
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
 import no.nav.familie.integrasjoner.dokarkiv.metadata.DokarkivMetadata
 import no.nav.familie.integrasjoner.felles.MDCOperations
+import no.nav.familie.integrasjoner.førstesidegenerator.FørstesideGeneratorService
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.kontrakter.felles.dokarkiv.*
 import no.nav.familie.kontrakter.felles.oppgave.Tema
@@ -16,7 +20,8 @@ import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentRequest as Dep
 class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
                       private val personopplysningerService: PersonopplysningerService,
                       private val dokarkivMetadata: DokarkivMetadata,
-                      private val dokarkivLogiskVedleggRestClient: DokarkivLogiskVedleggRestClient) {
+                      private val dokarkivLogiskVedleggRestClient: DokarkivLogiskVedleggRestClient,
+                      private val førstesideGeneratorService: FørstesideGeneratorService) {
 
     fun ferdistillJournalpost(journalpost: String, journalførendeEnhet: String) {
         dokarkivRestClient.ferdigstillJournalpost(journalpost, journalførendeEnhet)
@@ -41,13 +46,27 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
 
         val metadata = dokarkivMetadata.getMetadata(arkiverDokumentRequest.hoveddokumentvarianter[0])
         val hoveddokument = mapHoveddokument(arkiverDokumentRequest.hoveddokumentvarianter)
-        val vedleggsdokumenter = arkiverDokumentRequest.vedleggsdokumenter.map(this::mapTilArkivdokument)
+        var vedleggsdokumenter = arkiverDokumentRequest.vedleggsdokumenter.map(this::mapTilArkivdokument)
         val jpsak: Sak? = if (arkiverDokumentRequest.fagsakId != null)
             Sak(fagsakId = arkiverDokumentRequest.fagsakId,
                 sakstype = "FAGSAK",
                 fagsaksystem = metadata.fagsakSystem) else null
 
         val navn = hentNavnForFnr(fnr = arkiverDokumentRequest.fnr, behandlingstema = metadata.tema)
+
+        //førsteside
+        val førsteside: ByteArray? = if (arkiverDokumentRequest.førsteside != null)
+            førstesideGeneratorService.genererForside(arkiverDokumentRequest.førsteside!!) else null
+
+        if(førsteside != null) {
+            vedleggsdokumenter += ArkivDokument(brevkode = metadata.brevkode,
+                    dokumentKategori = metadata.dokumentKategori,
+                    tittel = arkiverDokumentRequest.førsteside?.overskriftsTittel,
+                    dokumentvarianter = listOf(DokumentVariant(filtype = "PDFA",
+                            variantformat = "ARKIV",
+                            fysiskDokument = førsteside,
+                            filnavn = "førsteside.pdf")))
+        }
 
         return OpprettJournalpostRequest(journalpostType = metadata.journalpostType,
                                          behandlingstema = metadata.behandlingstema,

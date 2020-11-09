@@ -14,7 +14,7 @@ object OpprettInfotrygdSakMapper {
         val asboRequest = ASBOGOSYSBestillInfotrygdSakRequest()
         asboRequest.fagomrade = opprettInfotrygdSakRequest.fagomrade
         asboRequest.fnr = opprettInfotrygdSakRequest.fnr
-        asboRequest.motattdato = GregorianCalendar.from((opprettInfotrygdSakRequest.motattdato ?: LocalDate.now())
+        asboRequest.motattdato = GregorianCalendar.from((opprettInfotrygdSakRequest.mottattdato ?: LocalDate.now())
                                                                 .atStartOfDay(ZoneId.systemDefault()))
         asboRequest.mottakerOrganisasjonsEnhetsId = opprettInfotrygdSakRequest.mottakerOrganisasjonsEnhetsId
         asboRequest.oppgaveId = opprettInfotrygdSakRequest.oppgaveId

@@ -23,6 +23,6 @@ public class IntegrasjonConfig {
 
         final var stsFullUrl = URI.create(stsUrl + "?grant_type=client_credentials&scope=openid");
 
-        return new StsRestClient(objectMapper, stsFullUrl, stsUsername, stsPassword);
+        return new StsRestClient(objectMapper, stsFullUrl, stsUsername, stsPassword, null);
     }
 }

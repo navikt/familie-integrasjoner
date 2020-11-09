@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
+import java.io.PrintWriter
+import java.io.StringWriter
 import javax.xml.ws.soap.SOAPFaultException
 
 @Component
@@ -24,7 +26,7 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
     @Retryable(value = [OppslagException::class], maxAttempts = 3, backoff = Backoff(delay = 4000))
     fun hentPersonResponse(request: HentPersonRequest?): HentPersonResponse {
         return try {
-            executeMedMetrics { port.hentPerson(request) }
+            port.hentPerson(request)
         } catch (e: Exception) {
             when {
                 e is HentPersonSikkerhetsbegrensning -> {
@@ -45,6 +47,13 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
                     throw OppslagException("Unexpected EOF in prolog",
                                            "TPS.hentPerson",
                                            OppslagException.Level.LAV,
+                                           HttpStatus.INTERNAL_SERVER_ERROR,
+                                           e)
+                }
+                sjekkConnectionReset(e) -> {
+                    throw OppslagException("Connection reset mot TPS.",
+                                           "TPS.hentPerson",
+                                           OppslagException.Level.MEDIUM,
                                            HttpStatus.INTERNAL_SERVER_ERROR,
                                            e)
                 }
@@ -115,5 +124,11 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
             }
             else -> false
         }
+    }
+
+    private fun sjekkConnectionReset(e: Exception): Boolean {
+        val sw = StringWriter()
+        e.printStackTrace(PrintWriter(sw))
+        return sw.toString().contains("Connection reset")
     }
 }

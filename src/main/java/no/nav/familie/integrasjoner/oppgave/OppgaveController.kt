@@ -20,7 +20,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     @GetMapping(path = ["/{oppgaveId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun hentOppgave(@PathVariable(name = "oppgaveId") oppgaveId: String)
             : ResponseEntity<Ressurs<Oppgave>> {
-        val oppgave = oppgaveService.hentOppgave(oppgaveId)
+        val oppgave = oppgaveService.hentOppgave(oppgaveId.toLong())
         return ResponseEntity.ok().body(success(oppgave, "Hent Oppgave OK"))
     }
 
@@ -88,6 +88,12 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
     }
 
+    @PatchMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/{oppgaveId}/oppdater"])
+    fun patchOppgave(@RequestBody oppgave: Oppgave): ResponseEntity<Ressurs<OppgaveResponse>> {
+        val oppgaveId = oppgaveService.patchOppgave(oppgave)
+        return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
+    }
+
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
     @Deprecated("Bruk v2-endepunkt")
     fun opprettOppgaveV1(@RequestBody oppgave: OpprettOppgave): ResponseEntity<Ressurs<OppgaveResponse>> {
@@ -136,7 +142,6 @@ data class DeprecatedFinnOppgaveResponseDto(val antallTreffTotalt: Long,
 data class DeprecatedOppgave(val id: Long? = null,
                              val tildeltEnhetsnr: String? = null,
                              val endretAvEnhetsnr: String? = null,
-                             val eksisterendeOppgaveId: String? = null,
                              val opprettetAvEnhetsnr: String? = null,
                              val journalpostId: String? = null,
                              val journalpostkilde: String? = null,

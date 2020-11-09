@@ -52,8 +52,8 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         return requestOppgaveJson(requestUrl)
     }
 
-    fun finnOppgaveMedId(oppgaveId: String): Oppgave {
-        return getForEntity(requestUrl(oppgaveId.toLong()), httpHeaders())
+    fun finnOppgaveMedId(oppgaveId: Long): Oppgave {
+        return getForEntity(requestUrl(oppgaveId), httpHeaders())
     }
 
     @Deprecated("Bruk finnOppgaver med FinnOppgaveRequest")
@@ -210,13 +210,13 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         return FinnOppgaveResponseDto(oppgaverOgAntall.antallTreffTotalt, oppgaver)
     }
 
-    fun oppdaterOppgave(patchDto: Oppgave) {
+    fun oppdaterOppgave(patchDto: Oppgave): Oppgave? {
         return Result.runCatching {
             patchForEntity<Oppgave>(requestUrl(patchDto.id ?: error("Kan ikke finne oppgaveId på oppgaven")),
                                     patchDto,
                                     httpHeaders())
         }.fold(
-                onSuccess = {},
+                onSuccess = { it },
                 onFailure = {
                     var feilmelding = "Feil ved oppdatering av oppgave for ${patchDto.id}."
                     if (it is HttpStatusCodeException) {
@@ -270,6 +270,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
 
     private fun requestOppgaveJson(requestUrl: URI): Oppgave {
         val finnOppgaveResponseDto = getForEntity<FinnOppgaveResponseDto>(requestUrl, httpHeaders())
+        if (finnOppgaveResponseDto == null) error("Response fra FinnOppgave er null")
         if (finnOppgaveResponseDto.oppgaver.isEmpty()) {
             returnerteIngenOppgaver.increment()
             throw OppslagException("Ingen oppgaver funnet for $requestUrl",
