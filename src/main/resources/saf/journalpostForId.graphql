@@ -8,6 +8,7 @@ query Journalpost($journalpostId: String!) {
         behandlingstema
         sak { arkivsaksystem arkivsaksnummer datoOpprettet fagsakId fagsaksystem }
         bruker { id type }
+        avsenderMottaker { id type navn land erLikBruker }
         journalforendeEnhet
         kanal
         dokumenter { dokumentInfoId tittel brevkode dokumentstatus dokumentvarianter { variantformat } logiskeVedlegg { logiskVedleggId tittel } }
