@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.config
 
+import no.nav.inf.GOSYSInfotrygdSak
 import no.nav.sbl.dialogarena.common.cxf.CXFClient
-import no.nav.tjeneste.pip.egen.ansatt.v1.EgenAnsattV1
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import org.springframework.beans.factory.annotation.Value
@@ -14,7 +14,7 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
                     @Value("\${CREDENTIAL_PASSWORD}") systemuserPwd: String,
                     @Value("\${PERSON_V3_URL}") private val personV3Url: String,
                     @Value("\${ARBEIDSFORDELING_V1_URL}") private val arbeidsfordelingUrl: String,
-                    @Value("\${EGEN_ANSATT_V1_URL}") private val egenAnsattUrl: String) {
+                    @Value("\${GOSYS_INFOTRYGDSAK_URL}") private val gosysInfotrygdSakUrl: String) {
 
     init {
         System.setProperty("no.nav.modig.security.sts.url", stsUrl)
@@ -31,9 +31,9 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
                     .build()
 
     @Bean
-    fun egenAnsattV1port(): EgenAnsattV1 =
-            CXFClient(EgenAnsattV1::class.java)
-                    .address(egenAnsattUrl)
+    fun gosysInfotrygdsakPort(): GOSYSInfotrygdSak =
+            CXFClient(GOSYSInfotrygdSak::class.java)
+                    .address(gosysInfotrygdSakUrl)
                     .configureStsForSystemUser()
                     .build()
 

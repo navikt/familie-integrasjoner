@@ -14,12 +14,13 @@ import java.time.format.DateTimeFormatter
 @Service @ApplicationScope
 class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClient) {
 
+    @Deprecated("Bruk finnOppgaver med FinnOppgaveRequest")
     fun finnOppgaver(tema: String,
                      behandlingstema: String?,
                      oppgaveType: String?,
                      enhet: String?,
                      saksbehandler: String?,
-                     journalpostId: String?): List<Oppgave> {
+                     journalpostId: String?): List<DeprecatedOppgave> {
         return oppgaveRestClient.finnOppgaver(tema, behandlingstema, oppgaveType, enhet, saksbehandler, journalpostId)
     }
 
@@ -27,19 +28,25 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         return oppgaveRestClient.finnOppgaver(finnOppgaveRequest)
     }
 
-    fun finnOppgaverV2(deprecatedFinnOppgaveRequest: DeprecatedFinnOppgaveRequest): FinnOppgaveResponseDto {
+    @Deprecated("Bruk finnOppgaver")
+    fun finnOppgaverV2(deprecatedFinnOppgaveRequest: DeprecatedFinnOppgaveRequest): DeprecatedFinnOppgaveResponseDto {
         return oppgaveRestClient.finnOppgaverV2(deprecatedFinnOppgaveRequest)
     }
 
-    fun hentOppgave(oppgaveId: String): Oppgave {
+    @Deprecated("Bruk finnOppgaver")
+    fun finnOppgaverV3(finnOppgaveRequest: FinnOppgaveRequest): DeprecatedFinnOppgaveResponseDto {
+        return oppgaveRestClient.finnOppgaverV3(finnOppgaveRequest)
+    }
+
+    fun hentOppgave(oppgaveId: Long): Oppgave {
         return oppgaveRestClient.finnOppgaveMedId(oppgaveId)
     }
 
     fun oppdaterOppgave(request: Oppgave): Long {
-        val oppgave: Oppgave = if (StringUtils.nullOrEmpty(request.eksisterendeOppgaveId)) {
+        val oppgave: Oppgave = if (request.id == null) {
             oppgaveRestClient.finnOppgave(request)
         } else {
-            oppgaveRestClient.finnOppgaveMedId(request.eksisterendeOppgaveId!!)
+            oppgaveRestClient.finnOppgaveMedId(request.id!!)
         }
         if (oppgave.status === StatusEnum.FERDIGSTILT) {
             LOG.info("Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId={} journalpostId={} oppgaveId={}",
@@ -57,8 +64,12 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         return oppgave.id!!
     }
 
+    fun patchOppgave(patchOppgave: Oppgave): Long {
+        return oppgaveRestClient.oppdaterOppgave(patchOppgave)?.id!!
+    }
+
     fun fordelOppgave(oppgaveId: Long, saksbehandler: String): Long {
-        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId.toString())
+        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
         if (oppgave.status === StatusEnum.FERDIGSTILT) {
             error("Kan ikke fordele oppgave med id $oppgaveId som allerede er ferdigstilt")
@@ -73,7 +84,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
     }
 
     fun tilbakestillFordelingPåOppgave(oppgaveId: Long): Long {
-        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId.toString())
+        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
         if (oppgave.status === StatusEnum.FERDIGSTILT) {
             error("Kan ikke tilbakestille fordeling på oppgave med id $oppgaveId som allerede er ferdigstilt")
@@ -88,7 +99,8 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         return oppgave.id!!
     }
 
-    fun opprettOppgave(request: OpprettOppgave): Long {
+    @Deprecated("Bruk opprettOppgave")
+    fun opprettOppgaveV1(request: OpprettOppgave): Long {
         val oppgave = Oppgave(
                 aktoerId = if (request.ident?.type == IdentType.Aktør) request.ident!!.ident else null,
                 orgnr = if (request.ident?.type == IdentType.Organisasjon) request.ident!!.ident else null,
@@ -106,7 +118,27 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
                 aktivDato = request.aktivFra.format(DateTimeFormatter.ISO_DATE),
                 oppgavetype = request.oppgavetype.value,
                 beskrivelse = request.beskrivelse,
-                eksisterendeOppgaveId = null,
+                behandlingstype = request.behandlingstype
+        )
+
+        return oppgaveRestClient.opprettOppgave(oppgave)
+    }
+
+    fun opprettOppgave(request: OpprettOppgaveRequest): Long {
+        val oppgave = Oppgave(
+                identer = if (request.ident != null) listOf(request.ident!!) else null,
+                aktoerId = if (request.ident?.gruppe == IdentGruppe.AKTOERID) request.ident!!.ident else null,
+                orgnr = if (request.ident?.gruppe == IdentGruppe.ORGNR) request.ident!!.ident else null,
+                saksreferanse = request.saksId,
+                journalpostId = request.journalpostId,
+                prioritet = request.prioritet,
+                tema = request.tema,
+                tildeltEnhetsnr = request.enhetsnummer,
+                behandlingstema = request.behandlingstema,
+                fristFerdigstillelse = request.fristFerdigstillelse.format(DateTimeFormatter.ISO_DATE),
+                aktivDato = request.aktivFra.format(DateTimeFormatter.ISO_DATE),
+                oppgavetype = request.oppgavetype.value,
+                beskrivelse = request.beskrivelse,
                 behandlingstype = request.behandlingstype
         )
 
@@ -114,7 +146,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
     }
 
     fun ferdigstill(oppgaveId: Long) {
-        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId.toString())
+        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
         when (oppgave.status) {
             StatusEnum.OPPRETTET, StatusEnum.AAPNET, StatusEnum.UNDER_BEHANDLING -> {
@@ -137,6 +169,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
     }
 
     companion object {
+
         private val LOG = LoggerFactory.getLogger(OppgaveService::class.java)
     }
 }

@@ -23,7 +23,11 @@ class InfotrygdRestClient(@Qualifier("jwtBearer") private val restTemplate: Rest
         val httpHeaders = org.springframework.http.HttpHeaders().apply {
             add("fnr", fnr)
         }
-        return getForEntity(harKontantstøtteUri, httpHeaders)
+        val response =  getForEntity<AktivKontantstøtteInfo>(harKontantstøtteUri, httpHeaders)
+        if (response == null) {
+            error("Response fra infotrygd-kontantstøtte er null")
+        }
+        return response
     }
 
     companion object {

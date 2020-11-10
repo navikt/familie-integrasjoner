@@ -19,6 +19,7 @@ public class DevLauncher {
                           "mock-dokdist",
                           "mock-egenansatt",
                           "mock-infotrygd",
+                          "mock-infotrygdsak",
                           "mock-medlemskap",
                           "mock-oppgave",
                           "mock-personopplysninger",

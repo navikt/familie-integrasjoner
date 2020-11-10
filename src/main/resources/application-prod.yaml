@@ -63,11 +63,12 @@ AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 SECURITYTOKENSERVICE_URL: https://sts.adeo.no/SecurityTokenServiceProvider/
 AKTOERID_URL: https://app.adeo.no/aktoerregister
 PERSON_V3_URL: https://wasapp.adeo.no/tpsws/ws/Person/v3
-EGEN_ANSATT_V1_URL: https://wasapp.adeo.no/tpsws/EgenAnsatt_v1
 DOKARKIV_V1_URL: http://dokarkiv
 MEDL2_URL: https://app.adeo.no/medl2
 SAF_URL: http://saf
 KODEVERK_URL: http://kodeverk
+FOERSTESIDEGENERATOR_URL: http://foerstesidegenerator
+EGEN_ANSATT_URL: https://skjermede-personer-pip.nais.adeo.no
 DOKDIST_URL: http://dokdistfordeling
 ARBEIDSFORDELING_V1_URL: https://app.adeo.no/norg2/ws/Arbeidsfordeling/v1
 PDL_URL: http://pdl-api

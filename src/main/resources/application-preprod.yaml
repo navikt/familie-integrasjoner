@@ -56,9 +56,11 @@ DOKARKIV_V1_URL: http://dokarkiv.q2
 MEDL2_URL: https://app-q2.adeo.no/medl2
 SAF_URL: http://saf.q2
 OPPGAVE_URL: http://oppgave.q2
-EGEN_ANSATT_V1_URL: https://wasapp-q2.adeo.no/tpsws/EgenAnsatt_v1
 KODEVERK_URL: http://kodeverk
+FOERSTESIDEGENERATOR_URL: https://foerstesidegenerator-q1.dev.adeo.no
+EGEN_ANSATT_URL: https://skjermede-personer-pip.nais.preprod.local
 DOKDIST_URL: http://dokdistfordeling.q2
 PDL_URL: http://pdl-api
 ARBEIDSFORDELING_V1_URL: https://app-q1.adeo.no/norg2/ws/Arbeidsfordeling/v1
 AAREG_URL: https://modapp-q2.adeo.no/aareg-services/api
+GOSYS_INFOTRYGDSAK_URL: https://tjenestebuss-q2.adeo.no/nav-cons-sak-gosys-3.0.0Web/sca/GOSYSInfotrygdSakWSEXP

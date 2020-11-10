@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.oppgave
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.oppgave.*
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import javax.validation.constraints.Pattern
 
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
@@ -18,7 +20,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     @GetMapping(path = ["/{oppgaveId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun hentOppgave(@PathVariable(name = "oppgaveId") oppgaveId: String)
             : ResponseEntity<Ressurs<Oppgave>> {
-        val oppgave = oppgaveService.hentOppgave(oppgaveId)
+        val oppgave = oppgaveService.hentOppgave(oppgaveId.toLong())
         return ResponseEntity.ok().body(success(oppgave, "Hent Oppgave OK"))
     }
 
@@ -30,7 +32,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
                      @RequestParam("enhet", required = false) enhet: String?,
                      @RequestParam("saksbehandler", required = false) saksbehandler: String?,
                      @RequestParam("journalpostId", required = false) journalpostId: String?)
-            : ResponseEntity<Ressurs<List<Oppgave>>> {
+            : ResponseEntity<Ressurs<List<DeprecatedOppgave>>> {
         val oppgaver = oppgaveService.finnOppgaver(tema,
                                                    behandlingstema,
                                                    oppgavetype,
@@ -43,7 +45,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     @PostMapping(path = ["/v2"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     @Deprecated("Bruk v3 endepunktet")
     fun finnOppgaverV2(@RequestBody deprecatedFinnOppgaveRequest: DeprecatedFinnOppgaveRequest)
-            : ResponseEntity<Ressurs<FinnOppgaveResponseDto>> {
+            : ResponseEntity<Ressurs<DeprecatedFinnOppgaveResponseDto>> {
         return when (deprecatedFinnOppgaveRequest.tema) {
             null -> ResponseEntity.ok().body(Ressurs.failure("påkrevd felt 'tema' mangler"))
             else -> ResponseEntity.ok()
@@ -52,7 +54,13 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 
     @GetMapping(path = ["/v3"])
-    fun finnOppgaverV3(finnOppgaveRequest: FinnOppgaveRequest): Ressurs<FinnOppgaveResponseDto> {
+    @Deprecated("Bruk v4 endepunktet")
+    fun finnOppgaverV3(finnOppgaveRequest: FinnOppgaveRequest): Ressurs<DeprecatedFinnOppgaveResponseDto> {
+        return success(oppgaveService.finnOppgaverV3(finnOppgaveRequest))
+    }
+
+    @PostMapping(path = ["/v4"])
+    fun finnOppgaverV4(@RequestBody finnOppgaveRequest: FinnOppgaveRequest): Ressurs<FinnOppgaveResponseDto> {
         return success(oppgaveService.finnOppgaver(finnOppgaveRequest))
     }
 
@@ -80,8 +88,22 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
     }
 
+    @PatchMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/{oppgaveId}/oppdater"])
+    fun patchOppgave(@RequestBody oppgave: Oppgave): ResponseEntity<Ressurs<OppgaveResponse>> {
+        val oppgaveId = oppgaveService.patchOppgave(oppgave)
+        return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
+    }
+
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun opprettOppgave(@RequestBody oppgave: OpprettOppgave): ResponseEntity<Ressurs<OppgaveResponse>> {
+    @Deprecated("Bruk v2-endepunkt")
+    fun opprettOppgaveV1(@RequestBody oppgave: OpprettOppgave): ResponseEntity<Ressurs<OppgaveResponse>> {
+        val oppgaveId = oppgaveService.opprettOppgaveV1(oppgave)
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(success(OppgaveResponse(oppgaveId = oppgaveId), "Opprett oppgave OK"))
+    }
+
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/opprett"])
+    fun opprettOppgaveV2(@RequestBody oppgave: OpprettOppgaveRequest): ResponseEntity<Ressurs<OppgaveResponse>> {
         val oppgaveId = oppgaveService.opprettOppgave(oppgave)
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(success(OppgaveResponse(oppgaveId = oppgaveId), "Opprett oppgave OK"))
@@ -110,3 +132,42 @@ class DeprecatedFinnOppgaveRequest(val tema: String? = null,
                                    val aktivTomDato: String? = null,
                                    val limit: Long? = null,
                                    val offset: Long? = null)
+
+@Deprecated("Benytt kontrakt")
+data class DeprecatedFinnOppgaveResponseDto(val antallTreffTotalt: Long,
+                                            val oppgaver: List<DeprecatedOppgave>)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Deprecated("Benytt kontrakt")
+data class DeprecatedOppgave(val id: Long? = null,
+                             val tildeltEnhetsnr: String? = null,
+                             val endretAvEnhetsnr: String? = null,
+                             val opprettetAvEnhetsnr: String? = null,
+                             val journalpostId: String? = null,
+                             val journalpostkilde: String? = null,
+                             val behandlesAvApplikasjon: String? = null,
+                             val saksreferanse: String? = null,
+                             val bnr: String? = null,
+                             val samhandlernr: String? = null,
+                             @field:Pattern(regexp = "[0-9]{13}")
+                             val aktoerId: String? = null,
+                             val orgnr: String? = null,
+                             val tilordnetRessurs: String? = null,
+                             val beskrivelse: String? = null,
+                             val temagruppe: String? = null,
+                             val tema: Tema? = null,
+                             val behandlingstema: String? = null,
+                             val oppgavetype: String? = null,
+                             val behandlingstype: String? = null,
+                             val versjon: Int? = null,
+                             val mappeId: Long? = null,
+                             val fristFerdigstillelse: String? = null,
+                             val aktivDato: String? = null,
+                             val opprettetTidspunkt: String? = null,
+                             val opprettetAv: String? = null,
+                             val endretAv: String? = null,
+                             val ferdigstiltTidspunkt: String? = null,
+                             val endretTidspunkt: String? = null,
+                             val prioritet: OppgavePrioritet? = null,
+                             val status: StatusEnum? = null,
+                             private var metadata: MutableMap<String, String>? = null)
