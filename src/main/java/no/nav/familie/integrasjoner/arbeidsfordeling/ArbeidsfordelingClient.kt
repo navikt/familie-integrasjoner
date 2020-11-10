@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.arbeidsfordeling
 import no.nav.familie.http.client.AbstractSoapClient
 import no.nav.familie.http.client.Pingable
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.kontrakter.felles.arbeidsfordeling.Enhet
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.ArbeidsfordelingKriterier
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Diskresjonskoder
@@ -57,7 +58,4 @@ class ArbeidsfordelingClient(private val arbeidsfordelingV1: ArbeidsfordelingV1)
 
 
     }
-
-    data class Enhet(val enhetId: String, val enhetNavn: String)
-
 }
