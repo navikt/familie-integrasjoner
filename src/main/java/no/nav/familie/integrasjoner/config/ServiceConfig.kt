@@ -4,14 +4,20 @@ import no.nav.inf.GOSYSInfotrygdSak
 import no.nav.sbl.dialogarena.common.cxf.CXFClient
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
+import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor
+import org.apache.wss4j.common.ext.WSPasswordCallback
+import org.apache.wss4j.dom.WSConstants
+import org.apache.wss4j.dom.handler.WSHandlerConstants
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.stereotype.Component
+import javax.security.auth.callback.CallbackHandler
 
 @Configuration
 class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
-                    @Value("\${CREDENTIAL_USERNAME}") systemuserUsername: String,
-                    @Value("\${CREDENTIAL_PASSWORD}") systemuserPwd: String,
+                    @Value("\${CREDENTIAL_USERNAME}") private val systemuserUsername: String,
+                    @Value("\${CREDENTIAL_PASSWORD}") private val systemuserPwd: String,
                     @Value("\${PERSON_V3_URL}") private val personV3Url: String,
                     @Value("\${ARBEIDSFORDELING_V1_URL}") private val arbeidsfordelingUrl: String,
                     @Value("\${GOSYS_INFOTRYGDSAK_URL}") private val gosysInfotrygdSakUrl: String) {
@@ -34,7 +40,7 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
     fun gosysInfotrygdsakPort(): GOSYSInfotrygdSak =
             CXFClient(GOSYSInfotrygdSak::class.java)
                     .address(gosysInfotrygdSakUrl)
-                    .configureStsForSystemUser()
+                    .withOutInterceptor(WSS4JOutInterceptor(SecurityProps(systemuserUsername, systemuserPwd)))
                     .build()
 
     @Bean
@@ -44,4 +50,19 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
                     .configureStsForSystemUser()
                     .build()
 
+}
+
+
+class SecurityProps(user: String,
+                    password: String) : HashMap<String, Any>() {
+
+    init {
+        this[WSHandlerConstants.ACTION] = WSHandlerConstants.USERNAME_TOKEN
+        this[WSHandlerConstants.USER] = user
+        this[WSHandlerConstants.PASSWORD_TYPE] = WSConstants.PW_TEXT
+        this[WSHandlerConstants.PW_CALLBACK_REF] = CallbackHandler { callbacks ->
+            val passwordCallback = callbacks[0] as WSPasswordCallback
+            passwordCallback.password = password
+        }
+    }
 }
