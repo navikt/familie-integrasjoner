@@ -10,7 +10,7 @@ query Journalpost($journalpostId: String!) {
         bruker { id type }
         journalforendeEnhet
         kanal
-        dokumenter { dokumentInfoId tittel brevkode dokumentstatus dokumentvarianter { variantformat } logiskeVedlegg { logiskVedleggId tittel } }
+        dokumenter { dokumentInfoId tittel brevkode dokumentstatus dokumentvarianter { variantformat filnavn } logiskeVedlegg { logiskVedleggId tittel } }
         relevanteDatoer { dato datotype }
     }
 }
