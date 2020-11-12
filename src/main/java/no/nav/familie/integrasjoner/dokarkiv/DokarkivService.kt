@@ -56,7 +56,7 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
 
         //førsteside
         val førsteside: ByteArray? = if (arkiverDokumentRequest.førsteside != null)
-            førstesideGeneratorService.genererForside(arkiverDokumentRequest.førsteside!!) else null
+            førstesideGeneratorService.genererForside(arkiverDokumentRequest.førsteside!!, arkiverDokumentRequest.fnr) else null
 
         if(førsteside != null) {
             vedleggsdokumenter += ArkivDokument(brevkode = metadata.brevkode,
