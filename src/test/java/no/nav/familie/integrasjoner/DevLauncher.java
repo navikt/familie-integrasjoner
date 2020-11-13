@@ -28,8 +28,9 @@ public class DevLauncher {
                           "mock-kodeverk",
                           "mock-arbeidsfordeling",
                           "mock-pdl",
-                          "mock-aareg"
-                ).build();
+                          "mock-aareg",
+                          "mock-sak"
+                          ).build();
         app.run(args);
     }
 }
