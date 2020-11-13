@@ -29,7 +29,7 @@ class SkyggesakControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `skal opprette skyggesak i sak`() {
         val request = Skyggesak("BAR", "BA", "123", "321")
-        stubFor(post(anyUrl()).willReturn(okJson(objectMapper.writeValueAsString(request.copy(id = 121212)))))
+        stubFor(post(anyUrl()).willReturn(okJson(objectMapper.writeValueAsString(request))))
 
         val response =
                 restTemplate.postForObject<Ressurs<List<Nothing>>>(localhost("/api/skyggesak/v1"),

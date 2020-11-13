@@ -33,7 +33,7 @@ class SkyggesakRestClient(@Value("\${SKYGGE_SAK_URL}") private val skyggesakUrl:
         } catch (e: HttpClientErrorException.Conflict) {
             logger.info("Skyggesak allerede opprettet for fagsak ${request.fagsakNr}")
         } catch (e: RestClientException) {
-            var feilmelding = "Feil ved oppretting av skyggesak i sak."
+            var feilmelding = "Feil ved oppretting av skyggesak i sak. url=$sakUri"
             if (e is HttpStatusCodeException && e.responseBodyAsString.isNotEmpty()) {
                 feilmelding += " Response fra Sak = ${e.responseBodyAsString}"
             }
