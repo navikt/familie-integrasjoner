@@ -1,10 +1,7 @@
 package no.nav.familie.integrasjoner.førstesidegenerator
 
 import no.nav.familie.integrasjoner.client.rest.FørstesideGeneratorClient
-import no.nav.familie.integrasjoner.førstesidegenerator.domene.Adresse
-import no.nav.familie.integrasjoner.førstesidegenerator.domene.Foerstesidetype
-import no.nav.familie.integrasjoner.førstesidegenerator.domene.PostFoerstesideRequest
-import no.nav.familie.integrasjoner.førstesidegenerator.domene.Spraakkode
+import no.nav.familie.integrasjoner.førstesidegenerator.domene.*
 import no.nav.familie.kontrakter.felles.dokarkiv.Førsteside
 import org.springframework.stereotype.Service
 import org.springframework.web.context.annotation.ApplicationScope
@@ -14,7 +11,7 @@ import org.springframework.web.context.annotation.ApplicationScope
 @ApplicationScope
 class FørstesideGeneratorService constructor(private val førstesideGeneratorClient: FørstesideGeneratorClient) {
 
-    fun genererForside(førsteside: Førsteside): ByteArray? {
+    fun genererForside(førsteside: Førsteside, brukerId: String): ByteArray? {
         val postFoerstesideRequest = PostFoerstesideRequest(
                 spraakkode = Spraakkode.valueOf(førsteside.maalform),
                 adresse = Adresse (
@@ -22,7 +19,10 @@ class FørstesideGeneratorService constructor(private val førstesideGeneratorCl
                         adresselinje2 = "Postboks 1400",
                         postnummer = "0109",
                         poststed = "OSLO"
-
+                ),
+                bruker = Bruker (
+                        brukerId = brukerId,
+                        brukerType = BrukerType.PERSON
                 ),
                 navSkjemaId = førsteside.navSkjemaId, //NAV 33.00-07
                 foerstesidetype = Foerstesidetype.ETTERSENDELSE,

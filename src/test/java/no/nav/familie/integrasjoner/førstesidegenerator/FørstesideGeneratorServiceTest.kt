@@ -31,7 +31,7 @@ class FørstesideGeneratorServiceTest {
 
         val førsteside = Førsteside(maalform = "NB",navSkjemaId = "123",overskriftsTittel = "Testoverskrift")
 
-        val resultat = førstesideGeneratorService.genererForside(førsteside)
+        val resultat = førstesideGeneratorService.genererForside(førsteside, "123")
 
 
         Assertions.assertThat(resultat?.size == hentBytes().size)
