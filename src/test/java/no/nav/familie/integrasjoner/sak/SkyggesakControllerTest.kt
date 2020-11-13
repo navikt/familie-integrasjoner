@@ -36,7 +36,7 @@ class SkyggesakControllerTest : OppslagSpringRunnerTest() {
                                                                    HttpEntity(request,
                                                                               headers))
 
-        verify(postRequestedFor(urlEqualTo("/v1/saker"))
+        verify(postRequestedFor(urlEqualTo("/api/v1/saker"))
                        .withRequestBody(equalToJson(objectMapper.writeValueAsString(request)))
                        .withHeader("X-Correlation-ID", equalTo("callIdTest")))
 

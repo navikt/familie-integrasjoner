@@ -23,7 +23,7 @@ class SkyggesakRestClient(@Value("\${SKYGGE_SAK_URL}") private val skyggesakUrl:
     : AbstractPingableRestClient(restTemplate, "skyggesak.sak") {
 
     override val pingUri: URI = URI.create("$skyggesakUrl/internal/alive")
-    private val sakUri = URI.create("$skyggesakUrl/v1/saker")
+    private val sakUri = URI.create("$skyggesakUrl/api/v1/saker")
 
     private val logger = LoggerFactory.getLogger(SkyggesakRestClient::class.java)
 
