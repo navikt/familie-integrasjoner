@@ -105,7 +105,7 @@ class DokarkivServiceTest {
     @Test fun `skal generere førsteside hvis førsteside er med i request`() {
         val slot = slot<OpprettJournalpostRequest>()
 
-        every { førstesideGeneratorService.genererForside(any()) }
+        every { førstesideGeneratorService.genererForside(any(), any()) }
                 .answers { PDF_DOK }
 
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
@@ -138,7 +138,7 @@ class DokarkivServiceTest {
     @Test fun `skal ikke generere førsteside hvis førsteside mangler i request`() {
         val slot = slot<OpprettJournalpostRequest>()
 
-        every { førstesideGeneratorService.genererForside(any()) }
+        every { førstesideGeneratorService.genererForside(any(), any()) }
                 .answers { PDF_DOK }
 
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
