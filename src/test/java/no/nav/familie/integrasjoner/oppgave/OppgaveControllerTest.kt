@@ -516,6 +516,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                                                     Oppgavetype.BehandleSak,
                                                     "enhet",
                                                     "sb",
+                                                    null,
                                                     "jpId",
                                                     "tilordnetRessurs",
                                                     true,
