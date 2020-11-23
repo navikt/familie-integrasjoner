@@ -13,6 +13,6 @@ object BarnetrygdHenleggelseMetadata : DokumentMetadata {
     override val kanal: String? = null
     override val dokumentTypeId: String = "BARNETRYGD_HENLEGGE_TRUKKET_SØKNAD"
     override val tittel: String? = "Brev for bekreftelse av trukket søknad"
-    override val brevkode: String? = "henlegge-trukket-søknad"
+    override val brevkode: String? = "henlegge-trukket-soknad"
     override val dokumentKategori: String = "B"
 }
