@@ -11,6 +11,7 @@ import org.apache.wss4j.dom.handler.WSHandlerConstants
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import javax.security.auth.callback.CallbackHandler
 import javax.xml.namespace.QName
 
@@ -37,6 +38,7 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
                     .build()
 
     @Bean
+    @Profile("!integrasjonstest")
     fun gosysInfotrygdsakPort(): GOSYSInfotrygdSak =
             CXFClient(GOSYSInfotrygdSak::class.java)
                     .address(gosysInfotrygdSakUrl)
