@@ -11,8 +11,8 @@ import org.apache.wss4j.dom.handler.WSHandlerConstants
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.stereotype.Component
 import javax.security.auth.callback.CallbackHandler
+import javax.xml.namespace.QName
 
 @Configuration
 class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
@@ -40,6 +40,13 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
     fun gosysInfotrygdsakPort(): GOSYSInfotrygdSak =
             CXFClient(GOSYSInfotrygdSak::class.java)
                     .address(gosysInfotrygdSakUrl)
+                    .wsdl("cons-sak-gosys-tjenestespesifikasjon/wsdl/cons-sak-gosys/" +
+                          "wsdl/nav-cons-sak-gosys-3.0.0_GOSYSInfotrygdSakWSEXP.wsdl")
+                    .serviceName(QName("http://nav-cons-sak-gosys-3.0.0/no/nav/inf/InfotrygdSak/Binding",
+                                       "GOSYSInfotrygdSakWSEXP_GOSYSInfotrygdSakHttpService"))
+                    .endpointName(QName("http://nav-cons-sak-gosys-3.0.0/no/nav/inf/InfotrygdSak/Binding",
+                                        "GOSYSInfotrygdSakWSEXP_GOSYSInfotrygdSakHttpPort"))
+
                     .withOutInterceptor(WSS4JOutInterceptor(SecurityProps(systemuserUsername, systemuserPwd)))
                     .build()
 
