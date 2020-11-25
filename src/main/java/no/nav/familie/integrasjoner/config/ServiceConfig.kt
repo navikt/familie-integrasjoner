@@ -38,12 +38,10 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
                     .build()
 
     @Bean
-    @Profile("!integrasjonstest")
     fun gosysInfotrygdsakPort(): GOSYSInfotrygdSak =
             CXFClient(GOSYSInfotrygdSak::class.java)
                     .address(gosysInfotrygdSakUrl)
-                    .wsdl("cons-sak-gosys-tjenestespesifikasjon/wsdl/cons-sak-gosys/" +
-                          "wsdl/nav-cons-sak-gosys-3.0.0_GOSYSInfotrygdSakWSEXP.wsdl")
+                    .wsdl("wsdl/cons-sak-gosys/wsdl/nav-cons-sak-gosys-3.0.0_GOSYSInfotrygdSakWSEXP.wsdl")
                     .serviceName(QName("http://nav-cons-sak-gosys-3.0.0/no/nav/inf/InfotrygdSak/Binding",
                                        "GOSYSInfotrygdSakWSEXP_GOSYSInfotrygdSakHttpService"))
                     .endpointName(QName("http://nav-cons-sak-gosys-3.0.0/no/nav/inf/InfotrygdSak/Binding",

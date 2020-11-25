@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Profile
 class InfotrygdsakTestConfig {
 
     @Bean
-    @Profile("mock-infotrygdsak")
     @Primary
     fun infotrygdsakSoapClientMock(): InfotrygdsakSoapClient {
         val infotrygdServiceMock: InfotrygdsakSoapClient = mockk(relaxed = true)
@@ -23,10 +22,4 @@ class InfotrygdsakTestConfig {
                 .returns(aktivKontantstøtteInfo)
         return infotrygdServiceMock
     }
-
-    @Bean
-    @Primary
-    fun gosysInfotrygdsakMock(): GOSYSInfotrygdSak = mockk(relaxed = true)
-
-
 }
