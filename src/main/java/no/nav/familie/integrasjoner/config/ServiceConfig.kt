@@ -46,8 +46,8 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
                                        "GOSYSInfotrygdSakWSEXP_GOSYSInfotrygdSakHttpService"))
                     .endpointName(QName("http://nav-cons-sak-gosys-3.0.0/no/nav/inf/InfotrygdSak/Binding",
                                         "GOSYSInfotrygdSakWSEXP_GOSYSInfotrygdSakHttpPort"))
-
                     .withOutInterceptor(WSS4JOutInterceptor(SecurityProps(systemuserUsername, systemuserPwd)))
+                    .timeout(20000, 20000)
                     .build()
 
     @Bean
