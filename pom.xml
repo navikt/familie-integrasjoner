@@ -24,7 +24,6 @@
         <common-java-modules.version>1.2019.11.06-15.14-6ca860e6cead</common-java-modules.version>
         <felles.version>1.20201123131335_671787f</felles.version>
         <kontrakt.version>2.0_20201120131435_1ee888b</kontrakt.version>
-        <fasterxml.version>2.11.3</fasterxml.version>
         <cxf.version>3.3.4</cxf.version>
         <token-validation-spring.version>1.3.1</token-validation-spring.version>
         <tjenestespesifikasjoner.version>1.2020.10.07-08.40-90b3ab7bad15</tjenestespesifikasjoner.version>
@@ -71,7 +70,6 @@
         <dependency>
             <groupId>org.springframework.retry</groupId>
             <artifactId>spring-retry</artifactId>
-            <version>1.3.0</version>
         </dependency>
 
         <dependency>
@@ -223,17 +221,14 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${fasterxml.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-kotlin</artifactId>
-            <version>${fasterxml.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
-            <version>2.8.6</version>
         </dependency>
 
         <dependency>
