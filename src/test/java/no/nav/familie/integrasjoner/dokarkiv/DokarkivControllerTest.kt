@@ -158,7 +158,8 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                 .withQueryStringParameter("forsoekFerdigstill", "false"))
                 .respond(response()
                                  .withStatusCode(401)
-                                 .withBody(json("Tekst fra body")))
+                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
+                                 .withBody("Tekst fra body"))
         val body = DeprecatedArkiverDokumentRequest("FNR",
                                                     false,
                                                     listOf(Dokument("foo".toByteArray(),
