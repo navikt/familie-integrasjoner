@@ -16,6 +16,8 @@ import org.mockserver.junit.MockServerRule
 import org.mockserver.model.Header
 import org.mockserver.model.HttpRequest
 import org.mockserver.model.HttpResponse
+import org.mockserver.model.HttpResponse.response
+import org.mockserver.model.JsonBody.json
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.core.io.ClassPathResource
@@ -57,7 +59,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                                 .withPath("/rest/saf/graphql")
                                 .withBody(gyldigJournalPostIdRequest())
                 )
-                .respond(HttpResponse.response().withBody(lesFil("gyldigsakresponse.json"))
+                .respond(response().withBody(lesFil("gyldigsakresponse.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
@@ -77,7 +79,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                                 .withPath("/rest/saf/graphql")
                                 .withBody(gyldigJournalPostIdRequest())
                 )
-                .respond(HttpResponse.response().withBody(lesFil("gyldigjournalpostresponse.json"))
+                .respond(response().withBody(json(lesFil("gyldigjournalpostresponse.json")))
                                  .withHeaders(Header("Content-Type", "application/json")))
 
         val response: ResponseEntity<Ressurs<Journalpost>> = restTemplate.exchange(uriHentJournalpost,
@@ -99,8 +101,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                                 .withPath("/rest/saf/graphql")
                                 .withBody(gyldigBrukerRequest())
                 )
-                .respond(HttpResponse.response().withBody(lesFil("gyldigJournalposterResponse.json"))
-                                 .withHeaders(Header("Content-Type", "application/json")))
+                .respond(response().withBody(json(lesFil("gyldigJournalposterResponse.json"))))
 
         val response: ResponseEntity<Ressurs<List<Journalpost>>> =
                 restTemplate.exchange(uriHentJournalpost,
@@ -141,7 +142,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                                 .withMethod("POST")
                                 .withHeader(Header("Content-Type", "application/json"))
                                 .withPath("/rest/saf/graphql"))
-                .respond(HttpResponse.response().withBody(lesFil("mangler_sak.json"))
+                .respond(response().withBody(lesFil("mangler_sak.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
@@ -160,7 +161,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                                 .withMethod("POST")
                                 .withHeader(Header("Content-Type", "application/json"))
                                 .withPath("/rest/saf/graphql"))
-                .respond(HttpResponse.response().withBody(lesFil("feil_arkivsaksystem.json"))
+                .respond(response().withBody(lesFil("feil_arkivsaksystem.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
@@ -179,7 +180,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                                 .withMethod("POST")
                                 .withHeader(Header("Content-Type", "application/json"))
                                 .withPath("/rest/saf/graphql"))
-                .respond(HttpResponse.response().withBody(lesFil("error_fra_saf.json"))
+                .respond(response().withBody(lesFil("error_fra_saf.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
@@ -204,7 +205,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
                                 .withMethod("POST")
                                 .withHeader(Header("Content-Type", "application/json"))
                                 .withPath("/rest/saf/graphql"))
-                .respond(HttpResponse.response().withStatusCode(500).withBody("feilmelding"))
+                .respond(response().withStatusCode(500).withBody("feilmelding"))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
                                                                                            HttpMethod.GET,
