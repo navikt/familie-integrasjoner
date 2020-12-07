@@ -56,6 +56,7 @@ KODEVERK_URL: #Mockes lokalt
 FOERSTESIDEGENERATOR_URL: #Mockes lokalt
 ARBEIDSFORDELING_V1_URL: #Mockes lokalt
 AAREG_URL: #Mockes lokalt
+SKYGGE_SAK_URL: #Mocker lokalt
 
 MEDL2_URL: #Denne er ikke i bruk da Medl2 mockes ut lokalt
 SAF_URL: http://localhost:18321/rest/saf
