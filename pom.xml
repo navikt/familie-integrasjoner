@@ -29,6 +29,8 @@
         <tjenestespesifikasjoner.version>1.2020.10.07-08.40-90b3ab7bad15</tjenestespesifikasjoner.version>
         <kotlin.version>1.4.20</kotlin.version>
 
+        <mock-server.version>5.11.2</mock-server.version>
+
         <!--suppress UnresolvedMavenProperty  Ligger som secret i github-->
         <sonar.projectKey>${SONAR_PROJECTKEY}</sonar.projectKey>
         <sonar.organization>navit</sonar.organization>
@@ -234,7 +236,13 @@
         <dependency>
             <groupId>org.mock-server</groupId>
             <artifactId>mockserver-netty</artifactId>
-            <version>5.7.2</version>
+            <version>${mock-server.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-junit-rule</artifactId>
+            <version>${mock-server.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
