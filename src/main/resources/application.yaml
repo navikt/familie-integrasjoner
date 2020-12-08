@@ -43,4 +43,3 @@ GOSYS_INFOTRYGDSAK_URL: "dummy"
 
 STS_URL: http://security-token-service.default.svc.nais.local/rest/v1/sts/token
 INFOTRYGD_URL: http://infotrygd-kontantstotte
-OPPGAVE_URL: http://oppgave
