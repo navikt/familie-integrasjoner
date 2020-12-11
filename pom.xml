@@ -25,7 +25,7 @@
         <felles.version>1.20201123131335_671787f</felles.version>
         <kontrakt.version>2.0_20201210133152_ac0e089</kontrakt.version>
         <cxf.version>3.3.4</cxf.version>
-        <token-validation-spring.version>1.3.1</token-validation-spring.version>
+        <token-validation-spring.version>1.3.2</token-validation-spring.version>
         <tjenestespesifikasjoner.version>1.2020.10.07-08.40-90b3ab7bad15</tjenestespesifikasjoner.version>
         <kotlin.version>1.4.21</kotlin.version>
 
