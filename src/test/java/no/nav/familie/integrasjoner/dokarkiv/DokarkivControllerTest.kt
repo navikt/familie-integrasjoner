@@ -14,6 +14,7 @@ import org.junit.Test
 import org.mockserver.junit.MockServerRule
 import org.mockserver.model.HttpRequest
 import org.mockserver.model.HttpResponse.response
+import org.mockserver.model.JsonBody.json
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.core.io.ClassPathResource
@@ -83,9 +84,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                 .withMethod("POST")
                                 .withPath("/rest/journalpostapi/v1/journalpost")
                                 .withQueryStringParameter("forsoekFerdigstill", "false"))
-                .respond(response()
-                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
-                                 .withBody(gyldigDokarkivResponse()))
+                .respond(response().withBody(json(gyldigDokarkivResponse())))
         val body = DeprecatedArkiverDokumentRequest("FNR",
                                                     false,
                                                     listOf(HOVEDDOKUMENT))
@@ -110,8 +109,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                 .withPath("/rest/journalpostapi/v1/journalpost")
                                 .withQueryStringParameter("forsoekFerdigstill", "false"))
                 .respond(response()
-                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
-                                 .withBody(gyldigDokarkivResponse()))
+                                 .withBody(json(gyldigDokarkivResponse())))
         val body = ArkiverDokumentRequest("FNR",
                                           false,
                                           listOf(HOVEDDOKUMENT))
@@ -134,9 +132,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                 .withMethod("POST")
                                 .withPath("/rest/journalpostapi/v1/journalpost")
                                 .withQueryStringParameter("forsoekFerdigstill", "false"))
-                .respond(response()
-                                 .withHeader("Content-Type", "application/json")
-                                 .withBody(gyldigDokarkivResponse()))
+                .respond(response().withBody(json(gyldigDokarkivResponse())))
         val body = ArkiverDokumentRequest("FNR",
                                           false,
                                           listOf(HOVEDDOKUMENT),
@@ -190,9 +186,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                 .request()
                                 .withMethod("PUT")
                                 .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId"))
-                .respond(response()
-                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
-                                 .withBody(gyldigDokarkivResponse()))
+                .respond(response().withBody(json(gyldigDokarkivResponse())))
 
         val body = OppdaterJournalpostRequest(bruker = DokarkivBruker(IdType.FNR, "12345678910"),
                                               tema = "tema",
@@ -283,9 +277,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                 .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"))
                 .respond(response()
                                  .withStatusCode(200)
-                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
-                                 .withBody(objectMapper.writeValueAsString(
-                                         LogiskVedleggResponse(21L))))
+                                 .withBody(json(objectMapper.writeValueAsString(LogiskVedleggResponse(21L)))))
 
         val response: ResponseEntity<Ressurs<LogiskVedleggResponse>> =
                 restTemplate.exchange(localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg"),
