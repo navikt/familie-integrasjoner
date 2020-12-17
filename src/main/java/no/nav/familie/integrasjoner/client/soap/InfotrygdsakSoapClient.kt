@@ -3,6 +3,8 @@ package no.nav.familie.integrasjoner.client.soap
 import no.nav.familie.http.client.AbstractSoapClient
 import no.nav.gosys.asbo.infotrygdsak.ASBOGOSYSBestillInfotrygdSakRequest
 import no.nav.gosys.asbo.infotrygdsak.ASBOGOSYSBestillInfotrygdSakResponse
+import no.nav.gosys.asbo.infotrygdsak.ASBOGOSYSHentInfotrygdSakListeRequest
+import no.nav.gosys.asbo.infotrygdsak.ASBOGOSYSInfotrygdSakListe
 import no.nav.inf.GOSYSInfotrygdSak
 import org.springframework.stereotype.Component
 
@@ -14,6 +16,13 @@ class InfotrygdsakSoapClient(private val gosysInfotrygdSak: GOSYSInfotrygdSak)
             : ASBOGOSYSBestillInfotrygdSakResponse {
         return executeMedMetrics {
             gosysInfotrygdSak.bestillInfotrygdSak(asbogosysBestillInfotrygdSakRequest)
+        }
+    }
+
+    fun hentInfotrygdSakListe(asbogosysBestillInfotrygdSakRequest: ASBOGOSYSHentInfotrygdSakListeRequest)
+            : ASBOGOSYSInfotrygdSakListe {
+        return executeMedMetrics {
+            gosysInfotrygdSak.hentSakListe(asbogosysBestillInfotrygdSakRequest)
         }
     }
 }
