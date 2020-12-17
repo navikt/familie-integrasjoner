@@ -7,7 +7,7 @@ import no.nav.gosys.asbo.infotrygdsak.ASBOGOSYSInfotrygdSakListe
 
 object FinnInfotrygdSakerMapper {
 
-    fun tilAsboRequest(finnInfotrygdSakerRequest: FinnInfotrygdSakerRequest): ASBOGOSYSHentInfotrygdSakListeRequest {
+    fun tilRequest(finnInfotrygdSakerRequest: FinnInfotrygdSakerRequest): ASBOGOSYSHentInfotrygdSakListeRequest {
         val request = ASBOGOSYSHentInfotrygdSakListeRequest()
         request.gjelderId = finnInfotrygdSakerRequest.fnr
         request.fagomradeKodeListe = listOf(finnInfotrygdSakerRequest.fagomrade)
@@ -15,7 +15,7 @@ object FinnInfotrygdSakerMapper {
         return request
     }
 
-    fun fraAsboResponse(asboResponse: ASBOGOSYSInfotrygdSakListe): List<InfotrygdSak> {
+    fun fraResponse(asboResponse: ASBOGOSYSInfotrygdSakListe): List<InfotrygdSak> {
         return asboResponse.sakListe.map {
             InfotrygdSak(it.gjelderId, it.saksnr, it.registrertNavEnhetId, it.fagomradeKode)
         }

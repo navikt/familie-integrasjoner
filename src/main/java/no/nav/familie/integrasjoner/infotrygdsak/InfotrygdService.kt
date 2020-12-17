@@ -19,8 +19,8 @@ class InfotrygdService(private val infotrygdsakSoapClient: InfotrygdsakSoapClien
     }
 
     fun hentInfotrygdSaker(finnInfotrygdSakerRequest: FinnInfotrygdSakerRequest): List<InfotrygdSak> {
-        val request = FinnInfotrygdSakerMapper.tilAsboRequest(finnInfotrygdSakerRequest)
+        val request = FinnInfotrygdSakerMapper.tilRequest(finnInfotrygdSakerRequest)
         val response = infotrygdsakSoapClient.hentInfotrygdSakListe(request)
-        return FinnInfotrygdSakerMapper.fraAsboResponse(response)
+        return FinnInfotrygdSakerMapper.fraResponse(response)
     }
 }
