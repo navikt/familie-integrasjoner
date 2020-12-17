@@ -3,6 +3,8 @@ package no.nav.familie.integrasjoner.infotrygdsak
 import com.github.tomakehurst.wiremock.client.WireMock
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.infotrygdsak.FinnInfotrygdSakerRequest
+import no.nav.familie.kontrakter.felles.infotrygdsak.InfotrygdSak
 import no.nav.familie.kontrakter.felles.infotrygdsak.OpprettInfotrygdSakRequest
 import no.nav.familie.kontrakter.felles.infotrygdsak.OpprettInfotrygdSakResponse
 import no.nav.familie.kontrakter.felles.objectMapper
@@ -56,9 +58,38 @@ internal class InfotrygdsakControllerTest : OppslagSpringRunnerTest() {
                                                                     oppgaveOrganisasjonsenhetId = "4408")
 
         val response: ResponseEntity<Ressurs<OpprettInfotrygdSakResponse>> =
-                restTemplate.exchange(localhost("/api/infotrygdsak"),
+                restTemplate.exchange(localhost("/api/infotrygdsak/opprett"),
                                       HttpMethod.POST,
                                       HttpEntity<Any>(objectMapper.writeValueAsString(opprettInfotrygdSakRequest), headers))
+
+        Assertions.assertThat(response.body!!.data).isNotNull()
+
+    }
+
+
+    @Test
+    fun `skal hente liste med infotrygdsaker`() {
+        val xmlResponse = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+                   |   <soapenv:Body>
+                   |      <sak:hentSakListeResponse xmlns:sak="http://nav-cons-sak-gosys-3.0.0/no/nav/inf/InfotrygdSak">
+                   |         <hentSakListeResponse>
+                   |            <sakListe>
+                   |                <gjelderId>12345678901</gjelderId>
+                   |                <saksnr>B01</saksnr>
+                   |                <fagomradeKode>B01</fagomradeKode>
+                   |                <registrertNavEnhetId>0385</registrertNavEnhetId>
+                   |            </sakListe>
+                   |        </hentSakListeResponse>
+                   |      </sak:hentSakListeResponse>
+                   |   </soapenv:Body>
+                   |</soapenv:Envelope>""".trimMargin()
+        WireMock.stubFor(WireMock.post(WireMock.anyUrl()).willReturn(WireMock.okXml(xmlResponse)))
+        val finnInfotrygdsaker = FinnInfotrygdSakerRequest(fnr = "10108000398", fagomrade = "ENF")
+
+        val response: ResponseEntity<Ressurs<List<InfotrygdSak>>> =
+                restTemplate.exchange(localhost("/api/infotrygdsak/soek"),
+                                      HttpMethod.POST,
+                                      HttpEntity<Any>(objectMapper.writeValueAsString(finnInfotrygdsaker), headers))
 
         Assertions.assertThat(response.body!!.data).isNotNull()
 
