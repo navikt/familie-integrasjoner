@@ -75,6 +75,7 @@ PDL_URL: http://pdl-api
 AAREG_URL: https://modapp.adeo.no/aareg-services/api
 SKYGGE_SAK_URL: http://sak
 OPPGAVE_URL: https://oppgave.nais.adeo.no
+GOSYS_INFOTRYGDSAK_URL: https://tjenestebuss.adeo.no/nav-cons-sak-gosys-3.0.0Web/sca/GOSYSInfotrygdSakWSEXP
 
 # Appdynamics
 APPDYNAMICS_CONTROLLER_HOST_NAME: appdynamics.adeo.no
