@@ -5,7 +5,14 @@
             <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{36}.%M - %msg%n</pattern>
         </encoder>
     </appender>
-    <root level="debug">
+    <root level="warn">
         <appender-ref ref="STDOUT" />
     </root>
+
+    <logger name="no.nav" level="WARN"/>
+    <logger name="no.nav.familie" level="INFO"/>
+    <logger name="no.nav.familie.http.sts" level="WARN"/>
+    <logger name="org.apache.cxf" level="ERROR"/>
+    <logger name="org.apache.http.client.protocol.ResponseProcessCookies" level="ERROR"/>
+    <logger name="org.apache.wss4j.common.crypto.CryptoBase" level="ERROR"/>
 </configuration>
