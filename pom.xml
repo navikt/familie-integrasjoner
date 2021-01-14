@@ -23,7 +23,7 @@
         <springfox.version>3.0.0</springfox.version>
         <common-java-modules.version>1.2019.11.06-15.14-6ca860e6cead</common-java-modules.version>
         <felles.version>1.20210111144144_6eff1f3</felles.version>
-        <kontrakt.version>2.0_20210105115213_05f0728</kontrakt.version>
+        <kontrakt.version>2.0_20210113145603_b33fdc0</kontrakt.version>
         <cxf.version>3.3.4</cxf.version>
         <token-validation-spring.version>1.3.2</token-validation-spring.version>
         <tjenestespesifikasjoner.version>1.2020.10.07-08.40-90b3ab7bad15</tjenestespesifikasjoner.version>
