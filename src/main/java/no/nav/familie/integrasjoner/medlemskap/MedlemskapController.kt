@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.medlemskap
 
+import no.nav.familie.kontrakter.felles.PersonIdent
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.medlemskap.Medlemskapsinfo
 import no.nav.security.token.support.core.api.ProtectedWithClaims
@@ -17,8 +18,15 @@ class MedlemskapController(private val medlemskapService: MedlemskapService) {
     }
 
     @GetMapping("v2")
+    @Deprecated("Bruk v3")
     fun hentMedlemskapsunntakForIdentEllerAktørId(@RequestHeader("Nav-Personident") ident: String)
             : Ressurs<Medlemskapsinfo> {
         return Ressurs.success(medlemskapService.hentMedlemskapsunntakForIdent(ident))
+    }
+
+    @PostMapping("v3")
+    fun hentMedlemskapsunntakForIdentEllerAktørIdV3(@RequestBody(required = true) personIdent: PersonIdent)
+            : Ressurs<Medlemskapsinfo> {
+        return Ressurs.success(medlemskapService.hentMedlemskapsunntakForIdent(personIdent.ident))
     }
 }
