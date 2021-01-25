@@ -37,20 +37,19 @@ jobs:
           echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin docker.pkg.github.com
       - name: Push Docker image
         run: docker push $IMAGE
-      - name: Deploy til dev-fss
-        uses: nais/deploy/actions/deploy@v1
-        env:
-          APIKEY: ${{ secrets.DEPLOY_APIKEY }}
-          CLUSTER: dev-fss
-          RESOURCE: app-preprod.yaml
+      - uses: navikt/github-app-token-generator@v1
+        id: get-token
+        with:
+          private-key: ${{ secrets.REPO_CLONER_PRIVATE_KEY }}
+          app-id: ${{ secrets.REPO_CLONER_APP_ID }}
       - name: Checkout e2e tests
         uses: actions/checkout@v2
         with:
           repository: navikt/familie-ba-e2e
           token: ${{ steps.get-token.outputs.token }}
           path: ba-e2e
-      - name: Setter riktig ba-mottak versjon i e2e tester
-        run: sed -i 's/familie-ba-mottak:latest/familie-ba-mottak:'$GITHUB_SHA'/g' ba-e2e/e2e/docker-compose.yml
+      - name: Setter riktig familie-integrasjoner versjon i e2e tester
+        run: sed -i 's/familie-integrasjoner:latest/familie-integrasjoner:'$GITHUB_SHA'/g' ba-e2e/e2e/docker-compose.yml
       - name: Start alle apper (e2e)
         env:
           MOTTAK_CLIENT_ID: ${{ secrets.MOTTAK_CLIENT_ID }}
