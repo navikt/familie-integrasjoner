@@ -62,7 +62,7 @@ INFOTRYGD_KS_SCOPE: ${INFOTRYGD_KS_SCOPE}
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 SECURITYTOKENSERVICE_URL: https://sts.adeo.no/SecurityTokenServiceProvider/
 AKTOERID_URL: https://app.adeo.no/aktoerregister
-PERSON_V3_URL: https://wasapp.adeo.no/tpsws/ws/Person/v3
+PERSON_V3_URL: https://app.adeo.no/tpsws-aura/ws/Person/v3
 DOKARKIV_V1_URL: http://dokarkiv
 MEDL2_URL: https://app.adeo.no/medl2
 SAF_URL: http://saf
