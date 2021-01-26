@@ -71,7 +71,7 @@ jobs:
           BA_SAK_SCOPE: ${{ secrets.BA_SAK_SCOPE }}
           OPPDRAG_CLIENT_ID: ${{ secrets.OPPDRAG_CLIENT_ID }}
           SRVUSER_BA_SAK_SECRET: ${{ secrets.SRVUSER_BA_SAK_SECRET }}
-        run: cd ba-e2e/e2e; ./e2e.sh
+        run: cd ba-e2e/e2e; docker-compose up --force-recreate
       - name: Kjør tester (e2e)
         env:
           GITHUB_USERNAME: x-access-token
