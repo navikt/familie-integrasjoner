@@ -2,7 +2,7 @@ apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
   name: familie-integrasjoner
-  namespace: default
+  namespace: teamfamilie
   labels:
     team: teamfamilie
 
@@ -23,6 +23,19 @@ spec:
     enabled: true
   secureLogs:
     enabled: true
+  azure:
+    application:
+      enabled: true
+      tenant: trygdeetaten.no
+  accessPolicy:
+    inbound:
+      rules:
+        - application: familie-ba-sak
+          namespace: default
+        - application: familie-ef-sak
+          namespace: teamfamilie
+        - application: familie-ks-sak
+          namespace: default
   prometheus:
     enabled: true
     path: /internal/prometheus
@@ -38,9 +51,7 @@ spec:
       memory: 1Gi
       cpu: 200m
   ingresses: # Optional. List of ingress URLs that will route HTTP traffic to the application.
-    - https://familie-integrasjoner.nais.preprod.local # Deprecated! Erstattes av https://familie-integrasjoner.dev.adeo.no
-    - https://familie-integrasjoner.dev-fss.nais.io # Deprecated! Erstattes av  https://familie-integrasjoner.dev.adeo.no
-    - https://familie-integrasjoner.dev.adeo.no
+    - https://familie-integrasjoner.teamfamilie.dev.adeo.no
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: preprod
