@@ -35,6 +35,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
 
     @Deprecated("Bruk finnOppgaver")
     fun finnOppgaverV3(finnOppgaveRequest: FinnOppgaveRequest): DeprecatedFinnOppgaveResponseDto {
+        LOG.warn("FinnOppgaver V3 er ikke lenger i bruk, gå over til V4.")
         return oppgaveRestClient.finnOppgaverV3(finnOppgaveRequest)
     }
 
