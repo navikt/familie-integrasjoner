@@ -1,7 +1,7 @@
 no.nav.security.jwt:
   issuer.azuread:
     discoveryurl: https://login.microsoftonline.com/navq.onmicrosoft.com/v2.0/.well-known/openid-configuration
-    accepted_audience: ${INTEGRASJONER_CLIENT_ID}
+    accepted_audience: ${AZURE_APP_CLIENT_ID}
     proxyurl: http://webproxy-nais.nav.no:8088
     cookie_name: azure_token
   client:
@@ -12,8 +12,8 @@ no.nav.security.jwt:
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${AAD_GRAPH_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       saf-onbehalf-of:
         resource-url: ${SAF_URL}
@@ -21,8 +21,8 @@ no.nav.security.jwt:
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${SAF_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       saf:
         resource-url: ${SAF_URL}
@@ -30,8 +30,8 @@ no.nav.security.jwt:
         grant-type: client_credentials
         scope: ${SAF_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       infotrygd:
         resource-url: ${INFOTRYGD_URL}
@@ -39,13 +39,13 @@ no.nav.security.jwt:
         grant-type: client_credentials
         scope: ${INFOTRYGD_KS_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
 
 AAD_URL: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
-INTEGRASJONER_CLIENT_ID: ${INTEGRASJONER_CLIENT_ID}
-CLIENT_SECRET: ${CLIENT_SECRET}
+INTEGRASJONER_CLIENT_ID: ${AZURE_APP_CLIENT_ID}
+CLIENT_SECRET: ${AZURE_APP_CLIENT_SECRET}
 INFOTRYGD_KS_SCOPE: ${INFOTRYGD_KS_SCOPE}
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
