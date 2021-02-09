@@ -24,35 +24,6 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         return ResponseEntity.ok().body(success(oppgave, "Hent Oppgave OK"))
     }
 
-    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
-    @Deprecated("Bruk v3 endepunktet")
-    fun finnOppgaver(@RequestParam("tema") tema: String,
-                     @RequestParam("behandlingstema", required = false) behandlingstema: String?,
-                     @RequestParam("oppgavetype", required = false) oppgavetype: String?,
-                     @RequestParam("enhet", required = false) enhet: String?,
-                     @RequestParam("saksbehandler", required = false) saksbehandler: String?,
-                     @RequestParam("journalpostId", required = false) journalpostId: String?)
-            : ResponseEntity<Ressurs<List<DeprecatedOppgave>>> {
-        val oppgaver = oppgaveService.finnOppgaver(tema,
-                                                   behandlingstema,
-                                                   oppgavetype,
-                                                   enhet,
-                                                   saksbehandler,
-                                                   journalpostId)
-        return ResponseEntity.ok().body(success(oppgaver, "Finn oppgaver OK"))
-    }
-
-    @PostMapping(path = ["/v2"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
-    @Deprecated("Bruk v3 endepunktet")
-    fun finnOppgaverV2(@RequestBody deprecatedFinnOppgaveRequest: DeprecatedFinnOppgaveRequest)
-            : ResponseEntity<Ressurs<DeprecatedFinnOppgaveResponseDto>> {
-        return when (deprecatedFinnOppgaveRequest.tema) {
-            null -> ResponseEntity.ok().body(Ressurs.failure("påkrevd felt 'tema' mangler"))
-            else -> ResponseEntity.ok()
-                    .body(success(oppgaveService.finnOppgaverV2(deprecatedFinnOppgaveRequest), "Finn oppgaver OK"))
-        }
-    }
-
     @GetMapping(path = ["/v3"])
     @Deprecated("Bruk v4 endepunktet")
     fun finnOppgaverV3(finnOppgaveRequest: FinnOppgaveRequest): Ressurs<DeprecatedFinnOppgaveResponseDto> {

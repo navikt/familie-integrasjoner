@@ -4,7 +4,6 @@ import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.OppslagException.Level
 import no.nav.familie.kontrakter.felles.oppgave.*
-import no.nav.sbl.util.StringUtils
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -14,23 +13,8 @@ import java.time.format.DateTimeFormatter
 @Service @ApplicationScope
 class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClient) {
 
-    @Deprecated("Bruk finnOppgaver med FinnOppgaveRequest")
-    fun finnOppgaver(tema: String,
-                     behandlingstema: String?,
-                     oppgaveType: String?,
-                     enhet: String?,
-                     saksbehandler: String?,
-                     journalpostId: String?): List<DeprecatedOppgave> {
-        return oppgaveRestClient.finnOppgaver(tema, behandlingstema, oppgaveType, enhet, saksbehandler, journalpostId)
-    }
-
     fun finnOppgaver(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {
         return oppgaveRestClient.finnOppgaver(finnOppgaveRequest)
-    }
-
-    @Deprecated("Bruk finnOppgaver")
-    fun finnOppgaverV2(deprecatedFinnOppgaveRequest: DeprecatedFinnOppgaveRequest): DeprecatedFinnOppgaveResponseDto {
-        return oppgaveRestClient.finnOppgaverV2(deprecatedFinnOppgaveRequest)
     }
 
     @Deprecated("Bruk finnOppgaver")
@@ -171,7 +155,6 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
     }
 
     companion object {
-
         private val LOG = LoggerFactory.getLogger(OppgaveService::class.java)
     }
 }
