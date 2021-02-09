@@ -52,9 +52,15 @@ jobs:
           APIKEY: ${{ secrets.DEPLOY_APIKEY }}
           CLUSTER: dev-fss
           RESOURCE: app-preprod.yaml
-      - name: Deploy til prod-fss
+      - name: Deploy til prod-fss default namespace
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.DEPLOY_APIKEY }}
           CLUSTER: prod-fss
           RESOURCE: app-prod.yaml
+      - name: Deploy til prod-fss teamfamilie namespace
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.DEPLOY_APIKEY }}
+          CLUSTER: prod-fss
+          RESOURCE: app-prod-teamfamilie.yaml

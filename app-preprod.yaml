@@ -25,17 +25,7 @@ spec:
     enabled: true
   azure:
     application:
-      enabled: true
-      tenant: trygdeetaten.no
-  accessPolicy:
-    inbound:
-      rules:
-        - application: familie-ba-sak
-          namespace: default
-        - application: familie-ef-sak
-          namespace: teamfamilie
-        - application: familie-ks-sak
-          namespace: default
+      enabled: false
   prometheus:
     enabled: true
     path: /internal/prometheus

@@ -25,13 +25,23 @@ spec:
     enabled: true
   azure:
     application:
-      enabled: false
+      enabled: true
+      tenant: trygdeetaten.no
+  accessPolicy:
+    inbound:
+      rules:
+        - application: familie-ba-sak
+          namespace: default
+        - application: familie-ef-sak
+          namespace: default
+        - application: familie-ks-sak
+          namespace: default
   prometheus:
     enabled: true
     path: /internal/prometheus
   replicas:
-    min: 2
-    max: 2
+    min: 1
+    max: 1
     cpuThresholdPercentage: 50
   resources:
     limits:
@@ -41,7 +51,7 @@ spec:
       memory: 1Gi
       cpu: 200m
   ingresses: # Optional. List of ingress URLs that will route HTTP traffic to the application.
-    - https://familie-integrasjoner.teamfamilie.nais.adeo.no
+    - https://familie-integrasjoner.teamfamilie.dev.adeo.no
   env:
     - name: SPRING_PROFILES_ACTIVE
-      value: prod
+      value: preprod

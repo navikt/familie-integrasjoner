@@ -25,7 +25,16 @@ spec:
     enabled: true
   azure:
     application:
-      enabled: false
+      enabled: true
+  accessPolicy:
+    inbound:
+      rules:
+        - application: familie-ba-sak
+          namespace: default
+        - application: familie-ef-sak
+          namespace: default
+        - application: familie-ks-sak
+          namespace: default
   prometheus:
     enabled: true
     path: /internal/prometheus
