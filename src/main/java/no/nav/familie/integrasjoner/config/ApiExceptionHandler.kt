@@ -84,7 +84,7 @@ class ApiExceptionHandler {
     }
 
     @ExceptionHandler(OppslagException::class)
-    fun handAktørOppslagException(e: OppslagException): ResponseEntity<Ressurs<Any>> {
+    fun handleOppslagException(e: OppslagException): ResponseEntity<Ressurs<Any>> {
         var feilmelding = "[${e.kilde}][${e.message}]"
         var sensitivFeilmelding = feilmelding
         if (!e.sensitiveInfo.isNullOrEmpty()) {
