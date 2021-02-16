@@ -47,7 +47,7 @@ class AccessAsApplicationFilter : OncePerRequestFilter() {
                 val allowAccessAsApplication = (claims.get("roles") as List<String>? ?: emptyList()).contains("access_as_application")
 
                 if (!allowAccessAsApplication) {
-                    logger.error("Ugyldig systemtoken: ${claims.get("groups")}, ${claims.allClaims.values}")
+                    logger.error("Ugyldig systemtoken.")
                 }
                 allowAccessAsApplication
             }
