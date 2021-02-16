@@ -47,7 +47,7 @@ class AccessAsApplicationFilter : OncePerRequestFilter() {
                 val allowAccessAsApplication = (claims.get("roles") as List<String>? ?: emptyList()).contains("access_as_application")
 
                 if (!allowAccessAsApplication) {
-                    logger.error("Ugyldig systemtoken")
+                    logger.error("Ugyldig systemtoken: ${claims.get("sub")}, ${claims.get("oid")}, ${claims.get("roles")}")
                 }
                 allowAccessAsApplication
             }
@@ -55,7 +55,7 @@ class AccessAsApplicationFilter : OncePerRequestFilter() {
                 true
             }
         } catch (e: Exception) {
-            logger.error("Feilet med å hente azp fra token + ${e.message} + \n ${e.stackTrace}")
+            logger.error("Feilet med å hente azp fra token")
             false
         }
     }
