@@ -40,7 +40,7 @@ class AccessAsApplicationFilter : OncePerRequestFilter() {
 
     private fun hasAccessAsApplication(): Boolean {
         return try {
-            val claims = SpringTokenValidationContextHolder().tokenValidationContext.getClaims("azure")
+            val claims = SpringTokenValidationContextHolder().tokenValidationContext.getClaims("azuread")
 
             //Dersom sub er lik oid så er tokenet anskaffet via client credentials flow, altså et token uten brukerinnvolvering. Om ikke, så er tokenet anskaffet på vegne av en bruker der oid er brukerens globale ID i Azure AD.
             if (claims.get("sub").equals(claims.get("oid"))) {
@@ -55,7 +55,7 @@ class AccessAsApplicationFilter : OncePerRequestFilter() {
                 true
             }
         } catch (e: Exception) {
-            logger.error("Feilet med å hente azp fra token")
+            logger.error("Feilet med å hente azp fra token + ${e.message} + \n ${e.stackTrace}")
             false
         }
     }
