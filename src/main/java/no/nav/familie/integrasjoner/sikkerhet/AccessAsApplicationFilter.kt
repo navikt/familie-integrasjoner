@@ -39,6 +39,8 @@ class AccessAsApplicationFilter : OncePerRequestFilter() {
     }
 
     private fun hasAccessAsApplication(): Boolean {
+        // TODO: Fjern når alle applikasjoner er over på team-namespace.
+        return true
         return try {
             val claims = SpringTokenValidationContextHolder().tokenValidationContext.getClaims("azuread")
 
