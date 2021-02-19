@@ -41,6 +41,7 @@ spec:
     - https://familie-integrasjoner.nais.preprod.local # Deprecated! Erstattes av https://familie-integrasjoner.dev.adeo.no
     - https://familie-integrasjoner.dev-fss.nais.io # Deprecated! Erstattes av  https://familie-integrasjoner.dev.adeo.no
     - https://familie-integrasjoner.dev.adeo.no
+    - https://familie-integrasjoner.dev-fss-pub.nais.io
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: preprod
