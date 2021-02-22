@@ -1,10 +1,13 @@
 package no.nav.familie.integrasjoner.infotrygd
 
 import no.nav.familie.integrasjoner.client.rest.InfotrygdRestClient
+import no.nav.familie.integrasjoner.client.soap.InfotrygdVedtakSoapClient
 import no.nav.familie.integrasjoner.infotrygd.domene.AktivKontantstøtteInfo
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
+import no.nav.familie.kontrakter.felles.ef.PerioderOvergangsstønadRequest
+import no.nav.familie.kontrakter.felles.ef.PerioderOvergangsstønadResponse
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -17,7 +20,8 @@ import org.springframework.web.client.HttpStatusCodeException
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/infotrygd")
-class InfotrygdController(private val infotrygdRestClient: InfotrygdRestClient) {
+class InfotrygdController(private val infotrygdRestClient: InfotrygdRestClient,
+                          private val infotrygdVedtakSoapClient: InfotrygdVedtakSoapClient) {
 
     @ExceptionHandler(HttpStatusCodeException::class)
     fun handleExceptions(ex: HttpStatusCodeException): ResponseEntity<Ressurs<Any>> {
@@ -45,7 +49,13 @@ class InfotrygdController(private val infotrygdRestClient: InfotrygdRestClient) 
                                          "Oppslag mot Infotrygd OK"))
     }
 
+    @PostMapping("vedtak-perioder")
+    fun hentVedtaksperioder(@RequestBody request: PerioderOvergangsstønadRequest): Ressurs<PerioderOvergangsstønadResponse> {
+        return success(infotrygdVedtakSoapClient.hentVedtaksperioder(request))
+    }
+
     companion object {
+
         private val LOG = LoggerFactory.getLogger(InfotrygdController::class.java)
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
     }
