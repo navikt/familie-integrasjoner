@@ -11,7 +11,7 @@ object BarnetrygdVedtakMetadata : DokumentMetadata {
     override val fagsakSystem: String? = "BA"
     override val tema: String = "BAR"
     override val behandlingstema: String? = Behandlingstema.Barnetrygd.value // https://confluence.adeo.no/display/BOA/Behandlingstema
-    override val kanal: String? = ""
+    override val kanal: String? = null
     override val dokumentTypeId: String = "BARNETRYGD_VEDTAK"
     override val tittel: String? = "Vedtak om innvilgelse av barnetrygd"
     override val brevkode: String? = "BAA1"
