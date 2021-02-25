@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.config
 import no.nav.inf.GOSYSInfotrygdSak
 import no.nav.sbl.dialogarena.common.cxf.CXFClient
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
+import no.nav.tjeneste.virksomhet.infotrygdvedtak.v1.binding.InfotrygdVedtakV1
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor
 import org.apache.wss4j.common.ext.WSPasswordCallback
@@ -11,7 +12,6 @@ import org.apache.wss4j.dom.handler.WSHandlerConstants
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Profile
 import javax.security.auth.callback.CallbackHandler
 import javax.xml.namespace.QName
 
@@ -21,6 +21,7 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
                     @Value("\${CREDENTIAL_PASSWORD}") private val systemuserPwd: String,
                     @Value("\${PERSON_V3_URL}") private val personV3Url: String,
                     @Value("\${ARBEIDSFORDELING_V1_URL}") private val arbeidsfordelingUrl: String,
+                    @Value("\${INFOTRYGD_VEDTAK_URL}") private val infotrygdVedtakUrl: String,
                     @Value("\${GOSYS_INFOTRYGDSAK_URL}") private val gosysInfotrygdSakUrl: String) {
 
     init {
@@ -54,6 +55,14 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
     fun arbeidsfordelingV1(): ArbeidsfordelingV1 =
             CXFClient(ArbeidsfordelingV1::class.java)
                     .address(arbeidsfordelingUrl)
+                    .configureStsForSystemUser()
+                    .build()
+
+    @Bean
+    fun infotrygdVedtak(): InfotrygdVedtakV1 =
+            CXFClient(InfotrygdVedtakV1::class.java)
+                    .address(infotrygdVedtakUrl)
+                    .timeout(10000, 10000)
                     .configureStsForSystemUser()
                     .build()
 
