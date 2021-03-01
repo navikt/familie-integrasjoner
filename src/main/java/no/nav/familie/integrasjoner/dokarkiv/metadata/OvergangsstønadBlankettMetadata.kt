@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 object OvergangsstønadBlankettMetadata : DokumentMetadata {
 
     override val journalpostType: JournalpostType = JournalpostType.NOTAT
-    override val fagsakSystem: String = "Infotrygd"
+    override val fagsakSystem: String = "IT01"
     override val tema: String = "ENF"
     override val behandlingstema: String = "ab0071"
     override val kanal: String? = null
