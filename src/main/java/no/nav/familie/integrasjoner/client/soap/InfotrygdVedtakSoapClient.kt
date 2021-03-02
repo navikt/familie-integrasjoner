@@ -55,6 +55,7 @@ class InfotrygdVedtakSoapClient(private val infotrygdVedtakV1: InfotrygdVedtakV1
 
     private fun mapRequest(request: PerioderOvergangsstønadRequest): FinnInfotrygdVedtakListeRequest {
         val finnInfotrygdVedtakListeRequest = FinnInfotrygdVedtakListeRequest()
+        finnInfotrygdVedtakListeRequest.personident = request.personIdent
         val element = Stoenadsklasser()
         element.value = "EF"
         finnInfotrygdVedtakListeRequest.stoenadsklasseListe.add(element)
