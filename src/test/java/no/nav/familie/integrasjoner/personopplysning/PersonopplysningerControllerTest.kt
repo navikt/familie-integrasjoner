@@ -5,6 +5,8 @@ import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.personopplysning.FinnPersonidenterResponse
+import no.nav.familie.kontrakter.felles.personopplysning.Ident
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import no.nav.security.token.support.test.JwtTokenGenerator
 import org.assertj.core.api.Assertions.assertThat
@@ -29,12 +31,12 @@ import kotlin.test.assertNull
 class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
 
     private val testLogger = LoggerFactory.getLogger(PersonopplysningerControllerTest::class.java) as Logger
+
     @get:Rule
     val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
     private lateinit var uriHentPersoninfo: String
     private lateinit var uriHentPersoninfoEnkel: String
     private lateinit var uriHentIdenter: String
-    private lateinit var uriHentHistoriskeIdenter: String
     private lateinit var uriHentAktørId: String
 
     @Before
@@ -45,9 +47,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         }.setBearerAuth(JwtTokenGenerator.signedJWTAsString("testbruker"))
         uriHentPersoninfo = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}v1/info/$TEMA").toUriString()
         uriHentPersoninfoEnkel = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}v1/infoEnkel/$TEMA").toUriString()
-        uriHentIdenter = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}identer/$TEMA").toUriString()
-        uriHentHistoriskeIdenter = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}identer/$TEMA/historikk")
-                .toUriString()
+        uriHentIdenter = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}v1/identer/$TEMA").toUriString()
         uriHentAktørId = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}aktorId/$TEMA").toUriString()
     }
 
@@ -98,7 +98,8 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `hent personinfo skal returnere persondata med ukjent bostedadresse og manglende sivilstand`() {
-        val response: ResponseEntity<Ressurs<Person>> = hentPersonInfoFraMockedPdlResponse("pdlUkjentBostedAdresseOkResponse.json")
+        val response: ResponseEntity<Ressurs<Person>> =
+                hentPersonInfoFraMockedPdlResponse("pdlUkjentBostedAdresseOkResponse.json")
         assertThat(response.body?.data?.bostedsadresse?.ukjentBosted?.bostedskommune).isEqualTo("Oslo")
         assertNull(response.body?.data?.sivilstand)
     }
@@ -138,6 +139,26 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
+    @Test
+    fun `hent identer til en person`() {
+        val ident = "12345678901"
+        mockServerRule.client
+                .`when`(HttpRequest.request()
+                                .withMethod("POST")
+                                .withPath("/rest/pdl/graphql")
+                                .withHeader("Tema", TEMA)
+                )
+                .respond(HttpResponse.response().withBody(readfile("pdlIdenterResponse.json"))
+                                 .withHeaders(Header("Content-Type", "application/json")))
+        val response = restTemplate.exchange<Ressurs<FinnPersonidenterResponse>>(uriHentIdenter,
+                                                                                 HttpMethod.POST,
+                                                                                 HttpEntity(Ident(ident), headers))
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.body.data!!.identer).hasSize(1)
+        assertThat(response.body.data!!.identer.first().personIdent).isEqualTo(ident)
+    }
+
     private fun hentPersonInfoFraMockedPdlResponse(responseFile: String): ResponseEntity<Ressurs<Person>> {
         mockServerRule.client
                 .`when`(HttpRequest.request()
@@ -165,6 +186,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
     }
 
     companion object {
+
         const val MOCK_SERVER_PORT = 18321
         const val FØDSELSDATO = "1955-09-13"
         const val NAVN = "ENGASJERT FYR"

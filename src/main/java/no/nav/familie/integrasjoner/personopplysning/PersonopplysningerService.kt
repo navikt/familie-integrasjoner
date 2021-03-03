@@ -3,12 +3,16 @@ package no.nav.familie.integrasjoner.personopplysning
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.client.soap.PersonSoapClient
+import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.felles.ws.DateUtil
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlIdent
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
+import no.nav.familie.kontrakter.felles.personopplysning.FinnPersonidenterResponse
+import no.nav.familie.kontrakter.felles.personopplysning.PersonIdentMedHistorikk
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Periode
@@ -63,8 +67,13 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
         return pdlRestClient.hentPerson(personIdent, tema, personInfoQuery)
     }
 
+    fun hentIdenter(personIdent: String, tema: Tema, medHistorikk: Boolean): FinnPersonidenterResponse {
+        val response = pdlRestClient.hentIdenter(personIdent, tema, medHistorikk)
+        return FinnPersonidenterResponse(response.map { PersonIdentMedHistorikk(it.ident, it.historisk) })
+    }
 
     companion object {
+
         const val PERSON = "PERSON"
     }
 }
