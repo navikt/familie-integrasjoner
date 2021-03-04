@@ -9,6 +9,7 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.ikkeTilgang
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
+import no.nav.familie.kontrakter.felles.personopplysning.FinnPersonidenterResponse
 import no.nav.familie.kontrakter.felles.personopplysning.Ident
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.format.annotation.DateTimeFormat
@@ -67,5 +68,14 @@ class PersonopplysningerController(private val personopplysningerService: Person
         return ResponseEntity.ok().body(success(
                 personopplysningerService.hentPersoninfo(personIdent, tema.toString(), PersonInfoQuery.ENKEL),
                 "Hent personinfo OK"))
+    }
+
+    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/identer/{tema}"])
+    fun hentIdenter(@RequestBody(required = true) ident: Ident,
+                    @PathVariable tema: Tema,
+                    @RequestParam(value = "historikk",
+                                  required = false,
+                                  defaultValue = "false") medHistorikk: Boolean): Ressurs<FinnPersonidenterResponse> {
+        return success(personopplysningerService.hentIdenter(ident.ident, tema, medHistorikk))
     }
 }

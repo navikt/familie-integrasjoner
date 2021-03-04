@@ -4,6 +4,7 @@ import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.http.sts.StsRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.personopplysning.internal.*
 import org.springframework.beans.factory.annotation.Qualifier
@@ -28,9 +29,9 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
                                                 query = personInfoQuery.graphQL)
         try {
-            val response = postForEntity<PdlHentPersonResponse>(pdlUri,
-                                                                pdlPersonRequest,
-                                                                httpHeaders(tema))
+            val response = postForEntity<PdlResponse<PdlPerson>>(pdlUri,
+                                                                 pdlPersonRequest,
+                                                                 httpHeaders(tema))
             if (response != null && !response.harFeil()) {
                 return Result.runCatching {
                     val familierelasjoner: Set<Familierelasjon> =
@@ -75,6 +76,28 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         }
     }
 
+    fun hentIdenter(personIdent: String, tema: Tema, historikk: Boolean): List<PdlIdent> {
+        val pdlPersonRequest = PdlIdentRequest(variables = PdlIdentRequestVariables(personIdent, "FOLKEREGISTERIDENT", historikk),
+                                               query = HENT_IDENTER_QUERY)
+
+        try {
+            val response = postForEntity<PdlResponse<PdlHentIdenter>>(pdlUri,
+                                                                      pdlPersonRequest,
+                                                                      httpHeaders(tema.name))
+            if (response.harFeil() || response.data.hentIdenter == null) {
+                throw pdlOppslagException(feilmelding = "Feil ved oppslag på person: ${response.errorMessages()}",
+                                          personIdent = personIdent)
+            }
+
+            return response.data.hentIdenter.identer
+        } catch (e: OppslagException) {
+            throw e
+        } catch(e: Exception) {
+            throw pdlOppslagException(personIdent, error = e)
+        }
+
+    }
+
     private fun httpHeaders(tema: String): HttpHeaders {
         return HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
@@ -100,7 +123,9 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
     }
 
     companion object {
+
         private const val PATH_GRAPHQL = "graphql"
+        private val HENT_IDENTER_QUERY = hentGraphqlQuery("hentIdenter")
     }
 }
 
@@ -108,6 +133,7 @@ enum class PersonInfoQuery(val graphQL: String) {
     ENKEL(hentGraphqlQuery("hentperson-enkel")),
     MED_RELASJONER(hentGraphqlQuery("hentperson-med-relasjoner"))
 }
+
 
 private fun hentGraphqlQuery(pdlResource: String): String {
     return PersonInfoQuery::class.java.getResource("/pdl/$pdlResource.graphql").readText().graphqlCompatible()

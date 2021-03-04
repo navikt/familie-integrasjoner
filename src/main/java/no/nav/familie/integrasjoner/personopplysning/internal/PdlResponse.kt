@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.familie.kontrakter.felles.personopplysning.Bostedsadresse
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 
-data class PdlHentPersonResponse(val data: PdlPerson,
-                                 val errors: List<PdlError>?) {
+data class PdlResponse<T>(val data: T,
+                          val errors: List<PdlError>?) {
 
     fun harFeil(): Boolean {
         return errors != null && errors.isNotEmpty()
