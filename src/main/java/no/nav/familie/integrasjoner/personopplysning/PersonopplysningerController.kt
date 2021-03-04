@@ -71,11 +71,11 @@ class PersonopplysningerController(private val personopplysningerService: Person
     }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/identer/{tema}"])
-    fun personInfoEnkel(@RequestBody(required = true) ident: Ident,
-                        @PathVariable tema: Tema,
-                        @RequestParam(value = "historikk",
-                                      required = false,
-                                      defaultValue = "false") medHistorikk: Boolean): Ressurs<FinnPersonidenterResponse> {
+    fun hentIdenter(@RequestBody(required = true) ident: Ident,
+                    @PathVariable tema: Tema,
+                    @RequestParam(value = "historikk",
+                                  required = false,
+                                  defaultValue = "false") medHistorikk: Boolean): Ressurs<FinnPersonidenterResponse> {
         return success(personopplysningerService.hentIdenter(ident.ident, tema, medHistorikk))
     }
 }
