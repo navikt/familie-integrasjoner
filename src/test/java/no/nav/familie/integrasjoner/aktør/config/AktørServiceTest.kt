@@ -74,9 +74,9 @@ class AktørServiceTest {
         every { aktørClient.hentAktørId(eq(PERSONIDENT_UTEN_IDENT)) } returns
                 AktørResponse().withAktør(PERSONIDENT_UTEN_IDENT, Aktør()
                         .withIdenter(listOf(Ident().withIdent(null).withGjeldende(true))))
-        every { pdlRestClient.hentGjeldendeAktørId(eq(PERSONIDENT), eq(Tema.ENF.name)) } returns TESTAKTORID
-        every { pdlRestClient.hentGjeldendePersonident(eq(TESTAKTORID), eq(Tema.ENF.name)) } returns PERSONIDENT
-        every { pdlRestClient.hentGjeldendeAktørId(eq(PERSONIDENT_UTEN_IDENT), eq(Tema.ENF.name)) } throws PdlNotFoundException()
+        every { pdlRestClient.hentGjeldendeAktørId(eq(PERSONIDENT), eq(Tema.ENF)) } returns TESTAKTORID
+        every { pdlRestClient.hentGjeldendePersonident(eq(TESTAKTORID), eq(Tema.ENF)) } returns PERSONIDENT
+        every { pdlRestClient.hentGjeldendeAktørId(eq(PERSONIDENT_UTEN_IDENT), eq(Tema.ENF)) } throws PdlNotFoundException()
     }
 
     @After
@@ -95,7 +95,7 @@ class AktørServiceTest {
 
     @Test
     fun `skal returnere aktørId fra pdl første gang`() {
-        val testAktørId = aktørService.getAktørIdFraPdl(PERSONIDENT, Tema.ENF.name)
+        val testAktørId = aktørService.getAktørIdFraPdl(PERSONIDENT, Tema.ENF)
         assertThat(testAktørId).isEqualTo(TESTAKTORID)
         verify(exactly = 1) { (pdlRestClient.hentGjeldendeAktørId(any(), any())) }
     }
@@ -111,7 +111,7 @@ class AktørServiceTest {
     @Test
     fun `skal returnere aktørId fra cache når den ligger der fra pdl`() {
         repeat(2) {
-            assertThat(aktørService.getAktørIdFraPdl(PERSONIDENT, Tema.ENF.name)).isEqualTo(TESTAKTORID)
+            assertThat(aktørService.getAktørIdFraPdl(PERSONIDENT, Tema.ENF)).isEqualTo(TESTAKTORID)
         }
         verify(exactly = 1) { pdlRestClient.hentGjeldendeAktørId(any(), any()) }
     }
@@ -129,7 +129,7 @@ class AktørServiceTest {
     fun `skal ikke cachea når den feiler`() {
         repeat(2) {
             assertThrows<Exception> {
-                aktørService.getAktørIdFraPdl(PERSONIDENT_UTEN_IDENT, Tema.ENF.name)
+                aktørService.getAktørIdFraPdl(PERSONIDENT_UTEN_IDENT, Tema.ENF)
             }
         }
         verify(exactly = 2) { pdlRestClient.hentGjeldendeAktørId(any(), any()) }

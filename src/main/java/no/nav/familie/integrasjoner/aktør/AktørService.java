@@ -5,6 +5,7 @@ import no.nav.familie.integrasjoner.aktør.domene.Ident;
 import no.nav.familie.integrasjoner.client.rest.AktørregisterRestClient;
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient;
 import no.nav.familie.integrasjoner.felles.OppslagException;
+import no.nav.familie.integrasjoner.felles.Tema;
 import no.nav.familie.integrasjoner.personopplysning.domene.AktørId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,7 @@ public class AktørService {
     }
 
     @Cacheable(value = "aktør_personIdent_pdl", unless = "#result == null")
-    public String getAktørIdFraPdl(String personIdent, String tema) {
+    public String getAktørIdFraPdl(String personIdent, Tema tema) {
         requireNonNull(personIdent, "personIdent");
         String responseFraRegister = pdlRestClient.hentGjeldendeAktørId(personIdent, tema);
         secureLogger.info("Legger fnr {} med aktørid {} i aktør-cache", personIdent, responseFraRegister);
@@ -57,7 +58,7 @@ public class AktørService {
     }
 
     @Cacheable(value = "aktør_aktørId_pdl", unless = "#result == null")
-    public String getPersonIdentFraPdl(AktørId aktørId, String tema) {
+    public String getPersonIdentFraPdl(AktørId aktørId, Tema tema) {
         requireNonNull(aktørId, "aktørId");
         String responseFraRegister = pdlRestClient.hentGjeldendePersonident(aktørId.getId(), tema);
         secureLogger.info("Legger aktørid {} med fnr {} i personident-cache", aktørId.getId(), responseFraRegister);

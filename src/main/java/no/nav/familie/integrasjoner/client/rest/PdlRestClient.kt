@@ -77,8 +77,8 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         }
     }
 
-    fun hentIdenter(personIdent: String, tema: Tema, historikk: Boolean): List<PdlIdent> {
-        val pdlPersonRequest = PdlIdentRequest(variables = PdlIdentRequestVariables(personIdent, "FOLKEREGISTERIDENT", historikk),
+    fun hentIdenter(ident: String, gruppe: String, tema: Tema, historikk: Boolean): List<PdlIdent> {
+        val pdlPersonRequest = PdlIdentRequest(variables = PdlIdentRequestVariables(ident, gruppe, historikk),
                                                query = HENT_IDENTER_QUERY)
 
         try {
@@ -86,48 +86,33 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                                                       pdlPersonRequest,
                                                                       httpHeaders(tema.name))
             if (response.harFeil() || response.data.hentIdenter == null) {
+                if (response.harNotFoundFeil()) {
+                    secureLogger.info("Finner ikke ident med gruppe=$gruppe for ident=$ident i PDL")
+                    throw PdlNotFoundException()
+                }
                 throw pdlOppslagException(feilmelding = "Feil ved oppslag på person: ${response.errorMessages()}",
-                                          personIdent = personIdent)
+                                          personIdent = ident)
             }
 
             return response.data.hentIdenter.identer
         } catch (e: OppslagException) {
             throw e
         } catch(e: Exception) {
-            throw pdlOppslagException(personIdent, error = e)
+            throw pdlOppslagException(ident, error = e)
         }
 
     }
 
-    fun hentGjeldendeAktørId(ident: String, tema: String): String {
-        return hentPdlIdent(ident, "AKTORID", tema)
+    fun hentGjeldendeAktørId(ident: String, tema: Tema): String {
+        val pdlIdenter = hentIdenter(ident, "AKTORID", tema, false)
+        return pdlIdenter.firstOrNull()?.ident
+                ?: throw pdlOppslagException(feilmelding = "Kunne ikke finne aktørId for personIdent=$ident i PDL. ", personIdent = ident)
     }
 
-    fun hentGjeldendePersonident(ident: String, tema: String): String {
-        return hentPdlIdent(ident, "FOLKEREGISTERIDENT", tema)
-    }
-
-    private fun hentPdlIdent(ident: String,
-                             gruppe: String,
-                             tema: String): String {
-        val pdlPersonRequest = PdlIdentRequest(variables = PdlIdentRequestVariables(ident, gruppe),
-                                               query = HENT_IDENTER_QUERY)
-
-        val pdlResponse: PdlResponse<PdlHentIdenter> = postForEntity(pdlUri,
-                                                                     pdlPersonRequest,
-                                                                     httpHeaders(tema))
-        feilsjekkRespons(pdlResponse, pdlPersonRequest.variables.ident)
-        return pdlResponse.data.hentIdenter?.identer?.firstOrNull()?.ident ?: throw pdlOppslagException(feilmelding = "Kunne ikke finne $gruppe for ident=$ident. Ingen gjeldende verdier i PDL. ", personIdent = ident)
-    }
-
-    private inline fun <reified T : Any> feilsjekkRespons(pdlResponse: PdlResponse<T>, personIdent: String) {
-        if (pdlResponse.harFeil()) {
-            if (pdlResponse.harNotFoundFeil()) {
-                throw PdlNotFoundException()
-            }
-            throw pdlOppslagException(feilmelding = "Feil ved henting av ${T::class} fra PDL: ${pdlResponse?.errorMessages()}",
-                                      personIdent = personIdent)
-        }
+    fun hentGjeldendePersonident(ident: String, tema: Tema): String {
+        val pdlIdenter = hentIdenter(ident, "FOLKEREGISTERIDENT", tema, false)
+        return pdlIdenter.firstOrNull()?.ident
+                ?: throw pdlOppslagException(feilmelding = "Kunne ikke finne personIdent for aktørId=$ident i PDL. ", personIdent = ident)
     }
 
 
