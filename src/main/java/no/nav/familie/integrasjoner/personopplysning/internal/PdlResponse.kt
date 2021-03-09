@@ -14,6 +14,10 @@ data class PdlResponse<T>(val data: T,
     fun errorMessages(): String {
         return errors?.joinToString { it -> it.message } ?: ""
     }
+
+    fun harNotFoundFeil(): Boolean {
+        return errors?.any { it.extensions?.notFound() == true } ?: false
+    }
 }
 
 data class PdlPerson(val person: PdlPersonData?)
@@ -31,7 +35,13 @@ data class PdlPersonData(val foedsel: List<PdlFødselsDato>,
 data class PdlFødselsDato(val foedselsdato: String?)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class PdlError(val message: String)
+data class PdlError(val message: String,
+                    val extensions: PdlExtensions?)
+
+data class PdlExtensions(val code: String) {
+    fun notFound() = code == "not_found"
+}
+
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlNavn(val fornavn: String,

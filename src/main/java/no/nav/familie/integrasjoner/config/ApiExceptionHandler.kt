@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.config
 
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.security.token.support.client.core.OAuth2ClientException
@@ -81,6 +82,12 @@ class ApiExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(failure("""Det oppstod en feil. ${e.message}""", error = e))
+    }
+
+    @ExceptionHandler(PdlNotFoundException::class)
+    fun handleThrowable(feil: PdlNotFoundException): ResponseEntity<Ressurs<Nothing>> {
+        logger.info("Finner ikke personen i PDL")
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(failure(frontendFeilmelding = "Finner ikke personen"))
     }
 
     @ExceptionHandler(OppslagException::class)

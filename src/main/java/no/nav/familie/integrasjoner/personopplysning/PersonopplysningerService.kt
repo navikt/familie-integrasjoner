@@ -68,7 +68,7 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
     }
 
     fun hentIdenter(personIdent: String, tema: Tema, medHistorikk: Boolean): FinnPersonidenterResponse {
-        val response = pdlRestClient.hentIdenter(personIdent, tema, medHistorikk)
+        val response = pdlRestClient.hentIdenter(personIdent, "FOLKEREGISTERIDENT", tema, medHistorikk)
         return FinnPersonidenterResponse(response.map { PersonIdentMedHistorikk(it.ident, it.historisk) })
     }
 
