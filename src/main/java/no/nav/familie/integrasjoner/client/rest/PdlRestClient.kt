@@ -6,6 +6,7 @@ import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
+import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.internal.*
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -98,6 +99,38 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
 
     }
 
+    fun hentGjeldendeAktørId(ident: String, tema: String): String {
+        return hentPdlIdent(ident, "AKTORID", tema)
+    }
+
+    fun hentGjeldendePersonident(ident: String, tema: String): String {
+        return hentPdlIdent(ident, "FOLKEREGISTERIDENT", tema)
+    }
+
+    private fun hentPdlIdent(ident: String,
+                             gruppe: String,
+                             tema: String): String {
+        val pdlPersonRequest = PdlIdentRequest(variables = PdlIdentRequestVariables(ident, gruppe),
+                                               query = HENT_IDENTER_QUERY)
+
+        val pdlResponse: PdlResponse<PdlHentIdenter> = postForEntity(pdlUri,
+                                                                     pdlPersonRequest,
+                                                                     httpHeaders(tema))
+        feilsjekkRespons(pdlResponse, pdlPersonRequest.variables.ident)
+        return pdlResponse.data.hentIdenter?.identer?.firstOrNull()?.ident ?: throw pdlOppslagException(feilmelding = "Kunne ikke finne $gruppe for ident=$ident. Ingen gjeldende verdier i PDL. ", personIdent = ident)
+    }
+
+    private inline fun <reified T : Any> feilsjekkRespons(pdlResponse: PdlResponse<T>, personIdent: String) {
+        if (pdlResponse.harFeil()) {
+            if (pdlResponse.harNotFoundFeil()) {
+                throw PdlNotFoundException()
+            }
+            throw pdlOppslagException(feilmelding = "Feil ved henting av ${T::class} fra PDL: ${pdlResponse?.errorMessages()}",
+                                      personIdent = personIdent)
+        }
+    }
+
+
     private fun httpHeaders(tema: String): HttpHeaders {
         return HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
@@ -133,7 +166,6 @@ enum class PersonInfoQuery(val graphQL: String) {
     ENKEL(hentGraphqlQuery("hentperson-enkel")),
     MED_RELASJONER(hentGraphqlQuery("hentperson-med-relasjoner"))
 }
-
 
 private fun hentGraphqlQuery(pdlResource: String): String {
     return PersonInfoQuery::class.java.getResource("/pdl/$pdlResource.graphql").readText().graphqlCompatible()
