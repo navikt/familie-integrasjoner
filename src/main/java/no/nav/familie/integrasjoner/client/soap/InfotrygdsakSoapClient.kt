@@ -9,12 +9,15 @@ import no.nav.gosys.asbo.infotrygdsak.ASBOGOSYSInfotrygdSakListe
 import no.nav.inf.BestillInfotrygdSakFaultGOSYSGeneriskMsg
 import no.nav.inf.GOSYSInfotrygdSak
 import no.nav.inf.HentSakListeFaultGOSYSGeneriskMsg
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 
 @Component
 class InfotrygdsakSoapClient(private val gosysInfotrygdSak: GOSYSInfotrygdSak)
     : AbstractSoapClient("GosysInfotrygdSak") {
+
+    private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
     fun opprettInfotrygdsak(asbogosysBestillInfotrygdSakRequest: ASBOGOSYSBestillInfotrygdSakRequest)
             : ASBOGOSYSBestillInfotrygdSakResponse {
@@ -23,6 +26,7 @@ class InfotrygdsakSoapClient(private val gosysInfotrygdSak: GOSYSInfotrygdSak)
                 gosysInfotrygdSak.bestillInfotrygdSak(asbogosysBestillInfotrygdSakRequest)
             }
         } catch (e: BestillInfotrygdSakFaultGOSYSGeneriskMsg) {
+            secureLogger.warn("Kan ikke opprette infotrygdsak: ${e.faultInfo}")
             throw OppslagException("Opprettelse av sak i Infotrygd feilet",
                                    "Infotrygd.opprettInfotrygdsak",
                                    OppslagException.Level.MEDIUM,
