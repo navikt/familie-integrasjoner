@@ -125,7 +125,8 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
                 oppgavetype = request.oppgavetype.value,
                 beskrivelse = request.beskrivelse,
                 behandlingstype = request.behandlingstype,
-                tilordnetRessurs = request.tilordnetRessurs
+                tilordnetRessurs = request.tilordnetRessurs,
+                behandlesAvApplikasjon = request.behandlesAvApplikasjon
         )
 
         return oppgaveRestClient.opprettOppgave(oppgave)
