@@ -20,6 +20,6 @@ class EgenAnsattRestClient(@Value("\${EGEN_ANSATT_URL}") private val egenAnsattU
 
     companion object {
 
-        private const val PATH_PING = "internal/isAlive"
+        private const val PATH_PING = "internal/health/readiness"
     }
 }
