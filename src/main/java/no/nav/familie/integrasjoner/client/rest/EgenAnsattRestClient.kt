@@ -9,14 +9,16 @@ import org.springframework.web.client.RestOperations
 import java.net.URI
 
 @Component
-class EgenAnsattRestClient(@Value("\${EGEN_ANSATT_URL}") private val egenAnsattUri: URI,
+class EgenAnsattRestClient(@Value("\${EGEN_ANSATT_URL}") private val uri: URI,
                            @Qualifier("noAuthorize") private val restTemplate: RestOperations)
     : AbstractPingableRestClient(restTemplate, "egenansatt") {
 
-    override val pingUri: URI = UriUtil.uri(egenAnsattUri, PATH_PING)
+    override val pingUri: URI = UriUtil.uri(uri, PATH_PING)
+    private val egenAnsattUri: URI = UriUtil.uri(uri, "skjermet")
 
-    fun erEgenAnsatt(fnr: String): Boolean = getForEntity(egenAnsattUri(fnr))
-    private fun egenAnsattUri(fnr: String): URI = UriUtil.uri(egenAnsattUri, "skjermet", "personident=$fnr")
+    data class SkjermetDataRequestDTO(val personident: String)
+
+    fun erEgenAnsatt(fnr: String): Boolean = postForEntity(egenAnsattUri, SkjermetDataRequestDTO(fnr))
 
     companion object {
 

@@ -32,16 +32,18 @@ class EgenAnsattControllerTest : OppslagSpringRunnerTest() {
     }
 
     private fun stubGetEgenAnsatt(erEgenAnsatt: Boolean) {
-        WireMock.stubFor(WireMock.get(PATH_OG_QUERY).willReturn(WireMock.aResponse()
-                                                                          .withStatus(200)
-                                                                          .withHeader("Content-Type",
-                                                                                      "application/json")
-                                                                          .withBody(objectMapper.writeValueAsString(
-                                                                                  erEgenAnsatt))))
+        WireMock.stubFor(WireMock.post(PATH_OG_QUERY)
+                                 .willReturn(WireMock.aResponse()
+                                                     .withStatus(200)
+                                                     .withHeader("Content-Type",
+                                                                 "application/json")
+                                                     .withBody(objectMapper.writeValueAsString(
+                                                             erEgenAnsatt))))
     }
 
     companion object {
+
         const val FNR = "12345678910"
-        private const val PATH_OG_QUERY = "/skjermet?personident=$FNR"
+        private const val PATH_OG_QUERY = "/skjermet"
     }
 }
