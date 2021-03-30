@@ -22,4 +22,9 @@ class TilgangskontrollService(private val cachedTilgangskontrollService: CachedT
         return cachedTilgangskontrollService.sjekkTilgang(personIdent, jwtToken, tema)
     }
 
+    fun sjekkTilgangTilFamilie(personIdent: String, tema: Tema): Tilgang {
+        val jwtToken = SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken("azuread")
+        return cachedTilgangskontrollService.sjekkTilgangTilFamilie(personIdent, jwtToken, tema)
+    }
+
 }

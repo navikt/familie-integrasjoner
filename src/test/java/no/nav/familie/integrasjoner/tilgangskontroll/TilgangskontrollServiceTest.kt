@@ -31,7 +31,7 @@ class TilgangskontrollServiceTest {
 
     @Test
     fun `tilgang til egen ansatt gir ikke tilgang hvis saksbehandler mangler rollen`() {
-        every { egenAnsattService.erEgenAnsatt(any()) }
+        every { egenAnsattService.erEgenAnsatt(any<String>()) }
                 .returns(true)
         every { tilgangConfig.grupper["utvidetTilgang"] }
                 .returns(AdRolle("8796", "NAV-Ansatt"))
@@ -49,7 +49,7 @@ class TilgangskontrollServiceTest {
 
     @Test
     fun `tilgang til egen ansatt gir tilgang hvis saksbehandler har rollen`() {
-        every { egenAnsattService.erEgenAnsatt(any()) }
+        every { egenAnsattService.erEgenAnsatt(any<String>()) }
                 .returns(true)
         every { tilgangConfig.grupper["utvidetTilgang"] }
                 .returns(AdRolle("8796", "NAV-Ansatt"))
@@ -67,7 +67,7 @@ class TilgangskontrollServiceTest {
 
     @Test
     fun `tilgang til egen ansatt gir ok hvis søker ikke er egen ansatt`() {
-        every { egenAnsattService.erEgenAnsatt(any()) }
+        every { egenAnsattService.erEgenAnsatt(any<String>()) }
                 .returns(false)
         every { tilgangConfig.grupper["utvidetTilgang"] }
                 .returns(AdRolle("8796", "NAV-Ansatt"))
@@ -81,7 +81,7 @@ class TilgangskontrollServiceTest {
 
     @Test
     fun `hvis kode6 har ikke saksbehandler uten rollen tilgang`() {
-        every { egenAnsattService.erEgenAnsatt(any()) }
+        every { egenAnsattService.erEgenAnsatt(any<String>()) }
                 .returns(false)
         every { tilgangConfig.grupper["kode6"] }
                 .returns(AdRolle("8796", "Strengt fortrolig adresse"))
@@ -101,7 +101,7 @@ class TilgangskontrollServiceTest {
 
     @Test
     fun `hvis kode7 har ikke saksbehandler uten rollen tilgang`() {
-        every { egenAnsattService.erEgenAnsatt(any()) }
+        every { egenAnsattService.erEgenAnsatt(any<String>()) }
                 .returns(false)
         every { tilgangConfig.grupper["kode7"] }
                 .returns(AdRolle("8796", "Fortrolig adresse"))
@@ -121,7 +121,7 @@ class TilgangskontrollServiceTest {
 
     @Test
     fun `hvis kode6 har saksbehandler med rollen tilgang`() {
-        every { egenAnsattService.erEgenAnsatt(any()) }
+        every { egenAnsattService.erEgenAnsatt(any<String>()) }
                 .returns(false)
         every { saksbehandler.jwtTokenClaims }
                 .returns(jwtTokenClaims)
@@ -141,7 +141,7 @@ class TilgangskontrollServiceTest {
 
     @Test
     fun `hvis kode7 har saksbehandler med rollen tilgang`() {
-        every { egenAnsattService.erEgenAnsatt(any()) }
+        every { egenAnsattService.erEgenAnsatt(any<String>()) }
                 .returns(false)
         every { saksbehandler.jwtTokenClaims }
                 .returns(jwtTokenClaims)

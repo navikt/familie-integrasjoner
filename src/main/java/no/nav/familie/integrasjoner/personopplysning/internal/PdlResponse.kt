@@ -20,6 +20,19 @@ data class PdlResponse<T>(val data: T,
     }
 }
 
+data class PersonDataBolk<T>(val ident: String, val code: String, val person: T?)
+data class PersonBolk<T>(val personBolk: List<PersonDataBolk<T>>)
+data class PdlBolkResponse<T>(val data: PersonBolk<T>?, val errors: List<PdlError>?) {
+
+    fun errorMessages(): String {
+        return errors?.joinToString { it -> it.message } ?: ""
+    }
+}
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class PdlPersonMedRelasjonerOgAdressebeskyttelse(val familierelasjoner: List<PdlFamilierelasjon> = emptyList(),
+                                                      val adressebeskyttelse: List<Adressebeskyttelse>)
+
 data class PdlPerson(val person: PdlPersonData?)
 
 @JsonIgnoreProperties(ignoreUnknown = true)

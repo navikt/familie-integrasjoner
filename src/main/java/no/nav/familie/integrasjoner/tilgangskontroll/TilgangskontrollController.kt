@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.tilgangskontroll
 
 import no.nav.familie.integrasjoner.felles.Tema
+import no.nav.familie.kontrakter.felles.PersonIdent
 import no.nav.familie.kontrakter.felles.tilgangskontroll.Tilgang
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.context.annotation.Profile
@@ -34,4 +35,11 @@ class TilgangskontrollController(private val tilgangskontrollService: Tilgangsko
     fun tilgangTilPersoner(@RequestBody personIdenter: List<String>, @RequestHeader(name = "Nav-Tema") tema: Tema): List<Tilgang> {
         return tilgangskontrollService.sjekkTilgangTilBrukere(personIdenter, tema)
     }
+
+    @PostMapping(path = ["/familie"])
+    @ProtectedWithClaims(issuer = "azuread")
+    fun tilgangTilPersonerV3(@RequestBody personIdent: PersonIdent, @RequestHeader(name = "Nav-Tema") tema: Tema): Tilgang {
+        return tilgangskontrollService.sjekkTilgangTilFamilie(personIdent.ident, tema)
+    }
+
 }
