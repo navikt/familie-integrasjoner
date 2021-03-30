@@ -51,7 +51,7 @@ data class PdlFødselsDato(val foedselsdato: String?)
 data class PdlError(val message: String,
                     val extensions: PdlExtensions?)
 
-data class PdlExtensions(val code: String) {
+data class PdlExtensions(val code: String?) {
     fun notFound() = code == "not_found"
 }
 
