@@ -85,7 +85,7 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
         val sivilstandIdenter = hovedperson.sivilstand.mapNotNull { it.relatertVedSivilstand }.distinct()
         val fullmaktIdenter = hovedperson.fullmakt.map { it.motpartsPersonident }.distinct()
 
-        val tilknyttedeIdenter = (sivilstandIdenter + fullmaktIdenter + barnIdenter).distinct()
+        val tilknyttedeIdenter = (barnIdenter + sivilstandIdenter + fullmaktIdenter).distinct()
         val tilknyttedeIdenterData = hentPersonMedRelasjonerOgAdressebeskyttelse(tilknyttedeIdenter, tema)
 
         val barnOpplysninger = tilknyttedeIdenterData.filter { (ident, _) -> barnIdenter.contains(ident) }

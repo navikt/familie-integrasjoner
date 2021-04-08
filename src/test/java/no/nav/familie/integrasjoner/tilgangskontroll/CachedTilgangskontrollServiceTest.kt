@@ -38,7 +38,7 @@ internal class CachedTilgangskontrollServiceTest {
         every { jwtTokenClaims.get("preferred_username") }.returns(listOf("bob"))
         every { jwtTokenClaims.getAsList(any()) }.returns(emptyList())
         every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } answers
-                { (firstArg() as Set<String>).map { it to false }.toMap() }
+                { firstArg<Set<String>>().map { it to false }.toMap() }
     }
 
     private fun mockHarKode7() {

@@ -30,10 +30,10 @@ data class PdlBolkResponse<T>(val data: PersonBolk<T>?, val errors: List<PdlErro
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class PdlPersonMedRelasjonerOgAdressebeskyttelse(val familierelasjoner: List<PdlFamilierelasjon> = emptyList(),
-                                                      val sivilstand: List<Sivilstand>,
-                                                      val fullmakt: List<Fullmakt>,
-                                                      val adressebeskyttelse: List<Adressebeskyttelse>)
+    data class PdlPersonMedRelasjonerOgAdressebeskyttelse(val familierelasjoner: List<PdlFamilierelasjon>,
+                                                          val sivilstand: List<Sivilstand>,
+                                                          val fullmakt: List<Fullmakt>,
+                                                          val adressebeskyttelse: List<Adressebeskyttelse>)
 
 data class PdlPerson(val person: PdlPersonData?)
 

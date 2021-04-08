@@ -1,5 +1,9 @@
 package no.nav.familie.integrasjoner.personopplysning
 
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
 import no.nav.familie.integrasjoner.client.soap.PersonSoapClient
 import no.nav.familie.integrasjoner.felles.ws.DateUtil
 import no.nav.familie.kontrakter.ks.søknad.testdata.SøknadTestdata
@@ -8,7 +12,6 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkResponse
-import org.mockito.ArgumentCaptor
 import org.mockito.Mockito
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -25,41 +28,30 @@ class PersonopplysningerTestConfig {
     @Profile("mock-personopplysninger")
     @Primary
     fun personConsumerMock(): PersonSoapClient {
-        val personConsumer = Mockito.mock(PersonSoapClient::class.java)
-        val personRequestCaptor =
-                ArgumentCaptor.forClass(HentPersonRequest::class.java)
-        val historikkRequestCaptor =
-                ArgumentCaptor.forClass(HentPersonhistorikkRequest::class.java)
-        Mockito.`when`(personConsumer.hentPersonhistorikkResponse(historikkRequestCaptor.capture()))
-                .thenAnswer {
-                    if (historikkRequestCaptor.value == null) {
-                        return@thenAnswer null
-                    }
-                    val personIdent = historikkRequestCaptor.value!!.aktoer as PersonIdent
-                    if (SøknadTestdata.barnPersonident == personIdent.ident.ident) {
-                        return@thenAnswer hentPersonhistorikkResponseBarn()
-                    }
-                    hentPersonHistorikkResponse(personIdent.ident.ident == SøknadTestdata.morPersonident)
-                }
-        Mockito.`when`(personConsumer.hentPersonResponse(personRequestCaptor.capture()))
-                .thenAnswer {
-                    if (personRequestCaptor.value == null) {
-                        return@thenAnswer null
-                    }
-                    val personIdent = personRequestCaptor.value!!.aktoer as PersonIdent
-                    if (SøknadTestdata.morPersonident == personIdent.ident.ident) {
-                        return@thenAnswer hentPersonResponseForMor()
-                    }
-                    if (SøknadTestdata.barnPersonident == personIdent.ident.ident) {
-                        return@thenAnswer hentPersonResponseForBarn()
-                    }
-                    hentPersonResponseForFar()
-                }
-        Mockito.doNothing().`when`(personConsumer).ping()
+        val personConsumer = mockk<PersonSoapClient>()
+        every { personConsumer.hentPersonhistorikkResponse(any()) } answers {
+            val personIdent = firstArg<HentPersonhistorikkRequest>().aktoer as PersonIdent
+            if (SøknadTestdata.barnPersonident == personIdent.ident.ident) {
+                hentPersonhistorikkResponseBarn()
+            } else {
+                hentPersonHistorikkResponse(personIdent.ident.ident == SøknadTestdata.morPersonident)
+            }
+        }
+        every { personConsumer.hentPersonResponse(any()) } answers {
+            val personIdent = firstArg<HentPersonRequest>().aktoer as PersonIdent
+            when (personIdent.ident.ident) {
+                SøknadTestdata.morPersonident -> hentPersonResponseForMor()
+                SøknadTestdata.barnPersonident -> hentPersonResponseForBarn()
+                else -> hentPersonResponseForFar()
+            }
+        }
+
+        every { personConsumer.ping() } just Runs
         return personConsumer
     }
 
     companion object {
+
         private val TOM = LocalDate.now()
         private val FOM = TOM.minusYears(5)
         private val FOM_BARNET = LocalDate.of(2018, 5, 1)
