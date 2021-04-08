@@ -49,6 +49,7 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
                condition = "#jwtToken.subject != null")
     fun sjekkTilgangTilPersonMedRelasjoner(personIdent: String, jwtToken: JwtToken, tema: Tema): Tilgang {
         val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent, tema)
+        secureLogger.info("Sjekker tilgang til {}", personMedRelasjoner)
 
         val tilgang = when (høyesteGraderingen(personMedRelasjoner)) {
             FORTROLIG -> hentTilgangForRolle(tilgangConfig.grupper["kode7"], jwtToken, personIdent)
