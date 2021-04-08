@@ -69,9 +69,8 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
      * Trenger kun å sjekke personen og barnets andre foreldrer for om de er ansatt
      */
     private fun erEgenAnsatt(personMedRelasjoner: PersonMedRelasjoner): Boolean {
-        val relevanteIdenterÅSjekkeEgenAnsattFor =
-                setOf(personMedRelasjoner.personIdent) + personMedRelasjoner.barnsForeldrer.map { it.personIdent }
-        return egenAnsattService.erEgenAnsatt(relevanteIdenterÅSjekkeEgenAnsattFor).any { it.value }
+        val relevanteIdenter = setOf(personMedRelasjoner.personIdent) + personMedRelasjoner.barnsForeldrer.map { it.personIdent }
+        return egenAnsattService.erEgenAnsatt(relevanteIdenter).any { it.value }
     }
 
     private fun høyesteGraderingen(personUtvidet: PersonMedRelasjoner): ADRESSEBESKYTTELSEGRADERING? {
