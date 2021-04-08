@@ -10,6 +10,13 @@ query($identer: [ID!]!){
                 relatertPersonsIdent
                 relatertPersonsRolle
             }
+            sivilstand {
+                type
+                relatertVedSivilstand
+            }
+            fullmakt {
+                motpartsPersonident
+            }
         }
     }
 }

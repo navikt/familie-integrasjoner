@@ -31,6 +31,8 @@ data class PdlBolkResponse<T>(val data: PersonBolk<T>?, val errors: List<PdlErro
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlPersonMedRelasjonerOgAdressebeskyttelse(val familierelasjoner: List<PdlFamilierelasjon> = emptyList(),
+                                                      val sivilstand: List<Sivilstand>,
+                                                      val fullmakt: List<Fullmakt>,
                                                       val adressebeskyttelse: List<Adressebeskyttelse>)
 
 data class PdlPerson(val person: PdlPersonData?)
@@ -52,6 +54,7 @@ data class PdlError(val message: String,
                     val extensions: PdlExtensions?)
 
 data class PdlExtensions(val code: String?) {
+
     fun notFound() = code == "not_found"
 }
 
@@ -82,9 +85,11 @@ data class Adressebeskyttelse(
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class Sivilstand(
-        val type: SIVILSTAND
-)
+data class Sivilstand(val type: SIVILSTAND,
+                      val relatertVedSivilstand: String?)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Fullmakt(val motpartsPersonident: String)
 
 enum class KJØNN {
     MANN,

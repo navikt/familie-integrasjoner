@@ -36,10 +36,10 @@ class TilgangskontrollController(private val tilgangskontrollService: Tilgangsko
         return tilgangskontrollService.sjekkTilgangTilBrukere(personIdenter, tema)
     }
 
-    @PostMapping(path = ["/familie"])
+    @PostMapping(path = ["/person-med-relasjoner"])
     @ProtectedWithClaims(issuer = "azuread")
-    fun tilgangTilPersonerV3(@RequestBody personIdent: PersonIdent, @RequestHeader(name = "Nav-Tema") tema: Tema): Tilgang {
-        return tilgangskontrollService.sjekkTilgangTilFamilie(personIdent.ident, tema)
+    fun tilgangTilPersonMedRelasjoner(@RequestBody personIdent: PersonIdent, @RequestHeader(name = "Nav-Tema") tema: Tema): Tilgang {
+        return tilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner(personIdent.ident, tema)
     }
 
 }

@@ -9,6 +9,7 @@ import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSE
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.FORTROLIG
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG_UTLAND
+import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
 import no.nav.familie.kontrakter.felles.tilgangskontroll.Tilgang
 import no.nav.security.token.support.core.jwt.JwtToken
@@ -43,37 +44,41 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
         }
     }
 
-    @Cacheable(cacheNames = ["TILGANG_TIL_FAMILIE"],
+    @Cacheable(cacheNames = ["TILGANG_TIL_PERSON_MED_RELASJONER"],
                key = "#jwtToken.subject.concat(#personIdent)",
                condition = "#jwtToken.subject != null")
-    fun sjekkTilgangTilFamilie(personIdent: String, jwtToken: JwtToken, tema: Tema): Tilgang {
+    fun sjekkTilgangTilPersonMedRelasjoner(personIdent: String, jwtToken: JwtToken, tema: Tema): Tilgang {
         val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent, tema)
-        val alleIdenter =
-                listOf(personIdent) + personMedRelasjoner.barn.map { it.personIdent } + personMedRelasjoner.barnsForeldrer.map { it.personIdent }
 
         val tilgang = when (høyesteGraderingen(personMedRelasjoner)) {
             FORTROLIG -> hentTilgangForRolle(tilgangConfig.grupper["kode7"], jwtToken, personIdent)
             STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND ->
-                hentTilgangForRolle(
-                        tilgangConfig.grupper["kode6"],
-                        jwtToken,
-                        personIdent)
+                hentTilgangForRolle(tilgangConfig.grupper["kode6"], jwtToken, personIdent)
             else -> Tilgang(harTilgang = true)
         }
         if (!tilgang.harTilgang) {
             return tilgang
         }
-        if (egenAnsattService.erEgenAnsatt(alleIdenter).any { it.value }) {
+        if (erEgenAnsatt(personMedRelasjoner)) {
             return hentTilgangForRolle(tilgangConfig.grupper["utvidetTilgang"], jwtToken, personIdent)
         }
         return Tilgang(harTilgang = true)
     }
 
-    // TODO uklart om man kan hente ut høyeste graderingen eller om man må sjekke flere
-    private fun høyesteGraderingen(personMedRelasjoner: PersonopplysningerService.PersonMedFamilieCache): ADRESSEBESKYTTELSEGRADERING? {
-        val adressebeskyttelser = (setOf(personMedRelasjoner.adressebeskyttelse) +
-                                   personMedRelasjoner.barn.map { it.adressebeskyttelse } +
-                                   personMedRelasjoner.barnsForeldrer.map { it.adressebeskyttelse }).filterNotNull()
+    /**
+     * Trenger kun å sjekke personen og barnets andre foreldrer for om de er ansatt
+     */
+    private fun erEgenAnsatt(personMedRelasjoner: PersonMedRelasjoner): Boolean {
+        val relevanteIdenterÅSjekkeEgenAnsattFor =
+                setOf(personMedRelasjoner.personIdent) + personMedRelasjoner.barnsForeldrer.map { it.personIdent }
+        return egenAnsattService.erEgenAnsatt(relevanteIdenterÅSjekkeEgenAnsattFor).any { it.value }
+    }
+
+    private fun høyesteGraderingen(personUtvidet: PersonMedRelasjoner): ADRESSEBESKYTTELSEGRADERING? {
+        val adressebeskyttelser =
+                (personUtvidet.adressebeskyttelse?.let { setOf(it) } ?: emptySet<ADRESSEBESKYTTELSEGRADERING>() +
+                 listOf(personUtvidet.sivilstand, personUtvidet.fullmakt, personUtvidet.barn, personUtvidet.barnsForeldrer)
+                         .flatMap { relasjoner -> relasjoner.mapNotNull { it.adressebeskyttelse } })
         return when {
             adressebeskyttelser.contains(STRENGT_FORTROLIG_UTLAND) -> STRENGT_FORTROLIG_UTLAND
             adressebeskyttelser.contains(STRENGT_FORTROLIG) -> STRENGT_FORTROLIG

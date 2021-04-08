@@ -10,10 +10,11 @@ import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter
-import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
 import no.nav.familie.integrasjoner.personopplysning.internal.FAMILIERELASJONSROLLE
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedRelasjonerOgAdressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
+import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedAdresseBeskyttelse
+import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
 import no.nav.familie.kontrakter.felles.personopplysning.FinnPersonidenterResponse
 import no.nav.familie.kontrakter.felles.personopplysning.PersonIdentMedHistorikk
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov
@@ -76,38 +77,46 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
     }
 
     @Cacheable(cacheNames = ["PERSON_MED_RELASJONER"], key = "#personIdent + #tema", condition = "#personIdent != null")
-    fun hentPersonMedRelasjoner(personIdent: String, tema: Tema): PersonMedFamilieCache {
+    fun hentPersonMedRelasjoner(personIdent: String, tema: Tema): PersonMedRelasjoner {
         val hovedperson = hentPersonMedRelasjonerOgAdressebeskyttelse(listOf(personIdent), tema).getOrThrow(personIdent)
         val barnIdenter = hovedperson.familierelasjoner
                 .filter { it.relatertPersonsRolle == FAMILIERELASJONSROLLE.BARN }
                 .map { it.relatertPersonsIdent }
-        val barnOpplysninger = hentPersonMedRelasjonerOgAdressebeskyttelse(barnIdenter, tema)
-        val barn = barnIdenter.map { PersonMedRelasjoner(it, barnOpplysninger.getOrThrow(it).gradering()) }
+        val sivilstandIdenter = hovedperson.sivilstand.mapNotNull { it.relatertVedSivilstand }.distinct()
+        val fullmaktIdenter = hovedperson.fullmakt.map { it.motpartsPersonident }.distinct()
+
+        val tilknyttedeIdenter = (sivilstandIdenter + fullmaktIdenter + barnIdenter).distinct()
+        val tilknyttedeIdenterData = hentPersonMedRelasjonerOgAdressebeskyttelse(tilknyttedeIdenter, tema)
+
+        val barnOpplysninger = tilknyttedeIdenterData.filter { (ident, _) -> barnIdenter.contains(ident) }
         val barnsForeldrer = hentBarnsForeldrer(barnOpplysninger, personIdent, tema)
-        return PersonMedFamilieCache(personIdent,
-                                     hovedperson.gradering(),
-                                     barn,
-                                     barnsForeldrer)
+
+        return PersonMedRelasjoner(personIdent = personIdent,
+                                   adressebeskyttelse = hovedperson.gradering(),
+                                   sivilstand = mapPersonMedRelasjoner(sivilstandIdenter, tilknyttedeIdenterData),
+                                   fullmakt = mapPersonMedRelasjoner(fullmaktIdenter, tilknyttedeIdenterData),
+                                   barn = mapPersonMedRelasjoner(barnIdenter, tilknyttedeIdenterData),
+                                   barnsForeldrer = barnsForeldrer)
     }
 
     private fun hentBarnsForeldrer(barnOpplysninger: Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>,
                                    personIdent: String,
-                                   tema: Tema): List<PersonMedRelasjoner> {
+                                   tema: Tema): List<PersonMedAdresseBeskyttelse> {
         val barnsForeldrerIdenter = barnOpplysninger.flatMap { (_, personMedRelasjoner) ->
             personMedRelasjoner.familierelasjoner.filter { it.relatertPersonsRolle != FAMILIERELASJONSROLLE.BARN }
-        }.filter { it.relatertPersonsIdent != personIdent }.map { it.relatertPersonsIdent }
+        }.filter { it.relatertPersonsIdent != personIdent }.map { it.relatertPersonsIdent }.distinct()
         val barnsForeldrerOpplysninger = hentPersonMedRelasjonerOgAdressebeskyttelse(barnsForeldrerIdenter, tema)
 
-        return barnsForeldrerIdenter.map {
-            PersonMedRelasjoner(it,
-                                barnsForeldrerOpplysninger.getOrThrow(it)
-                                        .gradering())
-        }
+        return mapPersonMedRelasjoner(barnsForeldrerIdenter, barnsForeldrerOpplysninger)
     }
 
-    fun PdlPersonMedRelasjonerOgAdressebeskyttelse.gradering() = this.adressebeskyttelse.firstOrNull()?.gradering
+    private fun mapPersonMedRelasjoner(sivilstandIdenter: List<String>,
+                                       tilknyttedeIdenterData: Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>) =
+            sivilstandIdenter.map { PersonMedAdresseBeskyttelse(it, tilknyttedeIdenterData.getOrThrow(it).gradering()) }
 
-    fun Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>.getOrThrow(ident: String) =
+    private fun PdlPersonMedRelasjonerOgAdressebeskyttelse.gradering() = this.adressebeskyttelse.firstOrNull()?.gradering
+
+    private fun Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>.getOrThrow(ident: String) =
             this[ident] ?: throw OppslagException("Finner ikke $ident i response fra pdl",
                                                   "pdl",
                                                   OppslagException.Level.MEDIUM)
@@ -117,16 +126,6 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
         if (personIdenter.isEmpty()) return emptyMap()
         return pdlRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(personIdenter, tema)
     }
-
-    // TODO burde vi sjekke ev. partners (sivilstand)?
-    data class PersonMedFamilieCache(
-            val personIdent: String,
-            val adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING?,
-            val barn: List<PersonMedRelasjoner>,
-            val barnsForeldrer: List<PersonMedRelasjoner>)
-
-    data class PersonMedRelasjoner(val personIdent: String,
-                                   val adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING?)
 
     companion object {
 

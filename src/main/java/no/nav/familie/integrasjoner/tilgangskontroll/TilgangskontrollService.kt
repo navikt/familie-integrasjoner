@@ -22,9 +22,12 @@ class TilgangskontrollService(private val cachedTilgangskontrollService: CachedT
         return cachedTilgangskontrollService.sjekkTilgang(personIdent, jwtToken, tema)
     }
 
-    fun sjekkTilgangTilFamilie(personIdent: String, tema: Tema): Tilgang {
+    fun sjekkTilgangTilPersonMedRelasjoner(personIdent: String, tema: Tema): Tilgang {
+        if(tema != Tema.ENF) {
+            throw IllegalArgumentException("Har ikke lagt inn støtte for andre enn ENF")
+        }
         val jwtToken = SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken("azuread")
-        return cachedTilgangskontrollService.sjekkTilgangTilFamilie(personIdent, jwtToken, tema)
+        return cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner(personIdent, jwtToken, tema)
     }
 
 }

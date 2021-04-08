@@ -18,11 +18,11 @@ class EgenAnsattRestClient(@Value("\${EGEN_ANSATT_URL}") private val uri: URI,
     private val egenAnsattBulkUri: URI = UriUtil.uri(uri, "skjermetBulk")
 
     data class SkjermetDataRequestDTO(val personident: String)
-    data class SkjermetDataBolkRequestDTO(val personidenter: List<String>)
+    data class SkjermetDataBolkRequestDTO(val personidenter: Set<String>)
 
     fun erEgenAnsatt(personIdent: String): Boolean = postForEntity(egenAnsattUri, SkjermetDataRequestDTO(personIdent))
 
-    fun erEgenAnsatt(personidenter: List<String>): Map<String, Boolean> = postForEntity(egenAnsattBulkUri, SkjermetDataBolkRequestDTO(personidenter))
+    fun erEgenAnsatt(personidenter: Set<String>): Map<String, Boolean> = postForEntity(egenAnsattBulkUri, SkjermetDataBolkRequestDTO(personidenter))
 
     companion object {
 

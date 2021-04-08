@@ -10,5 +10,5 @@ class EgenAnsattService(private val egenAnsattRestClient: EgenAnsattRestClient) 
     @Cacheable("erEgenAnsatt")
     fun erEgenAnsatt(personIdent: String): Boolean = egenAnsattRestClient.erEgenAnsatt(personIdent)
 
-    fun erEgenAnsatt(personIdenter: List<String>): Map<String, Boolean> = egenAnsattRestClient.erEgenAnsatt(personIdenter)
+    fun erEgenAnsatt(personIdenter: Set<String>): Map<String, Boolean> = egenAnsattRestClient.erEgenAnsatt(personIdenter)
 }
