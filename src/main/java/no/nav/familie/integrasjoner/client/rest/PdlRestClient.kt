@@ -6,6 +6,10 @@ import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
+import no.nav.familie.integrasjoner.felles.graphqlQuery
+import no.nav.familie.integrasjoner.geografisktilknytning.PdlGeografiskTilknytningRequest
+import no.nav.familie.integrasjoner.geografisktilknytning.PdlGeografiskTilknytningVariables
+import no.nav.familie.integrasjoner.geografisktilknytning.PdlHentGeografiskTilknytning
 import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.internal.*
 import org.springframework.beans.factory.annotation.Qualifier
@@ -115,6 +119,32 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                 ?: throw pdlOppslagException(feilmelding = "Kunne ikke finne personIdent for aktørId=$ident i PDL. ", personIdent = ident)
     }
 
+    fun hentGeografiskTilknytning(personIdent: String, tema: String): String {
+        val pdlGeografiskTilknytningRequest =
+                PdlGeografiskTilknytningRequest(variables = PdlGeografiskTilknytningVariables(personIdent),
+                                                query = HENT_GEOGRAFISK_TILKNYTNING_QUERY)
+        try {
+            val response: PdlResponse<PdlHentGeografiskTilknytning> = postForEntity(pdlUri,
+                                                                                    pdlGeografiskTilknytningRequest,
+                                                                                    httpHeaders(tema))
+
+            if (response.harFeil()) {
+                if (response.harNotFoundFeil()) {
+                    secureLogger.info("Finner ikke geografisk tilknytning for ident=$personIdent i PDL")
+                    throw PdlNotFoundException()
+                }
+                throw pdlOppslagException(feilmelding = "Feil ved oppslag på geografisk tilknytning på person: ${response.errorMessages()}",
+                                          personIdent = personIdent)
+            }
+            return response.data.hentGeografiskTilknytning.hentGeografiskTilknytning()
+        } catch (e: Exception) {
+            when (e) {
+                is OppslagException -> throw e
+                else -> throw pdlOppslagException(personIdent, error = e)
+            }
+        }
+    }
+
 
     private fun httpHeaders(tema: String): HttpHeaders {
         return HttpHeaders().apply {
@@ -144,6 +174,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
 
         private const val PATH_GRAPHQL = "graphql"
         private val HENT_IDENTER_QUERY = hentGraphqlQuery("hentIdenter")
+        private val HENT_GEOGRAFISK_TILKNYTNING_QUERY = graphqlQuery("/pdl/geografisk_tilknytning.graphql")
     }
 }
 
