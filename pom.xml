@@ -193,6 +193,11 @@
             <artifactId>person-v3-tjenestespesifikasjon</artifactId>
             <version>${tjenestespesifikasjoner.version}</version>
         </dependency>
+        <dependency>
+            <groupId>no.nav.tjenestespesifikasjoner</groupId>
+            <artifactId>nav-fim-organisasjon-v5-tjenestespesifikasjon</artifactId>
+            <version>${tjenestespesifikasjoner.version}</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/no.nav.tjenestespesifikasjoner/egenansatt-v1-tjenestespesifikasjon -->
         <dependency>
             <groupId>no.nav.tjenestespesifikasjoner</groupId>
