@@ -29,19 +29,7 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
         val personInfo = personopplysningerService.hentPersoninfo(personIdent, tema.toString(), PersonInfoQuery.ENKEL)
         val adressebeskyttelse = personInfo.adressebeskyttelseGradering
 
-        if (egenAnsattService.erEgenAnsatt(personIdent)) {
-            return hentTilgangForRolle(tilgangConfig.grupper["utvidetTilgang"], jwtToken, personIdent)
-        }
-
-        return when (adressebeskyttelse) {
-            FORTROLIG -> hentTilgangForRolle(tilgangConfig.grupper["kode7"], jwtToken, personIdent)
-            STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND ->
-                hentTilgangForRolle(
-                        tilgangConfig.grupper["kode6"],
-                        jwtToken,
-                        personIdent)
-            else -> Tilgang(true)
-        }
+        return sjekTilgang(adressebeskyttelse, jwtToken, personIdent) { egenAnsattService.erEgenAnsatt(personIdent) }
     }
 
     @Cacheable(cacheNames = ["TILGANG_TIL_PERSON_MED_RELASJONER"],
@@ -51,7 +39,15 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
         val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent, tema)
         secureLogger.info("Sjekker tilgang til {}", personMedRelasjoner)
 
-        val tilgang = when (høyesteGraderingen(personMedRelasjoner)) {
+        val høyesteGraderingen = høyesteGraderingen(personMedRelasjoner)
+        return sjekTilgang(høyesteGraderingen, jwtToken, personIdent) { erEgenAnsatt(personMedRelasjoner) }
+    }
+
+    private fun sjekTilgang(adressebeskyttelsegradering: ADRESSEBESKYTTELSEGRADERING?,
+                            jwtToken: JwtToken,
+                            personIdent: String,
+                            egenAnsattSjekk: () -> Boolean): Tilgang {
+        val tilgang = when (adressebeskyttelsegradering) {
             FORTROLIG -> hentTilgangForRolle(tilgangConfig.grupper["kode7"], jwtToken, personIdent)
             STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND ->
                 hentTilgangForRolle(tilgangConfig.grupper["kode6"], jwtToken, personIdent)
@@ -60,7 +56,7 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
         if (!tilgang.harTilgang) {
             return tilgang
         }
-        if (erEgenAnsatt(personMedRelasjoner)) {
+        if (egenAnsattSjekk()) {
             return hentTilgangForRolle(tilgangConfig.grupper["utvidetTilgang"], jwtToken, personIdent)
         }
         return Tilgang(harTilgang = true)

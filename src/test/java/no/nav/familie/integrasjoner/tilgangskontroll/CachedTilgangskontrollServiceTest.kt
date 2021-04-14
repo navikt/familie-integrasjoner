@@ -2,14 +2,17 @@ package no.nav.familie.integrasjoner.tilgangskontroll
 
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import no.nav.familie.integrasjoner.config.TilgangConfig
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
 import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
+import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedAdresseBeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
+import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import no.nav.security.token.support.core.jwt.JwtToken
 import no.nav.security.token.support.core.jwt.JwtTokenClaims
 import org.assertj.core.api.Assertions.assertThat
@@ -37,6 +40,7 @@ internal class CachedTilgangskontrollServiceTest {
         every { jwtToken.jwtTokenClaims } returns jwtTokenClaims
         every { jwtTokenClaims.get("preferred_username") }.returns(listOf("bob"))
         every { jwtTokenClaims.getAsList(any()) }.returns(emptyList())
+        every { egenAnsattService.erEgenAnsatt(any<String>()) } returns false
         every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } answers
                 { firstArg<Set<String>>().map { it to false }.toMap() }
     }
@@ -47,6 +51,28 @@ internal class CachedTilgangskontrollServiceTest {
 
     private fun mockHarKode6() {
         every { jwtTokenClaims.getAsList(any()) }.returns(listOf(kode6Id))
+    }
+
+    @Test
+    internal fun `har tilgang når det ikke finnes noen adressebeskyttelser for enskild person`() {
+        mockHentPersonInfo()
+        assertThat(sjekkTilgangTilPerson()).isTrue
+        verify(exactly = 1) { egenAnsattService.erEgenAnsatt(any<String>()) }
+    }
+
+    @Test
+    internal fun `har ikke tilgang når det finnes adressebeskyttelser for enskild person`() {
+        mockHentPersonInfo(ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
+        assertThat(sjekkTilgangTilPerson()).isFalse
+        verify(exactly = 0) { egenAnsattService.erEgenAnsatt(any<String>()) }
+    }
+
+    @Test
+    internal fun `har ikke tilgang når det ikke finnes noen adressebeskyttelser for enskild person men er ansatt`() {
+        every { egenAnsattService.erEgenAnsatt(any<String>()) } returns true
+        mockHentPersonInfo()
+        assertThat(sjekkTilgangTilPerson()).isFalse
+        verify(exactly = 1) { egenAnsattService.erEgenAnsatt(any<String>()) }
     }
 
     @Test
@@ -109,6 +135,8 @@ internal class CachedTilgangskontrollServiceTest {
     private fun sjekkTilgangTilPersonMedRelasjoner() =
             cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner("", jwtToken, Tema.ENF).harTilgang
 
+    private fun sjekkTilgangTilPerson() = cachedTilgangskontrollService.sjekkTilgang("", jwtToken, Tema.ENF).harTilgang
+
     private fun lagPersonMedRelasjoner(adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING? = null,
                                        sivilstand: ADRESSEBESKYTTELSEGRADERING? = null,
                                        fullmakt: ADRESSEBESKYTTELSEGRADERING? = null,
@@ -124,4 +152,14 @@ internal class CachedTilgangskontrollServiceTest {
 
     private fun lagPersonMedBeskyttelse(sivilstand: ADRESSEBESKYTTELSEGRADERING?, personIdent: String) =
             sivilstand?.let { listOf(PersonMedAdresseBeskyttelse(personIdent, it)) } ?: emptyList()
+
+    private fun mockHentPersonInfo(adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING = ADRESSEBESKYTTELSEGRADERING.UGRADERT) {
+        every { personopplysningerService.hentPersoninfo(any(), any(), any()) } returns
+                Person(fødselsdato = "1980-05-12",
+                       navn = "navn",
+                       kjønn = "KVINNE",
+                       familierelasjoner = emptySet(),
+                       adressebeskyttelseGradering = adressebeskyttelse,
+                       sivilstand = SIVILSTAND.UGIFT)
+    }
 }
