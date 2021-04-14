@@ -7,9 +7,7 @@ import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.felles.graphqlQuery
-import no.nav.familie.integrasjoner.geografisktilknytning.PdlGeografiskTilknytningRequest
-import no.nav.familie.integrasjoner.geografisktilknytning.PdlGeografiskTilknytningVariables
-import no.nav.familie.integrasjoner.geografisktilknytning.PdlHentGeografiskTilknytning
+import no.nav.familie.integrasjoner.geografisktilknytning.*
 import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.internal.*
 import org.springframework.beans.factory.annotation.Qualifier
@@ -101,7 +99,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
             return response.data.hentIdenter.identer
         } catch (e: OppslagException) {
             throw e
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             throw pdlOppslagException(ident, error = e)
         }
 
@@ -110,16 +108,18 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
     fun hentGjeldendeAktørId(ident: String, tema: Tema): String {
         val pdlIdenter = hentIdenter(ident, "AKTORID", tema, false)
         return pdlIdenter.firstOrNull()?.ident
-                ?: throw pdlOppslagException(feilmelding = "Kunne ikke finne aktørId for personIdent=$ident i PDL. ", personIdent = ident)
+               ?: throw pdlOppslagException(feilmelding = "Kunne ikke finne aktørId for personIdent=$ident i PDL. ",
+                                            personIdent = ident)
     }
 
     fun hentGjeldendePersonident(ident: String, tema: Tema): String {
         val pdlIdenter = hentIdenter(ident, "FOLKEREGISTERIDENT", tema, false)
         return pdlIdenter.firstOrNull()?.ident
-                ?: throw pdlOppslagException(feilmelding = "Kunne ikke finne personIdent for aktørId=$ident i PDL. ", personIdent = ident)
+               ?: throw pdlOppslagException(feilmelding = "Kunne ikke finne personIdent for aktørId=$ident i PDL. ",
+                                            personIdent = ident)
     }
 
-    fun hentGeografiskTilknytning(personIdent: String, tema: String): String {
+    fun hentGeografiskTilknytning(personIdent: String, tema: String): GeografiskTilknytningDto {
         val pdlGeografiskTilknytningRequest =
                 PdlGeografiskTilknytningRequest(variables = PdlGeografiskTilknytningVariables(personIdent),
                                                 query = HENT_GEOGRAFISK_TILKNYTNING_QUERY)
@@ -136,7 +136,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                 throw pdlOppslagException(feilmelding = "Feil ved oppslag på geografisk tilknytning på person: ${response.errorMessages()}",
                                           personIdent = personIdent)
             }
-            return response.data.hentGeografiskTilknytning.hentGeografiskTilknytning()
+            return response.data.hentGeografiskTilknytning
         } catch (e: Exception) {
             when (e) {
                 is OppslagException -> throw e
