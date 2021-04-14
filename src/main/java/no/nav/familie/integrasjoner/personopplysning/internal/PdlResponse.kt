@@ -20,6 +20,21 @@ data class PdlResponse<T>(val data: T,
     }
 }
 
+data class PersonDataBolk<T>(val ident: String, val code: String, val person: T?)
+data class PersonBolk<T>(val personBolk: List<PersonDataBolk<T>>)
+data class PdlBolkResponse<T>(val data: PersonBolk<T>?, val errors: List<PdlError>?) {
+
+    fun errorMessages(): String {
+        return errors?.joinToString { it -> it.message } ?: ""
+    }
+}
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+    data class PdlPersonMedRelasjonerOgAdressebeskyttelse(val familierelasjoner: List<PdlFamilierelasjon>,
+                                                          val sivilstand: List<Sivilstand>,
+                                                          val fullmakt: List<Fullmakt>,
+                                                          val adressebeskyttelse: List<Adressebeskyttelse>)
+
 data class PdlPerson(val person: PdlPersonData?)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -38,7 +53,8 @@ data class PdlFødselsDato(val foedselsdato: String?)
 data class PdlError(val message: String,
                     val extensions: PdlExtensions?)
 
-data class PdlExtensions(val code: String) {
+data class PdlExtensions(val code: String?) {
+
     fun notFound() = code == "not_found"
 }
 
@@ -69,9 +85,11 @@ data class Adressebeskyttelse(
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class Sivilstand(
-        val type: SIVILSTAND
-)
+data class Sivilstand(val type: SIVILSTAND,
+                      val relatertVedSivilstand: String?)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class Fullmakt(val motpartsPersonident: String)
 
 enum class KJØNN {
     MANN,

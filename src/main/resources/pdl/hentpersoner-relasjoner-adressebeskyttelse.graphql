@@ -1,0 +1,22 @@
+query($identer: [ID!]!){
+    personBolk: hentPersonBolk(identer: $identer) {
+        code
+        ident
+        person {
+            adressebeskyttelse {
+                gradering
+            }
+            familierelasjoner {
+                relatertPersonsIdent
+                relatertPersonsRolle
+            }
+            sivilstand {
+                type
+                relatertVedSivilstand
+            }
+            fullmakt {
+                motpartsPersonident
+            }
+        }
+    }
+}

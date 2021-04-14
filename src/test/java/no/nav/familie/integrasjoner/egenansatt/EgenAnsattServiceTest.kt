@@ -12,7 +12,7 @@ class EgenAnsattServiceTest {
 
     @Test
     fun `Er egen ansatt`() {
-        every { egenAnsattRestClientMock.erEgenAnsatt(any()) } returns true
+        every { egenAnsattRestClientMock.erEgenAnsatt(any<String>()) } returns true
         assertThat(egenAnsattService.erEgenAnsatt("1")).isTrue
     }
 }

@@ -16,7 +16,7 @@ class EgenAnsattTestConfig {
     @Primary
     fun egenAnssattClientMock(): EgenAnsattRestClient {
         val egenAnsattClient: EgenAnsattRestClient = mockk(relaxed = true)
-        every { egenAnsattClient.erEgenAnsatt(any()) } returns true
+        every { egenAnsattClient.erEgenAnsatt(any<String>()) } returns true
         return egenAnsattClient
     }
 }
