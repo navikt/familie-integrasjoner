@@ -21,7 +21,14 @@ class TilgangskontrollServiceTest {
     private val saksbehandler: JwtToken = mockk(relaxed = true)
     private val jwtTokenClaims: JwtTokenClaims = mockk()
     private val egenAnsattService: EgenAnsattService = mockk(relaxed = true)
-    private val tilgangConfig: TilgangConfig = TilgangConfig(mockk(relaxed = true))
+    private val GRUPPE_UTVIDET_TILGANG = "utvidetTilgang1"
+    private val GRUPPE_TILGANG_6 = "kode62"
+    private val GRUPPE_TILGANG_7 = "kode73"
+
+    private val tilgangConfig: TilgangConfig =
+            TilgangConfig(mapOf("utvidetTilgang" to AdRolle(GRUPPE_UTVIDET_TILGANG, "NAV-Ansatt"),
+                                "kode6" to AdRolle(GRUPPE_TILGANG_6, "Strengt fortrolig adresse"),
+                                "kode7" to AdRolle(GRUPPE_TILGANG_7, "Fortrolig adresse")))
     private val personopplysningerService: PersonopplysningerService = mockk(relaxed = true)
 
     private val cachedTilgangskontrollService = CachedTilgangskontrollService(egenAnsattService,
@@ -33,8 +40,6 @@ class TilgangskontrollServiceTest {
     fun `tilgang til egen ansatt gir ikke tilgang hvis saksbehandler mangler rollen`() {
         every { egenAnsattService.erEgenAnsatt(any<String>()) }
                 .returns(true)
-        every { tilgangConfig.grupper["utvidetTilgang"] }
-                .returns(AdRolle("8796", "NAV-Ansatt"))
         every { saksbehandler.jwtTokenClaims }
                 .returns(jwtTokenClaims)
         every { jwtTokenClaims.getAsList(any()) }
@@ -44,47 +49,41 @@ class TilgangskontrollServiceTest {
 
         assertThat(tilgangskontrollService.sjekkTilgang("123",
                                                         saksbehandler).harTilgang)
-                .isEqualTo(Tilgang(false).harTilgang)
+                .isFalse
     }
 
     @Test
     fun `tilgang til egen ansatt gir tilgang hvis saksbehandler har rollen`() {
         every { egenAnsattService.erEgenAnsatt(any<String>()) }
                 .returns(true)
-        every { tilgangConfig.grupper["utvidetTilgang"] }
-                .returns(AdRolle("8796", "NAV-Ansatt"))
+        every { personopplysningerService.hentPersoninfo("123", any(), any()) }
+                .returns(personMedAdressebeskyttelse(null))
         every { saksbehandler.jwtTokenClaims }
                 .returns(jwtTokenClaims)
         every { jwtTokenClaims.getAsList(any()) }
-                .returns(listOf("8796"))
+                .returns(listOf(GRUPPE_UTVIDET_TILGANG))
         every { jwtTokenClaims.get("preferred_username") }
                 .returns(listOf("bob"))
 
-        assertThat(tilgangskontrollService.sjekkTilgang("123",
-                                                        saksbehandler).harTilgang)
-                .isEqualTo(Tilgang(true).harTilgang)
+        assertThat(tilgangskontrollService.sjekkTilgang("123", saksbehandler).harTilgang)
+                .isTrue
     }
 
     @Test
     fun `tilgang til egen ansatt gir ok hvis søker ikke er egen ansatt`() {
         every { egenAnsattService.erEgenAnsatt(any<String>()) }
                 .returns(false)
-        every { tilgangConfig.grupper["utvidetTilgang"] }
-                .returns(AdRolle("8796", "NAV-Ansatt"))
         every { personopplysningerService.hentPersoninfo("123", any(), any()) }
                 .returns(personMedAdressebeskyttelse(null))
 
-        assertThat(tilgangskontrollService.sjekkTilgang("123",
-                                                        saksbehandler).harTilgang)
-                .isEqualTo(Tilgang(true).harTilgang)
+        assertThat(tilgangskontrollService.sjekkTilgang("123", saksbehandler).harTilgang)
+                .isTrue
     }
 
     @Test
     fun `hvis kode6 har ikke saksbehandler uten rollen tilgang`() {
         every { egenAnsattService.erEgenAnsatt(any<String>()) }
                 .returns(false)
-        every { tilgangConfig.grupper["kode6"] }
-                .returns(AdRolle("8796", "Strengt fortrolig adresse"))
         every { saksbehandler.jwtTokenClaims }
                 .returns(jwtTokenClaims)
         every { jwtTokenClaims.getAsList(any()) }
@@ -94,17 +93,14 @@ class TilgangskontrollServiceTest {
         every { personopplysningerService.hentPersoninfo("123", any(), any()) }
                 .returns(personMedAdressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG))
 
-        assertThat(tilgangskontrollService.sjekkTilgang("123",
-                                                        saksbehandler).harTilgang)
-                .isEqualTo(Tilgang(false).harTilgang)
+        assertThat(tilgangskontrollService.sjekkTilgang("123", saksbehandler).harTilgang)
+                .isFalse
     }
 
     @Test
     fun `hvis kode7 har ikke saksbehandler uten rollen tilgang`() {
         every { egenAnsattService.erEgenAnsatt(any<String>()) }
                 .returns(false)
-        every { tilgangConfig.grupper["kode7"] }
-                .returns(AdRolle("8796", "Fortrolig adresse"))
         every { saksbehandler.jwtTokenClaims }
                 .returns(jwtTokenClaims)
         every { jwtTokenClaims.getAsList(any()) }
@@ -114,9 +110,8 @@ class TilgangskontrollServiceTest {
         every { personopplysningerService.hentPersoninfo("123", any(), any()) }
                 .returns(personMedAdressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.FORTROLIG))
 
-        assertThat(tilgangskontrollService.sjekkTilgang("123",
-                                                        saksbehandler).harTilgang)
-                .isEqualTo(Tilgang(false).harTilgang)
+        assertThat(tilgangskontrollService.sjekkTilgang("123", saksbehandler).harTilgang)
+                .isFalse
     }
 
     @Test
@@ -128,15 +123,12 @@ class TilgangskontrollServiceTest {
         every { jwtTokenClaims.get("preferred_username") }
                 .returns(listOf("bob"))
         every { jwtTokenClaims.getAsList(any()) }
-                .returns(listOf("8796"))
+                .returns(listOf(GRUPPE_TILGANG_6))
         every { personopplysningerService.hentPersoninfo("123", any(), any()) }
                 .returns(personMedAdressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG))
-        every { tilgangConfig.grupper["kode6"] }
-                .returns(AdRolle("8796", "Strengt fortrolig adresse"))
 
-        assertThat(tilgangskontrollService.sjekkTilgang("123",
-                                                        saksbehandler).harTilgang)
-                .isEqualTo(Tilgang(true).harTilgang)
+        assertThat(tilgangskontrollService.sjekkTilgang("123", saksbehandler).harTilgang)
+                .isTrue
     }
 
     @Test
@@ -148,15 +140,12 @@ class TilgangskontrollServiceTest {
         every { jwtTokenClaims.get("preferred_username") }
                 .returns(listOf("bob"))
         every { jwtTokenClaims.getAsList(any()) }
-                .returns(listOf("8796"))
+                .returns(listOf(GRUPPE_TILGANG_7))
         every { personopplysningerService.hentPersoninfo("123", any(), any()) }
                 .returns(personMedAdressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.FORTROLIG))
-        every { tilgangConfig.grupper["kode7"] }
-                .returns(AdRolle("8796", "Fortrolig adresse"))
 
-        assertThat(tilgangskontrollService.sjekkTilgang("123",
-                                                        saksbehandler).harTilgang)
-                .isEqualTo(Tilgang(true).harTilgang)
+        assertThat(tilgangskontrollService.sjekkTilgang("123", saksbehandler).harTilgang)
+                .isTrue
     }
 
     private fun personMedAdressebeskyttelse(adressebeskyttelsegradering: ADRESSEBESKYTTELSEGRADERING?): Person {
