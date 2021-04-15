@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 class OrganisasjonController(private val organisasjonService: OrganisasjonService) {
 
     @GetMapping(path = ["/{orgnr}"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun erOrganisasjon(@PathVariable orgnr: String): Ressurs<Organisasjon> {
+    fun hentOrganisasjon(@PathVariable orgnr: String): Ressurs<Organisasjon> {
         return success(data = organisasjonService.hentOrganisasjon(orgnr))
     }
 
