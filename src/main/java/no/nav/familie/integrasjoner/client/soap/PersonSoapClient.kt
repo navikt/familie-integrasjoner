@@ -24,7 +24,7 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
     private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
     @Retryable(value = [OppslagException::class], maxAttempts = 3, backoff = Backoff(delay = 4000))
-    fun hentPersonResponse(request: HentPersonRequest?): HentPersonResponse {
+    fun hentPersonResponse(request: HentPersonRequest): HentPersonResponse {
         return try {
             port.hentPerson(request)
         } catch (e: Exception) {
@@ -75,7 +75,7 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
      * @throws HentPersonhistorikkPersonIkkeFunnet      når bruker ikke finnes
      */
     @Retryable(value = [OppslagException::class], maxAttempts = 3, backoff = Backoff(delay = 4000))
-    fun hentPersonhistorikkResponse(request: HentPersonhistorikkRequest?): HentPersonhistorikkResponse {
+    fun hentPersonhistorikkResponse(request: HentPersonhistorikkRequest): HentPersonhistorikkResponse {
         return try {
             executeMedMetrics { port.hentPersonhistorikk(request) }
         } catch (e: Exception) {

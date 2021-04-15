@@ -3,6 +3,9 @@ package no.nav.familie.integrasjoner.personopplysning
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningDto
+import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningType
+import no.nav.familie.integrasjoner.geografisktilknytning.PdlHentGeografiskTilknytning
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlHentIdenter
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlResponse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlNavn
@@ -79,6 +82,20 @@ class PdlGraphqlTest {
                 .isEqualTo("For Mellom Etter")
         assertThat(PdlNavn(fornavn = "For", etternavn = "Etter").fulltNavn())
                 .isEqualTo("For Etter")
+    }
+
+    @Test
+    fun testGeografiskTilknytningMapper() {
+        val pdlDto = GeografiskTilknytningDto(gtType = GeografiskTilknytningType.KOMMUNE,
+                                              gtKommune = "0301",
+                                              gtBydel = null,
+                                              gtLand = null)
+
+        val resp: PdlResponse<PdlHentGeografiskTilknytning> =
+                mapper.readValue(File(getFile("pdl/pdlGeografiskTilknytningResponse.json")))
+
+        assertThat(resp.harFeil()).isFalse
+        assertThat(resp.data.hentGeografiskTilknytning).usingRecursiveComparison().isEqualTo(pdlDto)
     }
 
     private fun getFile(name: String): String {

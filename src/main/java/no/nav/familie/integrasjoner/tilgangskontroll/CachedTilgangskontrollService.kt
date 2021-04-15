@@ -6,6 +6,10 @@ import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
 import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
+import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.FORTROLIG
+import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG
+import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG_UTLAND
+import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
 import no.nav.familie.kontrakter.felles.tilgangskontroll.Tilgang
 import no.nav.security.token.support.core.jwt.JwtToken
@@ -25,18 +29,57 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
         val personInfo = personopplysningerService.hentPersoninfo(personIdent, tema.toString(), PersonInfoQuery.ENKEL)
         val adressebeskyttelse = personInfo.adressebeskyttelseGradering
 
-        if (egenAnsattService.erEgenAnsatt(personIdent)) {
+        return sjekTilgang(adressebeskyttelse, jwtToken, personIdent) { egenAnsattService.erEgenAnsatt(personIdent) }
+    }
+
+    @Cacheable(cacheNames = ["TILGANG_TIL_PERSON_MED_RELASJONER"],
+               key = "#jwtToken.subject.concat(#personIdent)",
+               condition = "#jwtToken.subject != null")
+    fun sjekkTilgangTilPersonMedRelasjoner(personIdent: String, jwtToken: JwtToken, tema: Tema): Tilgang {
+        val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent, tema)
+        secureLogger.info("Sjekker tilgang til {}", personMedRelasjoner)
+
+        val høyesteGraderingen = høyesteGraderingen(personMedRelasjoner)
+        return sjekTilgang(høyesteGraderingen, jwtToken, personIdent) { erEgenAnsatt(personMedRelasjoner) }
+    }
+
+    private fun sjekTilgang(adressebeskyttelsegradering: ADRESSEBESKYTTELSEGRADERING?,
+                            jwtToken: JwtToken,
+                            personIdent: String,
+                            egenAnsattSjekk: () -> Boolean): Tilgang {
+        val tilgang = when (adressebeskyttelsegradering) {
+            FORTROLIG -> hentTilgangForRolle(tilgangConfig.grupper["kode7"], jwtToken, personIdent)
+            STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND ->
+                hentTilgangForRolle(tilgangConfig.grupper["kode6"], jwtToken, personIdent)
+            else -> Tilgang(harTilgang = true)
+        }
+        if (!tilgang.harTilgang) {
+            return tilgang
+        }
+        if (egenAnsattSjekk()) {
             return hentTilgangForRolle(tilgangConfig.grupper["utvidetTilgang"], jwtToken, personIdent)
         }
+        return Tilgang(harTilgang = true)
+    }
 
-        return when (adressebeskyttelse) {
-            ADRESSEBESKYTTELSEGRADERING.FORTROLIG -> hentTilgangForRolle(tilgangConfig.grupper["kode7"], jwtToken, personIdent)
-            ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG, ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG_UTLAND ->
-                hentTilgangForRolle(
-                    tilgangConfig.grupper["kode6"],
-                    jwtToken,
-                    personIdent)
-            else -> Tilgang(true)
+    /**
+     * Trenger kun å sjekke personen og barnets andre foreldrer for om de er ansatt
+     */
+    private fun erEgenAnsatt(personMedRelasjoner: PersonMedRelasjoner): Boolean {
+        val relevanteIdenter = setOf(personMedRelasjoner.personIdent) + personMedRelasjoner.barnsForeldrer.map { it.personIdent }
+        return egenAnsattService.erEgenAnsatt(relevanteIdenter).any { it.value }
+    }
+
+    private fun høyesteGraderingen(personUtvidet: PersonMedRelasjoner): ADRESSEBESKYTTELSEGRADERING? {
+        val adressebeskyttelser =
+                (personUtvidet.adressebeskyttelse?.let { setOf(it) } ?: emptySet<ADRESSEBESKYTTELSEGRADERING>() +
+                 listOf(personUtvidet.sivilstand, personUtvidet.fullmakt, personUtvidet.barn, personUtvidet.barnsForeldrer)
+                         .flatMap { relasjoner -> relasjoner.mapNotNull { it.adressebeskyttelse } })
+        return when {
+            adressebeskyttelser.contains(STRENGT_FORTROLIG_UTLAND) -> STRENGT_FORTROLIG_UTLAND
+            adressebeskyttelser.contains(STRENGT_FORTROLIG) -> STRENGT_FORTROLIG
+            adressebeskyttelser.contains(FORTROLIG) -> FORTROLIG
+            else -> null
         }
     }
 
@@ -51,6 +94,7 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
     }
 
     companion object {
+
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
         const val TILGANG_TIL_BRUKER = "tilgangTilBruker"
