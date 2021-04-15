@@ -3,14 +3,18 @@ package no.nav.familie.integrasjoner.personopplysning
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.client.soap.PersonSoapClient
+import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.felles.ws.DateUtil
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter
-import no.nav.familie.integrasjoner.personopplysning.internal.PdlIdent
+import no.nav.familie.integrasjoner.personopplysning.internal.FAMILIERELASJONSROLLE
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedRelasjonerOgAdressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
+import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedAdresseBeskyttelse
+import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
 import no.nav.familie.kontrakter.felles.personopplysning.FinnPersonidenterResponse
 import no.nav.familie.kontrakter.felles.personopplysning.PersonIdentMedHistorikk
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov
@@ -70,6 +74,57 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
     fun hentIdenter(personIdent: String, tema: Tema, medHistorikk: Boolean): FinnPersonidenterResponse {
         val response = pdlRestClient.hentIdenter(personIdent, "FOLKEREGISTERIDENT", tema, medHistorikk)
         return FinnPersonidenterResponse(response.map { PersonIdentMedHistorikk(it.ident, it.historisk) })
+    }
+
+    @Cacheable(cacheNames = ["PERSON_MED_RELASJONER"], key = "#personIdent + #tema", condition = "#personIdent != null")
+    fun hentPersonMedRelasjoner(personIdent: String, tema: Tema): PersonMedRelasjoner {
+        val hovedperson = hentPersonMedRelasjonerOgAdressebeskyttelse(listOf(personIdent), tema).getOrThrow(personIdent)
+        val barnIdenter = hovedperson.familierelasjoner
+                .filter { it.relatertPersonsRolle == FAMILIERELASJONSROLLE.BARN }
+                .map { it.relatertPersonsIdent }
+        val sivilstandIdenter = hovedperson.sivilstand.mapNotNull { it.relatertVedSivilstand }.distinct()
+        val fullmaktIdenter = hovedperson.fullmakt.map { it.motpartsPersonident }.distinct()
+
+        val tilknyttedeIdenter = (barnIdenter + sivilstandIdenter + fullmaktIdenter).distinct()
+        val tilknyttedeIdenterData = hentPersonMedRelasjonerOgAdressebeskyttelse(tilknyttedeIdenter, tema)
+
+        val barnOpplysninger = tilknyttedeIdenterData.filter { (ident, _) -> barnIdenter.contains(ident) }
+        val barnsForeldrer = hentBarnsForeldrer(barnOpplysninger, personIdent, tema)
+
+        return PersonMedRelasjoner(personIdent = personIdent,
+                                   adressebeskyttelse = hovedperson.gradering(),
+                                   sivilstand = mapPersonMedRelasjoner(sivilstandIdenter, tilknyttedeIdenterData),
+                                   fullmakt = mapPersonMedRelasjoner(fullmaktIdenter, tilknyttedeIdenterData),
+                                   barn = mapPersonMedRelasjoner(barnIdenter, tilknyttedeIdenterData),
+                                   barnsForeldrer = barnsForeldrer)
+    }
+
+    private fun hentBarnsForeldrer(barnOpplysninger: Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>,
+                                   personIdent: String,
+                                   tema: Tema): List<PersonMedAdresseBeskyttelse> {
+        val barnsForeldrerIdenter = barnOpplysninger.flatMap { (_, personMedRelasjoner) ->
+            personMedRelasjoner.familierelasjoner.filter { it.relatertPersonsRolle != FAMILIERELASJONSROLLE.BARN }
+        }.filter { it.relatertPersonsIdent != personIdent }.map { it.relatertPersonsIdent }.distinct()
+        val barnsForeldrerOpplysninger = hentPersonMedRelasjonerOgAdressebeskyttelse(barnsForeldrerIdenter, tema)
+
+        return mapPersonMedRelasjoner(barnsForeldrerIdenter, barnsForeldrerOpplysninger)
+    }
+
+    private fun mapPersonMedRelasjoner(sivilstandIdenter: List<String>,
+                                       tilknyttedeIdenterData: Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>) =
+            sivilstandIdenter.map { PersonMedAdresseBeskyttelse(it, tilknyttedeIdenterData.getOrThrow(it).gradering()) }
+
+    private fun PdlPersonMedRelasjonerOgAdressebeskyttelse.gradering() = this.adressebeskyttelse.firstOrNull()?.gradering
+
+    private fun Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>.getOrThrow(ident: String) =
+            this[ident] ?: throw OppslagException("Finner ikke $ident i response fra pdl",
+                                                  "pdl",
+                                                  OppslagException.Level.MEDIUM)
+
+    private fun hentPersonMedRelasjonerOgAdressebeskyttelse(personIdenter: List<String>,
+                                                            tema: Tema): Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse> {
+        if (personIdenter.isEmpty()) return emptyMap()
+        return pdlRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(personIdenter, tema)
     }
 
     companion object {

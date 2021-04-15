@@ -6,4 +6,4 @@ import org.springframework.boot.context.properties.ConstructorBinding
 
 @ConfigurationProperties("no.nav.security.jwt.tilgang")
 @ConstructorBinding
-class TilgangConfig(val grupper: MutableMap<String, AdRolle>)
+class TilgangConfig(val grupper: Map<String, AdRolle>)
