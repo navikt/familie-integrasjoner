@@ -19,7 +19,7 @@ class OrganisasjonService(private val organisasjonSoapClient: OrganisasjonSoapCl
         }
         val organisasjonResponse = organisasjonSoapClient.hentOrganisasjon(hentOrganisasjonRequest)
         val navnelinjer = (organisasjonResponse.organisasjon.navn as UstrukturertNavn).navnelinje
-        val navn = navnelinjer.joinToString(" ")
+        val navn = navnelinjer.joinToString(" ").trim()
 
         return Organisasjon(orgnr, navn)
 
