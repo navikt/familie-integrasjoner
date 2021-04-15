@@ -1,9 +1,11 @@
 package no.nav.familie.integrasjoner.config
 
+import no.nav.familie.kontrakter.felles.organisasjon.Organisasjon
 import no.nav.inf.GOSYSInfotrygdSak
 import no.nav.sbl.dialogarena.common.cxf.CXFClient
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
 import no.nav.tjeneste.virksomhet.infotrygdvedtak.v1.binding.InfotrygdVedtakV1
+import no.nav.tjeneste.virksomhet.organisasjon.v5.binding.OrganisasjonV5
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import org.apache.cxf.ws.security.wss4j.WSS4JOutInterceptor
 import org.apache.wss4j.common.ext.WSPasswordCallback
@@ -22,6 +24,7 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
                     @Value("\${PERSON_V3_URL}") private val personV3Url: String,
                     @Value("\${ARBEIDSFORDELING_V1_URL}") private val arbeidsfordelingUrl: String,
                     @Value("\${INFOTRYGD_VEDTAK_URL}") private val infotrygdVedtakUrl: String,
+                    @Value("\${ORGANISASJON_V5_URL}") private val organisasjonV5Url: String,
                     @Value("\${GOSYS_INFOTRYGDSAK_URL}") private val gosysInfotrygdSakUrl: String) {
 
     init {
@@ -34,6 +37,14 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
     fun personV3Port(): PersonV3 =
             CXFClient(PersonV3::class.java)
                     .address(personV3Url)
+                    .timeout(20000, 20000)
+                    .configureStsForSystemUser()
+                    .build()
+
+    @Bean
+    fun organisasjonV5Port(): OrganisasjonV5 =
+            CXFClient(OrganisasjonV5::class.java)
+                    .address(organisasjonV5Url)
                     .timeout(20000, 20000)
                     .configureStsForSystemUser()
                     .build()
