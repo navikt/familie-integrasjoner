@@ -401,7 +401,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                                                     enhet = "enhet",
                                                     saksbehandler = "sb",
                                                     aktørId = null,
-                                                    saksreferanse = "123rfadsfasdfkdsafkjsdafjk",
+                                                    saksreferanse = "5bf80d26-6c2c-4392-9678-12bdf22b090c",
                                                     journalpostId = "jpId",
                                                     tilordnetRessurs = "tilordnetRessurs",
                                                     tildeltRessurs = true,
@@ -419,7 +419,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT" +
                     "&sorteringsrekkefolge=DESC&limit=46&offset=16&behandlingstema=ab0270&oppgavetype=BEH_SAK" +
                     "&tildeltEnhetsnr=enhet&tildeltRessurs=true&tilordnetRessurs=tilordnetRessurs&journalpostId=jpId" +
-                    "&saksreferanse=123rfadsfasdfkdsafkjsdafjk" +
+                    "&saksreferanse=5bf80d26-6c2c-4392-9678-12bdf22b090c" +
                     "&opprettetFom=2015-10-01T12:10:00&opprettetTom=2016-11-02T13:11:00&fristFom=2017-12-03" +
                     "&fristTom=2018-01-04&aktivDatoFom=2019-02-05&aktivDatoTom=2020-03-06&mappeId=100000035")
                         .willReturn(okJson(gyldigOppgaveResponse("oppgave.json"))))
