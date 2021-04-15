@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.geografisktilknytning
 
-data class PdlHentGeografiskTilknytning(val hentGeografiskTilknytning: GeografiskTilknytningDto)
+data class PdlHentGeografiskTilknytning(val hentGeografiskTilknytning: GeografiskTilknytningDto?)
 
 data class GeografiskTilknytningDto(val gtType: GeografiskTilknytningType,
                                     val gtKommune: String?,

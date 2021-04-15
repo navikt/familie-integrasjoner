@@ -173,7 +173,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                 throw pdlOppslagException(feilmelding = "Feil ved oppslag på geografisk tilknytning på person: ${response.errorMessages()}",
                                           personIdent = personIdent)
             }
-            return response.data.hentGeografiskTilknytning
+            return response.data.hentGeografiskTilknytning ?: throw PdlNotFoundException()
         } catch (e: Exception) {
             when (e) {
                 is OppslagException -> throw e
