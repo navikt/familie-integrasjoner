@@ -19,10 +19,10 @@ class ArbeidsfordelingRestClient(@Value("\${NORG2_URL}")
     : AbstractPingableRestClient(restOperations, "norg2") {
 
     fun hentEnhet(geografiskOmråde: String): Enhet {
-        return getForEntity<Ressurs<Enhet>>(UriComponentsBuilder.fromUri(norg2Uri)
+        return getForEntity(UriComponentsBuilder.fromUri(norg2Uri)
                                                     .pathSegment("api/v1/enhet/navkontor/$geografiskOmråde")
                                                     .build()
-                                                    .toUri()).data!!
+                                                    .toUri())
     }
 
     override val pingUri: URI
