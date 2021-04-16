@@ -20,6 +20,7 @@ data class OppgaveRequest(val statuskategori: String = "AAPEN",
                           val tildeltRessurs: Boolean?,
                           val tilordnetRessurs: String?,
                           val journalpostId: String?,
+                          val saksreferanse: String?,
                           val opprettetFom: LocalDateTime?,
                           val opprettetTom: LocalDateTime?,
                           val fristFom: LocalDate?,
@@ -46,4 +47,5 @@ fun FinnOppgaveRequest.toDto() =
                        aktivDatoFom = this.aktivFomDato,
                        aktivDatoTom = this.aktivTomDato,
                        mappeId = this.enhetsmappe?.value,
-                       aktoerId = this.aktørId)
+                       aktoerId = this.aktørId,
+                       saksreferanse = this.saksreferanse)
