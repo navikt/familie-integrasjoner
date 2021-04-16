@@ -53,6 +53,7 @@ EGEN_ANSATT_URL: #Mockes ut lokalt
 FOERSTESIDEGENERATOR_URL:
 MEDL2_URL: http://vtp:8060/rest/medl2
 ARBEIDSFORDELING_V1_URL: http://vtp:8060/soap/norg2/ws/Arbeidsfordeling/v1
+NORG2_URL: #Mockes lokalt
 
 DOKDIST_URL: http://familie-mock-server:1337/rest/api/dokdist/
 DOKARKIV_V1_URL: http://familie-mock-server:1337/rest/api/dokarkiv/
