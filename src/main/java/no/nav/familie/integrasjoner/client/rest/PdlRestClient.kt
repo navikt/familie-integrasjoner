@@ -177,6 +177,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         } catch (e: Exception) {
             when (e) {
                 is OppslagException -> throw e
+                is PdlNotFoundException -> throw e
                 else -> throw pdlOppslagException(personIdent, error = e)
             }
         }
