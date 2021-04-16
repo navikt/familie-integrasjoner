@@ -39,6 +39,13 @@ class ArbeidsfordelingController(
         return ResponseEntity.ok(success(service.finnBehandlendeEnhetForPerson(personIdent.ident, tema.toString())))
     }
 
+    @PostMapping("/nav-kontor/{tema}")
+    fun hentLokaltNavKontor(@PathVariable(name = "tema") tema: Tema,
+                                             @RequestBody personIdent: PersonIdent)
+            : ResponseEntity<Ressurs<Enhet>> {
+        return ResponseEntity.ok(success(service.finnLokaltNavKontor(personIdent.ident, tema.toString())))
+    }
+
     enum class Tema {
         KON,
         BAR,
