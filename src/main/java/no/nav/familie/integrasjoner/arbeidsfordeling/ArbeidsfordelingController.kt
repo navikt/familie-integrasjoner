@@ -4,6 +4,7 @@ import no.nav.familie.kontrakter.felles.PersonIdent
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.arbeidsfordeling.Enhet
+import no.nav.familie.kontrakter.felles.navkontor.NavKontorEnhet
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -42,7 +43,7 @@ class ArbeidsfordelingController(
     @PostMapping("/nav-kontor/{tema}")
     fun hentLokaltNavKontor(@PathVariable(name = "tema") tema: Tema,
                                              @RequestBody personIdent: PersonIdent)
-            : ResponseEntity<Ressurs<Enhet>> {
+            : ResponseEntity<Ressurs<NavKontorEnhet>> {
         return ResponseEntity.ok(success(service.finnLokaltNavKontor(personIdent.ident, tema.toString())))
     }
 

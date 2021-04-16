@@ -7,6 +7,7 @@ import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningT
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import org.springframework.stereotype.Service
 import no.nav.familie.kontrakter.felles.arbeidsfordeling.Enhet
+import no.nav.familie.kontrakter.felles.navkontor.NavKontorEnhet
 
 @Service
 class ArbeidsfordelingService(
@@ -28,7 +29,7 @@ class ArbeidsfordelingService(
         return klient.finnBehandlendeEnhet(tema, personinfo.geografiskTilknytning, personinfo.diskresjonskode)
     }
 
-    fun finnLokaltNavKontor(personIdent: String, tema: String): Enhet {
+    fun finnLokaltNavKontor(personIdent: String, tema: String): NavKontorEnhet {
         val geografiskTilknytning = pdlRestClient.hentGeografiskTilknytning(personIdent, tema)
 
         val geografiskTilknytningKode: String = utledGeografiskTilknytningKode(geografiskTilknytning)
