@@ -9,8 +9,12 @@ import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRes
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostResponse
+import no.nav.familie.log.mdc.MDCConstants
+import org.slf4j.LoggerFactory
+import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpStatusCodeException
@@ -24,6 +28,8 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
                          @Qualifier("jwtBearerOboOgSts") private val restOperations: RestOperations)
     : AbstractPingableRestClient(restOperations, "dokarkiv.opprett") {
 
+    private val logger = LoggerFactory.getLogger(this::class.java)
+
     override val pingUri: URI = UriComponentsBuilder.fromUri(dokarkivUrl).path(PATH_PING).build().toUri()
 
     private val ferdigstillJournalPostClient = FerdigstillJournalPostClient(restOperations, dokarkivUrl)
@@ -35,7 +41,11 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
                        ferdigstill: Boolean): OpprettJournalpostResponse {
         val uri = lagJournalpostUri(ferdigstill)
         try {
-            return postForEntity(uri, jp)
+            val postForEntity = postForEntity<OpprettJournalpostResponse>(uri, jp, headers())
+            if (shouldLog()) {
+                logger.info("Laget journalpostId=${postForEntity.journalpostId} count=${value}")
+            }
+            return postForEntity
         } catch (e: RuntimeException) {
             throw oppslagExceptionVed("opprettelse", e, jp.bruker?.id)
         }
@@ -44,7 +54,11 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
     fun oppdaterJournalpost(jp: OppdaterJournalpostRequest, journalpostId: String): OppdaterJournalpostResponse {
         val uri = UriComponentsBuilder.fromUri(dokarkivUrl).pathSegment(PATH_JOURNALPOST, journalpostId).build().toUri()
         try {
-            return putForEntity(uri, jp)
+            val putForEntity = putForEntity<OppdaterJournalpostResponse>(uri, jp, headers())
+            if (shouldLog()) {
+                logger.info("Oppdater journalpostId=${putForEntity.journalpostId} count=${value}")
+            }
+            return putForEntity
         } catch (e: RuntimeException) {
             throw oppslagExceptionVed("oppdatering", e, jp.bruker?.id)
         }
@@ -72,6 +86,8 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
     private class FerdigstillJournalPostClient(restOperations: RestOperations, private val dokarkivUrl: URI)
         : AbstractRestClient(restOperations, "dokarkiv.ferdigstill") {
 
+        private val logger = LoggerFactory.getLogger(this::class.java)
+
         private fun ferdigstillJournalpostUri(journalpostId: String): URI {
             return UriComponentsBuilder
                     .fromUri(dokarkivUrl).path(String.format(PATH_FERDIGSTILL_JOURNALPOST, journalpostId)).build().toUri()
@@ -80,7 +96,10 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
         fun ferdigstillJournalpost(journalpostId: String, journalførendeEnhet: String) {
             val uri = ferdigstillJournalpostUri(journalpostId)
             try {
-                patchForEntity<String>(uri, FerdigstillJournalPost(journalførendeEnhet))
+                patchForEntity<String>(uri, FerdigstillJournalPost(journalførendeEnhet), headers())
+                if (shouldLog()) {
+                    logger.info("Ferdigstiller journalpostId=${journalpostId} count=${value}")
+                }
             } catch (e: RestClientResponseException) {
                 if (e.rawStatusCode == HttpStatus.BAD_REQUEST.value()) {
                     throw KanIkkeFerdigstilleJournalpostException("Kan ikke ferdigstille journalpost " +
@@ -97,5 +116,23 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
         private const val PATH_JOURNALPOST = "rest/journalpostapi/v1/journalpost"
         private const val QUERY_FERDIGSTILL = "forsoekFerdigstill={boolean}"
         private const val PATH_FERDIGSTILL_JOURNALPOST = "rest/journalpostapi/v1/journalpost/%s/ferdigstill"
+        private var value = 0;
+        private fun isMottak(): Boolean {
+            val consumer = MDC.get(MDCConstants.MDC_CONSUMER_ID)
+            return consumer == "familie-ef-mottak" || consumer == "srvfamilie-ef-mot"
+        }
+        private fun isEfSak() = MDC.get(MDCConstants.MDC_CONSUMER_ID) == "srvfamilie-ef-sak"
+        private fun shouldLog() = isMottak() || isEfSak()
+
+        fun headers(): HttpHeaders {
+            return HttpHeaders().apply {
+                if (isEfSak()) {
+                    add("Nav-User-Id", "ef-sak ${value++}")
+                }
+                if (isMottak()) {
+                    add("Nav-User-Id", "ef-mot ${value++}")
+                }
+            }
+        }
     }
 }
