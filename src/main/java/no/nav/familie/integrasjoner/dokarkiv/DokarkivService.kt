@@ -200,7 +200,7 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
 
     }
 
-    private fun mapDeprectedHoveddokument(dokumenter: List<DeprecatedDokument>): ArkivDokument {
+    private fun mapDeprecatedHoveddokument(dokumenter: List<DeprecatedDokument>): ArkivDokument {
         val dokument = dokumenter[0]
         val metadata = dokarkivMetadata.getMetadata(dokument)
         val dokumentvarianter = dokumenter.map {
