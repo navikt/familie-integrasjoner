@@ -6,9 +6,9 @@ import no.nav.familie.kontrakter.felles.dokarkiv.v2.Dokument
 import org.springframework.stereotype.Component
 
 @Component
-class DokarkivMetadata(vararg dokumentmMetadata: Dokumentmetadata) {
+class DokarkivMetadata(vararg dokumentmetadata: Dokumentmetadata) {
 
-    val metadata: Map<Dokumenttype, Dokumentmetadata> = dokumentmMetadata.associateBy { it.dokumenttype }
+    val metadata: Map<Dokumenttype, Dokumentmetadata> = dokumentmetadata.associateBy { it.dokumenttype }
 
     fun getMetadata(deprecatedDokument: DeprecatedDokument): Dokumentmetadata {
         return metadata[deprecatedDokument.dokumentType] ?: error("Ukjent dokumenttype ${deprecatedDokument.dokumentType}")
