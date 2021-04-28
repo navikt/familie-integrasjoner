@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.førstesidegenerator.domene
 
-enum class BrukerType {
-    PERSON, ORGANISASJON
+enum class Brukertype {
+    PERSON,
+    ORGANISASJON
 }

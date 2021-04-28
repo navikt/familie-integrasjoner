@@ -57,7 +57,7 @@ DOKARKIV_V1_URL: http://dokarkiv
 MEDL2_URL: https://app.adeo.no/medl2
 SAF_URL: http://saf
 KODEVERK_URL: http://kodeverk
-FOERSTESIDEGENERATOR_URL: http://foerstesidegenerator
+FORSTESIDEGENERATOR_URL: http://foerstesidegenerator
 EGEN_ANSATT_URL: https://skjermede-personer-pip.nais.adeo.no
 DOKDIST_URL: http://dokdistfordeling
 ARBEIDSFORDELING_V1_URL: https://app.adeo.no/norg2/ws/Arbeidsfordeling/v1

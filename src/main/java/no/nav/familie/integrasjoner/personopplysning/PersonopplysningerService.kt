@@ -4,7 +4,6 @@ import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.client.soap.PersonSoapClient
 import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.felles.ws.DateUtil
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo
@@ -15,6 +14,7 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedRelasj
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedAdresseBeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
+import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.personopplysning.FinnPersonidenterResponse
 import no.nav.familie.kontrakter.felles.personopplysning.PersonIdentMedHistorikk
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov
@@ -60,13 +60,12 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
         val request: HentPersonRequest =
                 HentPersonRequest().withAktoer(TpsPersonIdent().withIdent(NorskIdent().withIdent(personIdent)))
                         .withInformasjonsbehov(listOf(Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.ADRESSE))
-        val response: HentPersonResponse
-        response = personSoapClient.hentPersonResponse(request)
+        val response: HentPersonResponse = personSoapClient.hentPersonResponse(request)
         return oversetter.tilPersoninfo(PersonIdent(personIdent), response)
     }
 
     fun hentPersoninfo(personIdent: String,
-                       tema: String,
+                       tema: Tema,
                        personInfoQuery: PersonInfoQuery): Person {
         return pdlRestClient.hentPerson(personIdent, tema, personInfoQuery)
     }

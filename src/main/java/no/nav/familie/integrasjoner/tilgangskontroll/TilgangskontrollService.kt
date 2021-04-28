@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.tilgangskontroll
 
-import no.nav.familie.integrasjoner.felles.Tema
+import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.tilgangskontroll.Tilgang
 import no.nav.security.token.support.core.jwt.JwtToken
 import no.nav.security.token.support.spring.SpringTokenValidationContextHolder

@@ -4,7 +4,6 @@ import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.http.sts.StsRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.geografisktilknytning.*
@@ -25,6 +24,7 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonRequestVa
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlResponse
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.personopplysning.internal.Personident
+import no.nav.familie.kontrakter.felles.Tema
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -42,7 +42,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
 
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
 
-    fun hentPerson(personIdent: String, tema: String, personInfoQuery: PersonInfoQuery): Person {
+    fun hentPerson(personIdent: String, tema: Tema, personInfoQuery: PersonInfoQuery): Person {
 
         val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
                                                 query = personInfoQuery.graphQL)
@@ -50,7 +50,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
             val response = postForEntity<PdlResponse<PdlPerson>>(pdlUri,
                                                                  pdlPersonRequest,
                                                                  httpHeaders(tema))
-            if (response != null && !response.harFeil()) {
+            if (!response.harFeil()) {
                 return Result.runCatching {
                     val familierelasjoner: Set<Familierelasjon> =
                             when (personInfoQuery) {
@@ -83,7 +83,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                         }
                 )
             } else {
-                throw pdlOppslagException(feilmelding = "Feil ved oppslag på person: ${response?.errorMessages()}",
+                throw pdlOppslagException(feilmelding = "Feil ved oppslag på person: ${response.errorMessages()}",
                                           personIdent = personIdent)
             }
         } catch (e: Exception) {
@@ -101,7 +101,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         try {
             val response = postForEntity<PdlResponse<PdlHentIdenter>>(pdlUri,
                                                                       pdlPersonRequest,
-                                                                      httpHeaders(tema.name))
+                                                                      httpHeaders(tema))
             if (response.harFeil() || response.data.hentIdenter == null) {
                 if (response.harNotFoundFeil()) {
                     secureLogger.info("Finner ikke ident med gruppe=$gruppe for ident=$ident i PDL")
@@ -124,7 +124,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                            query = HENT_PERSON_RELASJONER_ADRESSEBESKYTTELSE)
         val response = postForEntity<PdlBolkResponse<PdlPersonMedRelasjonerOgAdressebeskyttelse>>(pdlUri,
                                                                                                   request,
-                                                                                                  httpHeaders(tema.name))
+                                                                                                  httpHeaders(tema))
         return feilsjekkOgReturnerData(response)
     }
 
@@ -156,7 +156,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                             personIdent = ident)
     }
 
-    fun hentGeografiskTilknytning(personIdent: String, tema: String): GeografiskTilknytningDto {
+    fun hentGeografiskTilknytning(personIdent: String, tema: Tema): GeografiskTilknytningDto {
         val pdlGeografiskTilknytningRequest =
                 PdlGeografiskTilknytningRequest(variables = PdlGeografiskTilknytningVariables(personIdent),
                                                 query = HENT_GEOGRAFISK_TILKNYTNING_QUERY)
@@ -170,7 +170,8 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                     secureLogger.info("Finner ikke geografisk tilknytning for ident=$personIdent i PDL")
                     throw PdlNotFoundException()
                 }
-                throw pdlOppslagException(feilmelding = "Feil ved oppslag på geografisk tilknytning på person: ${response.errorMessages()}",
+                throw pdlOppslagException(feilmelding = "Feil ved oppslag på geografisk tilknytning på person: " +
+                                                        response.errorMessages(),
                                           personIdent = personIdent)
             }
             return response.data.hentGeografiskTilknytning ?: throw PdlNotFoundException()
@@ -184,12 +185,12 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
     }
 
 
-    private fun httpHeaders(tema: String): HttpHeaders {
+    private fun httpHeaders(tema: Tema): HttpHeaders {
         return HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
             accept = listOf(MediaType.APPLICATION_JSON)
             add("Nav-Consumer-Token", "Bearer ${stsRestClient.systemOIDCToken}")
-            add("Tema", tema)
+            add("Tema", tema.name)
         }
     }
 

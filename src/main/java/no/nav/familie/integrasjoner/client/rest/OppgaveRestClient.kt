@@ -4,16 +4,15 @@ import io.micrometer.core.instrument.Metrics
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.familie.integrasjoner.oppgave.DeprecatedFinnOppgaveRequest
 import no.nav.familie.integrasjoner.oppgave.DeprecatedFinnOppgaveResponseDto
 import no.nav.familie.integrasjoner.oppgave.DeprecatedOppgave
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveRequest
 import no.nav.familie.integrasjoner.oppgave.domene.limitMotOppgave
 import no.nav.familie.integrasjoner.oppgave.domene.toDto
+import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
-import no.nav.familie.kontrakter.felles.oppgave.Tema
 import no.nav.familie.log.mdc.MDCConstants
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
@@ -26,7 +25,6 @@ import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
-import java.time.LocalDate
 import kotlin.math.min
 
 @Component
@@ -71,19 +69,17 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         offset += limitMotOppgave
 
         while (offset < grense) {
-            val nyeOppgaver =
-                    getForEntity<DeprecatedFinnOppgaveResponseDto>(buildOppgaveRequestUri(oppgaveRequest
-                                                                                                  .copy(offset = offset,
-                                                                                                        limit = min((grense - offset),
-                                                                                                                    limitMotOppgave))),
-                                                                   httpHeaders())
+            val nyeOppgaver: DeprecatedFinnOppgaveResponseDto =
+                    getForEntity(buildOppgaveRequestUri(oppgaveRequest.copy(offset = offset,
+                                                                            limit = min((grense - offset), limitMotOppgave))),
+                                 httpHeaders())
             oppgaver.addAll(nyeOppgaver.oppgaver)
             offset += limitMotOppgave
         }
         return DeprecatedFinnOppgaveResponseDto(oppgaverOgAntall.antallTreffTotalt, oppgaver)
     }
 
-    fun buildOppgaveRequestUri(oppgaveRequest: OppgaveRequest) =
+    fun buildOppgaveRequestUri(oppgaveRequest: OppgaveRequest): URI =
             UriComponentsBuilder.fromUri(oppgaveBaseUrl)
                     .path(PATH_OPPGAVE)
                     .queryParams(oppgaveRequest.toQueryParams())
@@ -143,7 +139,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
     fun opprettOppgave(dto: Oppgave): Long {
         val uri = UriComponentsBuilder.fromUri(oppgaveBaseUrl).path(PATH_OPPGAVE).build().toUri()
         return Result.runCatching { postForEntity<Oppgave>(uri, dto, httpHeaders()) }
-                .map { it?.id ?: error("Kan ikke finne oppgaveId på oppgaven $it") }
+                .map { it.id ?: error("Kan ikke finne oppgaveId på oppgaven $it") }
                 .onFailure {
                     var feilmelding = "Feil ved oppretting av oppgave for ${dto.aktoerId}."
                     if (it is HttpStatusCodeException) {
@@ -177,7 +173,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
 
     private fun requestOppgaveJson(requestUrl: URI): Oppgave {
         val finnOppgaveResponseDto = getForEntity<FinnOppgaveResponseDto>(requestUrl, httpHeaders())
-        if (finnOppgaveResponseDto == null) error("Response fra FinnOppgave er null")
+                                     ?: error("Response fra FinnOppgave er null")
         if (finnOppgaveResponseDto.oppgaver.isEmpty()) {
             returnerteIngenOppgaver.increment()
             throw OppslagException("Ingen oppgaver funnet for $requestUrl",

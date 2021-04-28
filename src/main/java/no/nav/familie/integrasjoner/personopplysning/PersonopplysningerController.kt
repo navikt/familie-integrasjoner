@@ -1,7 +1,6 @@
 package no.nav.familie.integrasjoner.personopplysning
 
 import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
-import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
@@ -9,6 +8,7 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.ikkeTilgang
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
+import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.personopplysning.FinnPersonidenterResponse
 import no.nav.familie.kontrakter.felles.personopplysning.Ident
 import no.nav.security.token.support.core.api.ProtectedWithClaims
@@ -58,7 +58,7 @@ class PersonopplysningerController(private val personopplysningerService: Person
     fun personInfo(@RequestHeader(name = "Nav-Personident") personIdent: String,
                    @PathVariable tema: Tema): ResponseEntity<Ressurs<Person>> {
         return ResponseEntity.ok().body(success(
-                personopplysningerService.hentPersoninfo(personIdent, tema.toString(), PersonInfoQuery.MED_RELASJONER),
+                personopplysningerService.hentPersoninfo(personIdent, tema, PersonInfoQuery.MED_RELASJONER),
                 "Hent personinfo OK"))
     }
 
@@ -66,7 +66,7 @@ class PersonopplysningerController(private val personopplysningerService: Person
     fun personInfoEnkel(@RequestHeader(name = "Nav-Personident") personIdent: String,
                         @PathVariable tema: Tema): ResponseEntity<Ressurs<Person>> {
         return ResponseEntity.ok().body(success(
-                personopplysningerService.hentPersoninfo(personIdent, tema.toString(), PersonInfoQuery.ENKEL),
+                personopplysningerService.hentPersoninfo(personIdent, tema, PersonInfoQuery.ENKEL),
                 "Hent personinfo OK"))
     }
 

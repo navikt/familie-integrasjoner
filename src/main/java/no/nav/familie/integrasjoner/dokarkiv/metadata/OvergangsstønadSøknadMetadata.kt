@@ -1,19 +1,23 @@
 package no.nav.familie.integrasjoner.dokarkiv.metadata
 
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.JournalpostType
+import no.nav.familie.kontrakter.felles.Behandlingstema
+import no.nav.familie.kontrakter.felles.Fagsystem
+import no.nav.familie.kontrakter.felles.Tema
+import no.nav.familie.kontrakter.felles.dokarkiv.Dokumenttype
 import org.springframework.stereotype.Component
 
 @Component
-object OvergangsstønadSøknadMetadata : DokumentMetadata {
+object OvergangsstønadSøknadMetadata : Dokumentmetadata {
 
     override val journalpostType: JournalpostType = JournalpostType.INNGAAENDE
-    override val fagsakSystem: String? = null
-    override val tema: String = "ENF"
-    override val behandlingstema: String? = "ab0071" // https://confluence.adeo.no/display/BOA/Behandlingstema
-    override val kanal: String? = "NAV_NO"
-    override val dokumentTypeId: String = "OVERGANGSSTØNAD_SØKNAD"
-    override val tittel: String? = "Søknad om overgangsstønad - enslig mor eller far"
-    override val brevkode: String? = "NAV 15-00.01"
-    override val dokumentKategori: String = "SOK"
+    override val fagsakSystem: Fagsystem? = null
+    override val tema: Tema = Tema.ENF
+    override val behandlingstema: Behandlingstema = Behandlingstema.Overgangsstønad
+    override val kanal: String = "NAV_NO"
+    override val dokumenttype: Dokumenttype = Dokumenttype.OVERGANGSSTØNAD_SØKNAD
+    override val tittel: String = "Søknad om overgangsstønad - enslig mor eller far"
+    override val brevkode: String = "NAV 15-00.01"
+    override val dokumentKategori: Dokumentkategori = Dokumentkategori.SOK
 
 }

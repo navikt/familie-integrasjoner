@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.dokdist
 
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.kontrakter.felles.Fagsystem
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.dokdist.DistribuerJournalpostRequest
 import org.assertj.core.api.Assertions
@@ -43,7 +44,7 @@ class DokdistControllerTest : OppslagSpringRunnerTest() {
                                  .withHeader("Content-Type", "application/json;charset=UTF-8")
                                  .withBody("{\"bestillingsId\": \"1234567\"}"))
 
-        val body = DistribuerJournalpostRequest(JOURNALPOST_ID, "IT", "ba-sak")
+        val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak")
         val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(localhost(DOKDIST_URL),
                                                                               HttpMethod.POST,
                                                                               HttpEntity(body, headers))
@@ -61,7 +62,7 @@ class DokdistControllerTest : OppslagSpringRunnerTest() {
                                 .withPath("/rest/v1/distribuerjournalpost"))
                 .respond(HttpResponse.response().withStatusCode(200).withBody(""))
 
-        val body = DistribuerJournalpostRequest(JOURNALPOST_ID, "IT", "ba-sak")
+        val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak")
         val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(localhost(DOKDIST_URL),
                                                                               HttpMethod.POST,
                                                                               HttpEntity(body, headers))
@@ -81,7 +82,7 @@ class DokdistControllerTest : OppslagSpringRunnerTest() {
                                  .withHeader("Content-Type", "application/json; charset=utf-8")
                                  .withBody(badRequestResponse()))
 
-        val body = DistribuerJournalpostRequest(JOURNALPOST_ID, "IT", "ba-sak")
+        val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak")
         val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(localhost(DOKDIST_URL),
                                                                               HttpMethod.POST,
                                                                               HttpEntity(body, headers))

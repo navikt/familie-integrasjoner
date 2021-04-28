@@ -8,17 +8,16 @@ import no.nav.familie.kontrakter.felles.dokarkiv.Dokumenttype
 import org.springframework.stereotype.Component
 
 @Component
-object BarnetrygdInnhenteOpplysningerMetadata : Dokumentmetadata {
+object BarnetrygdTilbakebetalingBrevMetadata : Dokumentmetadata {
 
     override val journalpostType: JournalpostType = JournalpostType.UTGAAENDE
     override val fagsakSystem: Fagsystem = Fagsystem.BA
     override val tema: Tema = Tema.BAR
-    override val behandlingstema: Behandlingstema? = null
+    override val behandlingstema: Behandlingstema = Behandlingstema.Tilbakebetaling
     override val kanal: String? = null
-    override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_INNHENTE_OPPLYSNINGER
-    override val tittel: String = "Brev for innhenting av opplysninger"
-    override val brevkode: String = "innhente-opplysninger"
+    override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_TILBAKEKREVING_BREV
+    override val tittel: String? = null
+    override val brevkode: String = Fagsystem.BA.name + "-TILB"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
-
 
 }

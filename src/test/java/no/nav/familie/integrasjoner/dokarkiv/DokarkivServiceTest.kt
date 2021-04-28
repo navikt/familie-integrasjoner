@@ -7,23 +7,36 @@ import io.mockk.slot
 import io.mockk.verify
 import no.nav.familie.integrasjoner.client.rest.DokarkivLogiskVedleggRestClient
 import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
-import no.nav.familie.integrasjoner.client.rest.FørstesideGeneratorClient
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.JournalpostType
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
-import no.nav.familie.integrasjoner.dokarkiv.metadata.*
+import no.nav.familie.integrasjoner.dokarkiv.metadata.BarnetrygdVedleggMetadata
+import no.nav.familie.integrasjoner.dokarkiv.metadata.BarnetrygdVedtakMetadata
+import no.nav.familie.integrasjoner.dokarkiv.metadata.DokarkivMetadata
+import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadMetadata
+import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadVedleggMetadata
 import no.nav.familie.integrasjoner.førstesidegenerator.FørstesideGeneratorService
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
-import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
-import no.nav.familie.kontrakter.felles.dokarkiv.*
+import no.nav.familie.kontrakter.felles.BrukerIdType
+import no.nav.familie.kontrakter.felles.Fagsystem
+import no.nav.familie.kontrakter.felles.Språkkode
+import no.nav.familie.kontrakter.felles.Tema
+import no.nav.familie.kontrakter.felles.dokarkiv.DokarkivBruker
+import no.nav.familie.kontrakter.felles.dokarkiv.Dokumenttype
+import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
+import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostResponse
+import no.nav.familie.kontrakter.felles.dokarkiv.Sak
+import no.nav.familie.kontrakter.felles.dokarkiv.v2.ArkiverDokumentRequest
+import no.nav.familie.kontrakter.felles.dokarkiv.v2.Dokument
+import no.nav.familie.kontrakter.felles.dokarkiv.v2.Filtype
+import no.nav.familie.kontrakter.felles.dokarkiv.v2.Førsteside
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertTrue
-import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequest
 
 class DokarkivServiceTest {
 
@@ -31,9 +44,6 @@ class DokarkivServiceTest {
 
     @MockK
     lateinit var dokarkivRestClient: DokarkivRestClient
-
-    @MockK
-    lateinit var førstesideGeneratorClient: FørstesideGeneratorClient
 
     @MockK
     lateinit var førstesideGeneratorService: FørstesideGeneratorService
@@ -46,7 +56,8 @@ class DokarkivServiceTest {
 
     private lateinit var dokarkivService: DokarkivService
 
-    @Before fun setUp() {
+    @Before
+    fun setUp() {
         MockKAnnotations.init(this)
         dokarkivService = DokarkivService(dokarkivRestClient,
                                           personopplysningerService,
@@ -63,8 +74,8 @@ class DokarkivServiceTest {
         every { dokarkivRestClient.oppdaterJournalpost(capture(slot), any()) }
                 .answers { OppdaterJournalpostResponse(JOURNALPOST_ID) }
 
-        val bruker = DokarkivBruker(IdType.FNR, "12345678910")
-        val dto = OppdaterJournalpostRequest(bruker = bruker, tema = "tema", sak = Sak("11111111", "fagsaksystem"))
+        val bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910")
+        val dto = OppdaterJournalpostRequest(bruker = bruker, tema = Tema.ENF, sak = Sak("11111111", "fagsaksystem"))
 
         dokarkivService.oppdaterJournalpost(dto, JOURNALPOST_ID)
 
@@ -87,13 +98,17 @@ class DokarkivServiceTest {
                            kjønn = "KVINNE",
                            familierelasjoner = emptySet(),
                            adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                            sivilstand =  SIVILSTAND.UGIFT)
+                           sivilstand = SIVILSTAND.UGIFT)
                 }
-        val dto = DeprecatedArkiverDokumentRequest(FNR,
-                                                   false,
-                                                   listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
+        val dto = ArkiverDokumentRequest(FNR,
+                                         false,
+                                         listOf(Dokument(PDF_DOK,
+                                                         Filtype.PDFA,
+                                                         FILNAVN,
+                                                         null,
+                                                         Dokumenttype.KONTANTSTØTTE_SØKNAD)))
 
-        dokarkivService.lagJournalpostV2(dto)
+        dokarkivService.lagJournalpost(dto)
 
         val request = slot.captured
         verify {
@@ -105,7 +120,7 @@ class DokarkivServiceTest {
     @Test fun `skal generere førsteside hvis førsteside er med i request`() {
         val slot = slot<OpprettJournalpostRequest>()
 
-        every { førstesideGeneratorService.genererForside(any(), any()) }
+        every { førstesideGeneratorService.genererForside(any<Førsteside>(), any()) }
                 .answers { PDF_DOK }
 
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
@@ -114,18 +129,24 @@ class DokarkivServiceTest {
         every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
                 .answers {
                     Person(fødselsdato = "1980-05-12",
-                            navn = navn,
-                            kjønn = "KVINNE",
-                            familierelasjoner = emptySet(),
-                            adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                            sivilstand =  SIVILSTAND.UGIFT)
+                           navn = navn,
+                           kjønn = "KVINNE",
+                           familierelasjoner = emptySet(),
+                           adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
+                           sivilstand = SIVILSTAND.UGIFT)
                 }
         val dto = ArkiverDokumentRequest(FNR,
-                false,
-                listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")),
-                førsteside = Førsteside(maalform = "NB",navSkjemaId = "123",overskriftsTittel = "Testoverskrift"))
+                                         false,
+                                         listOf(Dokument(PDF_DOK,
+                                                         Filtype.PDFA,
+                                                         FILNAVN,
+                                                         null,
+                                                         Dokumenttype.KONTANTSTØTTE_SØKNAD)),
+                                         førsteside = Førsteside(språkkode = Språkkode.NB,
+                                                                 navSkjemaId = "123",
+                                                                 overskriftstittel = "Testoverskrift"))
 
-        dokarkivService.lagJournalpostV3(dto)
+        dokarkivService.lagJournalpost(dto)
 
         val request = slot.captured
         verify {
@@ -138,7 +159,7 @@ class DokarkivServiceTest {
     @Test fun `skal ikke generere førsteside hvis førsteside mangler i request`() {
         val slot = slot<OpprettJournalpostRequest>()
 
-        every { førstesideGeneratorService.genererForside(any(), any()) }
+        every { førstesideGeneratorService.genererForside(any<Førsteside>(), any()) }
                 .answers { PDF_DOK }
 
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
@@ -147,17 +168,21 @@ class DokarkivServiceTest {
         every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
                 .answers {
                     Person(fødselsdato = "1980-05-12",
-                            navn = navn,
-                            kjønn = "KVINNE",
-                            familierelasjoner = emptySet(),
-                            adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                            sivilstand =  SIVILSTAND.UGIFT)
+                           navn = navn,
+                           kjønn = "KVINNE",
+                           familierelasjoner = emptySet(),
+                           adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
+                           sivilstand = SIVILSTAND.UGIFT)
                 }
         val dto = ArkiverDokumentRequest(FNR,
-                false,
-                listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "KONTANTSTØTTE_SØKNAD")))
+                                         false,
+                                         listOf(Dokument(PDF_DOK,
+                                                         Filtype.PDFA,
+                                                         FILNAVN,
+                                                         null,
+                                                         Dokumenttype.KONTANTSTØTTE_SØKNAD)))
 
-        dokarkivService.lagJournalpostV3(dto)
+        dokarkivService.lagJournalpost(dto)
 
         val request = slot.captured
         verify {
@@ -180,21 +205,29 @@ class DokarkivServiceTest {
                            kjønn = "KVINNE",
                            familierelasjoner = emptySet(),
                            adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                            sivilstand = SIVILSTAND.UGIFT)
+                           sivilstand = SIVILSTAND.UGIFT)
                 }
 
-        val dto = DeprecatedArkiverDokumentRequest(FNR,
+        val dto = ArkiverDokumentRequest(FNR,
                                                    false,
-                                                   listOf(Dokument(PDF_DOK, FilType.PDFA, FILNAVN, null, "BARNETRYGD_VEDTAK"),
-                                                          Dokument(PDF_DOK, FilType.PDFA, null, TITTEL, "BARNETRYGD_VEDLEGG")),
+                                                   listOf(Dokument(PDF_DOK,
+                                                                   Filtype.PDFA,
+                                                                   FILNAVN,
+                                                                   null,
+                                                                   Dokumenttype.BARNETRYGD_VEDTAK)),
+                                                   listOf(Dokument(PDF_DOK,
+                                                                   Filtype.PDFA,
+                                                                   null,
+                                                                   TITTEL,
+                                                                   Dokumenttype.BARNETRYGD_VEDLEGG)),
                                                    fagsakId = FAGSAK_ID)
 
-        dokarkivService.lagJournalpostV2(dto)
+        dokarkivService.lagJournalpost(dto)
 
         val request = slot.captured
-        assertOpprettBarnetrygdVedtakJournalpostRequest(request,
-                                                        PDF_DOK,
-                                                        Sak(fagsakId = FAGSAK_ID, fagsaksystem = "BA", sakstype = "FAGSAK"))
+        assertOpprettBarnetrygdVedtakJournalpostRequest(request, PDF_DOK, Sak(fagsakId = FAGSAK_ID,
+                                                                              fagsaksystem = Fagsystem.BA,
+                                                                              sakstype = "FAGSAK"))
     }
 
     @Test fun `skal mappe request til opprettJournalpostRequest av type ORIGINAL JSON`() {
@@ -208,16 +241,16 @@ class DokarkivServiceTest {
                            kjønn = "KVINNE",
                            familierelasjoner = emptySet(),
                            adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                            sivilstand = SIVILSTAND.UGIFT)
+                           sivilstand = SIVILSTAND.UGIFT)
                 }
 
-        val dto = DeprecatedArkiverDokumentRequest(FNR, false, listOf(Dokument(JSON_DOK,
-                                                                               FilType.JSON,
-                                                                               FILNAVN,
-                                                                               null,
-                                                                               "KONTANTSTØTTE_SØKNAD")))
+        val dto = ArkiverDokumentRequest(FNR, false, listOf(Dokument(JSON_DOK,
+                                                                     Filtype.JSON,
+                                                                     FILNAVN,
+                                                                     null,
+                                                                     Dokumenttype.KONTANTSTØTTE_SØKNAD)))
 
-        dokarkivService.lagJournalpostV2(dto)
+        dokarkivService.lagJournalpost(dto)
 
         val request = slot.captured
 
@@ -241,16 +274,16 @@ class DokarkivServiceTest {
                            kjønn = "KVINNE",
                            familierelasjoner = emptySet(),
                            adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                            sivilstand = SIVILSTAND.UGIFT)
+                           sivilstand = SIVILSTAND.UGIFT)
                 }
 
-        val dto = DeprecatedArkiverDokumentRequest(FNR, false, listOf(Dokument(JSON_DOK,
-                                                                               FilType.JSON,
-                                                                               FILNAVN,
-                                                                               null,
-                                                                               "KONTANTSTØTTE_SØKNAD")))
+        val dto = ArkiverDokumentRequest(FNR, false, listOf(Dokument(JSON_DOK,
+                                                                     Filtype.JSON,
+                                                                     FILNAVN,
+                                                                     null,
+                                                                     Dokumenttype.KONTANTSTØTTE_SØKNAD)))
 
-        val arkiverDokumentResponse = dokarkivService.lagJournalpostV2(dto)
+        val arkiverDokumentResponse = dokarkivService.lagJournalpost(dto)
 
         assertThat(arkiverDokumentResponse.journalpostId).isEqualTo(JOURNALPOST_ID)
         assertTrue(arkiverDokumentResponse.ferdigstilt)
@@ -262,13 +295,13 @@ class DokarkivServiceTest {
                                                 arkivVariantformat: String,
                                                 sak: Sak? = null) {
         assertThat(request.avsenderMottaker!!.id).isEqualTo(FNR)
-        assertThat(request.avsenderMottaker!!.idType).isEqualTo(IdType.FNR)
+        assertThat(request.avsenderMottaker!!.idType).isEqualTo(BrukerIdType.FNR)
         assertThat(request.bruker!!.id).isEqualTo(FNR)
-        assertThat(request.bruker!!.idType).isEqualTo(IdType.FNR)
-        assertThat(request.behandlingstema).isEqualTo(KontanstøtteSøknadMetadata.behandlingstema)
+        assertThat(request.bruker!!.idType).isEqualTo(BrukerIdType.FNR)
+        assertThat(request.behandlingstema).isEqualTo(KontanstøtteSøknadMetadata.behandlingstema.value)
         assertThat(request.journalpostType).isEqualTo(JournalpostType.INNGAAENDE)
         assertThat(request.kanal).isEqualTo(KontanstøtteSøknadMetadata.kanal)
-        assertThat(request.tema).isEqualTo(KontanstøtteSøknadMetadata.tema)
+        assertThat(request.tema).isEqualTo(KontanstøtteSøknadMetadata.tema.toString())
         assertThat(request.sak).isNull()
         assertThat(request.dokumenter[0].tittel).isEqualTo(KontanstøtteSøknadMetadata.tittel)
         assertThat(request.dokumenter[0].brevkode).isEqualTo(KontanstøtteSøknadMetadata.brevkode)
@@ -288,13 +321,13 @@ class DokarkivServiceTest {
                                                                 pdfDok: ByteArray,
                                                                 sak: Sak) {
         assertThat(request.avsenderMottaker!!.id).isEqualTo(FNR)
-        assertThat(request.avsenderMottaker!!.idType).isEqualTo(IdType.FNR)
+        assertThat(request.avsenderMottaker!!.idType).isEqualTo(BrukerIdType.FNR)
         assertThat(request.bruker!!.id).isEqualTo(FNR)
-        assertThat(request.bruker!!.idType).isEqualTo(IdType.FNR)
-        assertThat(request.behandlingstema).isEqualTo(BarnetrygdVedtakMetadata.behandlingstema)
+        assertThat(request.bruker!!.idType).isEqualTo(BrukerIdType.FNR)
+        assertThat(request.behandlingstema).isEqualTo(BarnetrygdVedtakMetadata.behandlingstema.value)
         assertThat(request.journalpostType).isEqualTo(BarnetrygdVedtakMetadata.journalpostType)
         assertThat(request.kanal).isEqualTo(BarnetrygdVedtakMetadata.kanal)
-        assertThat(request.tema).isEqualTo(BarnetrygdVedtakMetadata.tema)
+        assertThat(request.tema).isEqualTo(BarnetrygdVedtakMetadata.tema.toString())
         assertThat(request.dokumenter[0].tittel).isEqualTo(BarnetrygdVedtakMetadata.tittel)
         assertThat(request.dokumenter[0].brevkode).isEqualTo(BarnetrygdVedtakMetadata.brevkode)
         assertThat(request.dokumenter[0].dokumentKategori).isEqualTo(BarnetrygdVedtakMetadata.dokumentKategori)
@@ -315,6 +348,7 @@ class DokarkivServiceTest {
     }
 
     companion object {
+
         private const val FNR = "fnr"
         private val PDF_DOK = "dok".toByteArray()
         private const val ARKIV_VARIANTFORMAT = "ARKIV"
@@ -323,7 +357,6 @@ class DokarkivServiceTest {
         private const val JOURNALPOST_ID = "123"
         private const val FILNAVN = "filnavn"
         private const val TITTEL = "tittel"
-        private val PERSON_IDENT = PersonIdent(FNR)
         private const val FAGSAK_ID = "s200"
     }
 }

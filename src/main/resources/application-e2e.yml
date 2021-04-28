@@ -50,7 +50,7 @@ SECURITYTOKENSERVICE_URL: http://vtp:8060/soap/SecurityTokenServiceProvider/
 PERSON_V3_URL: https://vtp:8063/soap/tpsws/ws/Person/v3
 INFOTRYGD_URL: http://vtp:8060/rest/infotrygd-kontantstotte
 EGEN_ANSATT_URL: #Mockes ut lokalt
-FOERSTESIDEGENERATOR_URL:
+FORSTESIDEGENERATOR_URL:
 MEDL2_URL: http://vtp:8060/rest/medl2
 ARBEIDSFORDELING_V1_URL: http://vtp:8060/soap/norg2/ws/Arbeidsfordeling/v1
 NORG2_URL: #Mockes lokalt

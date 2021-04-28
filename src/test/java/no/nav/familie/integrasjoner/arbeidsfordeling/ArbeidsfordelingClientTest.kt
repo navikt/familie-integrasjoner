@@ -6,6 +6,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.kontrakter.felles.Tema
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.FinnBehandlendeEnhetListeUgyldigInput
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Organisasjonsenhet
@@ -18,10 +19,10 @@ import org.junit.jupiter.api.assertThrows
 
 
 class ArbeidsfordelingClientTest {
-    val TEMA = "TEMA"
-    val GEOGRAFISK_TILKNYTNING = "GEOGRAFISK_TILKNYTNING"
-    val DISKRESJONSKODE = "DISKRESJONSKODE"
-    val ENHET_ID = "ENHET_ID"
+    private val TEMA = Tema.ENF
+    private val GEOGRAFISK_TILKNYTNING = "GEOGRAFISK_TILKNYTNING"
+    private val DISKRESJONSKODE = "DISKRESJONSKODE"
+    private val ENHET_ID = "ENHET_ID"
 
     @MockK
     lateinit var service: ArbeidsfordelingV1
@@ -50,7 +51,7 @@ class ArbeidsfordelingClientTest {
         }
 
         val response = client.finnBehandlendeEnhet(TEMA, null, null)
-        assertThat(requestSlot.captured.arbeidsfordelingKriterier.tema.value).isEqualTo(TEMA)
+        assertThat(requestSlot.captured.arbeidsfordelingKriterier.tema.value).isEqualTo(TEMA.toString())
         assertThat(requestSlot.captured.arbeidsfordelingKriterier.behandlingstema).isNull()
         assertThat(requestSlot.captured.arbeidsfordelingKriterier.geografiskTilknytning).isNull()
         assertThat(response.first().enhetId).isEqualTo(ENHET_ID)
@@ -72,7 +73,7 @@ class ArbeidsfordelingClientTest {
         }
 
         val response = client.finnBehandlendeEnhet(TEMA, GEOGRAFISK_TILKNYTNING, DISKRESJONSKODE)
-        assertThat(requestSlot.captured.arbeidsfordelingKriterier.tema.value).isEqualTo(TEMA)
+        assertThat(requestSlot.captured.arbeidsfordelingKriterier.tema.value).isEqualTo(TEMA.toString())
         assertThat(requestSlot.captured.arbeidsfordelingKriterier.diskresjonskode.value).isEqualTo(DISKRESJONSKODE)
         assertThat(requestSlot.captured.arbeidsfordelingKriterier.geografiskTilknytning.value).isEqualTo(GEOGRAFISK_TILKNYTNING)
         assertThat(response.first().enhetId).isEqualTo(ENHET_ID)
@@ -87,6 +88,6 @@ class ArbeidsfordelingClientTest {
         } throws FinnBehandlendeEnhetListeUgyldigInput("Ugyldig input", null)
 
         val e = assertThrows<OppslagException> { client.finnBehandlendeEnhet(TEMA, null, null) }
-        assertThat(e.message).isEqualTo("Ugyldig input tema=TEMA geografiskOmråde=null melding=Ugyldig input")
+        assertThat(e.message).isEqualTo("Ugyldig input tema=ENF geografiskOmråde=null melding=Ugyldig input")
     }
 }

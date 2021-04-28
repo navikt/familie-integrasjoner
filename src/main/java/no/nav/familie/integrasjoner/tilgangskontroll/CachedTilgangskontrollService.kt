@@ -3,7 +3,6 @@ package no.nav.familie.integrasjoner.tilgangskontroll
 import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.config.TilgangConfig
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
-import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.FORTROLIG
@@ -11,6 +10,7 @@ import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSE
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG_UTLAND
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
+import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.tilgangskontroll.Tilgang
 import no.nav.security.token.support.core.jwt.JwtToken
 import org.slf4j.LoggerFactory
@@ -26,7 +26,7 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
                key = "#jwtToken.subject.concat(#personIdent)",
                condition = "#personIdent != null && #jwtToken.subject != null")
     fun sjekkTilgang(personIdent: String, jwtToken: JwtToken, tema: Tema): Tilgang {
-        val personInfo = personopplysningerService.hentPersoninfo(personIdent, tema.toString(), PersonInfoQuery.ENKEL)
+        val personInfo = personopplysningerService.hentPersoninfo(personIdent, tema, PersonInfoQuery.ENKEL)
         val adressebeskyttelse = personInfo.adressebeskyttelseGradering
 
         return sjekTilgang(adressebeskyttelse, jwtToken, personIdent) { egenAnsattService.erEgenAnsatt(personIdent) }

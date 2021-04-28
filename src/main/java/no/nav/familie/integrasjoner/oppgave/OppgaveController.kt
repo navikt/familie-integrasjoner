@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.oppgave
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
+import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.oppgave.*
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.format.annotation.DateTimeFormat
