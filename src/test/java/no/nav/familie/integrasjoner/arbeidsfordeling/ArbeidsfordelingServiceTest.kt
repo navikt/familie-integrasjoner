@@ -6,15 +6,16 @@ import io.mockk.verify
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningDto
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningType
+import no.nav.familie.kontrakter.felles.Tema
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.lang.IllegalStateException
 
 internal class ArbeidsfordelingServiceTest {
 
-    val restClient: ArbeidsfordelingRestClient = mockk()
-    val pdlRestClient: PdlRestClient = mockk()
-    val arbeidsfordelingService =
+    private val restClient: ArbeidsfordelingRestClient = mockk()
+    private val pdlRestClient: PdlRestClient = mockk()
+    private val arbeidsfordelingService =
             ArbeidsfordelingService(klient = mockk(),
                                     restClient = restClient,
                                     pdlRestClient = pdlRestClient,
@@ -30,7 +31,7 @@ internal class ArbeidsfordelingServiceTest {
                                                     any())
         } returns GeografiskTilknytningDto(GeografiskTilknytningType.UDEFINERT, null, null, null)
 
-        assertThrows<IllegalStateException> { arbeidsfordelingService.finnLokaltNavKontor(ident, "ENF") }
+        assertThrows<IllegalStateException> { arbeidsfordelingService.finnLokaltNavKontor(ident, Tema.ENF) }
     }
 
     @Test
@@ -46,7 +47,7 @@ internal class ArbeidsfordelingServiceTest {
 
         every { restClient.hentEnhet(any())} returns mockk()
 
-        arbeidsfordelingService.finnLokaltNavKontor(ident, "ENF")
+        arbeidsfordelingService.finnLokaltNavKontor(ident, Tema.ENF)
 
         verify { restClient.hentEnhet("2372") }
     }

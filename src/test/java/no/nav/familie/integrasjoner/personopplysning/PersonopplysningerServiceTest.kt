@@ -6,7 +6,6 @@ import io.mockk.verify
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.client.soap.PersonSoapClient
 import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter
 import no.nav.familie.integrasjoner.personopplysning.domene.adresse.AdresseType
 import no.nav.familie.integrasjoner.personopplysning.domene.adresse.TpsAdresseOversetter
@@ -21,6 +20,7 @@ import no.nav.familie.integrasjoner.personopplysning.internal.Fullmakt
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlFamilierelasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedRelasjonerOgAdressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.Sivilstand
+import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import no.nav.familie.kontrakter.ks.søknad.testdata.SøknadTestdata
 import org.assertj.core.api.Assertions.assertThat
@@ -131,10 +131,11 @@ class PersonopplysningerServiceTest {
 
     @Test
     fun `hentPersonMedRelasjoner skal kalle på pdl 3 ganger, hovedpersonen, relasjonene og barnets andre forelder`() {
-        val hovedPerson = "1" to lagPdlPersonMedRelasjoner(familierelasjoner = listOf(PdlFamilierelasjon("2",
-                                                                                                         FAMILIERELASJONSROLLE.BARN)),
-                                                           sivilstand = listOf(Sivilstand(SIVILSTAND.GIFT, "3")),
-                                                           fullmakt = listOf(Fullmakt("4")))
+        val hovedPerson = "1" to
+                lagPdlPersonMedRelasjoner(familierelasjoner = listOf(PdlFamilierelasjon("2",
+                                                                                        FAMILIERELASJONSROLLE.BARN)),
+                                          sivilstand = listOf(Sivilstand(SIVILSTAND.GIFT, "3")),
+                                          fullmakt = listOf(Fullmakt("4")))
         val barn = lagPdlPersonMedRelasjoner(familierelasjoner = listOf(PdlFamilierelasjon("22",
                                                                                            FAMILIERELASJONSROLLE.FAR)))
         every { pdlRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(any(), any()) } answers {

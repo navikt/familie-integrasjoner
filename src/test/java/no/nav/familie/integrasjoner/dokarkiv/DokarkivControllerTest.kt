@@ -4,7 +4,9 @@ import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.kontrakter.felles.BrukerIdType
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.dokarkiv.*
 import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions.assertThat
@@ -166,7 +168,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                                                     FilType.PDFA,
                                                                     null,
                                                                     null,
-                                                                    "KONTANTSTØTTE_SØKNAD")))
+                                                                    Dokumenttype.KONTANTSTØTTE_SØKNAD)))
 
         val responseDeprecated: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
                 restTemplate.exchange(localhost(DOKARKIV_URL_V2),
@@ -188,8 +190,8 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                 .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId"))
                 .respond(response().withBody(json(gyldigDokarkivResponse())))
 
-        val body = OppdaterJournalpostRequest(bruker = DokarkivBruker(IdType.FNR, "12345678910"),
-                                              tema = "tema",
+        val body = OppdaterJournalpostRequest(bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
+                                              tema = Tema.ENF,
                                               sak = Sak("11111111", "fagsaksystem"))
 
         val response: ResponseEntity<Ressurs<OppdaterJournalpostResponse>> =
@@ -214,8 +216,8 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                  .withHeader("Content-Type", "application/json;charset=UTF-8")
                                  .withBody(gyldigDokarkivResponse(500)))
 
-        val body = OppdaterJournalpostRequest(bruker = DokarkivBruker(IdType.FNR, "12345678910"),
-                                              tema = "tema",
+        val body = OppdaterJournalpostRequest(bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
+                                              tema = Tema.ENF,
                                               sak = Sak("11111111", "fagsaksystem"))
 
         val response: ResponseEntity<Ressurs<OppdaterJournalpostResponse>> =
@@ -368,11 +370,11 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                                              FilType.PDFA,
                                              "filnavn",
                                              null,
-                                             "KONTANTSTØTTE_SØKNAD")
+                                             Dokumenttype.KONTANTSTØTTE_SØKNAD)
         private val VEDLEGG = Dokument("foo".toByteArray(),
                                        FilType.PDFA,
                                        "filnavn",
                                        "Vedlegg",
-                                       "KONTANTSTØTTE_SØKNAD_VEDLEGG")
+                                       Dokumenttype.KONTANTSTØTTE_SØKNAD_VEDLEGG)
     }
 }

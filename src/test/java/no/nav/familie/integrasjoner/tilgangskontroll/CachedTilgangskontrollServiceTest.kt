@@ -5,13 +5,13 @@ import io.mockk.mockk
 import io.mockk.verify
 import no.nav.familie.integrasjoner.config.TilgangConfig
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
-import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedAdresseBeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
+import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import no.nav.security.token.support.core.jwt.JwtToken
 import no.nav.security.token.support.core.jwt.JwtTokenClaims

@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.oppgave
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
+import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.oppgave.*
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -16,7 +17,7 @@ class OppgaveRestClientTestConfig {
     @Bean
     @Profile("mock-oppgave")
     @Primary
-    fun OppgaveMockRestClient(): OppgaveRestClient {
+    fun oppgaveMockRestClient(): OppgaveRestClient {
         val klient: OppgaveRestClient = mockk(relaxed = false)
         val response = Oppgave(id = 42,
                                aktoerId = "1234",

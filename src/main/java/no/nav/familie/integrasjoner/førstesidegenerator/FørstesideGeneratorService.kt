@@ -1,41 +1,64 @@
 package no.nav.familie.integrasjoner.førstesidegenerator
 
-import no.nav.familie.integrasjoner.client.rest.FørstesideGeneratorClient
-import no.nav.familie.integrasjoner.førstesidegenerator.domene.*
-import no.nav.familie.kontrakter.felles.dokarkiv.Førsteside
+import no.nav.familie.integrasjoner.client.rest.FørstesidegeneratorClient
+import no.nav.familie.integrasjoner.førstesidegenerator.domene.Adresse
+import no.nav.familie.integrasjoner.førstesidegenerator.domene.Bruker
+import no.nav.familie.integrasjoner.førstesidegenerator.domene.Brukertype
+import no.nav.familie.integrasjoner.førstesidegenerator.domene.Førstesidetype
+import no.nav.familie.integrasjoner.førstesidegenerator.domene.PostFørstesideRequest
+import no.nav.familie.kontrakter.felles.Språkkode
+import no.nav.familie.kontrakter.felles.dokarkiv.v2.Førsteside
 import org.springframework.stereotype.Service
 import org.springframework.web.context.annotation.ApplicationScope
+import no.nav.familie.kontrakter.felles.dokarkiv.Førsteside as DeprecatedFørsteside
 
 
 @Service
 @ApplicationScope
-class FørstesideGeneratorService constructor(private val førstesideGeneratorClient: FørstesideGeneratorClient) {
+class FørstesideGeneratorService(private val førstesidegeneratorClient: FørstesidegeneratorClient) {
 
-    fun genererForside(førsteside: Førsteside, brukerId: String): ByteArray? {
-        val postFoerstesideRequest = PostFoerstesideRequest(
-                spraakkode = Spraakkode.valueOf(førsteside.maalform),
-                adresse = Adresse (
-                        adresselinje1 = "Nav skanning",
-                        adresselinje2 = "Postboks 1400",
-                        postnummer = "0109",
-                        poststed = "OSLO"
-                ),
-                bruker = Bruker (
-                        brukerId = brukerId,
-                        brukerType = BrukerType.PERSON
-                ),
-                navSkjemaId = førsteside.navSkjemaId, //NAV 33.00-07
-                foerstesidetype = Foerstesidetype.ETTERSENDELSE,
-                tema = "BAR", // TODO flytt ut i kontrakter
-                overskriftstittel = førsteside.overskriftsTittel,//"Søknad om barnetrygd ved fødsel - NAV 33.00-07, Ettersendelse til søknad om barnetrygd ved fødsel - NAV 33.00-07",
-                dokumentlisteFoersteside = arrayListOf(
-                        if (førsteside.maalform == "NN") "Sjå vedlagte brev" else "Se vedlagte brev"
-                ),
-                vedleggsliste = arrayListOf(
-                        if (førsteside.maalform == "NN") "Sjå vedlagte brev" else "Se vedlagte brev"
-                )
-        
-        )
-        return førstesideGeneratorClient.genererFørsteside(postFoerstesideRequest).foersteside
+    fun genererForside(førsteside: DeprecatedFørsteside, brukerId: String): ByteArray {
+        val postFørstesideRequest =
+                PostFørstesideRequest(språkkode = Språkkode.valueOf(førsteside.maalform),
+                                      adresse = Adresse(adresselinje1 = "Nav skanning",
+                                                        adresselinje2 = "Postboks 1400",
+                                                        postnummer = "0109",
+                                                        poststed = "OSLO"),
+                                      bruker = Bruker(brukerId = brukerId,
+                                                      brukerType = Brukertype.PERSON),
+                                      navSkjemaId = førsteside.navSkjemaId, //NAV 33.00-07
+                                      førstesidetype = Førstesidetype.ETTERSENDELSE,
+                                      tema = "BAR", // TODO flytt ut i kontrakter
+                        //"Søknad om barnetrygd ved fødsel - NAV 33.00-07,
+                        // Ettersendelse til søknad om barnetrygd ved fødsel - NAV 33.00-07",
+                                      overskriftstittel = førsteside.overskriftsTittel,
+                                      dokumentlisteFørsteside = arrayListOf(if (førsteside.maalform == "NN") "Sjå vedlagte brev"
+                                                                            else "Se vedlagte brev"),
+                                      vedleggsliste = arrayListOf(if (førsteside.maalform == "NN") "Sjå vedlagte brev"
+                                                                  else "Se vedlagte brev"))
+        return førstesidegeneratorClient.genererFørsteside(postFørstesideRequest).førsteside
     }
+
+    fun genererForside(førsteside: Førsteside, brukerId: String): ByteArray {
+        val postFørstesideRequest =
+                PostFørstesideRequest(språkkode = førsteside.språkkode,
+                                      adresse = Adresse(adresselinje1 = "Nav skanning",
+                                                        adresselinje2 = "Postboks 1400",
+                                                        postnummer = "0109",
+                                                        poststed = "OSLO"),
+                                      bruker = Bruker(brukerId = brukerId,
+                                                      brukerType = Brukertype.PERSON),
+                                      navSkjemaId = førsteside.navSkjemaId, //NAV 33.00-07
+                                      førstesidetype = Førstesidetype.ETTERSENDELSE,
+                                      tema = "BAR", // TODO flytt ut i kontrakter
+                        //"Søknad om barnetrygd ved fødsel - NAV 33.00-07,
+                        // Ettersendelse til søknad om barnetrygd ved fødsel - NAV 33.00-07",
+                                      overskriftstittel = førsteside.overskriftstittel,
+                                      dokumentlisteFørsteside = arrayListOf(vedleggstekst(førsteside.språkkode)),
+                                      vedleggsliste = arrayListOf(vedleggstekst(førsteside.språkkode)))
+        return førstesidegeneratorClient.genererFørsteside(postFørstesideRequest).førsteside
+    }
+
+    fun vedleggstekst(språkkode: Språkkode) = if (språkkode == Språkkode.NN) "Sjå vedlagte brev" else "Se vedlagte brev"
+
 }

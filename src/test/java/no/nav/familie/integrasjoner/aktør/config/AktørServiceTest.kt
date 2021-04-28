@@ -11,8 +11,8 @@ import no.nav.familie.integrasjoner.aktør.internal.AktørResponse
 import no.nav.familie.integrasjoner.client.rest.AktørregisterRestClient
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.config.CacheConfig
-import no.nav.familie.integrasjoner.felles.Tema
 import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
+import no.nav.familie.kontrakter.felles.Tema
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before

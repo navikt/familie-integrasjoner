@@ -23,13 +23,12 @@ class ArbeidsfordelingClient(private val arbeidsfordelingV1: ArbeidsfordelingV1)
         arbeidsfordelingV1.ping()
     }
 
-    fun finnBehandlendeEnhet(gjeldendeTema: String,
+    fun finnBehandlendeEnhet(gjeldendeTema: no.nav.familie.kontrakter.felles.Tema,
                              gjeldendeGeografiskOmråde: String?,
                              gjeldendeDiskresjonskode: String?): List<Enhet> {
         val request = FinnBehandlendeEnhetListeRequest().apply {
             arbeidsfordelingKriterier = ArbeidsfordelingKriterier().apply {
-                tema = Tema().apply { value = gjeldendeTema }
-
+                tema = Tema().apply { value = gjeldendeTema.toString() }
                 if (gjeldendeGeografiskOmråde != null) {
                     geografiskTilknytning = Geografi().apply {
                         value = gjeldendeGeografiskOmråde

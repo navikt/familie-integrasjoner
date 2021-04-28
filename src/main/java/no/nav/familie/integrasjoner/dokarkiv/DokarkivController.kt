@@ -5,6 +5,7 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.dokarkiv.*
+import no.nav.familie.kontrakter.felles.dokarkiv.v2.ArkiverDokumentRequest
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -18,6 +19,7 @@ import java.util.*
 import java.util.function.Consumer
 import javax.validation.Valid
 import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequest
+import no.nav.familie.kontrakter.felles.dokarkiv.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequest2
 
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
@@ -51,10 +53,18 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     }
 
     @PostMapping(path = ["/v3"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun arkiverDokumentV3(@RequestBody @Valid arkiverDokumentRequest: ArkiverDokumentRequest)
+    fun arkiverDokumentV4(@RequestBody @Valid arkiverDokumentRequest: DeprecatedArkiverDokumentRequest2)
             : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(success(journalføringService.lagJournalpostV3(arkiverDokumentRequest),
+                              "Arkivert journalpost OK"))
+    }
+
+    @PostMapping(path = ["/v4"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun arkiverDokumentV4(@RequestBody @Valid arkiverDokumentRequest: ArkiverDokumentRequest)
+            : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(success(journalføringService.lagJournalpost(arkiverDokumentRequest),
                               "Arkivert journalpost OK"))
     }
 

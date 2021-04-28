@@ -4,15 +4,12 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import no.nav.familie.integrasjoner.client.rest.SafRestClient
-import no.nav.familie.integrasjoner.dokarkiv.DokarkivServiceTest
-import no.nav.familie.kontrakter.felles.dokarkiv.Dokument
-import no.nav.familie.kontrakter.felles.dokarkiv.FilType
+import no.nav.familie.kontrakter.felles.BrukerIdType
 import no.nav.familie.kontrakter.felles.journalpost.*
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 import org.springframework.context.annotation.Profile
-import java.time.LocalDateTime
 
 @Configuration
 class HentJournalpostTestConfig {
