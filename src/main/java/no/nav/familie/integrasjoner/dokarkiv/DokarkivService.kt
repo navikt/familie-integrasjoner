@@ -106,7 +106,7 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
         val fnr = arkiverDokumentRequest.fnr
 
         val metadata = dokarkivMetadata.getMetadata(arkiverDokumentRequest.hoveddokumentvarianter[0])
-        val hoveddokument = mapDeprectedHoveddokument(arkiverDokumentRequest.hoveddokumentvarianter)
+        val hoveddokument = mapDeprecatedHoveddokument(arkiverDokumentRequest.hoveddokumentvarianter)
         var vedleggsdokumenter = arkiverDokumentRequest.vedleggsdokumenter.map(this::mapTilArkivdokument)
         val jpsak: Sak? = if (arkiverDokumentRequest.fagsakId != null)
             Sak(fagsakId = arkiverDokumentRequest.fagsakId,
