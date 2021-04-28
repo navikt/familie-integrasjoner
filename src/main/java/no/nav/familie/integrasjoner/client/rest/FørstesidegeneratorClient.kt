@@ -19,7 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Component
-class FørstesidegeneratorClient(@Value("\${FØRSTESIDEGENERATOR_URL}") private val førstesidegeneratorURI: URI,
+class FørstesidegeneratorClient(@Value("\${FORSTESIDEGENERATOR_URL}") private val førstesidegeneratorURI: URI,
                                 @Qualifier("sts") private val restTemplate: RestOperations)
     : AbstractPingableRestClient(restTemplate, "førstesidegenterator") {
 
