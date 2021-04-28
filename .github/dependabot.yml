@@ -1,0 +1,75 @@
+version: 2
+registries:
+  maven-repository-maven-pkg-github-com-navikt-fp-felles:
+    type: maven-repository
+    url: https://maven.pkg.github.com/navikt/fp-felles/
+    username: x-access-token
+    password: "${{secrets.MAVEN_REPOSITORY_MAVEN_PKG_GITHUB_COM_NAVIKT_FP_FELLES_PASSWORD}}"
+
+updates:
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: weekly
+    time: "04:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: no.nav.familie.kontrakter:felles
+    versions:
+    - 2.0_20210225150823_36d3519
+    - 2.0_20210303203405_aebacea
+    - 2.0_20210305131536_dd4cd5d
+    - 2.0_20210312160913_1f140c8
+    - 2.0_20210416141710_97efcc5
+  - dependency-name: no.nav.familie.kontrakter:kontantstotte
+    versions:
+    - 2.0_20210225150823_36d3519
+    - 2.0_20210303203405_aebacea
+    - 2.0_20210305131536_dd4cd5d
+    - 2.0_20210312160913_1f140c8
+    - 2.0_20210416141710_97efcc5
+  - dependency-name: no.nav.familie.felles:http-client
+    versions:
+    - 1.20210416135502_5bf9eff
+  - dependency-name: no.nav.familie.felles:log
+    versions:
+    - 1.20210416135502_5bf9eff
+  - dependency-name: org.jetbrains.kotlin:kotlin-maven-plugin
+    versions:
+    - 1.4.32
+  - dependency-name: org.jetbrains.kotlin:kotlin-maven-allopen
+    versions:
+    - 1.4.32
+  - dependency-name: org.jetbrains.kotlin:kotlin-test-junit
+    versions:
+    - 1.4.32
+  - dependency-name: org.jetbrains.kotlin:kotlin-reflect
+    versions:
+    - 1.4.32
+  - dependency-name: org.jetbrains.kotlin:kotlin-stdlib-jdk8
+    versions:
+    - 1.4.32
+  - dependency-name: no.nav.common:cxf
+    versions:
+    - 2.2021.02.16_10.55-dc7ccfbaf5db
+    - 2.2021.03.03_08.24-3686938439d9
+    - 2.2021.03.26_09.45-569ba329264c
+    - 2.2021.04.08_11.42-d0c0afd39ca0
+  - dependency-name: org.springframework.boot:spring-boot-starter-parent
+    versions:
+    - 2.4.3
+    - 2.4.4
+  - dependency-name: no.nav.security:token-validation-test-support
+    versions:
+    - 1.3.4
+  - dependency-name: no.nav.security:token-validation-spring
+    versions:
+    - 1.3.4
+  - dependency-name: no.nav.security:token-client-spring
+    versions:
+    - 1.3.4
+  - dependency-name: io.mockk:mockk
+    versions:
+    - 1.10.6
+  registries:
+  - maven-repository-maven-pkg-github-com-navikt-fp-felles
