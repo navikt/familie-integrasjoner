@@ -64,7 +64,8 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
     private fun mapTilOpprettJournalpostRequest(arkiverDokumentRequest: ArkiverDokumentRequest): OpprettJournalpostRequest {
 
         val dokarkivBruker = DokarkivBruker(BrukerIdType.FNR, arkiverDokumentRequest.fnr)
-        val metadata = dokarkivMetadata.getMetadata(arkiverDokumentRequest.hoveddokumentvarianter[0])
+        val hoveddokument = arkiverDokumentRequest.hoveddokumentvarianter[0]
+        val metadata = dokarkivMetadata.getMetadata(hoveddokument)
         val avsenderMottaker = arkiverDokumentRequest.avsenderMottaker ?: arkiverDokumentRequest.fnr.let {
             val navn = hentNavnForFnr(fnr = arkiverDokumentRequest.fnr, behandlingstema = metadata.tema)
             AvsenderMottaker(it, BrukerIdType.FNR, navn)
@@ -91,7 +92,7 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
         return OpprettJournalpostRequest(journalpostType = metadata.journalpostType,
                                          behandlingstema = metadata.behandlingstema?.value,
                                          kanal = metadata.kanal,
-                                         tittel = metadata.tittel,
+                                         tittel = hoveddokument.tittel ?: metadata.tittel,
                                          tema = metadata.tema.name,
                                          avsenderMottaker = avsenderMottaker,
                                          bruker = dokarkivBruker,
