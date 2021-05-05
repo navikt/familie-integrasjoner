@@ -42,4 +42,8 @@ SAF_SCOPE: "dummy-scope"
 GOSYS_INFOTRYGDSAK_URL: "dummy"
 
 STS_URL: http://security-token-service.default.svc.nais.local/rest/v1/sts/token
-INFOTRYGD_URL: http://infotrygd-kontantstotte
+INFOTRYGD_URL: http://infotrygd-kontantstotte.default
+KODEVERK_URL: http://kodeverk.default
+PDL_URL: http://pdl-api.default
+DOKARKIV_V1_URL: http://dokarkiv.default
+
