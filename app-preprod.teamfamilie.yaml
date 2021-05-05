@@ -37,8 +37,9 @@ spec:
     requests:
       memory: 1Gi
       cpu: 200m
-  ingresses: 
+  ingresses:
     - https://familie-integrasjoner.dev-fss-pub.nais.io
+    - https://familie-integrasjoner.dev.adeo.no
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: preprod
