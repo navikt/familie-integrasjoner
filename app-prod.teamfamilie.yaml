@@ -2,7 +2,7 @@ apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
   name: familie-integrasjoner
-  namespace: default
+  namespace: teamfamilie
   labels:
     team: teamfamilie
 
@@ -38,7 +38,8 @@ spec:
       memory: 1Gi
       cpu: 200m
   ingresses: # Optional. List of ingress URLs that will route HTTP traffic to the application.
-    - https://familie-integrasjoner.dev.adeo.no
+    - https://familie-integrasjoner.prod-fss-pub.nais.io
+    - https://familie-integrasjoner.nais.adeo.no
   env:
     - name: SPRING_PROFILES_ACTIVE
-      value: preprod
+      value: prod
