@@ -40,6 +40,7 @@ spec:
   ingresses:
     - https://familie-integrasjoner.dev-fss-pub.nais.io
     - https://familie-integrasjoner.dev.adeo.no
+    - https://familie-integrasjoner.dev.intern.nav.no
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: preprod
