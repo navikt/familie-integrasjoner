@@ -55,7 +55,7 @@ PERSON_V3_URL: https://app.adeo.no/tpsws-aura/ws/Person/v3
 ORGANISASJON_V5_URL: https://modapp.adeo.no/ereg/ws/OrganisasjonService/v5
 MEDL2_URL: https://app.adeo.no/medl2
 SAF_URL: http://saf.default
-FORSTESIDEGENERATOR_URL: http://foerstesidegenerator
+FORSTESIDEGENERATOR_URL: http://foerstesidegenerator.default
 EGEN_ANSATT_URL: https://skjermede-personer-pip.nais.adeo.no
 DOKDIST_URL: http://dokdistfordeling.default
 ARBEIDSFORDELING_V1_URL: https://app.adeo.no/norg2/ws/Arbeidsfordeling/v1
