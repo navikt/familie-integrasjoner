@@ -49,7 +49,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
             : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(success(journalføringService.lagJournalpostV2(deprecatedArkiverDokumentRequest),
-                              "Arkivert journalpost OK"))
+                              Companion.ARKIVERT_OK_MELDING))
     }
 
     @PostMapping(path = ["/v3"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -57,7 +57,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
             : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(success(journalføringService.lagJournalpostV3(arkiverDokumentRequest),
-                              "Arkivert journalpost OK"))
+                              Companion.ARKIVERT_OK_MELDING))
     }
 
     @PostMapping(path = ["/v4"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -65,7 +65,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
             : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(success(journalføringService.lagJournalpost(arkiverDokumentRequest),
-                              "Arkivert journalpost OK"))
+                              Companion.ARKIVERT_OK_MELDING))
     }
 
     @PutMapping(path = ["/v2/{journalpostId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -108,7 +108,9 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     }
 
     companion object {
+
         private val LOG = LoggerFactory.getLogger(DokarkivController::class.java)
+        const val ARKIVERT_OK_MELDING = "Arkivert journalpost OK"
     }
 
 }
