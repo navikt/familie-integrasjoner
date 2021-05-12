@@ -7,6 +7,7 @@ import no.nav.familie.integrasjoner.førstesidegenerator.domene.Brukertype
 import no.nav.familie.integrasjoner.førstesidegenerator.domene.Førstesidetype
 import no.nav.familie.integrasjoner.førstesidegenerator.domene.PostFørstesideRequest
 import no.nav.familie.kontrakter.felles.Språkkode
+import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Førsteside
 import org.springframework.stereotype.Service
 import org.springframework.web.context.annotation.ApplicationScope
@@ -31,7 +32,7 @@ class FørstesideGeneratorService(private val førstesidegeneratorClient: Først
                                                       brukerType = Brukertype.PERSON),
                                       navSkjemaId = førsteside.navSkjemaId, //NAV 33.00-07
                                       førstesidetype = Førstesidetype.ETTERSENDELSE,
-                                      tema = "BAR", // TODO flytt ut i kontrakter
+                                      tema =  Tema.BAR.name,
                         //"Søknad om barnetrygd ved fødsel - NAV 33.00-07,
                         // Ettersendelse til søknad om barnetrygd ved fødsel - NAV 33.00-07",
                                       overskriftstittel = førsteside.overskriftsTittel,
@@ -53,7 +54,7 @@ class FørstesideGeneratorService(private val førstesidegeneratorClient: Først
                                                       brukerType = Brukertype.PERSON),
                                       navSkjemaId = førsteside.navSkjemaId, //NAV 33.00-07
                                       førstesidetype = Førstesidetype.ETTERSENDELSE,
-                                      tema = "BAR", // TODO flytt ut i kontrakter
+                                      tema = Tema.BAR.name,
                         //"Søknad om barnetrygd ved fødsel - NAV 33.00-07,
                         // Ettersendelse til søknad om barnetrygd ved fødsel - NAV 33.00-07",
                                       overskriftstittel = førsteside.overskriftstittel,
