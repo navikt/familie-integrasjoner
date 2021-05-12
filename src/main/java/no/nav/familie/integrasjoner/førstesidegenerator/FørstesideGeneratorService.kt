@@ -7,6 +7,7 @@ import no.nav.familie.integrasjoner.førstesidegenerator.domene.Brukertype
 import no.nav.familie.integrasjoner.førstesidegenerator.domene.Førstesidetype
 import no.nav.familie.integrasjoner.førstesidegenerator.domene.PostFørstesideRequest
 import no.nav.familie.kontrakter.felles.Språkkode
+import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Førsteside
 import org.springframework.stereotype.Service
 import org.springframework.web.context.annotation.ApplicationScope
@@ -28,14 +29,14 @@ class FørstesideGeneratorService(private val førstesidegeneratorClient: Først
                                                       brukerType = Brukertype.PERSON),
                                       navSkjemaId = førsteside.navSkjemaId, //NAV 33.00-07
                                       førstesidetype = Førstesidetype.ETTERSENDELSE,
-                                      tema = "BAR", // TODO flytt ut i kontrakter
+                                      tema =  Tema.BAR.name,
                         //"Søknad om barnetrygd ved fødsel - NAV 33.00-07,
                         // Ettersendelse til søknad om barnetrygd ved fødsel - NAV 33.00-07",
                                       overskriftstittel = førsteside.overskriftsTittel,
-                                      dokumentlisteFørsteside = arrayListOf(if (førsteside.maalform == "NN") "Sjå vedlagte brev"
-                                                                            else "Se vedlagte brev"),
-                                      vedleggsliste = arrayListOf(if (førsteside.maalform == "NN") "Sjå vedlagte brev"
-                                                                  else "Se vedlagte brev"))
+                                      dokumentlisteFørsteside = arrayListOf(if (førsteside.maalform == "NN") Companion.VEDLAGTEBREV_TEKST_NN
+                                                                            else Companion.VEDLAGTEBREV_TEKST_NB),
+                                      vedleggsliste = arrayListOf(if (førsteside.maalform == "NN") Companion.VEDLAGTEBREV_TEKST_NN
+                                                                  else Companion.VEDLAGTEBREV_TEKST_NB))
         return førstesidegeneratorClient.genererFørsteside(postFørstesideRequest).førsteside
     }
 
@@ -50,7 +51,7 @@ class FørstesideGeneratorService(private val førstesidegeneratorClient: Først
                                                       brukerType = Brukertype.PERSON),
                                       navSkjemaId = førsteside.navSkjemaId, //NAV 33.00-07
                                       førstesidetype = Førstesidetype.ETTERSENDELSE,
-                                      tema = "BAR", // TODO flytt ut i kontrakter
+                                      tema = Tema.BAR.name,
                         //"Søknad om barnetrygd ved fødsel - NAV 33.00-07,
                         // Ettersendelse til søknad om barnetrygd ved fødsel - NAV 33.00-07",
                                       overskriftstittel = førsteside.overskriftstittel,
@@ -59,6 +60,12 @@ class FørstesideGeneratorService(private val førstesidegeneratorClient: Først
         return førstesidegeneratorClient.genererFørsteside(postFørstesideRequest).førsteside
     }
 
-    fun vedleggstekst(språkkode: Språkkode) = if (språkkode == Språkkode.NN) "Sjå vedlagte brev" else "Se vedlagte brev"
+    fun vedleggstekst(språkkode: Språkkode) = if (språkkode == Språkkode.NN) Companion.VEDLAGTEBREV_TEKST_NN else Companion.VEDLAGTEBREV_TEKST_NB
+
+    companion object {
+
+        const val VEDLAGTEBREV_TEKST_NN = "Sjå vedlagte brev"
+        const val VEDLAGTEBREV_TEKST_NB = "Se vedlagte brev"
+    }
 
 }
