@@ -257,7 +257,8 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
 
     private fun mapTilArkiverDokumentResponse(response: OpprettJournalpostResponse): ArkiverDokumentResponse {
         return ArkiverDokumentResponse(response.journalpostId!!,
-                                       response.journalpostferdigstilt ?: false)
+                                       response.journalpostferdigstilt ?: false,
+                                       response.dokumenter)
     }
 
     fun lagNyttLogiskVedlegg(dokumentInfoId: String,
