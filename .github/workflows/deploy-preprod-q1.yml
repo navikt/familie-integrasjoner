@@ -4,7 +4,7 @@ on:
   pull_request:
     branches-ignore:
       - 'dependabot/**'
-
+concurrency: q1
 env:
   IMAGE: docker.pkg.github.com/${{ github.repository }}/familie-integrasjoner-q1:${{ github.sha }}
 jobs:
