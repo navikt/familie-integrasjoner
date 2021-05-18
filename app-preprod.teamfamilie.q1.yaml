@@ -1,0 +1,45 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: familie-integrasjoner-q1
+  namespace: teamfamilie
+  labels:
+    team: teamfamilie
+
+spec:
+  image: {{ image }}
+  port: 8085
+  liveness:
+    path: /internal/status/isAlive
+    initialDelay: 30
+    timeout: 5
+    failureThreshold: 10
+  readiness:
+    path: /internal/status/isAlive
+    initialDelay: 30
+    timeout: 5
+    failureThreshold: 10
+  vault:
+    enabled: true
+  secureLogs:
+    enabled: true
+  prometheus:
+    enabled: true
+    path: /internal/prometheus
+  replicas:
+    min: 2
+    max: 2
+    cpuThresholdPercentage: 50
+  resources:
+    limits:
+      memory: 2Gi
+      cpu: 1500m
+    requests:
+      memory: 1Gi
+      cpu: 200m
+  ingresses:
+    - https://familie-integrasjoner-q1.dev.adeo.no
+    - https://familie-integrasjoner-q1.dev.intern.nav.no
+  env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: preprod-q1
