@@ -1,8 +1,8 @@
 package no.nav.familie.integrasjoner.config
 
-import no.nav.familie.kontrakter.felles.organisasjon.Organisasjon
+import no.nav.common.cxf.CXFClient
+import no.nav.common.cxf.StsConfig
 import no.nav.inf.GOSYSInfotrygdSak
-import no.nav.sbl.dialogarena.common.cxf.CXFClient
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
 import no.nav.tjeneste.virksomhet.infotrygdvedtak.v1.binding.InfotrygdVedtakV1
 import no.nav.tjeneste.virksomhet.organisasjon.v5.binding.OrganisasjonV5
@@ -18,7 +18,7 @@ import javax.security.auth.callback.CallbackHandler
 import javax.xml.namespace.QName
 
 @Configuration
-class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
+class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") private val stsUrl: String,
                     @Value("\${CREDENTIAL_USERNAME}") private val systemuserUsername: String,
                     @Value("\${CREDENTIAL_PASSWORD}") private val systemuserPwd: String,
                     @Value("\${PERSON_V3_URL}") private val personV3Url: String,
@@ -34,11 +34,20 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
     }
 
     @Bean
+    fun stsConfig(): StsConfig? {
+        return StsConfig.builder()
+                .url(stsUrl)
+                .username(systemuserUsername)
+                .password(systemuserPwd)
+                .build()
+    }
+
+    @Bean
     fun personV3Port(): PersonV3 =
             CXFClient(PersonV3::class.java)
                     .address(personV3Url)
                     .timeout(20000, 20000)
-                    .configureStsForSystemUser()
+                    .configureStsForSystemUser(stsConfig())
                     .build()
 
     @Bean
@@ -46,7 +55,7 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
             CXFClient(OrganisasjonV5::class.java)
                     .address(organisasjonV5Url)
                     .timeout(20000, 20000)
-                    .configureStsForSystemUser()
+                    .configureStsForSystemUser(stsConfig())
                     .build()
 
     @Bean
@@ -66,7 +75,7 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
     fun arbeidsfordelingV1(): ArbeidsfordelingV1 =
             CXFClient(ArbeidsfordelingV1::class.java)
                     .address(arbeidsfordelingUrl)
-                    .configureStsForSystemUser()
+                    .configureStsForSystemUser(stsConfig())
                     .build()
 
     @Bean
@@ -74,7 +83,7 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") stsUrl: String,
             CXFClient(InfotrygdVedtakV1::class.java)
                     .address(infotrygdVedtakUrl)
                     .timeout(10000, 10000)
-                    .configureStsForSystemUser()
+                    .configureStsForSystemUser(stsConfig())
                     .build()
 
 }
