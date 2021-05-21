@@ -2,13 +2,14 @@ name: Build-Deploy-Preprod
 on:
   workflow_dispatch:
   pull_request:
-    branches-ignore:
-      - 'dependabot/**'
+    types: [ opened, synchronize, reopened, ready_for_review ]
+
 concurrency: preprod
 env:
   IMAGE: docker.pkg.github.com/${{ github.repository }}/familie-integrasjoner:${{ github.sha }}
 jobs:
   deploy-to-dev:
+    if: github.event.pull_request.draft == false
     name: Build, push and deploy to dev-fss
     runs-on: ubuntu-latest
     steps:
