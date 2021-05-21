@@ -50,18 +50,18 @@ INFOTRYGD_KS_SCOPE: ${INFOTRYGD_KS_SCOPE}
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 SECURITYTOKENSERVICE_URL: https://sts-q2.preprod.local/SecurityTokenServiceProvider/
-AKTOERID_URL: https://app-q2.adeo.no/aktoerregister
-PERSON_V3_URL: https://app-q2.adeo.no/tpsws-aura/ws/Person/v3
+AKTOERID_URL: https://app-q1.adeo.no/aktoerregister
+PERSON_V3_URL: https://app-q1.adeo.no/tpsws-aura/ws/Person/v3
 ORGANISASJON_V5_URL: https://modapp-q1.adeo.no/ereg/ws/OrganisasjonService/v5
-DOKARKIV_V1_URL: http://dokarkiv.q2
+DOKARKIV_V1_URL: http://dokarkiv.q1
 MEDL2_URL: https://app-q2.adeo.no/medl2
-SAF_URL: http://saf.q2
+SAF_URL: http://saf.q1
 OPPGAVE_URL: http://oppgave-q1.oppgavehandtering
 FORSTESIDEGENERATOR_URL: https://foerstesidegenerator-q1.dev.adeo.no
 EGEN_ANSATT_URL: https://skjermede-personer-pip.nais.preprod.local
 DOKDIST_URL: http://dokdistfordeling.q1
 ARBEIDSFORDELING_V1_URL: https://app-q1.adeo.no/norg2/ws/Arbeidsfordeling/v1
-AAREG_URL: https://modapp-q2.adeo.no/aareg-services/api
+AAREG_URL: https://modapp-q1.adeo.no/aareg-services/api
 GOSYS_INFOTRYGDSAK_URL: https://tjenestebuss-q2.adeo.no/nav-cons-sak-gosys-3.0.0Web/sca/GOSYSInfotrygdSakWSEXP
 SKYGGE_SAK_URL: http://sak.q2
 INFOTRYGD_VEDTAK_URL: https://modapp-q1.adeo.no/infotrygd-ws/InfotrygdVedtak/v1
