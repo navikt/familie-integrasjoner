@@ -14,6 +14,15 @@ no.nav.security.jwt:
           client-id: ${INTEGRASJONER_CLIENT_ID}
           client-secret: ${CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      aad-graph:
+        resource-url: ${AAD_GRAPH_API_URI}
+        token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: ${AAD_GRAPH_SCOPE}
+        authentication:
+          client-id: ${INTEGRASJONER_CLIENT_ID}
+          client-secret: ${CLIENT_SECRET}
+          client-auth-method: client_secret_basic
       saf-onbehalf-of:
         resource-url: ${SAF_URL}
         token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
