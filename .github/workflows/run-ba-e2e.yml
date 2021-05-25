@@ -1,6 +1,7 @@
 name: run-ba-e2e
 on:
   workflow_dispatch:
+concurrency: e2e
 env:
   IMAGE: docker.pkg.github.com/${{ github.repository }}/familie-integrasjoner:${{ github.sha }}
 jobs:
