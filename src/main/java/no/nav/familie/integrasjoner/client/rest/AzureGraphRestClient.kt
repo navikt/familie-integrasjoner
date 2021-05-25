@@ -2,7 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.integrasjoner.azure.domene.Grupper
-import no.nav.familie.integrasjoner.azure.domene.Saksbehandler
+import no.nav.familie.integrasjoner.azure.domene.AzureAdBruker
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -17,11 +17,17 @@ class AzureGraphRestClient(@Qualifier("jwtBearer") restTemplate: RestOperations,
 
     val saksbehandlerUri: URI = UriComponentsBuilder.fromUri(aadGraphURI).pathSegment(ME).build().toUri()
 
+    fun saksbehandlerUri(id: String): URI = UriComponentsBuilder.fromUri(aadGraphURI).pathSegment(USERS, id).build().toUri()
+
     val grupperUri: URI = UriComponentsBuilder.fromUri(aadGraphURI).pathSegment(ME, GRUPPER).build().toUri()
 
 
-    fun hentSaksbehandler(): Saksbehandler {
+    fun hentSaksbehandler(): AzureAdBruker {
         return getForEntity(saksbehandlerUri)
+    }
+
+    fun hentSaksbehandler(id: String): AzureAdBruker {
+        return getForEntity(saksbehandlerUri(id))
     }
 
     fun hentGrupper(): Grupper {
@@ -30,6 +36,7 @@ class AzureGraphRestClient(@Qualifier("jwtBearer") restTemplate: RestOperations,
 
     companion object {
         private const val ME = "me"
+        private const val USERS = "users"
         private const val GRUPPER = "memberOf"
     }
 }
