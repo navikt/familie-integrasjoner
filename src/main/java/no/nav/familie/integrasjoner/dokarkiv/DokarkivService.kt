@@ -90,7 +90,7 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
                                                                                    filnavn = "førsteside.pdf")))
         }
 
-        LOG.info("Journalfører fagsak ${sak.fagsakId} med tittel ${hoveddokument.tittel ?: metadata.tittel}")
+        LOG.info("Journalfører fagsak ${sak?.fagsakId} med tittel ${hoveddokument.tittel ?: metadata.tittel}")
         return OpprettJournalpostRequest(journalpostType = metadata.journalpostType,
                                          behandlingstema = metadata.behandlingstema?.value,
                                          kanal = metadata.kanal,
