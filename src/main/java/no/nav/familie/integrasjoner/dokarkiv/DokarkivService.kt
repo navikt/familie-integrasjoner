@@ -25,6 +25,7 @@ import no.nav.familie.kontrakter.felles.dokarkiv.Sak
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.ArkiverDokumentRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Dokument
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Filtype
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequest2
@@ -89,6 +90,7 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
                                                                                    filnavn = "førsteside.pdf")))
         }
 
+        LOG.info("Journalfører fagsak ${sak.fagsakId} med tittel ${hoveddokument.tittel ?: metadata.tittel}")
         return OpprettJournalpostRequest(journalpostType = metadata.journalpostType,
                                          behandlingstema = metadata.behandlingstema?.value,
                                          kanal = metadata.kanal,
@@ -270,4 +272,7 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
         dokarkivLogiskVedleggRestClient.slettLogiskVedlegg(dokumentInfoId, logiskVedleggId)
     }
 
+    companion object {
+        private val LOG = LoggerFactory.getLogger(DokarkivService::class.java)
+    }
 }
