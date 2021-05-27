@@ -16,7 +16,7 @@ object BarnetrygdVarselOmRevurderingMetadata : Dokumentmetadata {
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_VARSEL_OM_REVURDERING
-    override val tittel: String = "Brev for varsel om revurdering"
+    override val tittel: String = "Varsel om revurdering - barnetrygd"
     override val brevkode: String = "varsel-om-revurdering"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
