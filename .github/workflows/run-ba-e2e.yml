@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 concurrency: e2e
 env:
-  IMAGE: docker.pkg.github.com/${{ github.repository }}/familie-integrasjoner:${{ github.sha }}
+  IMAGE: ghcr.io/navikt/familie-integrasjoner:${{ github.sha }}
 jobs:
   run-ba-e2e:
     name: Run barnetrygd e2e
@@ -30,12 +30,12 @@ jobs:
       - name: Bygg Docker image
         run: |
           docker build -t $IMAGE .
-      - name: Login to Github Package Registry
-        env:
-          DOCKER_USERNAME: x-access-token
-          DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin docker.pkg.github.com
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@ab80d026d4753220c4243394c07c7d80f9638d06
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push Docker image
         run: docker push $IMAGE
       - name: Deploy til dev-fss
