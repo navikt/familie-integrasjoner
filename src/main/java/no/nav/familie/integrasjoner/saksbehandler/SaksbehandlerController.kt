@@ -12,7 +12,7 @@ class SaksbehandlerController(private val saksbehandlerService: SaksbehandlerSer
 
     @GetMapping(path = ["/{id}"])
     @ProtectedWithClaims(issuer = "azuread")
-    fun hentSaksbehandler(@PathVariable id: String): Saksbehandler { // id kan være azure-id eller e-post
+    fun hentSaksbehandler(@PathVariable id: String): Saksbehandler { // id kan være azure-id, e-post eller nav-ident
         return saksbehandlerService.hentSaksbehandler(id)
     }
 
