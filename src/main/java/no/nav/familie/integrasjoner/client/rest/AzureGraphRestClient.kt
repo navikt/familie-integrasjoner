@@ -24,7 +24,7 @@ class AzureGraphRestClient(@Qualifier("jwtBearer") restTemplate: RestOperations,
     fun saksbehandlersøkUri(navIdent: String): URI =
             UriComponentsBuilder.fromUri(aadGraphURI)
                     .pathSegment(USERS)
-                    .queryParam("\$search", "onPremisesSamAccountName:{navIdent}")
+                    .queryParam("\$search", "\"onPremisesSamAccountName:{navIdent}\"")
                     .queryParam("\$select", "givenName,surname,onPremisesSamAccountName,id,userPrincipalName")
                     .buildAndExpand(navIdent)
                     .toUri()
