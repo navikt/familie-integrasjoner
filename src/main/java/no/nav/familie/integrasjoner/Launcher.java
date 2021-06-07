@@ -11,7 +11,6 @@ public class Launcher {
 
     public static void main(String... args) {
         SpringApplication app = new SpringApplicationBuilder(ApplicationConfig.class).build();
-        app.setRegisterShutdownHook(false);
         app.run(args);
     }
 
