@@ -16,7 +16,7 @@ object BarnetrygdOpphørMetadata : Dokumentmetadata {
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_OPPHØR
-    override val tittel: String = "Vedtak om opphør av barnetrygd"
+    override val tittel: String = "Vedtak om opphørt barnetrygd"
     override val brevkode: String = "opphor"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }

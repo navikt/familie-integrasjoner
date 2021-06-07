@@ -16,7 +16,7 @@ object BarnetrygdVedtakAvslagMetadata : Dokumentmetadata {
     override val behandlingstema: Behandlingstema = Behandlingstema.Barnetrygd
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_VEDTAK_AVSLAG
-    override val tittel: String = "Vedtak om avslag på barnetrygd"
+    override val tittel: String = "Vedtak om avslag - barnetrygd"
     override val brevkode: String = "BAA1"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.VB
 

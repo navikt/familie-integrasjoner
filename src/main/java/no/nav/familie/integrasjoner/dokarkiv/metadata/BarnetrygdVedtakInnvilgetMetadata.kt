@@ -16,7 +16,7 @@ object BarnetrygdVedtakInnvilgetMetadata : Dokumentmetadata {
     override val behandlingstema: Behandlingstema = Behandlingstema.Barnetrygd
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_VEDTAK_INNVILGELSE
-    override val tittel: String = "Vedtak om innvilgelse av barnetrygd"
+    override val tittel: String = "Vedtak om barnetrygd"
     override val brevkode: String = "BAA1"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.VB
 
