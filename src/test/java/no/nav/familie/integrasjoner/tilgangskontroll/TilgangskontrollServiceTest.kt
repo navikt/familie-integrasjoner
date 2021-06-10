@@ -26,7 +26,7 @@ class TilgangskontrollServiceTest {
     private val GRUPPE_TILGANG_7 = "kode73"
 
     private val tilgangConfig: TilgangConfig =
-            TilgangConfig(mapOf("utvidetTilgang" to AdRolle(GRUPPE_UTVIDET_TILGANG, "NAV-Ansatt"),
+            TilgangConfig(mapOf("utvidet-tilgang" to AdRolle(GRUPPE_UTVIDET_TILGANG, "NAV-Ansatt"),
                                 "kode6" to AdRolle(GRUPPE_TILGANG_6, "Strengt fortrolig adresse"),
                                 "kode7" to AdRolle(GRUPPE_TILGANG_7, "Fortrolig adresse")))
     private val personopplysningerService: PersonopplysningerService = mockk(relaxed = true)
