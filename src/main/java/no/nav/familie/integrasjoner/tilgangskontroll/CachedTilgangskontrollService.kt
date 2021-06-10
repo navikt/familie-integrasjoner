@@ -57,7 +57,7 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
             return tilgang
         }
         if (egenAnsattSjekk()) {
-            return hentTilgangForRolle(tilgangConfig.grupper["utvidetTilgang"], jwtToken, personIdent)
+            return hentTilgangForRolle(tilgangConfig.grupper["utvidet-tilgang"], jwtToken, personIdent)
         }
         return Tilgang(harTilgang = true)
     }
