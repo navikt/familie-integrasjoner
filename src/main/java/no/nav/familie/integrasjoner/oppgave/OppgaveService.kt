@@ -111,9 +111,10 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
 
     fun opprettOppgave(request: OpprettOppgaveRequest): Long {
         val oppgave = Oppgave(
-                identer = if (request.ident != null) listOf(request.ident!!) else null,
+                identer = if (erFolkeregisteridentEllerNpid(request.ident)) listOf(request.ident!!) else null,
                 aktoerId = if (request.ident?.gruppe == IdentGruppe.AKTOERID) request.ident!!.ident else null,
                 orgnr = if (request.ident?.gruppe == IdentGruppe.ORGNR) request.ident!!.ident else null,
+                samhandlernr = if (request.ident?.gruppe == IdentGruppe.SAMHANDLERNR) request.ident!!.ident else null,
                 saksreferanse = request.saksId,
                 journalpostId = request.journalpostId,
                 prioritet = request.prioritet,
@@ -154,6 +155,9 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         }
 
     }
+
+    private fun erFolkeregisteridentEllerNpid(oppgaveIdent: OppgaveIdentV2?) =
+            oppgaveIdent?.gruppe == IdentGruppe.FOLKEREGISTERIDENT || oppgaveIdent?.gruppe == IdentGruppe.NPID
 
     companion object {
         private val LOG = LoggerFactory.getLogger(OppgaveService::class.java)
