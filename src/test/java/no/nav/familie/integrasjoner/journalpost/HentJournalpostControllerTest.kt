@@ -8,8 +8,11 @@ import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.kontrakter.felles.BrukerIdType
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Tema
-import no.nav.familie.kontrakter.felles.journalpost.*
-import no.nav.security.token.support.test.JwtTokenGenerator
+import no.nav.familie.kontrakter.felles.journalpost.Bruker
+import no.nav.familie.kontrakter.felles.journalpost.Journalpost
+import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
+import no.nav.familie.kontrakter.felles.journalpost.Journalposttype
+import no.nav.familie.kontrakter.felles.journalpost.Journalstatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -17,7 +20,6 @@ import org.junit.Test
 import org.mockserver.junit.MockServerRule
 import org.mockserver.model.Header
 import org.mockserver.model.HttpRequest
-import org.mockserver.model.HttpResponse
 import org.mockserver.model.HttpResponse.response
 import org.mockserver.model.JsonBody.json
 import org.slf4j.LoggerFactory
@@ -45,7 +47,9 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
     @Before
     fun setUp() {
         testLogger.addAppender(listAppender)
-        headers.setBearerAuth(JwtTokenGenerator.signedJWTAsString("testbruker"))
+        headers.setBearerAuth(token(mapOf("groups" to listOf("SAKSBEHANDLER"),
+                                          "name" to "Mock McMockface",
+                                          "preferred_username" to "mock.mcmockface@nav.no")))
         uriHentSaksnummer = UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/sak")
                 .queryParam("journalpostId", JOURNALPOST_ID).toUriString()
         uriHentJournalpost = UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
@@ -119,22 +123,6 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.data?.first()?.journalposttype).isEqualTo(Journalposttype.I)
         assertThat(response.body?.data?.first()?.journalstatus).isEqualTo(Journalstatus.JOURNALFOERT)
         assertThat(response.body?.data?.first()?.datoMottatt).isEqualTo(LocalDateTime.parse("2020-01-31T08:00:17"))
-    }
-
-    @Test
-    fun `hent dokument skal returnere dokument og status ok`() {
-        mockServerRule.client
-                .`when`(HttpRequest.request()
-                                .withMethod("GET")
-                                .withPath("/rest/saf/rest/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID/ARKIV")
-                )
-                .respond(HttpResponse().withBody("pdf".toByteArray()).withHeaders(Header("Content-Type", "application/pdf")))
-
-        val response: ResponseEntity<Ressurs<ByteArray>> = restTemplate.exchange(uriHentDokument,
-                                                                                 HttpMethod.GET,
-                                                                                 HttpEntity<String>(headers))
-        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
     }
 
     @Test
@@ -239,6 +227,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
     }
 
     companion object {
+
         const val MOCK_SERVER_PORT = 18321
         const val JOURNALPOST_ID = "12345678"
         const val DOKUMENTINFO_ID = "123456789"

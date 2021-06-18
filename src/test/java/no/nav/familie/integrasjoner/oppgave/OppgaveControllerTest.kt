@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
+import org.springframework.web.client.exchange
 import org.springframework.web.util.UriComponentsBuilder
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -45,7 +46,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         oppgaveControllerLogger.addAppender(listAppender)
         oppgaveServiceLogger.addAppender(listAppender)
         exceptionHandler.addAppender(listAppender)
-        headers.setBearerAuth(lokalTestToken)
+        headers.setBearerAuth(token())
 
     }
 

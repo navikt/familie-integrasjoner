@@ -31,7 +31,7 @@ class InfotrygdControllerTest : OppslagSpringRunnerTest() {
 
     @Before
     fun setUp() {
-        headers.setBearerAuth(lokalTestToken)
+        headers.setBearerAuth(token())
     }
 
     @Test
@@ -39,13 +39,13 @@ class InfotrygdControllerTest : OppslagSpringRunnerTest() {
         val response: ResponseEntity<Ressurs<AktivKontantstøtteInfo>> =
                 restTemplate.exchange(localhost(HAR_BARN_AKTIV_KONTANTSTØTTE),
                                       HttpMethod.GET,
-                                      HttpEntity<Any>(headers))
+                                      HttpEntity<Any>(null, headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
         assertThat(response.body?.melding).isEqualTo("Mangler påkrevd request header")
         assertThat(response.body?.stacktrace)
-                .contains("Missing request header 'Nav-Personident' for method parameter of type String")
+                .contains("Required request header 'Nav-Personident' for method parameter type String is not present")
     }
 
     @Test
@@ -55,7 +55,7 @@ class InfotrygdControllerTest : OppslagSpringRunnerTest() {
         val response: ResponseEntity<Ressurs<AktivKontantstøtteInfo>> =
                 restTemplate.exchange(localhost(HAR_BARN_AKTIV_KONTANTSTØTTE),
                                       HttpMethod.GET,
-                                      HttpEntity<Any>(headers))
+                                      HttpEntity<Any>(null, headers))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -105,6 +105,7 @@ class InfotrygdControllerTest : OppslagSpringRunnerTest() {
     }
 
     companion object {
+
         const val MOCK_SERVER_PORT = 18321
         const val HAR_BARN_AKTIV_KONTANTSTØTTE = "/api/infotrygd/v1/harBarnAktivKontantstotte"
     }

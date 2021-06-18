@@ -1,6 +1,15 @@
 package no.nav.familie.integrasjoner.sak
 
-import com.github.tomakehurst.wiremock.client.WireMock.*
+import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
+import com.github.tomakehurst.wiremock.client.WireMock.equalToJson
+import com.github.tomakehurst.wiremock.client.WireMock.okJson
+import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.status
+import com.github.tomakehurst.wiremock.client.WireMock.stubFor
+import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
+import com.github.tomakehurst.wiremock.client.WireMock.verify
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Status.SUKSESS
@@ -22,7 +31,7 @@ class SkyggesakControllerTest : OppslagSpringRunnerTest() {
 
     @Before
     fun setup() {
-        headers.setBearerAuth(lokalTestToken)
+        headers.setBearerAuth(token())
         headers[NavHttpHeaders.NAV_CALL_ID.asString()] = "callIdTest"
     }
 
