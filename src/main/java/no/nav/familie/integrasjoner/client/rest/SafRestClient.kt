@@ -19,7 +19,6 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestOperations
-import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Service
@@ -29,7 +28,6 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
 
     override val pingUri: URI = UriUtil.uri(safBaseUrl, PATH_PING)
     private val safUri = UriUtil.uri(safBaseUrl, PATH_GRAPHQL)
-    private val safHentdokumentUri = UriComponentsBuilder.fromUri(safBaseUrl).path(PATH_HENT_DOKUMENT)
 
     fun hentJournalpost(journalpostId: String): Journalpost {
         val safJournalpostRequest = SafJournalpostRequest(SafRequestVariabler(journalpostId),
@@ -74,15 +72,6 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
             }
         } catch (e: Exception) {
             throw JournalpostForBrukerException(e.message, e, journalposterForBrukerRequest)
-        }
-    }
-
-    fun hentDokument(journalpostId: String, dokumentInfoId: String, variantFormat: String): ByteArray {
-        val hentDokumentUri = safHentdokumentUri.buildAndExpand(journalpostId, dokumentInfoId, variantFormat).toUri()
-        try {
-            return getForEntity(hentDokumentUri, httpHeaders())
-        } catch (e: Exception) {
-            throw JournalpostRestClientException(e.message, e, journalpostId)
         }
     }
 
