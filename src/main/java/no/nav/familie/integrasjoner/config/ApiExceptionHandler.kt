@@ -1,6 +1,5 @@
 package no.nav.familie.integrasjoner.config
 
-import no.nav.familie.integrasjoner.felles.ForbiddenException
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.kontrakter.felles.Ressurs
@@ -29,14 +28,6 @@ class ApiExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(failure(errorMessage = "Du er ikke logget inn.", frontendFeilmelding = "Du er ikke logget inn", error = e))
-    }
-
-    @ExceptionHandler(ForbiddenException::class)
-    fun handleUnauthorizedException(e: ForbiddenException): ResponseEntity<Ressurs<Any>> {
-        logger.warn("Kan ikke gjøre handling.", e)
-        return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
-                .body(failure(errorMessage = e.message, frontendFeilmelding = e.message, error = e))
     }
 
     @ExceptionHandler(RestClientResponseException::class)
@@ -125,11 +116,10 @@ class ApiExceptionHandler {
         }
         return ResponseEntity
                 .status(e.httpStatus)
-                .body(failure(feilmelding, error = e))
+                .body(failure(feilmelding, error =e))
     }
 
     companion object {
-
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
     }
 }

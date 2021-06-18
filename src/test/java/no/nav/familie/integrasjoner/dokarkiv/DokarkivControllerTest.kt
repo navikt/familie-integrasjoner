@@ -39,7 +39,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
     val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
 
     @Before fun setUp() {
-        headers.setBearerAuth(token())
+        headers.setBearerAuth(lokalTestToken)
         objectMapper.registerModule(KotlinModule())
 
         (LoggerFactory.getLogger("secureLogger") as Logger)
@@ -361,7 +361,6 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
     }
 
     companion object {
-
         private const val MOCK_SERVER_PORT = 18321
         private const val DOKARKIV_URL = "/api/arkiv"
         private const val DOKARKIV_URL_V2 = "${DOKARKIV_URL}/v2/"

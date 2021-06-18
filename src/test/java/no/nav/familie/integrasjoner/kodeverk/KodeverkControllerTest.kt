@@ -1,8 +1,6 @@
 package no.nav.familie.integrasjoner.kodeverk
 
-import com.github.tomakehurst.wiremock.client.WireMock.aResponse
-import com.github.tomakehurst.wiremock.client.WireMock.get
-import com.github.tomakehurst.wiremock.client.WireMock.stubFor
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.kodeverk.BeskrivelseDto
@@ -52,10 +50,8 @@ class KodeverkControllerTest : OppslagSpringRunnerTest() {
     }
 
     companion object {
-
         private const val KODEVERK_URL = "/api/kodeverk/"
         private const val KODEVERL_EEARG_URL = "${KODEVERK_URL}/landkoder/eea"
-        private const val GET_KODEVERK_EEAFREG_URL =
-                "/api/v1/kodeverk/EEAFreg/koder/betydninger?ekskluderUgyldige=false&spraak=nb"
+        private const val GET_KODEVERK_EEAFREG_URL = "/api/v1/kodeverk/EEAFreg/koder/betydninger?ekskluderUgyldige=false&spraak=nb"
     }
 }

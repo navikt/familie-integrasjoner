@@ -1,8 +1,6 @@
 package no.nav.familie.integrasjoner.journalpost
 
 import no.nav.familie.integrasjoner.client.rest.SafRestClient
-import no.nav.familie.integrasjoner.config.SikkerhetContext
-import no.nav.familie.integrasjoner.felles.ForbiddenException
 import no.nav.familie.kontrakter.felles.journalpost.Journalpost
 import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,8 +25,6 @@ class JournalpostService @Autowired constructor(private val safRestClient: SafRe
     }
 
     fun hentDokument(journalpostId: String, dokumentInfoId: String, variantFormat: String): ByteArray {
-        if (SikkerhetContext.erSystemKontekst()) throw ForbiddenException("Systembruker har ikke tilgang til å hente dokumenter.")
-
         return safRestClient.hentDokument(journalpostId, dokumentInfoId, variantFormat)
     }
 }

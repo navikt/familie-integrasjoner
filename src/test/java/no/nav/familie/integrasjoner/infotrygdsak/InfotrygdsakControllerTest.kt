@@ -18,7 +18,6 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
-import org.springframework.web.client.exchange
 import java.time.LocalDate
 
 @ActiveProfiles("integrasjonstest", "mock-sts")
@@ -28,7 +27,7 @@ internal class InfotrygdsakControllerTest : OppslagSpringRunnerTest() {
 
     @Before
     fun setUp() {
-        headers.setBearerAuth(token())
+        headers.setBearerAuth(lokalTestToken)
         headers.set("Content-Type", "application/json")
     }
 
@@ -63,7 +62,7 @@ internal class InfotrygdsakControllerTest : OppslagSpringRunnerTest() {
                                       HttpMethod.POST,
                                       HttpEntity<Any>(objectMapper.writeValueAsString(opprettInfotrygdSakRequest), headers))
 
-        Assertions.assertThat(response.body!!.data).isNotNull
+        Assertions.assertThat(response.body!!.data).isNotNull()
 
     }
 

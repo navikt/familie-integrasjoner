@@ -26,7 +26,7 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
 
     @Before
     fun setUp() {
-        headers.setBearerAuth(token())
+        headers.setBearerAuth(lokalTestToken)
     }
 
     @Test
@@ -66,7 +66,6 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
     }
 
     companion object {
-
         private const val GET_MEDLEMSKAP_URL = "api/medlemskap/v1?id=6549687"
     }
 }

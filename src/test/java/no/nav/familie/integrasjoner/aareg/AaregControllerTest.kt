@@ -1,10 +1,6 @@
 package no.nav.familie.integrasjoner.aareg
 
-import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
-import com.github.tomakehurst.wiremock.client.WireMock.get
-import com.github.tomakehurst.wiremock.client.WireMock.okJson
-import com.github.tomakehurst.wiremock.client.WireMock.status
-import com.github.tomakehurst.wiremock.client.WireMock.stubFor
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.aareg.domene.Arbeidsforhold
 import no.nav.familie.kontrakter.felles.Ressurs
@@ -21,7 +17,6 @@ import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
-import org.springframework.web.client.postForObject
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.time.LocalDate
@@ -33,7 +28,7 @@ class AaregControllerTest : OppslagSpringRunnerTest() {
 
     @Before
     fun setup() {
-        headers.setBearerAuth(token())
+        headers.setBearerAuth(lokalTestToken)
     }
 
     @Test
@@ -74,7 +69,6 @@ class AaregControllerTest : OppslagSpringRunnerTest() {
     }
 
     companion object {
-
         private const val AAREG_URL = "/api/aareg"
         private const val ARBEIDSFORHOLD_URL = "${AAREG_URL}/arbeidsforhold"
         private const val IDENT = "01012012345"

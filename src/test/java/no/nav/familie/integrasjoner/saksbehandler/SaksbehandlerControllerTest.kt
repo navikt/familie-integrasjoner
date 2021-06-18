@@ -16,9 +16,8 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.web.client.exchange
 import org.springframework.web.util.UriComponentsBuilder
-import java.util.*
+import java.util.UUID
 
 @ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
 class SaksbehandlerControllerTest : OppslagSpringRunnerTest() {
@@ -31,7 +30,7 @@ class SaksbehandlerControllerTest : OppslagSpringRunnerTest() {
 
     @Before
     fun setUp() {
-        headers.setBearerAuth(token())
+        headers.setBearerAuth(lokalTestToken)
     }
 
     @Test
