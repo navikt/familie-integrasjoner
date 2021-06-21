@@ -122,24 +122,6 @@ class ApiExceptionHandler {
                 .body(failure(feilmelding, error = e))
     }
 
-    @ExceptionHandler(JournalpostRestClientException::class)
-    fun handleJournalpostRestClientException(e: JournalpostRestClientException): ResponseEntity<Ressurs<Any>> {
-        logger.error("Ukjent feil mot saf ved henting av journalpost: ${e.message}")
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(failure(e.message, error = e))
-    }
-
-    @ExceptionHandler(JournalpostForbiddenException::class)
-    fun handleJournalpostForbiddenException(e: JournalpostForbiddenException): ResponseEntity<Ressurs<Any>> {
-        logger.warn("Bruker eller system ikke tilgang til saf ressurs: ${e.message}")
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(ikkeTilgang(e.message ?: "Bruker eller system har ikke tilgang til saf ressurs"))
-    }
-
     companion object {
 
         private val secureLogger = LoggerFactory.getLogger("secureLogger")

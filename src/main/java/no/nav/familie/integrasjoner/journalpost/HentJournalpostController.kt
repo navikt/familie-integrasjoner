@@ -15,8 +15,6 @@ import org.springframework.web.client.HttpStatusCodeException
 @RestController @RequestMapping("/api/journalpost") @ProtectedWithClaims(issuer = "azuread")
 class HentJournalpostController(private val journalpostService: JournalpostService) {
 
-    private val secureLogger = LoggerFactory.getLogger("secureLogger")
-
     @ExceptionHandler(JournalpostRestClientException::class)
     fun handleRestClientException(ex: JournalpostRestClientException): ResponseEntity<Ressurs<Any>> {
         val errorBaseMessage = "Feil ved henting av journalpost=${ex.journalpostId}"
@@ -33,6 +31,15 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
         secureLogger.warn(errorBaseMessage, ex)
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(failure(errorBaseMessage + errorExtMessage, error = ex))
+    }
+
+    @ExceptionHandler(JournalpostForbiddenException::class)
+    fun handleJournalpostForbiddenException(e: JournalpostForbiddenException): ResponseEntity<Ressurs<Any>> {
+        LOG.warn("Bruker eller system ikke tilgang til saf ressurs: ${e.message}")
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(Ressurs.ikkeTilgang(e.message ?: "Bruker eller system har ikke tilgang til saf ressurs"))
     }
 
     private fun byggFeilmelding(ex: RuntimeException): String {
@@ -85,5 +92,6 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
 
     companion object {
         private val LOG = LoggerFactory.getLogger(HentJournalpostController::class.java)
+        private val secureLogger = LoggerFactory.getLogger("secureLogger")
     }
 }
