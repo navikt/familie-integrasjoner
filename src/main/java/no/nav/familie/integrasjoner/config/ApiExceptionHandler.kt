@@ -124,6 +124,8 @@ class ApiExceptionHandler {
 
     @ExceptionHandler(JournalpostRestClientException::class)
     fun handleJournalpostRestClientException(e: JournalpostRestClientException): ResponseEntity<Ressurs<Any>> {
+        logger.error("Ukjent feil mot saf ved henting av journalpost: ${e.message}")
+
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(failure(e.message, error = e))
@@ -131,6 +133,8 @@ class ApiExceptionHandler {
 
     @ExceptionHandler(JournalpostForbiddenException::class)
     fun handleJournalpostForbiddenException(e: JournalpostForbiddenException): ResponseEntity<Ressurs<Any>> {
+        logger.warn("Bruker eller system ikke tilgang til saf ressurs: ${e.message}")
+
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(ikkeTilgang(e.message ?: "Bruker eller system har ikke tilgang til saf ressurs"))
