@@ -15,7 +15,10 @@ import org.springframework.web.client.RestOperations
 import org.springframework.web.client.RestTemplate
 
 @Configuration
-@Import(ConsumerIdClientInterceptor::class, BearerTokenClientInterceptor::class, StsBearerTokenClientInterceptor::class)
+@Import(ConsumerIdClientInterceptor::class,
+        BearerTokenClientInterceptor::class,
+        StsBearerTokenClientInterceptor::class,
+        BearerTokenWithSTSFallbackClientInterceptor::class)
 class RestTemplateConfig(
         private val environment: Environment
 ) {
