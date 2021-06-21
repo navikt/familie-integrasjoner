@@ -5,8 +5,8 @@ import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.journalpost.JournalpostForBrukerException
-import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
 import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
+import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostBrukerData
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostData
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostRequest
@@ -43,10 +43,16 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
                                                                                           null,
                                                                                           journalpostId)
             } else {
-                responsFailure.increment()
-                throw JournalpostRestClientException("Kan ikke hente journalpost " + response.errors?.toString(),
-                                                     null,
-                                                     journalpostId)
+                val tilgangFeil = response.errors?.firstOrNull { it.message?.contains("Tilgang til ressurs ble avvist") == true }
+
+                if (tilgangFeil != null) {
+                    throw JournalpostForbiddenException(tilgangFeil.message)
+                } else {
+                    responsFailure.increment()
+                    throw JournalpostRestClientException("Kan ikke hente journalpost " + response.errors?.toString(),
+                                                         null,
+                                                         journalpostId)
+                }
             }
         } catch (e: HttpClientErrorException.Forbidden) {
             throw JournalpostForbiddenException(e.message, e)
@@ -70,10 +76,16 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
                                                               null,
                                                               journalposterForBrukerRequest)
             } else {
-                responsFailure.increment()
-                throw JournalpostForBrukerException("Kan ikke hente journalposter " + response.errors?.toString(),
-                                                    null,
-                                                    journalposterForBrukerRequest)
+                val tilgangFeil = response.errors?.firstOrNull { it.message?.contains("Tilgang til ressurs ble avvist") == true }
+
+                if (tilgangFeil != null) {
+                    throw JournalpostForbiddenException(tilgangFeil.message)
+                } else {
+                    responsFailure.increment()
+                    throw JournalpostForBrukerException("Kan ikke hente journalposter " + response.errors?.toString(),
+                                                        null,
+                                                        journalposterForBrukerRequest)
+                }
             }
         } catch (e: HttpClientErrorException.Forbidden) {
             throw JournalpostForbiddenException(e.message, e)
@@ -92,7 +104,6 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
 
     companion object {
 
-        private const val PATH_HENT_DOKUMENT = "/rest/hentdokument/{journalpostId}/{dokumentInfoId}/{variantFormat}"
         private const val PATH_PING = "isAlive"
         private const val PATH_GRAPHQL = "graphql"
         private const val NAV_CALL_ID = "Nav-Callid"
