@@ -127,7 +127,7 @@ class ApiExceptionHandler {
         logger.error("Ukjent feil mot saf ved henting av journalpost: ${e.message}")
 
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .status(HttpStatus.OK)
                 .body(failure(e.message, error = e))
     }
 
