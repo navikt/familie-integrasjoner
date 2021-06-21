@@ -136,7 +136,7 @@ class ApiExceptionHandler {
         logger.warn("Bruker eller system ikke tilgang til saf ressurs: ${e.message}")
 
         return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
+                .status(HttpStatus.OK)
                 .body(ikkeTilgang(e.message ?: "Bruker eller system har ikke tilgang til saf ressurs"))
     }
 
