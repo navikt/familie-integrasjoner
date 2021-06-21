@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestOperations
 import java.net.URI
 
@@ -34,63 +33,51 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
     fun hentJournalpost(journalpostId: String): Journalpost {
         val safJournalpostRequest = SafJournalpostRequest(SafRequestVariabler(journalpostId),
                                                           graphqlQuery("/saf/journalpostForId.graphql"))
-        try {
-            val response = postForEntity<SafJournalpostResponse<SafJournalpostData>>(safUri,
-                                                                                     safJournalpostRequest,
-                                                                                     httpHeaders())
-            if (!response.harFeil()) {
-                return response.data?.journalpost ?: throw JournalpostRestClientException("Kan ikke hente journalpost",
-                                                                                          null,
-                                                                                          journalpostId)
-            } else {
-                val tilgangFeil = response.errors?.firstOrNull { it.message?.contains("Tilgang til ressurs ble avvist") == true }
+        val response = postForEntity<SafJournalpostResponse<SafJournalpostData>>(safUri,
+                                                                                 safJournalpostRequest,
+                                                                                 httpHeaders())
+        if (!response.harFeil()) {
+            return response.data?.journalpost ?: throw JournalpostRestClientException("Kan ikke hente journalpost",
+                                                                                      null,
+                                                                                      journalpostId)
+        } else {
+            val tilgangFeil = response.errors?.firstOrNull { it.message?.contains("Tilgang til ressurs ble avvist") == true }
 
-                if (tilgangFeil != null) {
-                    throw JournalpostForbiddenException(tilgangFeil.message)
-                } else {
-                    responsFailure.increment()
-                    throw JournalpostRestClientException("Kan ikke hente journalpost " + response.errors?.toString(),
-                                                         null,
-                                                         journalpostId)
-                }
+            if (tilgangFeil != null) {
+                throw JournalpostForbiddenException(tilgangFeil.message)
+            } else {
+                responsFailure.increment()
+                throw JournalpostRestClientException("Kan ikke hente journalpost " + response.errors?.toString(),
+                                                     null,
+                                                     journalpostId)
             }
-        } catch (e: HttpClientErrorException.Forbidden) {
-            throw JournalpostForbiddenException(e.message, e)
-        } catch (e: Exception) {
-            throw JournalpostRestClientException(e.message, e, journalpostId)
         }
     }
 
     fun finnJournalposter(journalposterForBrukerRequest: JournalposterForBrukerRequest): List<Journalpost> {
         val safJournalpostRequest = SafJournalpostRequest(journalposterForBrukerRequest,
                                                           graphqlQuery("/saf/journalposterForBruker.graphql"))
-        try {
-            val response =
-                    postForEntity<SafJournalpostResponse<SafJournalpostBrukerData>>(safUri,
-                                                                                    safJournalpostRequest,
-                                                                                    httpHeaders())
+        val response =
+                postForEntity<SafJournalpostResponse<SafJournalpostBrukerData>>(safUri,
+                                                                                safJournalpostRequest,
+                                                                                httpHeaders())
 
-            if (!response.harFeil()) {
-                return response.data?.dokumentoversiktBruker?.journalposter
-                       ?: throw JournalpostForBrukerException("Kan ikke hente journalposter",
-                                                              null,
-                                                              journalposterForBrukerRequest)
+        if (!response.harFeil()) {
+            return response.data?.dokumentoversiktBruker?.journalposter
+                   ?: throw JournalpostForBrukerException("Kan ikke hente journalposter",
+                                                          null,
+                                                          journalposterForBrukerRequest)
+        } else {
+            val tilgangFeil = response.errors?.firstOrNull { it.message?.contains("Tilgang til ressurs ble avvist") == true }
+
+            if (tilgangFeil != null) {
+                throw JournalpostForbiddenException(tilgangFeil.message)
             } else {
-                val tilgangFeil = response.errors?.firstOrNull { it.message?.contains("Tilgang til ressurs ble avvist") == true }
-
-                if (tilgangFeil != null) {
-                    throw JournalpostForbiddenException(tilgangFeil.message)
-                } else {
-                    responsFailure.increment()
-                    throw JournalpostForBrukerException("Kan ikke hente journalposter " + response.errors?.toString(),
-                                                        null,
-                                                        journalposterForBrukerRequest)
-                }
+                responsFailure.increment()
+                throw JournalpostForBrukerException("Kan ikke hente journalposter " + response.errors?.toString(),
+                                                    null,
+                                                    journalposterForBrukerRequest)
             }
-        } catch (e: HttpClientErrorException.Forbidden) {
-            throw JournalpostForbiddenException(e.message, e)
-        } catch (e: Exception) {
-            throw JournalpostForBrukerException(e.message, e, journalposterForBrukerRequest)
         }
     }
 
