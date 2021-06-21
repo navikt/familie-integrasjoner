@@ -10,3 +10,5 @@ class JournalpostForBrukerException(message: String?,
                                     cause: Throwable?,
                                     val journalposterForBrukerRequest: JournalposterForBrukerRequest) :
         RuntimeException(message, cause)
+
+class JournalpostForbiddenException(message: String?, cause: Throwable?) : RuntimeException(message, cause)

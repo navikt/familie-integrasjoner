@@ -2,12 +2,14 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.integrasjoner.felles.MDCOperations
+import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
 import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
@@ -35,6 +37,8 @@ class SafHentDokumentRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
         val hentDokumentUri = safHentdokumentUri.buildAndExpand(journalpostId, dokumentInfoId, variantFormat).toUri()
         try {
             return getForEntity(hentDokumentUri, httpHeaders())
+        } catch (e: HttpClientErrorException.Forbidden) {
+            throw JournalpostForbiddenException(e.message, e)
         } catch (e: Exception) {
             throw JournalpostRestClientException(e.message, e, journalpostId)
         }

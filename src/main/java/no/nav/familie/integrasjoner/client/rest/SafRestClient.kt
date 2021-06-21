@@ -6,6 +6,7 @@ import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.journalpost.JournalpostForBrukerException
 import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
+import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostBrukerData
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostData
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostRequest
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestOperations
 import java.net.URI
 
@@ -46,6 +48,8 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
                                                      null,
                                                      journalpostId)
             }
+        } catch (e: HttpClientErrorException.Forbidden) {
+            throw JournalpostForbiddenException(e.message, e)
         } catch (e: Exception) {
             throw JournalpostRestClientException(e.message, e, journalpostId)
         }
@@ -59,6 +63,7 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
                     postForEntity<SafJournalpostResponse<SafJournalpostBrukerData>>(safUri,
                                                                                     safJournalpostRequest,
                                                                                     httpHeaders())
+
             if (!response.harFeil()) {
                 return response.data?.dokumentoversiktBruker?.journalposter
                        ?: throw JournalpostForBrukerException("Kan ikke hente journalposter",
@@ -70,6 +75,8 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
                                                     null,
                                                     journalposterForBrukerRequest)
             }
+        } catch (e: HttpClientErrorException.Forbidden) {
+            throw JournalpostForbiddenException(e.message, e)
         } catch (e: Exception) {
             throw JournalpostForBrukerException(e.message, e, journalposterForBrukerRequest)
         }
