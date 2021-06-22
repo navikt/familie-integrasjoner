@@ -38,7 +38,7 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
         LOG.warn("Bruker eller system ikke tilgang til saf ressurs: ${e.message}")
 
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.FORBIDDEN)
                 .body(Ressurs.ikkeTilgang(e.message ?: "Bruker eller system har ikke tilgang til saf ressurs"))
     }
 
