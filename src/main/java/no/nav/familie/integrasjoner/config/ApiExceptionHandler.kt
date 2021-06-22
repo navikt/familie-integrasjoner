@@ -1,9 +1,12 @@
 package no.nav.familie.integrasjoner.config
 
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
+import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
 import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
+import no.nav.familie.kontrakter.felles.Ressurs.Companion.ikkeTilgang
 import no.nav.security.token.support.client.core.OAuth2ClientException
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
 import org.apache.commons.lang3.exception.ExceptionUtils
@@ -116,10 +119,11 @@ class ApiExceptionHandler {
         }
         return ResponseEntity
                 .status(e.httpStatus)
-                .body(failure(feilmelding, error =e))
+                .body(failure(feilmelding, error = e))
     }
 
     companion object {
+
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
     }
 }
