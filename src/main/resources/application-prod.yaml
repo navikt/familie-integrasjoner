@@ -65,7 +65,7 @@ AAD_URL: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/v2.0/tok
 INTEGRASJONER_CLIENT_ID: ${INTEGRASJONER_CLIENT_ID}
 CLIENT_SECRET: ${CLIENT_SECRET}
 INFOTRYGD_KS_SCOPE: ${INFOTRYGD_KS_SCOPE}
-DOKARKIV_SCOPE: "api://prod-fss:teamdokumenthandtering:dokarkiv/.default"
+DOKARKIV_SCOPE: "api://162b3255-2f72-4399-8f7a-244add9ffaac/.default"
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 SECURITYTOKENSERVICE_URL: https://sts.adeo.no/SecurityTokenServiceProvider/
