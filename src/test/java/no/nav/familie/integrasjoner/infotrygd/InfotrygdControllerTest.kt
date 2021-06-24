@@ -45,7 +45,7 @@ class InfotrygdControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
         assertThat(response.body?.melding).isEqualTo("Mangler påkrevd request header")
         assertThat(response.body?.stacktrace)
-                .contains("Missing request header 'Nav-Personident' for method parameter of type String")
+                .contains("Required request header 'Nav-Personident' for method parameter of type String")
     }
 
     @Test

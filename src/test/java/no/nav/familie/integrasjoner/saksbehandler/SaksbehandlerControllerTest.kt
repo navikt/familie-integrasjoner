@@ -96,7 +96,7 @@ class SaksbehandlerControllerTest : OppslagSpringRunnerTest() {
         assertThat(saksbehandler.fornavn).isEqualTo("Bob")
         assertThat(saksbehandler.etternavn).isEqualTo("Burger")
         assertThat(saksbehandler.azureId).isEqualTo(id)
-        assertThat(saksbehandler.navIdent).isEqualTo("B857496")
+        assertThat(saksbehandler.navIdent).isEqualTo(navIdent)
     }
 
     companion object {
