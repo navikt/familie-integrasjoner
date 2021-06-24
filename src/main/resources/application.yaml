@@ -23,6 +23,13 @@ no.nav.security.jwt:
         rolle-id: ${egen_ansatt}
         beskrivelse: NAV-ansatt
 
+sftp:
+  username: ${CREDENTIAL_USERNAME}
+  host: ${SFTP_HOST}
+  port: ${SFTP_PORT:22}
+  privateKey: ${SFTP_PRIVATE_KEY}
+  passphrase: ${SFTP_PASSPHRASE}
+
 management:
   endpoint.health:
     show-details: always
