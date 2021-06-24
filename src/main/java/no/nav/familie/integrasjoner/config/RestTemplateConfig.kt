@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.config
 
 import no.nav.familie.http.interceptor.BearerTokenClientInterceptor
+import no.nav.familie.http.interceptor.BearerTokenWithSTSFallbackClientInterceptor
 import no.nav.familie.http.interceptor.ConsumerIdClientInterceptor
 import no.nav.familie.http.interceptor.MdcValuesPropagatingClientInterceptor
 import no.nav.familie.http.interceptor.StsBearerTokenClientInterceptor
@@ -14,7 +15,10 @@ import org.springframework.web.client.RestOperations
 import org.springframework.web.client.RestTemplate
 
 @Configuration
-@Import(ConsumerIdClientInterceptor::class, BearerTokenClientInterceptor::class, StsBearerTokenClientInterceptor::class)
+@Import(ConsumerIdClientInterceptor::class,
+        BearerTokenClientInterceptor::class,
+        StsBearerTokenClientInterceptor::class,
+        BearerTokenWithSTSFallbackClientInterceptor::class)
 class RestTemplateConfig(
         private val environment: Environment
 ) {
@@ -61,6 +65,27 @@ class RestTemplateConfig(
             RestTemplateBuilder()
                     .interceptors(consumerIdClientInterceptor,
                                   bearerTokenClientInterceptor,
+                                  MdcValuesPropagatingClientInterceptor())
+                    .requestFactory(this::requestFactory)
+                    .build()
+        }
+    }
+
+    @Bean("jwtBearerOboOgSts")
+    fun restTemplateOboOgSts(consumerIdClientInterceptor: ConsumerIdClientInterceptor,
+                             bearerTokenWithSTSFallbackClientInterceptor: BearerTokenWithSTSFallbackClientInterceptor): RestOperations {
+        return if (trengerProxy()) {
+            RestTemplateBuilder()
+                    .additionalCustomizers(NaisProxyCustomizer())
+                    .interceptors(consumerIdClientInterceptor,
+                                  bearerTokenWithSTSFallbackClientInterceptor,
+                                  MdcValuesPropagatingClientInterceptor())
+                    .requestFactory(this::requestFactory)
+                    .build()
+        } else {
+            RestTemplateBuilder()
+                    .interceptors(consumerIdClientInterceptor,
+                                  bearerTokenWithSTSFallbackClientInterceptor,
                                   MdcValuesPropagatingClientInterceptor())
                     .requestFactory(this::requestFactory)
                     .build()
