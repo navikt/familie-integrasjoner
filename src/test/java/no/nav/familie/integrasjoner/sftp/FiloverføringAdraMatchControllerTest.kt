@@ -17,7 +17,7 @@ import org.springframework.web.util.UriComponentsBuilder
 
 
 @ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
-class SftpControllerTest : OppslagSpringRunnerTest() {
+class FiloverføringAdraMatchControllerTest : OppslagSpringRunnerTest() {
 
     @get:Rule
     val sftpServer: FakeSftpServerRule = FakeSftpServerRule().apply { port = MOCK_SERVER_PORT }
