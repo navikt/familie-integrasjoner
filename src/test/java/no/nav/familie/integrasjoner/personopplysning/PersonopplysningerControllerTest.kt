@@ -43,6 +43,7 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
 
     @BeforeEach
     fun setUp() {
+        client.reset()
         testLogger.addAppender(listAppender)
         headers.apply {
             add("Nav-Personident", "12345678901")
@@ -125,12 +126,11 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
 
     @Test
     fun `hent personinfo returnerer med feil hvis ikke pdl responderer med 200`() {
-        client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withPath("/rest/pdl/graphql")
-                                .withBody(gyldigRequest("hentperson-med-relasjoner.graphql"))
-                )
+        client.`when`(HttpRequest.request()
+                              .withMethod("POST")
+                              .withPath("/rest/pdl/graphql")
+                              .withBody(gyldigRequest("hentperson-med-relasjoner.graphql"))
+        )
                 .respond(HttpResponse.response().withStatusCode(500))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentPersoninfo,
@@ -144,12 +144,11 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
     @Test
     fun `hent identer til en person`() {
         val ident = "12345678901"
-        client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withPath("/rest/pdl/graphql")
-                                .withHeader("Tema", TEMA)
-                )
+        client.`when`(HttpRequest.request()
+                              .withMethod("POST")
+                              .withPath("/rest/pdl/graphql")
+                              .withHeader("Tema", TEMA)
+        )
                 .respond(HttpResponse.response().withBody(readfile("pdlIdenterResponse.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
         val response = restTemplate.exchange<Ressurs<FinnPersonidenterResponse>>(uriHentIdenter,
@@ -162,15 +161,14 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
     }
 
     private fun hentPersonInfoFraMockedPdlResponse(responseFile: String): ResponseEntity<Ressurs<Person>> {
-        client
-                .`when`(HttpRequest.request()
-                        .withMethod("POST")
-                        .withPath("/rest/pdl/graphql")
-                        .withHeader("Tema", TEMA)
-                        .withBody(gyldigRequest("hentperson-med-relasjoner.graphql"))
-                )
+        client.`when`(HttpRequest.request()
+                              .withMethod("POST")
+                              .withPath("/rest/pdl/graphql")
+                              .withHeader("Tema", TEMA)
+                              .withBody(gyldigRequest("hentperson-med-relasjoner.graphql"))
+        )
                 .respond(HttpResponse.response().withBody(readfile(responseFile))
-                        .withHeaders(Header("Content-Type", "application/json")))
+                                 .withHeaders(Header("Content-Type", "application/json")))
 
         return restTemplate.exchange(uriHentPersoninfo, HttpMethod.GET, HttpEntity<String>(headers))
     }

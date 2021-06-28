@@ -8,7 +8,11 @@ import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.kontrakter.felles.BrukerIdType
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Tema
-import no.nav.familie.kontrakter.felles.journalpost.*
+import no.nav.familie.kontrakter.felles.journalpost.Bruker
+import no.nav.familie.kontrakter.felles.journalpost.Journalpost
+import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
+import no.nav.familie.kontrakter.felles.journalpost.Journalposttype
+import no.nav.familie.kontrakter.felles.journalpost.Journalstatus
 import no.nav.security.token.support.test.JwtTokenGenerator
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -46,6 +50,7 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
 
     @BeforeEach
     fun setUp() {
+        client.reset()
         testLogger.addAppender(listAppender)
         headers.setBearerAuth(JwtTokenGenerator.signedJWTAsString("testbruker"))
         uriHentSaksnummer = UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/sak")
@@ -57,12 +62,11 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
 
     @Test
     fun `hent saksnummer skal returnere saksnummer og status ok`() {
-        client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withPath("/rest/saf/graphql")
-                                .withBody(gyldigJournalPostIdRequest())
-                )
+        client.`when`(HttpRequest.request()
+                              .withMethod("POST")
+                              .withPath("/rest/saf/graphql")
+                              .withBody(gyldigJournalPostIdRequest())
+        )
                 .respond(response().withBody(lesFil("gyldigsakresponse.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
 
@@ -77,12 +81,11 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
 
     @Test
     fun `hent journalpost skal returnere journalpost og status ok`() {
-        client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withPath("/rest/saf/graphql")
-                                .withBody(gyldigJournalPostIdRequest())
-                )
+        client.`when`(HttpRequest.request()
+                              .withMethod("POST")
+                              .withPath("/rest/saf/graphql")
+                              .withBody(gyldigJournalPostIdRequest())
+        )
                 .respond(response().withBody(json(lesFil("gyldigjournalpostresponse.json")))
                                  .withHeaders(Header("Content-Type", "application/json")))
 
@@ -99,12 +102,11 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
 
     @Test
     fun `hent journalpostForBruker skal returnere journalposter og status ok`() {
-        client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withPath("/rest/saf/graphql")
-                                .withBody(gyldigBrukerRequest())
-                )
+        client.`when`(HttpRequest.request()
+                              .withMethod("POST")
+                              .withPath("/rest/saf/graphql")
+                              .withBody(gyldigBrukerRequest())
+        )
                 .respond(response().withBody(json(lesFil("gyldigJournalposterResponse.json"))))
 
         val response: ResponseEntity<Ressurs<List<Journalpost>>> =
@@ -125,11 +127,10 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
 
     @Test
     fun `hent dokument skal returnere dokument og status ok`() {
-        client
-                .`when`(HttpRequest.request()
-                                .withMethod("GET")
-                                .withPath("/rest/saf/rest/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID/ARKIV")
-                )
+        client.`when`(HttpRequest.request()
+                              .withMethod("GET")
+                              .withPath("/rest/saf/rest/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID/ARKIV")
+        )
                 .respond(HttpResponse().withBody("pdf".toByteArray()).withHeaders(Header("Content-Type", "application/pdf")))
 
         val response: ResponseEntity<Ressurs<ByteArray>> = restTemplate.exchange(uriHentDokument,
@@ -141,11 +142,10 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
 
     @Test
     fun `hent saksnummer skal returnere status 404 hvis sak mangler`() {
-        client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withHeader(Header("Content-Type", "application/json"))
-                                .withPath("/rest/saf/graphql"))
+        client.`when`(HttpRequest.request()
+                              .withMethod("POST")
+                              .withHeader(Header("Content-Type", "application/json"))
+                              .withPath("/rest/saf/graphql"))
                 .respond(response().withBody(lesFil("mangler_sak.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
 
@@ -160,11 +160,10 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
 
     @Test
     fun `hent saksnummer skal returnere status 404 hvis sak ikke er gsak`() {
-        client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withHeader(Header("Content-Type", "application/json"))
-                                .withPath("/rest/saf/graphql"))
+        client.`when`(HttpRequest.request()
+                              .withMethod("POST")
+                              .withHeader(Header("Content-Type", "application/json"))
+                              .withPath("/rest/saf/graphql"))
                 .respond(response().withBody(lesFil("feil_arkivsaksystem.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
 
@@ -179,11 +178,10 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
 
     @Test
     fun `hent saksnummer skal returnerer 500 hvis klient returnerer 200 med feilmeldinger`() {
-        client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withHeader(Header("Content-Type", "application/json"))
-                                .withPath("/rest/saf/graphql"))
+        client.`when`(HttpRequest.request()
+                              .withMethod("POST")
+                              .withHeader(Header("Content-Type", "application/json"))
+                              .withPath("/rest/saf/graphql"))
                 .respond(response().withBody(lesFil("error_fra_saf.json"))
                                  .withHeaders(Header("Content-Type", "application/json")))
 
@@ -204,11 +202,10 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
 
     @Test
     fun `hent saksnummer skal returnere 500 ved ukjent feil`() {
-        client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withHeader(Header("Content-Type", "application/json"))
-                                .withPath("/rest/saf/graphql"))
+        client.`when`(HttpRequest.request()
+                              .withMethod("POST")
+                              .withHeader(Header("Content-Type", "application/json"))
+                              .withPath("/rest/saf/graphql"))
                 .respond(response().withStatusCode(500).withBody("feilmelding"))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentSaksnummer,
@@ -218,7 +215,7 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
         assertThat(response.body?.melding)
-                .contains("Feil ved henting av journalpost=12345678 statuscode=500 INTERNAL_SERVER_ERROR body=feilmelding")
+                .contains("Feil ved henting av journalpost")
         assertThat(loggingEvents)
                 .extracting<Level, RuntimeException> { obj: ILoggingEvent -> obj.level }
                 .containsExactly(Level.WARN)
@@ -241,6 +238,7 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
     }
 
     companion object {
+
         const val JOURNALPOST_ID = "12345678"
         const val DOKUMENTINFO_ID = "123456789"
         const val SAKSNUMMER = "87654321"

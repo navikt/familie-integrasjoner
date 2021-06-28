@@ -31,16 +31,16 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
 
     @BeforeEach
     fun setUp() {
+        client.reset()
         headers.setBearerAuth(lokalTestToken)
     }
 
 
     @Test
     fun `dokdist returnerer OK`() {
-        client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withPath("/rest/v1/distribuerjournalpost"))
+        client.`when`(HttpRequest.request()
+                              .withMethod("POST")
+                              .withPath("/rest/v1/distribuerjournalpost"))
                 .respond(HttpResponse.response().withStatusCode(200)
                                  .withHeader("Content-Type", "application/json;charset=UTF-8")
                                  .withBody("{\"bestillingsId\": \"1234567\"}"))
@@ -57,10 +57,9 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
 
     @Test
     fun `dokdist returnerer OK uten bestillingsId`() {
-        client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withPath("/rest/v1/distribuerjournalpost"))
+        client.`when`(HttpRequest.request()
+                              .withMethod("POST")
+                              .withPath("/rest/v1/distribuerjournalpost"))
                 .respond(HttpResponse.response().withStatusCode(200).withBody(""))
 
         val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak")
@@ -75,10 +74,9 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
 
     @Test
     fun `dokdist returnerer 400`() {
-        client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withPath("/rest/v1/distribuerjournalpost"))
+        client.`when`(HttpRequest.request()
+                              .withMethod("POST")
+                              .withPath("/rest/v1/distribuerjournalpost"))
                 .respond(HttpResponse.response().withStatusCode(400)
                                  .withHeader("Content-Type", "application/json; charset=utf-8")
                                  .withBody(badRequestResponse()))
@@ -99,6 +97,7 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
     }
 
     companion object {
+
         private const val DOKDIST_URL = "/api/dist/v1"
         private const val JOURNALPOST_ID = "453492547"
     }

@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.saksbehandler
 
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.saksbehandler.Saksbehandler
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -27,16 +28,16 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
 
     @BeforeEach
     fun setUp() {
+        client.reset()
         headers.setBearerAuth(lokalTestToken)
     }
 
     @Test
     fun `skal kalle korrekt tjeneste for oppslag på id`() {
         val id = UUID.randomUUID()
-        client
-                .`when`(HttpRequest.request()
-                                .withMethod("GET")
-                                .withPath("/users/$id"))
+        client.`when`(HttpRequest.request()
+                              .withMethod("GET")
+                              .withPath("/users/$id"))
                 .respond(HttpResponse.response().withHeader("Content-Type", "application/json")
                                  .withBody("""{
                                            "givenName": "Bob",
@@ -48,11 +49,11 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
         val uri = UriComponentsBuilder.fromHttpUrl(localhost(BASE_URL))
                 .pathSegment(id.toString()).toUriString()
 
-        val response: ResponseEntity<Saksbehandler> = restTemplate.exchange(uri,
-                                                                            HttpMethod.GET,
-                                                                            HttpEntity<String>(headers))
+        val response: ResponseEntity<Ressurs<Saksbehandler>> = restTemplate.exchange(uri,
+                                                                                     HttpMethod.GET,
+                                                                                     HttpEntity<String>(headers))
         print(id)
-        val saksbehandler = response.body!!
+        val saksbehandler = response.body!!.data!!
         assertThat(saksbehandler.fornavn).isEqualTo("Bob")
         assertThat(saksbehandler.etternavn).isEqualTo("Burger")
         assertThat(saksbehandler.azureId).isEqualTo(id)
@@ -63,14 +64,14 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
     fun `skal kalle korrekt tjeneste for oppslag på navIdent`() {
         val navIdent = "B857496"
         val id = UUID.randomUUID()
-        client
-                .`when`(HttpRequest.request()
-                                .withMethod("GET")
-                                .withPath("/users")
-                                .withQueryStringParameters(Parameter("\$search", "onPremisesSamAccountName:B857496"),
-                                                           Parameter("\$select",
-                                                                     "givenName,surname,onPremisesSamAccountName,id," +
-                                                                     "userPrincipalName")))
+
+        client.`when`(HttpRequest.request()
+                              .withMethod("GET")
+                              .withPath("/users")
+                              .withQueryStringParameters(Parameter("\$search", "\"onPremisesSamAccountName:B857496\""),
+                                                         Parameter("\$select",
+                                                                   "givenName,surname,onPremisesSamAccountName,id," +
+                                                                   "userPrincipalName")))
                 .respond(HttpResponse.response().withHeader("Content-Type", "application/json")
                                  .withBody("""{
                                            "value": [
@@ -86,10 +87,10 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
         val uri = UriComponentsBuilder.fromHttpUrl(localhost(BASE_URL))
                 .pathSegment(navIdent).toUriString()
 
-        val response: ResponseEntity<Saksbehandler> = restTemplate.exchange(uri,
-                                                                            HttpMethod.GET,
-                                                                            HttpEntity<String>(headers))
-        val saksbehandler = response.body!!
+        val response: ResponseEntity<Ressurs<Saksbehandler>> = restTemplate.exchange(uri,
+                                                                                     HttpMethod.GET,
+                                                                                     HttpEntity<String>(headers))
+        val saksbehandler = response.body!!.data!!
         assertThat(saksbehandler.fornavn).isEqualTo("Bob")
         assertThat(saksbehandler.etternavn).isEqualTo("Burger")
         assertThat(saksbehandler.azureId).isEqualTo(id)

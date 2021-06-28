@@ -32,6 +32,7 @@ class InfotrygdControllerTest(val client: ClientAndServer) : OppslagSpringRunner
 
     @BeforeEach
     fun setUp() {
+        client.reset()
         headers.setBearerAuth(lokalTestToken)
     }
 
@@ -46,7 +47,7 @@ class InfotrygdControllerTest(val client: ClientAndServer) : OppslagSpringRunner
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
         assertThat(response.body?.melding).isEqualTo("Mangler påkrevd request header")
         assertThat(response.body?.stacktrace)
-                .contains("Required request header 'Nav-Personident' for method parameter of type String")
+                .contains("Required request header 'Nav-Personident' for method parameter type String")
     }
 
     @Test
@@ -98,14 +99,14 @@ class InfotrygdControllerTest(val client: ClientAndServer) : OppslagSpringRunner
     }
 
     private fun spesifiserResponsFraInfotrygd(respons: String) {
-        client
-                .`when`(HttpRequest.request()
-                                .withMethod("GET")
-                                .withPath("/v1/harBarnAktivKontantstotte"))
+        client.`when`(HttpRequest.request()
+                              .withMethod("GET")
+                              .withPath("/v1/harBarnAktivKontantstotte"))
                 .respond(HttpResponse.response().withHeader("Content-Type", "application/json").withBody(respons))
     }
 
     companion object {
+
         const val HAR_BARN_AKTIV_KONTANTSTØTTE = "/api/infotrygd/v1/harBarnAktivKontantstotte"
     }
 }

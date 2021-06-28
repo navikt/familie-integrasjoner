@@ -70,6 +70,7 @@ class MedlemskapServiceTest {
     }
 
     companion object {
+
         private const val TEST_AKTØRID = "1000011111111"
     }
 }

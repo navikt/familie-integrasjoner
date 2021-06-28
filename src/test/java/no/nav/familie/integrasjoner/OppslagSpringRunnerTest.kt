@@ -54,6 +54,7 @@ abstract class OppslagSpringRunnerTest {
     }
 
     companion object {
+
         const val MOCK_SERVER_PORT = 18321
         private const val LOCALHOST = "http://localhost:"
         protected fun initLoggingEventListAppender(): ListAppender<ILoggingEvent> {
