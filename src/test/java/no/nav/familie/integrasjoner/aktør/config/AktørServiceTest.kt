@@ -14,11 +14,11 @@ import no.nav.familie.integrasjoner.config.CacheConfig
 import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.kontrakter.felles.Tema
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.EnableCaching
@@ -27,17 +27,21 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 import org.springframework.context.annotation.Profile
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.junit4.SpringRunner
+import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @ActiveProfiles(profiles = ["AktørServiceTest"])
-@RunWith(SpringRunner::class)
+@ExtendWith(SpringExtension::class)
 @EnableCaching
 class AktørServiceTest {
 
-    @Autowired private lateinit var aktørService: AktørService
-    @Autowired private lateinit var aktørClient: AktørregisterRestClient
-    @Autowired private lateinit var pdlRestClient: PdlRestClient
-    @Autowired private lateinit var cacheManager: CacheManager
+    @Autowired 
+    private lateinit var aktørService: AktørService
+    @Autowired 
+    private lateinit var aktørClient: AktørregisterRestClient
+    @Autowired 
+    private lateinit var pdlRestClient: PdlRestClient
+    @Autowired 
+    private lateinit var cacheManager: CacheManager
 
 
     @Configuration
@@ -66,7 +70,7 @@ class AktørServiceTest {
 
     }
 
-    @Before
+    @BeforeEach
     fun setUp() {
         every { aktørClient.hentAktørId(eq(PERSONIDENT)) } returns
                 AktørResponse().withAktør(PERSONIDENT, Aktør()
@@ -79,7 +83,7 @@ class AktørServiceTest {
         every { pdlRestClient.hentGjeldendeAktørId(eq(PERSONIDENT_UTEN_IDENT), eq(Tema.ENF)) } throws PdlNotFoundException()
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         clearMocks(aktørClient)
         clearMocks(pdlRestClient)

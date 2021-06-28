@@ -7,8 +7,8 @@ import no.nav.familie.kontrakter.felles.Ressurs.Status.SUKSESS
 import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.log.NavHttpHeaders
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.postForObject
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.http.HttpEntity
@@ -20,7 +20,7 @@ import org.springframework.test.context.TestPropertySource
 @AutoConfigureWireMock(port = 28085)
 class SkyggesakControllerTest : OppslagSpringRunnerTest() {
 
-    @Before
+    @BeforeEach
     fun setup() {
         headers.setBearerAuth(lokalTestToken)
         headers[NavHttpHeaders.NAV_CALL_ID.asString()] = "callIdTest"

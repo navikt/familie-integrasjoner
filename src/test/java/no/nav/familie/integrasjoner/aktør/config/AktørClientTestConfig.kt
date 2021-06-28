@@ -8,7 +8,6 @@ import no.nav.familie.integrasjoner.aktør.domene.Ident
 import no.nav.familie.integrasjoner.aktør.internal.AktørResponse
 import no.nav.familie.integrasjoner.client.rest.AktørregisterRestClient
 import no.nav.familie.kontrakter.ks.søknad.testdata.SøknadTestdata
-import org.mockito.Mockito
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary

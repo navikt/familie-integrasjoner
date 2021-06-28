@@ -255,7 +255,7 @@
         </dependency>
         <dependency>
             <groupId>org.mock-server</groupId>
-            <artifactId>mockserver-junit-rule</artifactId>
+            <artifactId>mockserver-junit-jupiter</artifactId>
             <version>${mock-server.version}</version>
             <scope>test</scope>
         </dependency>

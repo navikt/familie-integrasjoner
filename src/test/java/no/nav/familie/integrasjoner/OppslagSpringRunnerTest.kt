@@ -2,8 +2,8 @@ package no.nav.familie.integrasjoner
 
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.read.ListAppender
-import org.junit.After
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.web.server.LocalServerPort
@@ -11,9 +11,9 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
-import org.springframework.test.context.junit4.SpringRunner
+import org.springframework.test.context.junit.jupiter.SpringExtension
 
-@RunWith(SpringRunner::class)
+@ExtendWith(SpringExtension::class)
 @SpringBootTest(classes = [UnitTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 abstract class OppslagSpringRunnerTest {
 
@@ -25,7 +25,7 @@ abstract class OppslagSpringRunnerTest {
     @LocalServerPort
     private val port = 0
 
-    @After
+    @AfterEach
     fun reset() {
         loggingEvents.clear()
         headers.clear()
@@ -54,7 +54,7 @@ abstract class OppslagSpringRunnerTest {
     }
 
     companion object {
-
+        const val MOCK_SERVER_PORT = 18321
         private const val LOCALHOST = "http://localhost:"
         protected fun initLoggingEventListAppender(): ListAppender<ILoggingEvent> {
             val listAppender = ListAppender<ILoggingEvent>()

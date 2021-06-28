@@ -7,8 +7,8 @@ import no.nav.familie.integrasjoner.client.rest.FørstesidegeneratorClient
 import no.nav.familie.integrasjoner.førstesidegenerator.domene.PostFørstesideResponse
 import no.nav.familie.kontrakter.felles.dokarkiv.Førsteside
 import org.assertj.core.api.Assertions
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 
 class FørstesideGeneratorServiceTest {
@@ -18,7 +18,7 @@ class FørstesideGeneratorServiceTest {
     private lateinit var førstesideGeneratorService: FørstesideGeneratorService
 
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
         førstesideGeneratorService = FørstesideGeneratorService(førstesidegeneratorClient)

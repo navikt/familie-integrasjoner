@@ -10,10 +10,12 @@ import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.dokarkiv.*
 import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.mockserver.junit.MockServerRule
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockserver.integration.ClientAndServer
+import org.mockserver.junit.jupiter.MockServerExtension
+import org.mockserver.junit.jupiter.MockServerSettings
 import org.mockserver.model.HttpRequest
 import org.mockserver.model.HttpResponse.response
 import org.mockserver.model.JsonBody.json
@@ -28,17 +30,17 @@ import org.springframework.test.context.ActiveProfiles
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
-import java.util.*
+import java.util.LinkedList
 import kotlin.test.assertFalse
 import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequest
 
 @ActiveProfiles(profiles = ["integrasjonstest", "mock-sts", "mock-aktor", "mock-personopplysninger", "mock-pdl"])
-class DokarkivControllerTest : OppslagSpringRunnerTest() {
+@ExtendWith(MockServerExtension::class)
+@MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
+class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSpringRunnerTest() {
 
-    @get:Rule
-    val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
-
-    @Before fun setUp() {
+    @BeforeEach
+    fun setUp() {
         headers.setBearerAuth(lokalTestToken)
         objectMapper.registerModule(KotlinModule())
 
@@ -80,7 +82,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal midlertidig journalføre dokument`() {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest
                                 .request()
                                 .withMethod("POST")
@@ -104,12 +106,11 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `v3 skal midlertidig journalføre dokument`() {
-        mockServerRule.client
-                .`when`(HttpRequest
-                                .request()
-                                .withMethod("POST")
-                                .withPath("/rest/journalpostapi/v1/journalpost")
-                                .withQueryStringParameter("forsoekFerdigstill", "false"))
+        client.`when`(HttpRequest
+                              .request()
+                              .withMethod("POST")
+                              .withPath("/rest/journalpostapi/v1/journalpost")
+                              .withQueryStringParameter("forsoekFerdigstill", "false"))
                 .respond(response()
                                  .withBody(json(gyldigDokarkivResponse())))
         val body = ArkiverDokumentRequest("FNR",
@@ -129,7 +130,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal midlertidig journalføre dokument med vedlegg`() {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/journalpostapi/v1/journalpost")
@@ -153,7 +154,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `dokarkiv returnerer 401`() {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/journalpostapi/v1/journalpost")
@@ -183,7 +184,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `oppdaterJournalpost returnerer OK`() {
         val journalpostId = "12345678"
-        mockServerRule.client
+        client
                 .`when`(HttpRequest
                                 .request()
                                 .withMethod("PUT")
@@ -207,7 +208,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `dokarkiv skal logge detaljert feilmelding til secureLogger ved HttpServerErrorExcetion`() {
         val journalpostId = "12345678"
-        mockServerRule.client
+        client
                 .`when`(HttpRequest
                                 .request()
                                 .withMethod("PUT")
@@ -234,7 +235,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `ferdigstill returnerer ok`() {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest
                                 .request()
                                 .withMethod("PATCH")
@@ -252,7 +253,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `ferdigstill returnerer 400 hvis ikke mulig ferdigstill`() {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest
                                 .request()
                                 .withMethod("PATCH")
@@ -272,7 +273,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal opprette logisk vedlegg`() {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest
                                 .request()
                                 .withMethod("POST")
@@ -293,7 +294,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal returnere feil hvis man ikke kan opprette logisk vedlegg`() {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest
                                 .request()
                                 .withMethod("POST")
@@ -315,7 +316,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal slette logisk vedlegg`() {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest
                                 .request()
                                 .withMethod("DELETE")
@@ -336,7 +337,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal returnere feil hvis man ikke kan slette logisk vedlegg`() {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest
                                 .request()
                                 .withMethod("DELETE")
@@ -361,7 +362,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
     }
 
     companion object {
-        private const val MOCK_SERVER_PORT = 18321
+
         private const val DOKARKIV_URL = "/api/arkiv"
         private const val DOKARKIV_URL_V2 = "${DOKARKIV_URL}/v2/"
         private const val DOKARKIV_URL_V3 = "${DOKARKIV_URL}/v3/"

@@ -12,7 +12,6 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkResponse
-import org.mockito.Mockito
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary

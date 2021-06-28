@@ -5,8 +5,8 @@ import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.medlemskap.Medlemskapsinfo
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.core.io.ClassPathResource
@@ -24,7 +24,7 @@ import java.nio.file.Files
 @AutoConfigureWireMock(port = 28085)
 class MedlemskapControllerTest : OppslagSpringRunnerTest() {
 
-    @Before
+    @BeforeEach
     fun setUp() {
         headers.setBearerAuth(lokalTestToken)
     }

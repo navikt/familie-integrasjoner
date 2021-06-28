@@ -9,8 +9,8 @@ import no.nav.familie.kontrakter.felles.Ressurs.Status.SUKSESS
 import no.nav.familie.kontrakter.felles.getDataOrThrow
 import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.postForObject
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.core.io.ClassPathResource
@@ -26,7 +26,7 @@ import java.time.LocalDate
 @AutoConfigureWireMock(port = 28085)
 class AaregControllerTest : OppslagSpringRunnerTest() {
 
-    @Before
+    @BeforeEach
     fun setup() {
         headers.setBearerAuth(lokalTestToken)
     }

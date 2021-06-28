@@ -12,7 +12,7 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlNavn
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPerson
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import java.io.File

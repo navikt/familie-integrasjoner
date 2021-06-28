@@ -10,10 +10,12 @@ import no.nav.familie.kontrakter.felles.personopplysning.Ident
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import no.nav.security.token.support.test.JwtTokenGenerator
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.mockserver.junit.MockServerRule
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockserver.integration.ClientAndServer
+import org.mockserver.junit.jupiter.MockServerExtension
+import org.mockserver.junit.jupiter.MockServerSettings
 import org.mockserver.model.Header
 import org.mockserver.model.HttpRequest
 import org.mockserver.model.HttpResponse
@@ -28,18 +30,18 @@ import org.springframework.web.util.UriComponentsBuilder
 import kotlin.test.assertNull
 
 @ActiveProfiles("integrasjonstest", "mock-personopplysninger", "mock-sts")
-class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
+@ExtendWith(MockServerExtension::class)
+@MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
+class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTest() {
 
     private val testLogger = LoggerFactory.getLogger(PersonopplysningerControllerTest::class.java) as Logger
 
-    @get:Rule
-    val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
     private lateinit var uriHentPersoninfo: String
     private lateinit var uriHentPersoninfoEnkel: String
     private lateinit var uriHentIdenter: String
     private lateinit var uriHentAktørId: String
 
-    @Before
+    @BeforeEach
     fun setUp() {
         testLogger.addAppender(listAppender)
         headers.apply {
@@ -123,7 +125,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `hent personinfo returnerer med feil hvis ikke pdl responderer med 200`() {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/pdl/graphql")
@@ -142,7 +144,7 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `hent identer til en person`() {
         val ident = "12345678901"
-        mockServerRule.client
+        client
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/pdl/graphql")
@@ -155,12 +157,12 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
                                                                                  HttpEntity(Ident(ident), headers))
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
-        assertThat(response.body.data!!.identer).hasSize(1)
-        assertThat(response.body.data!!.identer.first().personIdent).isEqualTo(ident)
+        assertThat(response.body?.data!!.identer).hasSize(1)
+        assertThat(response.body?.data!!.identer.first().personIdent).isEqualTo(ident)
     }
 
     private fun hentPersonInfoFraMockedPdlResponse(responseFile: String): ResponseEntity<Ressurs<Person>> {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest.request()
                         .withMethod("POST")
                         .withPath("/rest/pdl/graphql")
@@ -187,7 +189,6 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
 
     companion object {
 
-        const val MOCK_SERVER_PORT = 18321
         const val FØDSELSDATO = "1955-09-13"
         const val NAVN = "ENGASJERT FYR"
         const val KJØNN = "MANN"

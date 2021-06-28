@@ -11,8 +11,8 @@ import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppgave.*
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
@@ -34,7 +34,7 @@ import java.time.LocalDateTime
 @AutoConfigureWireMock(port = 28085)
 class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
-    @Before
+    @BeforeEach
     fun setup() {
         val oppgaveControllerLogger =
                 LoggerFactory.getLogger(OppgaveController::class.java) as Logger

@@ -3,14 +3,15 @@ package no.nav.familie.integrasjoner.saksbehandler
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.kontrakter.felles.saksbehandler.Saksbehandler
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.mockserver.junit.MockServerRule
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockserver.integration.ClientAndServer
+import org.mockserver.junit.jupiter.MockServerExtension
+import org.mockserver.junit.jupiter.MockServerSettings
 import org.mockserver.model.HttpRequest
 import org.mockserver.model.HttpResponse
 import org.mockserver.model.Parameter
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -20,15 +21,11 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.util.UUID
 
 @ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
-class SaksbehandlerControllerTest : OppslagSpringRunnerTest() {
+@ExtendWith(MockServerExtension::class)
+@MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
+class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTest() {
 
-    @Autowired
-    lateinit var saksbehandlerController: SaksbehandlerController
-
-    @get:Rule
-    val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
-
-    @Before
+    @BeforeEach
     fun setUp() {
         headers.setBearerAuth(lokalTestToken)
     }
@@ -36,7 +33,7 @@ class SaksbehandlerControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `skal kalle korrekt tjeneste for oppslag på id`() {
         val id = UUID.randomUUID()
-        mockServerRule.client
+        client
                 .`when`(HttpRequest.request()
                                 .withMethod("GET")
                                 .withPath("/users/$id"))
@@ -55,7 +52,7 @@ class SaksbehandlerControllerTest : OppslagSpringRunnerTest() {
                                                                             HttpMethod.GET,
                                                                             HttpEntity<String>(headers))
         print(id)
-        val saksbehandler = response.body
+        val saksbehandler = response.body!!
         assertThat(saksbehandler.fornavn).isEqualTo("Bob")
         assertThat(saksbehandler.etternavn).isEqualTo("Burger")
         assertThat(saksbehandler.azureId).isEqualTo(id)
@@ -66,7 +63,7 @@ class SaksbehandlerControllerTest : OppslagSpringRunnerTest() {
     fun `skal kalle korrekt tjeneste for oppslag på navIdent`() {
         val navIdent = "B857496"
         val id = UUID.randomUUID()
-        mockServerRule.client
+        client
                 .`when`(HttpRequest.request()
                                 .withMethod("GET")
                                 .withPath("/users")
@@ -92,7 +89,7 @@ class SaksbehandlerControllerTest : OppslagSpringRunnerTest() {
         val response: ResponseEntity<Saksbehandler> = restTemplate.exchange(uri,
                                                                             HttpMethod.GET,
                                                                             HttpEntity<String>(headers))
-        val saksbehandler = response.body
+        val saksbehandler = response.body!!
         assertThat(saksbehandler.fornavn).isEqualTo("Bob")
         assertThat(saksbehandler.etternavn).isEqualTo("Burger")
         assertThat(saksbehandler.azureId).isEqualTo(id)
@@ -102,7 +99,5 @@ class SaksbehandlerControllerTest : OppslagSpringRunnerTest() {
     companion object {
 
         const val BASE_URL = "/api/saksbehandler"
-
-        const val MOCK_SERVER_PORT = 18321
     }
 }

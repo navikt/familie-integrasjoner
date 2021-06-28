@@ -11,10 +11,12 @@ import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.journalpost.*
 import no.nav.security.token.support.test.JwtTokenGenerator
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.mockserver.junit.MockServerRule
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockserver.integration.ClientAndServer
+import org.mockserver.junit.jupiter.MockServerExtension
+import org.mockserver.junit.jupiter.MockServerSettings
 import org.mockserver.model.Header
 import org.mockserver.model.HttpRequest
 import org.mockserver.model.HttpResponse
@@ -32,17 +34,17 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.time.LocalDateTime
 
 @ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
-class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
+@ExtendWith(MockServerExtension::class)
+@MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
+class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTest() {
 
     private val testLogger = LoggerFactory.getLogger(HentJournalpostController::class.java) as Logger
 
-    @get:Rule
-    val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
     private lateinit var uriHentSaksnummer: String
     private lateinit var uriHentJournalpost: String
     private lateinit var uriHentDokument: String
 
-    @Before
+    @BeforeEach
     fun setUp() {
         testLogger.addAppender(listAppender)
         headers.setBearerAuth(JwtTokenGenerator.signedJWTAsString("testbruker"))
@@ -55,7 +57,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `hent saksnummer skal returnere saksnummer og status ok`() {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/saf/graphql")
@@ -75,7 +77,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `hent journalpost skal returnere journalpost og status ok`() {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/saf/graphql")
@@ -97,7 +99,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `hent journalpostForBruker skal returnere journalposter og status ok`() {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withPath("/rest/saf/graphql")
@@ -123,7 +125,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `hent dokument skal returnere dokument og status ok`() {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest.request()
                                 .withMethod("GET")
                                 .withPath("/rest/saf/rest/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID/ARKIV")
@@ -139,7 +141,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `hent saksnummer skal returnere status 404 hvis sak mangler`() {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withHeader(Header("Content-Type", "application/json"))
@@ -158,7 +160,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `hent saksnummer skal returnere status 404 hvis sak ikke er gsak`() {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withHeader(Header("Content-Type", "application/json"))
@@ -177,7 +179,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `hent saksnummer skal returnerer 500 hvis klient returnerer 200 med feilmeldinger`() {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withHeader(Header("Content-Type", "application/json"))
@@ -202,7 +204,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `hent saksnummer skal returnere 500 ved ukjent feil`() {
-        mockServerRule.client
+        client
                 .`when`(HttpRequest.request()
                                 .withMethod("POST")
                                 .withHeader(Header("Content-Type", "application/json"))
@@ -239,7 +241,6 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
     }
 
     companion object {
-        const val MOCK_SERVER_PORT = 18321
         const val JOURNALPOST_ID = "12345678"
         const val DOKUMENTINFO_ID = "123456789"
         const val SAKSNUMMER = "87654321"
