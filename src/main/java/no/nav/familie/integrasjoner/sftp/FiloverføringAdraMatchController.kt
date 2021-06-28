@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping(value = ["/api/sftp"])
 @Profile("!e2e")
-class SftpController(private val sftpClient: SftpClient) {
+class FiloverføringAdraMatchController(private val sftpClient: FiloverføringAdraMatchClient) {
 
     @PutMapping
     @ProtectedWithClaims(issuer = "azuread")

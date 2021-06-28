@@ -3,13 +3,13 @@ package no.nav.familie.integrasjoner.sftp
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
-import no.nav.familie.integrasjoner.config.SftpConfig
+import no.nav.familie.integrasjoner.config.FiloverføringAdraMatchConfig
 import no.nav.familie.kontrakter.felles.Fil
 import org.springframework.stereotype.Service
 import java.io.ByteArrayInputStream
 
 @Service
-class SftpClient(private val config: SftpConfig) {
+class FiloverføringAdraMatchClient(private val config: FiloverføringAdraMatchConfig) {
 
     private val jSch = JSch().apply {
         addIdentity(config.username,
@@ -24,9 +24,9 @@ class SftpClient(private val config: SftpConfig) {
         try {
             session = jSch.getSession(config.username, config.host, config.port).apply { }
             session.setConfig("StrictHostKeyChecking", "no")
-            session.connect()
+            session.connect(1000)
 
-            channel = session.openChannel(SftpConfig.JSCH_CHANNEL_TYPE_SFTP) as ChannelSftp
+            channel = session.openChannel(FiloverføringAdraMatchConfig.JSCH_CHANNEL_TYPE_SFTP) as ChannelSftp
             channel.connect()
             channel.put(ByteArrayInputStream(fil.innhold), fil.navn)
         } finally {
