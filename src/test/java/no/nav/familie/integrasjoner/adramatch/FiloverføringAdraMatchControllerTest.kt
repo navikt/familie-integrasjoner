@@ -1,4 +1,4 @@
-package no.nav.familie.integrasjoner.sftp
+package no.nav.familie.integrasjoner.adramatch
 
 import com.github.stefanbirkner.fakesftpserver.rule.FakeSftpServerRule
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
@@ -35,14 +35,14 @@ class FiloverføringAdraMatchControllerTest : OppslagSpringRunnerTest() {
         val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(uri,
                                                                               HttpMethod.PUT,
                                                                               HttpEntity(payload, headers))
-        assertThat(response.body.data).isEqualTo("Fil lastet opp!")
+        assertThat(response.body!!.data).isEqualTo("Fil lastet opp!")
         val fileContent = sftpServer.getFileContent("/file.txt")
         assertThat(fileContent).isEqualTo("Filinnhold".toByteArray())
     }
 
     companion object {
 
-        const val BASE_URL = "/api/sftp"
+        const val BASE_URL = "/api/adramatch/avstemming"
         const val MOCK_SERVER_PORT = 18321
     }
 }

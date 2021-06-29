@@ -1,4 +1,4 @@
-package no.nav.familie.integrasjoner.sftp
+package no.nav.familie.integrasjoner.adramatch
 
 import no.nav.familie.kontrakter.felles.Fil
 import no.nav.familie.kontrakter.felles.Ressurs
@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping(value = ["/api/sftp"])
+@RequestMapping(value = ["/api/adramatch/avstemming"])
 @Profile("!e2e")
 class FiloverføringAdraMatchController(private val sftpClient: FiloverføringAdraMatchClient) {
 

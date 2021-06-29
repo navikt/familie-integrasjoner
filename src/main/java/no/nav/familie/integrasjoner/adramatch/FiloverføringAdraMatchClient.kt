@@ -1,4 +1,4 @@
-package no.nav.familie.integrasjoner.sftp
+package no.nav.familie.integrasjoner.adramatch
 
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
