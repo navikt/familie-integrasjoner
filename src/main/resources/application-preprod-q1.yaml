@@ -86,4 +86,4 @@ INFOTRYGD_VEDTAK_URL: https://modapp-q1.adeo.no/infotrygd-ws/InfotrygdVedtak/v1
 NORG2_URL: https://norg2.dev.adeo.no/norg2/
 
 PDL_URL: http://pdl-api-q1.pdl
-SFTP_HOST: https://b27apvl00364.preprod.local
+SFTP_HOST: b27apvl00364.preprod.local
