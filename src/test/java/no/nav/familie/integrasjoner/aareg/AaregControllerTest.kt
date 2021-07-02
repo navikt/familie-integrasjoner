@@ -1,6 +1,10 @@
 package no.nav.familie.integrasjoner.aareg
 
-import com.github.tomakehurst.wiremock.client.WireMock.*
+import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
+import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.okJson
+import com.github.tomakehurst.wiremock.client.WireMock.status
+import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.aareg.domene.Arbeidsforhold
 import no.nav.familie.kontrakter.felles.Ressurs
@@ -9,8 +13,8 @@ import no.nav.familie.kontrakter.felles.Ressurs.Status.SUKSESS
 import no.nav.familie.kontrakter.felles.getDataOrThrow
 import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.postForObject
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.core.io.ClassPathResource
@@ -26,7 +30,7 @@ import java.time.LocalDate
 @AutoConfigureWireMock(port = 28085)
 class AaregControllerTest : OppslagSpringRunnerTest() {
 
-    @Before
+    @BeforeEach
     fun setup() {
         headers.setBearerAuth(lokalTestToken)
     }
@@ -69,6 +73,7 @@ class AaregControllerTest : OppslagSpringRunnerTest() {
     }
 
     companion object {
+
         private const val AAREG_URL = "/api/aareg"
         private const val ARBEIDSFORHOLD_URL = "${AAREG_URL}/arbeidsforhold"
         private const val IDENT = "01012012345"

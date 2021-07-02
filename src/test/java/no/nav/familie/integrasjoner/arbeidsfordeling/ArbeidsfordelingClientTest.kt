@@ -19,6 +19,7 @@ import org.junit.jupiter.api.assertThrows
 
 
 class ArbeidsfordelingClientTest {
+
     private val TEMA = Tema.ENF
     private val GEOGRAFISK_TILKNYTNING = "GEOGRAFISK_TILKNYTNING"
     private val DISKRESJONSKODE = "DISKRESJONSKODE"

@@ -5,10 +5,12 @@ import no.nav.familie.kontrakter.felles.Fagsystem
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.dokdist.DistribuerJournalpostRequest
 import org.assertj.core.api.Assertions
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.mockserver.junit.MockServerRule
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockserver.integration.ClientAndServer
+import org.mockserver.junit.jupiter.MockServerExtension
+import org.mockserver.junit.jupiter.MockServerSettings
 import org.mockserver.model.HttpRequest
 import org.mockserver.model.HttpResponse
 import org.springframework.boot.test.web.client.exchange
@@ -23,23 +25,22 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
 @ActiveProfiles(profiles = ["integrasjonstest", "mock-sts"])
-class DokdistControllerTest : OppslagSpringRunnerTest() {
+@ExtendWith(MockServerExtension::class)
+@MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
+class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTest() {
 
-    @get:Rule
-    val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
-
-    @Before
+    @BeforeEach
     fun setUp() {
+        client.reset()
         headers.setBearerAuth(lokalTestToken)
     }
 
 
     @Test
     fun `dokdist returnerer OK`() {
-        mockServerRule.client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withPath("/rest/v1/distribuerjournalpost"))
+        client.`when`(HttpRequest.request()
+                              .withMethod("POST")
+                              .withPath("/rest/v1/distribuerjournalpost"))
                 .respond(HttpResponse.response().withStatusCode(200)
                                  .withHeader("Content-Type", "application/json;charset=UTF-8")
                                  .withBody("{\"bestillingsId\": \"1234567\"}"))
@@ -56,10 +57,9 @@ class DokdistControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `dokdist returnerer OK uten bestillingsId`() {
-        mockServerRule.client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withPath("/rest/v1/distribuerjournalpost"))
+        client.`when`(HttpRequest.request()
+                              .withMethod("POST")
+                              .withPath("/rest/v1/distribuerjournalpost"))
                 .respond(HttpResponse.response().withStatusCode(200).withBody(""))
 
         val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak")
@@ -74,10 +74,9 @@ class DokdistControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `dokdist returnerer 400`() {
-        mockServerRule.client
-                .`when`(HttpRequest.request()
-                                .withMethod("POST")
-                                .withPath("/rest/v1/distribuerjournalpost"))
+        client.`when`(HttpRequest.request()
+                              .withMethod("POST")
+                              .withPath("/rest/v1/distribuerjournalpost"))
                 .respond(HttpResponse.response().withStatusCode(400)
                                  .withHeader("Content-Type", "application/json; charset=utf-8")
                                  .withBody(badRequestResponse()))
@@ -98,7 +97,7 @@ class DokdistControllerTest : OppslagSpringRunnerTest() {
     }
 
     companion object {
-        private const val MOCK_SERVER_PORT = 18321
+
         private const val DOKDIST_URL = "/api/dist/v1"
         private const val JOURNALPOST_ID = "453492547"
     }

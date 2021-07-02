@@ -2,7 +2,12 @@ package no.nav.familie.integrasjoner.aareg
 
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.familie.integrasjoner.aareg.domene.*
+import no.nav.familie.integrasjoner.aareg.domene.Ansettelsesperiode
+import no.nav.familie.integrasjoner.aareg.domene.Arbeidsforhold
+import no.nav.familie.integrasjoner.aareg.domene.Arbeidsgiver
+import no.nav.familie.integrasjoner.aareg.domene.ArbeidsgiverType
+import no.nav.familie.integrasjoner.aareg.domene.Arbeidstaker
+import no.nav.familie.integrasjoner.aareg.domene.Periode
 import no.nav.familie.integrasjoner.client.rest.AaregRestClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

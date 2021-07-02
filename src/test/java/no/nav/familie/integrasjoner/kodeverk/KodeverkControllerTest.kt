@@ -1,6 +1,8 @@
 package no.nav.familie.integrasjoner.kodeverk
 
-import com.github.tomakehurst.wiremock.client.WireMock.*
+import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.kodeverk.BeskrivelseDto
@@ -9,7 +11,7 @@ import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkSpråk
 import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.http.HttpMethod
@@ -50,8 +52,10 @@ class KodeverkControllerTest : OppslagSpringRunnerTest() {
     }
 
     companion object {
+
         private const val KODEVERK_URL = "/api/kodeverk/"
         private const val KODEVERL_EEARG_URL = "${KODEVERK_URL}/landkoder/eea"
-        private const val GET_KODEVERK_EEAFREG_URL = "/api/v1/kodeverk/EEAFreg/koder/betydninger?ekskluderUgyldige=false&spraak=nb"
+        private const val GET_KODEVERK_EEAFREG_URL =
+                "/api/v1/kodeverk/EEAFreg/koder/betydninger?ekskluderUgyldige=false&spraak=nb"
     }
 }

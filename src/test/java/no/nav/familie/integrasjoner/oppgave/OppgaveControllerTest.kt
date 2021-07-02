@@ -2,17 +2,36 @@ package no.nav.familie.integrasjoner.oppgave
 
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
-import com.github.tomakehurst.wiremock.client.WireMock.*
+import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.exactly
+import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath
+import com.github.tomakehurst.wiremock.client.WireMock.ok
+import com.github.tomakehurst.wiremock.client.WireMock.okJson
+import com.github.tomakehurst.wiremock.client.WireMock.patch
+import com.github.tomakehurst.wiremock.client.WireMock.patchRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.status
+import com.github.tomakehurst.wiremock.client.WireMock.stubFor
+import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
+import com.github.tomakehurst.wiremock.client.WireMock.verify
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.config.ApiExceptionHandler
-import no.nav.familie.kontrakter.felles.Behandlingstema
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.objectMapper
-import no.nav.familie.kontrakter.felles.oppgave.*
+import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
+import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
+import no.nav.familie.kontrakter.felles.oppgave.IdentType
+import no.nav.familie.kontrakter.felles.oppgave.Oppgave
+import no.nav.familie.kontrakter.felles.oppgave.OppgaveIdent
+import no.nav.familie.kontrakter.felles.oppgave.OppgaveResponse
+import no.nav.familie.kontrakter.felles.oppgave.Oppgavetype
+import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgave
+import no.nav.familie.kontrakter.felles.oppgave.StatusEnum
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
@@ -27,14 +46,13 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 @ActiveProfiles("integrasjonstest", "mock-sts")
 @TestPropertySource(properties = ["OPPGAVE_URL=http://localhost:28085"])
 @AutoConfigureWireMock(port = 28085)
 class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
-    @Before
+    @BeforeEach
     fun setup() {
         val oppgaveControllerLogger =
                 LoggerFactory.getLogger(OppgaveController::class.java) as Logger
@@ -396,46 +414,6 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `finnOppgaverV3 deserialiserer komplett objekt riktig`() {
-        val finnOppgaveRequest = FinnOppgaveRequest(tema = Tema.BAR,
-                                                    behandlingstema = Behandlingstema.Barnetrygd,
-                                                    oppgavetype = Oppgavetype.BehandleSak,
-                                                    enhet = "enhet",
-                                                    saksbehandler = "sb",
-                                                    aktørId = null,
-                                                    saksreferanse = "5bf80d26-6c2c-4392-9678-12bdf22b090c",
-                                                    journalpostId = "jpId",
-                                                    tilordnetRessurs = "tilordnetRessurs",
-                                                    tildeltRessurs = true,
-                                                    opprettetFomTidspunkt = LocalDateTime.of(2015, 10, 1, 12, 10),
-                                                    opprettetTomTidspunkt = LocalDateTime.of(2016, 11, 2, 13, 11),
-                                                    fristFomDato = LocalDate.of(2017, 12, 3),
-                                                    fristTomDato = LocalDate.of(2018, 1, 4),
-                                                    aktivFomDato = LocalDate.of(2019, 2, 5),
-                                                    aktivTomDato = LocalDate.of(2020, 3, 6),
-                                                    enhetsmappe = Enhetsmappe.SøknaderKlarTilBehandling,
-                                                    offset = 16,
-                                                    limit = 46)
-        val url = UriComponentsBuilder.fromHttpUrl(localhost("/api/oppgave/v3"))
-                .queryParams(finnOppgaveRequest.toQueryParams()).build().toUri()
-        stubFor(get("/api/v1/oppgaver?statuskategori=AAPEN&tema=BAR&sorteringsfelt=OPPRETTET_TIDSPUNKT" +
-                    "&sorteringsrekkefolge=DESC&limit=46&offset=16&behandlingstema=ab0270&oppgavetype=BEH_SAK" +
-                    "&tildeltEnhetsnr=enhet&tildeltRessurs=true&tilordnetRessurs=tilordnetRessurs&journalpostId=jpId" +
-                    "&saksreferanse=5bf80d26-6c2c-4392-9678-12bdf22b090c" +
-                    "&opprettetFom=2015-10-01T12:10:00&opprettetTom=2016-11-02T13:11:00&fristFom=2017-12-03" +
-                    "&fristTom=2018-01-04&aktivDatoFom=2019-02-05&aktivDatoTom=2020-03-06&mappeId=100000035")
-                        .willReturn(okJson(gyldigOppgaveResponse("oppgave.json"))))
-
-        val response: ResponseEntity<Ressurs<FinnOppgaveResponseDto>> =
-                restTemplate.exchange(url,
-                                      HttpMethod.GET,
-                                      HttpEntity(DeprecatedFinnOppgaveRequest("BAR"), headers))
-
-        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(response.body?.data?.oppgaver).hasSize(1)
-    }
-
-    @Test
     fun `fordelOppgave skal tilordne oppgave til saksbehandler når saksbehandler er satt på requesten`() {
         val saksbehandlerId = "Z999999"
         stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
@@ -516,6 +494,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     }
 
     companion object {
+
         private const val OPPGAVE_URL = "/api/oppgave/"
         private const val OPPDATER_OPPGAVE_URL = "${OPPGAVE_URL}/oppdater"
         private const val OPPGAVE_ID = 315488374L

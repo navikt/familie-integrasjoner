@@ -6,10 +6,12 @@ import no.nav.familie.integrasjoner.infotrygd.domene.AktivKontantstøtteInfo
 import no.nav.familie.kontrakter.felles.Ressurs
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.mockserver.junit.MockServerRule
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockserver.integration.ClientAndServer
+import org.mockserver.junit.jupiter.MockServerExtension
+import org.mockserver.junit.jupiter.MockServerSettings
 import org.mockserver.model.HttpRequest
 import org.mockserver.model.HttpResponse
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,16 +23,16 @@ import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 
 @ActiveProfiles("integrasjonstest", "mock-oauth")
-class InfotrygdControllerTest : OppslagSpringRunnerTest() {
+@ExtendWith(MockServerExtension::class)
+@MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
+class InfotrygdControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTest() {
 
     @Autowired
     lateinit var infotrygdRestClient: InfotrygdRestClient
 
-    @get:Rule
-    val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
-
-    @Before
+    @BeforeEach
     fun setUp() {
+        client.reset()
         headers.setBearerAuth(lokalTestToken)
     }
 
@@ -45,7 +47,7 @@ class InfotrygdControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
         assertThat(response.body?.melding).isEqualTo("Mangler påkrevd request header")
         assertThat(response.body?.stacktrace)
-                .contains("Required request header 'Nav-Personident' for method parameter of type String")
+                .contains("Required request header 'Nav-Personident' for method parameter type String")
     }
 
     @Test
@@ -97,15 +99,14 @@ class InfotrygdControllerTest : OppslagSpringRunnerTest() {
     }
 
     private fun spesifiserResponsFraInfotrygd(respons: String) {
-        mockServerRule.client
-                .`when`(HttpRequest.request()
-                                .withMethod("GET")
-                                .withPath("/v1/harBarnAktivKontantstotte"))
+        client.`when`(HttpRequest.request()
+                              .withMethod("GET")
+                              .withPath("/v1/harBarnAktivKontantstotte"))
                 .respond(HttpResponse.response().withHeader("Content-Type", "application/json").withBody(respons))
     }
 
     companion object {
-        const val MOCK_SERVER_PORT = 18321
+
         const val HAR_BARN_AKTIV_KONTANTSTØTTE = "/api/infotrygd/v1/harBarnAktivKontantstotte"
     }
 }

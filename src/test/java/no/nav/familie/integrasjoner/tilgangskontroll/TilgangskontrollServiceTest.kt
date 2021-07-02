@@ -9,7 +9,6 @@ import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSE
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
-import no.nav.familie.kontrakter.felles.tilgangskontroll.Tilgang
 import no.nav.security.token.support.core.jwt.JwtToken
 import no.nav.security.token.support.core.jwt.JwtTokenClaims
 import org.assertj.core.api.Assertions.assertThat
