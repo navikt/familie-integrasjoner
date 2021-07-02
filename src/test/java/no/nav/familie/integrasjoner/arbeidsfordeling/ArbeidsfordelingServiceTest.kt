@@ -9,7 +9,6 @@ import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningT
 import no.nav.familie.kontrakter.felles.Tema
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.lang.IllegalStateException
 
 internal class ArbeidsfordelingServiceTest {
 
@@ -45,7 +44,7 @@ internal class ArbeidsfordelingServiceTest {
                                            gtBydel = null,
                                            gtLand = null)
 
-        every { restClient.hentEnhet(any())} returns mockk()
+        every { restClient.hentEnhet(any()) } returns mockk()
 
         arbeidsfordelingService.finnLokaltNavKontor(ident, Tema.ENF)
 

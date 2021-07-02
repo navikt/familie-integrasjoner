@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test
 
 
 class FørstesideGeneratorServiceTest {
+
     @MockK
     private lateinit var førstesidegeneratorClient: FørstesidegeneratorClient
 
@@ -29,7 +30,7 @@ class FørstesideGeneratorServiceTest {
         every { førstesidegeneratorClient.genererFørsteside(any()) }
                 .answers { PostFørstesideResponse(hentBytes()) }
 
-        val førsteside = Førsteside(maalform = "NB",navSkjemaId = "123",overskriftsTittel = "Testoverskrift")
+        val førsteside = Førsteside(maalform = "NB", navSkjemaId = "123", overskriftsTittel = "Testoverskrift")
 
         val resultat = førstesideGeneratorService.genererForside(førsteside, "123")
 

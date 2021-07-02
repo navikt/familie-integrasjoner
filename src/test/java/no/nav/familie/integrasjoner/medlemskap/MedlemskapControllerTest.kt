@@ -66,6 +66,7 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
     }
 
     companion object {
+
         private const val GET_MEDLEMSKAP_URL = "api/medlemskap/v1?id=6549687"
     }
 }

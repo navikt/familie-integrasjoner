@@ -7,14 +7,14 @@ import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningD
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningType
 import no.nav.familie.integrasjoner.geografisktilknytning.PdlHentGeografiskTilknytning
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlHentIdenter
-import no.nav.familie.integrasjoner.personopplysning.internal.PdlResponse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlNavn
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPerson
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlResponse
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 import java.io.File
 
 class PdlGraphqlTest {

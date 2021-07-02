@@ -69,6 +69,7 @@ class CachedKodeverkServiceTest {
     }
 
     companion object {
+
         private const val POSTNUMMER = "0557"
         private const val POSTSTED = "Oslo"
         private const val LANDKODE = "NOR"

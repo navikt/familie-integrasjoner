@@ -70,7 +70,7 @@ class DokarkivServiceTest {
     }
 
     @Test
- fun `oppdaterJournalpost skal legge til default sakstype`() {
+    fun `oppdaterJournalpost skal legge til default sakstype`() {
         val slot = slot<OppdaterJournalpostRequest>()
         every { dokarkivRestClient.oppdaterJournalpost(capture(slot), any()) }
                 .answers { OppdaterJournalpostResponse(JOURNALPOST_ID) }
@@ -88,7 +88,7 @@ class DokarkivServiceTest {
     }
 
     @Test
- fun `skal mappe request til opprettJournalpostRequest av type arkiv pdfa`() {
+    fun `skal mappe request til opprettJournalpostRequest av type arkiv pdfa`() {
         val slot = slot<OpprettJournalpostRequest>()
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
                 .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
@@ -120,7 +120,7 @@ class DokarkivServiceTest {
     }
 
     @Test
- fun `skal generere førsteside hvis førsteside er med i request`() {
+    fun `skal generere førsteside hvis førsteside er med i request`() {
         val slot = slot<OpprettJournalpostRequest>()
 
         every { førstesideGeneratorService.genererForside(any<Førsteside>(), any()) }
@@ -160,7 +160,7 @@ class DokarkivServiceTest {
     }
 
     @Test
- fun `skal ikke generere førsteside hvis førsteside mangler i request`() {
+    fun `skal ikke generere førsteside hvis førsteside mangler i request`() {
         val slot = slot<OpprettJournalpostRequest>()
 
         every { førstesideGeneratorService.genererForside(any<Førsteside>(), any()) }
@@ -197,7 +197,7 @@ class DokarkivServiceTest {
     }
 
     @Test
- fun `skal mappe request til opprettJournalpostRequest for barnetrygd vedtak`() {
+    fun `skal mappe request til opprettJournalpostRequest for barnetrygd vedtak`() {
         val slot = slot<OpprettJournalpostRequest>()
 
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
@@ -214,18 +214,18 @@ class DokarkivServiceTest {
                 }
 
         val dto = ArkiverDokumentRequest(FNR,
-                                                   false,
-                                                   listOf(Dokument(PDF_DOK,
-                                                                   Filtype.PDFA,
-                                                                   FILNAVN,
-                                                                   null,
-                                                                   Dokumenttype.BARNETRYGD_VEDTAK)),
-                                                   listOf(Dokument(PDF_DOK,
-                                                                   Filtype.PDFA,
-                                                                   null,
-                                                                   TITTEL,
-                                                                   Dokumenttype.BARNETRYGD_VEDLEGG)),
-                                                   fagsakId = FAGSAK_ID)
+                                         false,
+                                         listOf(Dokument(PDF_DOK,
+                                                         Filtype.PDFA,
+                                                         FILNAVN,
+                                                         null,
+                                                         Dokumenttype.BARNETRYGD_VEDTAK)),
+                                         listOf(Dokument(PDF_DOK,
+                                                         Filtype.PDFA,
+                                                         null,
+                                                         TITTEL,
+                                                         Dokumenttype.BARNETRYGD_VEDLEGG)),
+                                         fagsakId = FAGSAK_ID)
 
         dokarkivService.lagJournalpost(dto)
 
@@ -236,7 +236,7 @@ class DokarkivServiceTest {
     }
 
     @Test
- fun `skal mappe request til opprettJournalpostRequest av type ORIGINAL JSON`() {
+    fun `skal mappe request til opprettJournalpostRequest av type ORIGINAL JSON`() {
         val slot = slot<OpprettJournalpostRequest>()
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
                 .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
@@ -271,7 +271,7 @@ class DokarkivServiceTest {
     }
 
     @Test
- fun `response fra klient skal returnere arkiverDokumentResponse`() {
+    fun `response fra klient skal returnere arkiverDokumentResponse`() {
         every { dokarkivRestClient.lagJournalpost(any(), any()) }
                 .answers { OpprettJournalpostResponse(journalpostId = JOURNALPOST_ID, journalpostferdigstilt = true) }
         every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
