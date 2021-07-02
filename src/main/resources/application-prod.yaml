@@ -84,7 +84,7 @@ OPPGAVE_URL: https://oppgave.nais.adeo.no
 GOSYS_INFOTRYGDSAK_URL: https://tjenestebuss.adeo.no/nav-cons-sak-gosys-3.0.0Web/sca/GOSYSInfotrygdSakWSEXP
 INFOTRYGD_VEDTAK_URL: https://modapp.adeo.no/infotrygd-ws/InfotrygdVedtak/v1
 NORG2_URL: https://norg2.nais.adeo.no/norg2/
-SFTP_HOST: https://a01drvl099.adeo.no
+SFTP_HOST: a01drvl099.adeo.no
 
 # Appdynamics
 APPDYNAMICS_CONTROLLER_HOST_NAME: appdynamics.adeo.no
