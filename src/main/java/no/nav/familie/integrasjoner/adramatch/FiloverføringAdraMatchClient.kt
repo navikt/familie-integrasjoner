@@ -28,6 +28,7 @@ class FiloverføringAdraMatchClient(private val config: FiloverføringAdraMatchC
 
             channel = session.openChannel(FiloverføringAdraMatchConfig.JSCH_CHANNEL_TYPE_SFTP) as ChannelSftp
             channel.connect()
+            channel.cd(config.directory)
             channel.put(ByteArrayInputStream(fil.innhold), fil.navn)
         } finally {
             channel?.disconnect()
