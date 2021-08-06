@@ -39,9 +39,13 @@ class ArbeidsfordelingService(
 
     }
 
+    fun hentNavKontor(enhetsId: String): NavKontorEnhet {
+        return restClient.hentNavkontor(enhetsId)
+    }
+
     private fun utledGeografiskTilknytningKode(geografiskTilknytning: GeografiskTilknytningDto): String {
         geografiskTilknytning.let {
-           return when (it.gtType) {
+            return when (it.gtType) {
                 GeografiskTilknytningType.BYDEL -> it.gtBydel!!
                 GeografiskTilknytningType.KOMMUNE -> it.gtKommune!!
                 GeografiskTilknytningType.UTLAND -> it.gtLand!!
