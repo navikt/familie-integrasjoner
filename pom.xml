@@ -39,9 +39,6 @@
         <sonar.login>${SONAR_LOGIN}</sonar.login>
         <spring.cloud>3.0.3</spring.cloud>
 
-        <!-- Setter denne til token-support sine versjoner, versjoner(9.x) i spring er ikke kompatibel med oauth2-oidc-sdk -->
-        <nimbus-jose-jwt.version>8.20.2</nimbus-jose-jwt.version>
-
     </properties>
 
     <dependencies>
