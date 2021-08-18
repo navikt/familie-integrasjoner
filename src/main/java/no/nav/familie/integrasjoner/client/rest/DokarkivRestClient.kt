@@ -9,6 +9,8 @@ import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRes
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostResponse
+import no.nav.familie.kontrakter.felles.objectMapper
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -24,6 +26,7 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
                          @Qualifier("jwtBearerOboOgSts") private val restOperations: RestOperations)
     : AbstractPingableRestClient(restOperations, "dokarkiv.opprett") {
 
+
     override val pingUri: URI = UriComponentsBuilder.fromUri(dokarkivUrl).path(PATH_PING).build().toUri()
 
     private val ferdigstillJournalPostClient = FerdigstillJournalPostClient(restOperations, dokarkivUrl)
@@ -35,6 +38,8 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
                        ferdigstill: Boolean): OpprettJournalpostResponse {
         val uri = lagJournalpostUri(ferdigstill)
         try {
+            //TODO fjern etter prod debug
+            secureLogger.info("Gjør kall mot dokarkiv med request ${objectMapper.writeValueAsString(jp)}" )
             return postForEntity(uri, jp)
         } catch (e: RuntimeException) {
             throw oppslagExceptionVed("opprettelse", e, jp.bruker?.id)
@@ -92,7 +97,7 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
     }
 
     companion object {
-
+        private val secureLogger = LoggerFactory.getLogger("secureLogger")
         private const val PATH_PING = "isAlive"
         private const val PATH_JOURNALPOST = "rest/journalpostapi/v1/journalpost"
         private const val QUERY_FERDIGSTILL = "forsoekFerdigstill={boolean}"
