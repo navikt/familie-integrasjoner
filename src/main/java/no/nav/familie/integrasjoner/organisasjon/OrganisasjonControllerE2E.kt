@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/organisasjon")
-@Profile("!e2e")
-class OrganisasjonController(private val organisasjonService: OrganisasjonService) {
+@Profile("e2e")
+class OrganisasjonControllerE2E {
 
     @GetMapping(path = ["/{orgnr}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun hentOrganisasjon(@PathVariable orgnr: String): Ressurs<Organisasjon> {
-        return success(data = organisasjonService.hentOrganisasjon(orgnr))
+        return success(data = Organisasjon(organisasjonsnummer = orgnr, navn = "Mocka organisasjon"))
     }
 
 }
