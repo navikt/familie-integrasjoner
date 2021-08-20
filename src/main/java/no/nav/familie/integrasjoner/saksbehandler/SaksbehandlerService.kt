@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.saksbehandler
 import no.nav.familie.integrasjoner.client.rest.AzureGraphRestClient
 import no.nav.familie.kontrakter.felles.saksbehandler.Saksbehandler
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class SaksbehandlerService(private val azureGraphRestClient: AzureGraphRestClient) {
@@ -10,6 +11,13 @@ class SaksbehandlerService(private val azureGraphRestClient: AzureGraphRestClien
     private val lengdeNavIdent = 7
 
     fun hentSaksbehandler(id: String): Saksbehandler {
+
+        if (id == ID_VEDTAKSLØSNINGEN) {
+            return Saksbehandler(UUID.randomUUID(),
+                                 ID_VEDTAKSLØSNINGEN,
+                                 "Vedtaksløsning",
+                                 "Nav")
+        }
 
         val azureAdBruker = if (id.length == lengdeNavIdent) {
             val azureAdBrukere = azureGraphRestClient.finnSaksbehandler(id)
@@ -27,5 +35,10 @@ class SaksbehandlerService(private val azureGraphRestClient: AzureGraphRestClien
                              azureAdBruker.onPremisesSamAccountName,
                              azureAdBruker.givenName,
                              azureAdBruker.surname)
+    }
+
+    companion object {
+
+        const val ID_VEDTAKSLØSNINGEN = "VL"
     }
 }
