@@ -11,8 +11,10 @@
       "path": [
         "journalpost"
       ],
-      "exceptionType": "TECHNICAL",
-      "exception": "NullPointerException"
+      "extensions": {
+        "code": "server_error",
+        "classification": "DataFetchingException"
+      }
     }
   ],
   "data": {

@@ -42,7 +42,7 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
                                                                                       null,
                                                                                       journalpostId)
         } else {
-            val tilgangFeil = response.errors?.firstOrNull { it.code == SafErrorCode.forbidden }
+            val tilgangFeil = response.errors?.firstOrNull { it.extensions.code == SafErrorCode.forbidden }
 
             if (tilgangFeil != null) {
                 throw JournalpostForbiddenException(tilgangFeil.message)
