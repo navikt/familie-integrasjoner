@@ -7,6 +7,7 @@ import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.journalpost.JournalpostForBrukerException
 import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
 import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
+import no.nav.familie.integrasjoner.journalpost.internal.SafErrorCode
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostBrukerData
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostData
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostRequest
@@ -41,7 +42,7 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
                                                                                       null,
                                                                                       journalpostId)
         } else {
-            val tilgangFeil = response.errors?.firstOrNull { it.message?.contains("Tilgang til ressurs ble avvist") == true }
+            val tilgangFeil = response.errors?.firstOrNull { it.extensions.code == SafErrorCode.forbidden }
 
             if (tilgangFeil != null) {
                 throw JournalpostForbiddenException(tilgangFeil.message)
