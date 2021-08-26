@@ -4,7 +4,6 @@ import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.OppslagException.Level
-import no.nav.familie.integrasjoner.saksbehandler.SaksbehandlerService
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.oppgave.*
 import org.slf4j.LoggerFactory
@@ -14,11 +13,8 @@ import org.springframework.web.context.annotation.ApplicationScope
 import java.time.format.DateTimeFormatter
 
 @Service @ApplicationScope
-class OppgaveService constructor(
-        private val oppgaveRestClient: OppgaveRestClient,
-        private val pdlRestClient: PdlRestClient,
-        private val saksbehandlerService: SaksbehandlerService,
-) {
+class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClient,
+                                 private val pdlRestClient: PdlRestClient) {
 
     fun finnOppgaver(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {
         return oppgaveRestClient.finnOppgaver(finnOppgaveRequest)
@@ -69,7 +65,7 @@ class OppgaveService constructor(
         val oppdatertOppgaveDto = oppgave.copy(
                 id = oppgave.id,
                 versjon = oppgave.versjon,
-                tilordnetRessurs = saksbehandlerService.hentNavIdent(saksbehandler)
+                tilordnetRessurs = saksbehandler
         )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
         return oppgave.id!!
@@ -132,7 +128,7 @@ class OppgaveService constructor(
                 oppgavetype = request.oppgavetype.value,
                 beskrivelse = request.beskrivelse,
                 behandlingstype = request.behandlingstype,
-                tilordnetRessurs = request.tilordnetRessurs?.let { saksbehandlerService.hentNavIdent(it) },
+                tilordnetRessurs = request.tilordnetRessurs,
                 behandlesAvApplikasjon = request.behandlesAvApplikasjon
         )
 
@@ -176,7 +172,6 @@ class OppgaveService constructor(
     }
 
     companion object {
-
         private val LOG = LoggerFactory.getLogger(OppgaveService::class.java)
     }
 }
