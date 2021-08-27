@@ -8,16 +8,19 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 @RequestMapping(value = ["/api/saksbehandler"])
-@Profile("!e2e")
-class SaksbehandlerController(private val saksbehandlerService: SaksbehandlerService) {
+@Profile("e2e")
+class SaksbehandlerControllerE2E {
 
     @GetMapping(path = ["/{id}"])
     @ProtectedWithClaims(issuer = "azuread")
-    fun hentSaksbehandler(@PathVariable id: String): Ressurs<Saksbehandler> { // id kan være azure-id, e-post eller nav-ident
-        return Ressurs.success(saksbehandlerService.hentSaksbehandler(id), "Hent saksbehandler OK")
+    fun hentSaksbehandler(@PathVariable id: String): Ressurs<Saksbehandler> {
+        return Ressurs.success(Saksbehandler(azureId = UUID.randomUUID(),
+                                             navIdent = id,
+                                             fornavn = "Mocka",
+                                             etternavn = "Saksbehandler"), "Hent saksbehandler OK")
     }
-
 }
