@@ -39,8 +39,12 @@ class SaksbehandlerService(private val azureGraphRestClient: AzureGraphRestClien
                              azureAdBruker.surname)
     }
 
+    fun hentNavIdent(saksbehandlerId: String): String =
+            saksbehandlerId.takeIf { it.length == lengdeNavIdent } ?: hentSaksbehandler(saksbehandlerId).navIdent
+
     companion object {
 
         const val ID_VEDTAKSLØSNINGEN = "VL"
     }
+
 }
