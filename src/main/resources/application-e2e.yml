@@ -62,7 +62,6 @@ no.nav.security.jwt:
 
 AAD_URL: http://vtp:8060/rest/isso/oauth2/access_token
 
-AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 STS_URL: http://nav-auth-mock:8200/nais-sts/token
 SECURITYTOKENSERVICE_URL: http://vtp:8060/soap/SecurityTokenServiceProvider/
 PERSON_V3_URL: https://vtp:8063/soap/tpsws/ws/Person/v3
@@ -73,6 +72,7 @@ MEDL2_URL: http://vtp:8060/rest/medl2
 ARBEIDSFORDELING_V1_URL: http://vtp:8060/soap/norg2/ws/Arbeidsfordeling/v1
 NORG2_URL: #Mockes lokalt
 
+AAD_GRAPH_API_URI: http://familie-mock-server:1337/
 DOKDIST_URL: http://familie-mock-server:1337/rest/api/dokdist/
 DOKARKIV_V1_URL: http://familie-mock-server:1337/rest/api/dokarkiv/
 OPPGAVE_URL: http://familie-mock-server:1337/rest/api/oppgave/
