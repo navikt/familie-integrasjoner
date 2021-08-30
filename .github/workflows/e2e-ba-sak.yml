@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 env:
   IMAGE: ghcr.io/navikt/familie-integrasjoner:${{ github.sha }}
-  IMAGE_UTEN_TAG: ghcr.io/navikt/familie-integrasjoner
+  IMAGE_UTEN_TAG: ghcr.io/navikt/familie-integrasjoner:latest
 jobs:
   run-e2e:
     name: Run e2e
