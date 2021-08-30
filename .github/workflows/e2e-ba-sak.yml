@@ -53,25 +53,25 @@ jobs:
         run: sed -i 's/familie-integrasjoner:latest/familie-integrasjoner:'$GITHUB_SHA'/g' ba-e2e/e2e/docker-compose.yml
       - name: Start alle apper (e2e)
         env:
-          MOTTAK_CLIENT_ID: ${{ secrets.MOTTAK_CLIENT_ID }}
-          MOTTAK_FRONTEND_CLIENT_ID: ${{ secrets.MOTTAK_FRONTEND_CLIENT_ID }}
-          MOTTAK_CLIENT_SECRET: ${{ secrets.MOTTAK_CLIENT_SECRET }}
-          MOTTAK_BA_SAK_SCOPE: ${{ secrets.MOTTAK_BA_SAK_SCOPE }}
-          MOTTAK_FAMILIE_INTEGRASJONER_SCOPE: ${{ secrets.MOTTAK_FAMILIE_INTEGRASJONER_SCOPE }}
           INTEGRASJONER_CLIENT_ID: ${{ secrets.INTEGRASJONER_CLIENT_ID }}
           INTEGRASJONER_CLIENT_SECRET: ${{ secrets.INTEGRASJONER_CLIENT_SECRET }}
           INTEGRASJONER_INFOTRYGD_KS_SCOPE: ${{ secrets.INTEGRASJONER_INFOTRYGD_KS_SCOPE }}
           INTEGRASJONER_AAD_GRAPH_SCOPE: ${{ secrets.INTEGRASJONER_AAD_GRAPH_SCOPE }}
           SAK_CLIENT_ID: ${{ secrets.SAK_CLIENT_ID }}
+          SAK_CLIENT_SECRET: ${{ secrets.SAK_CLIENT_SECRET }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
           SAK_FRONTEND_CLIENT_ID: ${{ secrets.SAK_FRONTEND_CLIENT_ID }}
-          SAK_CLIENT_SECRET: ${{ secrets.SAK_CLIENT_SECRET}}
+          SAK_FRONTEND_CLIENT_SECRET: ${{ secrets.SAK_FRONTEND_CLIENT_SECRET }}
+          OPPDRAG_CLIENT_ID: ${{ secrets.OPPDRAG_CLIENT_ID }}
           INTEGRASJONER_SCOPE: ${{ secrets.INTEGRASJONER_SCOPE }}
           OPPDRAG_SCOPE: ${{ secrets.OPPDRAG_SCOPE }}
-          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
-          SAK_FRONTEND_CLIENT_SECRET: ${{ secrets.SAK_FRONTEND_CLIENT_SECRET }}
           BA_SAK_SCOPE: ${{ secrets.BA_SAK_SCOPE }}
-          OPPDRAG_CLIENT_ID: ${{ secrets.OPPDRAG_CLIENT_ID }}
+          MOTTAK_CLIENT_ID: ${{ secrets.MOTTAK_CLIENT_ID }}
+          MOTTAK_CLIENT_SECRET: ${{ secrets.MOTTAK_CLIENT_SECRET }}
           SRVUSER_BA_SAK_SECRET: ${{ secrets.SRVUSER_BA_SAK_SECRET }}
+          FAMILIE_TILBAKE_API_URL_SCOPE: ${{ secrets.FAMILIE_TILBAKE_API_URL_SCOPE }}
+          TILBAKE_CLIENT_ID: ${{ secrets.TILBAKE_CLIENT_ID }}
+          AZURE_APP_CLIENT_ID: ${{ secrets.AZURE_APP_CLIENT_ID }}
         run: cd ba-e2e/e2e; ./e2e.sh
       - name: Kjør tester (e2e)
         env:
