@@ -22,4 +22,9 @@ class OrganisasjonController(private val organisasjonService: OrganisasjonServic
         return success(data = organisasjonService.hentOrganisasjon(orgnr))
     }
 
+    @GetMapping(path = ["/{orgnr}/valider"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun validerOrganisasjon(@PathVariable orgnr: String): Ressurs<Boolean> {
+        return success(data = organisasjonService.validerOrganisasjon(orgnr))
+    }
+
 }
