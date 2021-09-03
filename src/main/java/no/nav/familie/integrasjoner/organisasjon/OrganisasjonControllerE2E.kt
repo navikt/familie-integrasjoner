@@ -22,7 +22,7 @@ class OrganisasjonControllerE2E {
         return success(data = Organisasjon(organisasjonsnummer = orgnr, navn = "Mocka organisasjon"))
     }
 
-    @GetMapping(path = ["/valider/{orgnr}"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @GetMapping(path = ["/{orgnr}/valider"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun validerOrganisasjon(@PathVariable orgnr: String): Ressurs<Boolean> {
         return success(data = true)
     }
