@@ -19,13 +19,18 @@ class AzureGraphRestClient(@Qualifier("jwtBearer") restTemplate: RestOperations,
 
     val saksbehandlerUri: URI = UriComponentsBuilder.fromUri(aadGraphURI).pathSegment(ME).build().toUri()
 
-    fun saksbehandlerUri(id: String): URI = UriComponentsBuilder.fromUri(aadGraphURI).pathSegment(USERS, id).build().toUri()
+    fun saksbehandlerUri(id: String): URI =
+            UriComponentsBuilder.fromUri(aadGraphURI)
+                    .pathSegment(USERS, id)
+                    .queryParam("\$select", FELTER)
+                    .build()
+                    .toUri()
 
     fun saksbehandlersøkUri(navIdent: String): URI =
             UriComponentsBuilder.fromUri(aadGraphURI)
                     .pathSegment(USERS)
                     .queryParam("\$search", "\"onPremisesSamAccountName:{navIdent}\"")
-                    .queryParam("\$select", "givenName,surname,onPremisesSamAccountName,id,userPrincipalName")
+                    .queryParam("\$select", FELTER)
                     .buildAndExpand(navIdent)
                     .toUri()
 
@@ -51,9 +56,10 @@ class AzureGraphRestClient(@Qualifier("jwtBearer") restTemplate: RestOperations,
     }
 
     companion object {
+
         private const val ME = "me"
         private const val USERS = "users"
         private const val GRUPPER = "memberOf"
-
+        private const val FELTER = "givenName,surname,onPremisesSamAccountName,id,userPrincipalName"
     }
 }

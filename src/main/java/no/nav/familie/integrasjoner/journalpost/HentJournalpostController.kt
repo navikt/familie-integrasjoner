@@ -9,13 +9,18 @@ import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.HttpStatusCodeException
 
 @RestController @RequestMapping("/api/journalpost") @ProtectedWithClaims(issuer = "azuread")
 class HentJournalpostController(private val journalpostService: JournalpostService) {
-
-    private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
     @ExceptionHandler(JournalpostRestClientException::class)
     fun handleRestClientException(ex: JournalpostRestClientException): ResponseEntity<Ressurs<Any>> {
@@ -33,6 +38,15 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
         secureLogger.warn(errorBaseMessage, ex)
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(failure(errorBaseMessage + errorExtMessage, error = ex))
+    }
+
+    @ExceptionHandler(JournalpostForbiddenException::class)
+    fun handleJournalpostForbiddenException(e: JournalpostForbiddenException): ResponseEntity<Ressurs<Any>> {
+        LOG.warn("Bruker eller system ikke tilgang til saf ressurs: ${e.message}")
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(Ressurs.ikkeTilgang(e.message ?: "Bruker eller system har ikke tilgang til saf ressurs"))
     }
 
     private fun byggFeilmelding(ex: RuntimeException): String {
@@ -84,6 +98,8 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
     }
 
     companion object {
+
         private val LOG = LoggerFactory.getLogger(HentJournalpostController::class.java)
+        private val secureLogger = LoggerFactory.getLogger("secureLogger")
     }
 }

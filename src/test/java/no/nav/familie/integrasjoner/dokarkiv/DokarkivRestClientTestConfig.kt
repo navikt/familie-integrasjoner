@@ -1,6 +1,9 @@
 package no.nav.familie.integrasjoner.dokarkiv
 
-import io.mockk.*
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
 import no.nav.familie.integrasjoner.client.rest.DokarkivLogiskVedleggRestClient
 import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse

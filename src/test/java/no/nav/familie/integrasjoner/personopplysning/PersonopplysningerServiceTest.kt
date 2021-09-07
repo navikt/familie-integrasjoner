@@ -25,8 +25,8 @@ import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import no.nav.familie.kontrakter.ks.søknad.testdata.SøknadTestdata
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -37,7 +37,7 @@ class PersonopplysningerServiceTest {
 
     private val pdlRestClient = mockk<PdlRestClient>()
 
-    @Before
+    @BeforeEach
     fun setUp() {
         personSoapClient = PersonopplysningerTestConfig().personConsumerMock()
         personopplysningerService = PersonopplysningerService(personSoapClient,

@@ -1,16 +1,18 @@
 package no.nav.familie.integrasjoner.saksbehandler
 
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.saksbehandler.Saksbehandler
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
-import org.mockserver.junit.MockServerRule
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockserver.integration.ClientAndServer
+import org.mockserver.junit.jupiter.MockServerExtension
+import org.mockserver.junit.jupiter.MockServerSettings
 import org.mockserver.model.HttpRequest
 import org.mockserver.model.HttpResponse
 import org.mockserver.model.Parameter
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -20,26 +22,22 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.util.UUID
 
 @ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
-class SaksbehandlerControllerTest : OppslagSpringRunnerTest() {
+@ExtendWith(MockServerExtension::class)
+@MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
+class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTest() {
 
-    @Autowired
-    lateinit var saksbehandlerController: SaksbehandlerController
-
-    @get:Rule
-    val mockServerRule = MockServerRule(this, MOCK_SERVER_PORT)
-
-    @Before
+    @BeforeEach
     fun setUp() {
+        client.reset()
         headers.setBearerAuth(lokalTestToken)
     }
 
     @Test
     fun `skal kalle korrekt tjeneste for oppslag på id`() {
         val id = UUID.randomUUID()
-        mockServerRule.client
-                .`when`(HttpRequest.request()
-                                .withMethod("GET")
-                                .withPath("/users/$id"))
+        client.`when`(HttpRequest.request()
+                              .withMethod("GET")
+                              .withPath("/users/$id"))
                 .respond(HttpResponse.response().withHeader("Content-Type", "application/json")
                                  .withBody("""{
                                            "givenName": "Bob",
@@ -51,11 +49,11 @@ class SaksbehandlerControllerTest : OppslagSpringRunnerTest() {
         val uri = UriComponentsBuilder.fromHttpUrl(localhost(BASE_URL))
                 .pathSegment(id.toString()).toUriString()
 
-        val response: ResponseEntity<Saksbehandler> = restTemplate.exchange(uri,
-                                                                            HttpMethod.GET,
-                                                                            HttpEntity<String>(headers))
+        val response: ResponseEntity<Ressurs<Saksbehandler>> = restTemplate.exchange(uri,
+                                                                                     HttpMethod.GET,
+                                                                                     HttpEntity<String>(headers))
         print(id)
-        val saksbehandler = response.body
+        val saksbehandler = response.body!!.data!!
         assertThat(saksbehandler.fornavn).isEqualTo("Bob")
         assertThat(saksbehandler.etternavn).isEqualTo("Burger")
         assertThat(saksbehandler.azureId).isEqualTo(id)
@@ -66,14 +64,14 @@ class SaksbehandlerControllerTest : OppslagSpringRunnerTest() {
     fun `skal kalle korrekt tjeneste for oppslag på navIdent`() {
         val navIdent = "B857496"
         val id = UUID.randomUUID()
-        mockServerRule.client
-                .`when`(HttpRequest.request()
-                                .withMethod("GET")
-                                .withPath("/users")
-                                .withQueryStringParameters(Parameter("\$search", "onPremisesSamAccountName:B857496"),
-                                                           Parameter("\$select",
-                                                                     "givenName,surname,onPremisesSamAccountName,id," +
-                                                                     "userPrincipalName")))
+
+        client.`when`(HttpRequest.request()
+                              .withMethod("GET")
+                              .withPath("/users")
+                              .withQueryStringParameters(Parameter("\$search", "\"onPremisesSamAccountName:B857496\""),
+                                                         Parameter("\$select",
+                                                                   "givenName,surname,onPremisesSamAccountName,id," +
+                                                                   "userPrincipalName")))
                 .respond(HttpResponse.response().withHeader("Content-Type", "application/json")
                                  .withBody("""{
                                            "value": [
@@ -89,20 +87,18 @@ class SaksbehandlerControllerTest : OppslagSpringRunnerTest() {
         val uri = UriComponentsBuilder.fromHttpUrl(localhost(BASE_URL))
                 .pathSegment(navIdent).toUriString()
 
-        val response: ResponseEntity<Saksbehandler> = restTemplate.exchange(uri,
-                                                                            HttpMethod.GET,
-                                                                            HttpEntity<String>(headers))
-        val saksbehandler = response.body
+        val response: ResponseEntity<Ressurs<Saksbehandler>> = restTemplate.exchange(uri,
+                                                                                     HttpMethod.GET,
+                                                                                     HttpEntity<String>(headers))
+        val saksbehandler = response.body!!.data!!
         assertThat(saksbehandler.fornavn).isEqualTo("Bob")
         assertThat(saksbehandler.etternavn).isEqualTo("Burger")
         assertThat(saksbehandler.azureId).isEqualTo(id)
-        assertThat(saksbehandler.navIdent).isEqualTo("B857496")
+        assertThat(saksbehandler.navIdent).isEqualTo(navIdent)
     }
 
     companion object {
 
         const val BASE_URL = "/api/saksbehandler"
-
-        const val MOCK_SERVER_PORT = 18321
     }
 }

@@ -5,7 +5,14 @@ import io.mockk.mockk
 import io.mockk.slot
 import no.nav.familie.integrasjoner.client.rest.SafRestClient
 import no.nav.familie.kontrakter.felles.BrukerIdType
-import no.nav.familie.kontrakter.felles.journalpost.*
+import no.nav.familie.kontrakter.felles.journalpost.Bruker
+import no.nav.familie.kontrakter.felles.journalpost.DokumentInfo
+import no.nav.familie.kontrakter.felles.journalpost.Dokumentstatus
+import no.nav.familie.kontrakter.felles.journalpost.Journalpost
+import no.nav.familie.kontrakter.felles.journalpost.Journalposttype
+import no.nav.familie.kontrakter.felles.journalpost.Journalstatus
+import no.nav.familie.kontrakter.felles.journalpost.LogiskVedlegg
+import no.nav.familie.kontrakter.felles.journalpost.Sak
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary

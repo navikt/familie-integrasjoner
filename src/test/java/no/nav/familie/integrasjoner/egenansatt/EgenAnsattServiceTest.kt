@@ -4,9 +4,10 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.familie.integrasjoner.client.rest.EgenAnsattRestClient
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class EgenAnsattServiceTest {
+
     private val egenAnsattRestClientMock: EgenAnsattRestClient = mockk()
     private val egenAnsattService = EgenAnsattService(egenAnsattRestClientMock)
 

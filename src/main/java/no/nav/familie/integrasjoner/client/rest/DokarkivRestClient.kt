@@ -21,7 +21,7 @@ import java.net.URI
 
 @Component
 class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
-                         @Qualifier("sts") private val restOperations: RestOperations)
+                         @Qualifier("jwtBearerOboOgSts") private val restOperations: RestOperations)
     : AbstractPingableRestClient(restOperations, "dokarkiv.opprett") {
 
     override val pingUri: URI = UriComponentsBuilder.fromUri(dokarkivUrl).path(PATH_PING).build().toUri()
@@ -29,13 +29,13 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
     private val ferdigstillJournalPostClient = FerdigstillJournalPostClient(restOperations, dokarkivUrl)
 
     fun lagJournalpostUri(ferdigstill: Boolean): URI = UriComponentsBuilder
-        .fromUri(dokarkivUrl).path(PATH_JOURNALPOST).query(QUERY_FERDIGSTILL).buildAndExpand(ferdigstill).toUri()
+            .fromUri(dokarkivUrl).path(PATH_JOURNALPOST).query(QUERY_FERDIGSTILL).buildAndExpand(ferdigstill).toUri()
 
     fun lagJournalpost(jp: OpprettJournalpostRequest,
                        ferdigstill: Boolean): OpprettJournalpostResponse {
         val uri = lagJournalpostUri(ferdigstill)
         try {
-            return postForEntity(uri, jp)!!
+            return postForEntity(uri, jp)
         } catch (e: RuntimeException) {
             throw oppslagExceptionVed("opprettelse", e, jp.bruker?.id)
         }
@@ -44,7 +44,7 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
     fun oppdaterJournalpost(jp: OppdaterJournalpostRequest, journalpostId: String): OppdaterJournalpostResponse {
         val uri = UriComponentsBuilder.fromUri(dokarkivUrl).pathSegment(PATH_JOURNALPOST, journalpostId).build().toUri()
         try {
-            return putForEntity(uri, jp)!!
+            return putForEntity(uri, jp)
         } catch (e: RuntimeException) {
             throw oppslagExceptionVed("oppdatering", e, jp.bruker?.id)
         }
@@ -74,7 +74,7 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
 
         private fun ferdigstillJournalpostUri(journalpostId: String): URI {
             return UriComponentsBuilder
-                .fromUri(dokarkivUrl).path(String.format(PATH_FERDIGSTILL_JOURNALPOST, journalpostId)).build().toUri()
+                    .fromUri(dokarkivUrl).path(String.format(PATH_FERDIGSTILL_JOURNALPOST, journalpostId)).build().toUri()
         }
 
         fun ferdigstillJournalpost(journalpostId: String, journalførendeEnhet: String) {
@@ -92,6 +92,7 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
     }
 
     companion object {
+
         private const val PATH_PING = "isAlive"
         private const val PATH_JOURNALPOST = "rest/journalpostapi/v1/journalpost"
         private const val QUERY_FERDIGSTILL = "forsoekFerdigstill={boolean}"

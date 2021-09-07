@@ -23,6 +23,15 @@ no.nav.security.jwt:
           client-id: ${INTEGRASJONER_CLIENT_ID}
           client-secret: ${CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      dokarkiv-onbehalf-of:
+        resource-url: ${DOKARKIV_V1_URL}
+        token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: ${DOKARKIV_SCOPE}
+        authentication:
+          client-id: ${INTEGRASJONER_CLIENT_ID}
+          client-secret: ${CLIENT_SECRET}
+          client-auth-method: client_secret_basic
       saf-onbehalf-of:
         resource-url: ${SAF_URL}
         token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
@@ -76,6 +85,10 @@ CREDENTIAL_PASSWORD: not-a-real-pw
 strengt_fortrolig_adresse: Ingen tilgang
 fortrolig_adresse: Ingen tilgang
 egen_ansatt: Ingen tilgang
+
+SFTP_HOST: localhost
+SFTP_PRIVATE_KEY: LS0tLS1CRUdJTiBFQyBQUklWQVRFIEtFWS0tLS0tClByb2MtVHlwZTogNCxFTkNSWVBURUQKREVLLUluZm86IEFFUy0xMjgtQ0JDLDdEMThBQTYwQjJEOTlERTc3RTE2NDU3NDNEOUI2M0Q1CgozeDdyNno0WXdxUWl0Tk5iTzE3b1ExQmsrSEQyR0hQRUwrY1Y1ZDc4YlhYeDJ6ekIxZm8zRG5sdjJWNVI2cTVWClZJcVJxNkV0d2p1YUwybEs5ZW50NGszSS9YRTh4Q3RIL1d0LzE3b3dqZ1pkbDZHZFJCODNCN3FuakN1UEpEVjQKZ2RxMmJzUWF5NzEzd1FEeVI0bnd4R3NmMmxYbUlBOFBlNFFJVTVGM1h0UXIrRm1rL1Jtb0pGbDFONlRCTGdRbwo2WDBCQjNUMUw5Q2dadGQ4Y0VydVViK1hlQUhzTlI2VG1OL3hxaVMzUHdVdWdRdzhzRUd1azI2QWRPMjZjZGs5Cm1xd3lCUWZ3UDdPajhMR3U5NjduRWdCZXVsY25YQ1I4UDR5WVg5L201MFU9Ci0tLS0tRU5EIEVDIFBSSVZBVEUgS0VZLS0tLS0K
+SFTP_PASSPHRASE: Palpatine
 
 # mock-server
 PDL_URL: http://localhost:1337/rest/api/pdl

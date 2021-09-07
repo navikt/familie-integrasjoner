@@ -9,8 +9,8 @@ import no.nav.familie.kontrakter.felles.infotrygdsak.OpprettInfotrygdSakRequest
 import no.nav.familie.kontrakter.felles.infotrygdsak.OpprettInfotrygdSakResponse
 import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.http.HttpEntity
@@ -25,7 +25,7 @@ import java.time.LocalDate
 @AutoConfigureWireMock(port = 28085)
 internal class InfotrygdsakControllerTest : OppslagSpringRunnerTest() {
 
-    @Before
+    @BeforeEach
     fun setUp() {
         headers.setBearerAuth(lokalTestToken)
         headers.set("Content-Type", "application/json")

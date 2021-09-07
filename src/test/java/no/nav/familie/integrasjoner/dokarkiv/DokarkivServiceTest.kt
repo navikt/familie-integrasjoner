@@ -34,8 +34,8 @@ import no.nav.familie.kontrakter.felles.dokarkiv.v2.Filtype
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Førsteside
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import kotlin.test.assertTrue
 
 class DokarkivServiceTest {
@@ -56,7 +56,7 @@ class DokarkivServiceTest {
 
     private lateinit var dokarkivService: DokarkivService
 
-    @Before
+    @BeforeEach
     fun setUp() {
         MockKAnnotations.init(this)
         dokarkivService = DokarkivService(dokarkivRestClient,
@@ -69,7 +69,8 @@ class DokarkivServiceTest {
                                           førstesideGeneratorService)
     }
 
-    @Test fun `oppdaterJournalpost skal legge til default sakstype`() {
+    @Test
+    fun `oppdaterJournalpost skal legge til default sakstype`() {
         val slot = slot<OppdaterJournalpostRequest>()
         every { dokarkivRestClient.oppdaterJournalpost(capture(slot), any()) }
                 .answers { OppdaterJournalpostResponse(JOURNALPOST_ID) }
@@ -86,7 +87,8 @@ class DokarkivServiceTest {
         assertThat(request.sak?.sakstype == "FAGSAK")
     }
 
-    @Test fun `skal mappe request til opprettJournalpostRequest av type arkiv pdfa`() {
+    @Test
+    fun `skal mappe request til opprettJournalpostRequest av type arkiv pdfa`() {
         val slot = slot<OpprettJournalpostRequest>()
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
                 .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
@@ -117,7 +119,8 @@ class DokarkivServiceTest {
         assertOpprettJournalpostRequest(request, "PDFA", PDF_DOK, ARKIV_VARIANTFORMAT)
     }
 
-    @Test fun `skal generere førsteside hvis førsteside er med i request`() {
+    @Test
+    fun `skal generere førsteside hvis førsteside er med i request`() {
         val slot = slot<OpprettJournalpostRequest>()
 
         every { førstesideGeneratorService.genererForside(any<Førsteside>(), any()) }
@@ -156,7 +159,8 @@ class DokarkivServiceTest {
         assertThat(request.dokumenter.find { it.tittel == "Testoverskrift" }).isNotNull
     }
 
-    @Test fun `skal ikke generere førsteside hvis førsteside mangler i request`() {
+    @Test
+    fun `skal ikke generere førsteside hvis førsteside mangler i request`() {
         val slot = slot<OpprettJournalpostRequest>()
 
         every { førstesideGeneratorService.genererForside(any<Førsteside>(), any()) }
@@ -192,7 +196,8 @@ class DokarkivServiceTest {
         assertThat(request.dokumenter.find { it.tittel == "Testoverskrift" }).isNull()
     }
 
-    @Test fun `skal mappe request til opprettJournalpostRequest for barnetrygd vedtak`() {
+    @Test
+    fun `skal mappe request til opprettJournalpostRequest for barnetrygd vedtak`() {
         val slot = slot<OpprettJournalpostRequest>()
 
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
@@ -209,18 +214,18 @@ class DokarkivServiceTest {
                 }
 
         val dto = ArkiverDokumentRequest(FNR,
-                                                   false,
-                                                   listOf(Dokument(PDF_DOK,
-                                                                   Filtype.PDFA,
-                                                                   FILNAVN,
-                                                                   null,
-                                                                   Dokumenttype.BARNETRYGD_VEDTAK)),
-                                                   listOf(Dokument(PDF_DOK,
-                                                                   Filtype.PDFA,
-                                                                   null,
-                                                                   TITTEL,
-                                                                   Dokumenttype.BARNETRYGD_VEDLEGG)),
-                                                   fagsakId = FAGSAK_ID)
+                                         false,
+                                         listOf(Dokument(PDF_DOK,
+                                                         Filtype.PDFA,
+                                                         FILNAVN,
+                                                         null,
+                                                         Dokumenttype.BARNETRYGD_VEDTAK)),
+                                         listOf(Dokument(PDF_DOK,
+                                                         Filtype.PDFA,
+                                                         null,
+                                                         TITTEL,
+                                                         Dokumenttype.BARNETRYGD_VEDLEGG)),
+                                         fagsakId = FAGSAK_ID)
 
         dokarkivService.lagJournalpost(dto)
 
@@ -230,7 +235,8 @@ class DokarkivServiceTest {
                                                                               sakstype = "FAGSAK"))
     }
 
-    @Test fun `skal mappe request til opprettJournalpostRequest av type ORIGINAL JSON`() {
+    @Test
+    fun `skal mappe request til opprettJournalpostRequest av type ORIGINAL JSON`() {
         val slot = slot<OpprettJournalpostRequest>()
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
                 .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
@@ -264,7 +270,8 @@ class DokarkivServiceTest {
                                         STRUKTURERT_VARIANTFORMAT)
     }
 
-    @Test fun `response fra klient skal returnere arkiverDokumentResponse`() {
+    @Test
+    fun `response fra klient skal returnere arkiverDokumentResponse`() {
         every { dokarkivRestClient.lagJournalpost(any(), any()) }
                 .answers { OpprettJournalpostResponse(journalpostId = JOURNALPOST_ID, journalpostferdigstilt = true) }
         every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }

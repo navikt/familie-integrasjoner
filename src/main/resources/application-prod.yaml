@@ -24,6 +24,15 @@ no.nav.security.jwt:
           client-id: ${INTEGRASJONER_CLIENT_ID}
           client-secret: ${CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      dokarkiv-onbehalf-of:
+        resource-url: ${DOKARKIV_V1_URL}
+        token-endpoint-url: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/v2.0/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: ${DOKARKIV_SCOPE}
+        authentication:
+          client-id: ${INTEGRASJONER_CLIENT_ID}
+          client-secret: ${CLIENT_SECRET}
+          client-auth-method: client_secret_basic
       saf-onbehalf-of:
         resource-url: ${SAF_URL}
         token-endpoint-url: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/v2.0/token
@@ -56,6 +65,7 @@ AAD_URL: https://login.microsoftonline.com/navno.onmicrosoft.com/oauth2/v2.0/tok
 INTEGRASJONER_CLIENT_ID: ${INTEGRASJONER_CLIENT_ID}
 CLIENT_SECRET: ${CLIENT_SECRET}
 INFOTRYGD_KS_SCOPE: ${INFOTRYGD_KS_SCOPE}
+DOKARKIV_SCOPE: "api://162b3255-2f72-4399-8f7a-244add9ffaac/.default"
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 SECURITYTOKENSERVICE_URL: https://sts.adeo.no/SecurityTokenServiceProvider/
@@ -74,6 +84,7 @@ OPPGAVE_URL: https://oppgave.nais.adeo.no
 GOSYS_INFOTRYGDSAK_URL: https://tjenestebuss.adeo.no/nav-cons-sak-gosys-3.0.0Web/sca/GOSYSInfotrygdSakWSEXP
 INFOTRYGD_VEDTAK_URL: https://modapp.adeo.no/infotrygd-ws/InfotrygdVedtak/v1
 NORG2_URL: https://norg2.nais.adeo.no/norg2/
+SFTP_HOST: a01drvl099.adeo.no
 
 # Appdynamics
 APPDYNAMICS_CONTROLLER_HOST_NAME: appdynamics.adeo.no

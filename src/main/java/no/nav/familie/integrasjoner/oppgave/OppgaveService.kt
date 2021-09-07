@@ -1,8 +1,11 @@
 package no.nav.familie.integrasjoner.oppgave
 
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
+import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.OppslagException.Level
+import no.nav.familie.integrasjoner.saksbehandler.SaksbehandlerService
+import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.oppgave.*
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -11,7 +14,11 @@ import org.springframework.web.context.annotation.ApplicationScope
 import java.time.format.DateTimeFormatter
 
 @Service @ApplicationScope
-class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClient) {
+class OppgaveService constructor(
+        private val oppgaveRestClient: OppgaveRestClient,
+        private val pdlRestClient: PdlRestClient,
+        private val saksbehandlerService: SaksbehandlerService,
+) {
 
     fun finnOppgaver(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {
         return oppgaveRestClient.finnOppgaver(finnOppgaveRequest)
@@ -62,7 +69,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
         val oppdatertOppgaveDto = oppgave.copy(
                 id = oppgave.id,
                 versjon = oppgave.versjon,
-                tilordnetRessurs = saksbehandler
+                tilordnetRessurs = saksbehandlerService.hentNavIdent(saksbehandler)
         )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
         return oppgave.id!!
@@ -111,9 +118,9 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
 
     fun opprettOppgave(request: OpprettOppgaveRequest): Long {
         val oppgave = Oppgave(
-                identer = if (request.ident != null) listOf(request.ident!!) else null,
-                aktoerId = if (request.ident?.gruppe == IdentGruppe.AKTOERID) request.ident!!.ident else null,
+                aktoerId = if (erAktørIdEllerFnr(request.ident)) getAktørId(request.ident!!, request.tema) else null,
                 orgnr = if (request.ident?.gruppe == IdentGruppe.ORGNR) request.ident!!.ident else null,
+                samhandlernr = if (request.ident?.gruppe == IdentGruppe.SAMHANDLERNR) request.ident!!.ident else null,
                 saksreferanse = request.saksId,
                 journalpostId = request.journalpostId,
                 prioritet = request.prioritet,
@@ -125,7 +132,7 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
                 oppgavetype = request.oppgavetype.value,
                 beskrivelse = request.beskrivelse,
                 behandlingstype = request.behandlingstype,
-                tilordnetRessurs = request.tilordnetRessurs,
+                tilordnetRessurs = request.tilordnetRessurs?.let { saksbehandlerService.hentNavIdent(it) },
                 behandlesAvApplikasjon = request.behandlesAvApplikasjon
         )
 
@@ -155,7 +162,21 @@ class OppgaveService constructor(private val oppgaveRestClient: OppgaveRestClien
 
     }
 
+    private fun erAktørIdEllerFnr(oppgaveIdent: OppgaveIdentV2?) =
+            oppgaveIdent?.gruppe == IdentGruppe.FOLKEREGISTERIDENT || oppgaveIdent?.gruppe == IdentGruppe.AKTOERID
+
+    private fun getAktørId(oppgaveIdentV2: OppgaveIdentV2, tema: Tema): String? {
+        return if (oppgaveIdentV2.gruppe == IdentGruppe.AKTOERID) oppgaveIdentV2.ident
+        else try {
+            pdlRestClient.hentGjeldendeAktørId(oppgaveIdentV2.ident!!, tema)
+        } catch (e: OppslagException) {
+            LOG.warn("Klarte ikke hente aktørId for person fra PDL. Oppretter oppgave uten ident")
+            null
+        }
+    }
+
     companion object {
+
         private val LOG = LoggerFactory.getLogger(OppgaveService::class.java)
     }
 }
