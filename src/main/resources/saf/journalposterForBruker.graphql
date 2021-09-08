@@ -5,7 +5,8 @@ query journalposterForBruker($brukerId: BrukerIdInput!,
     dokumentoversiktBruker(brukerId: $brukerId,
         foerste: $antall,
         tema: $tema,
-        journalposttyper: $journalposttype) {
+        journalposttyper: $journalposttype,
+        journalstatuser: []) {
         journalposter {
             journalpostId
             journalposttype
