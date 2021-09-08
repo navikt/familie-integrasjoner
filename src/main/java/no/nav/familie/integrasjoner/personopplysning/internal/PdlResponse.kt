@@ -30,10 +30,10 @@ data class PdlBolkResponse<T>(val data: PersonBolk<T>?, val errors: List<PdlErro
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-    data class PdlPersonMedRelasjonerOgAdressebeskyttelse(val familierelasjoner: List<PdlFamilierelasjon>,
-                                                          val sivilstand: List<Sivilstand>,
-                                                          val fullmakt: List<Fullmakt>,
-                                                          val adressebeskyttelse: List<Adressebeskyttelse>)
+data class PdlPersonMedRelasjonerOgAdressebeskyttelse(val forelderBarnRelasjon: List<PdlForelderBarnRelasjon>,
+                                                      val sivilstand: List<Sivilstand>,
+                                                      val fullmakt: List<Fullmakt>,
+                                                      val adressebeskyttelse: List<Adressebeskyttelse>)
 
 data class PdlPerson(val person: PdlPersonData?)
 
@@ -41,7 +41,7 @@ data class PdlPerson(val person: PdlPersonData?)
 data class PdlPersonData(val foedsel: List<PdlFødselsDato>,
                          val navn: List<PdlNavn>,
                          val kjoenn: List<PdlKjoenn>,
-                         val familierelasjoner: List<PdlFamilierelasjon> = emptyList(),
+                         val forelderBarnRelasjon: List<PdlForelderBarnRelasjon> = emptyList(),
                          val adressebeskyttelse: List<Adressebeskyttelse>,
                          val bostedsadresse: List<Bostedsadresse?>,
                          val sivilstand: List<Sivilstand?>)
@@ -76,8 +76,8 @@ data class PdlNavn(val fornavn: String,
 data class PdlKjoenn(val kjoenn: KJØNN)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class PdlFamilierelasjon(val relatertPersonsIdent: String,
-                              val relatertPersonsRolle: FAMILIERELASJONSROLLE)
+data class PdlForelderBarnRelasjon(val relatertPersonsIdent: String,
+                                   val relatertPersonsRolle: FORELDERBARNRELASJONROLLE)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Adressebeskyttelse(
@@ -97,7 +97,7 @@ enum class KJØNN {
     UKJENT
 }
 
-enum class FAMILIERELASJONSROLLE {
+enum class FORELDERBARNRELASJONROLLE {
     BARN,
     FAR,
     MEDMOR,
