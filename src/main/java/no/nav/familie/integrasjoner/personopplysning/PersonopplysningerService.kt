@@ -78,7 +78,7 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
     @Cacheable(cacheNames = ["PERSON_MED_RELASJONER"], key = "#personIdent + #tema", condition = "#personIdent != null")
     fun hentPersonMedRelasjoner(personIdent: String, tema: Tema): PersonMedRelasjoner {
         val hovedperson = hentPersonMedRelasjonerOgAdressebeskyttelse(listOf(personIdent), tema).getOrThrow(personIdent)
-        val barnIdenter = hovedperson.familierelasjoner
+        val barnIdenter = hovedperson.forelderBarnRelasjon
                 .filter { it.relatertPersonsRolle == FAMILIERELASJONSROLLE.BARN }
                 .map { it.relatertPersonsIdent }
         val sivilstandIdenter = hovedperson.sivilstand.mapNotNull { it.relatertVedSivilstand }.distinct()
@@ -102,7 +102,7 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
                                    personIdent: String,
                                    tema: Tema): List<PersonMedAdresseBeskyttelse> {
         val barnsForeldrerIdenter = barnOpplysninger.flatMap { (_, personMedRelasjoner) ->
-            personMedRelasjoner.familierelasjoner.filter { it.relatertPersonsRolle != FAMILIERELASJONSROLLE.BARN }
+            personMedRelasjoner.forelderBarnRelasjon.filter { it.relatertPersonsRolle != FAMILIERELASJONSROLLE.BARN }
         }.filter { it.relatertPersonsIdent != personIdent }.map { it.relatertPersonsIdent }.distinct()
         val barnsForeldrerOpplysninger = hentPersonMedRelasjonerOgAdressebeskyttelse(barnsForeldrerIdenter, tema)
 
