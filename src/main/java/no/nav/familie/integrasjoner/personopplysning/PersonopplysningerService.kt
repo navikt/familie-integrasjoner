@@ -9,7 +9,7 @@ import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter
-import no.nav.familie.integrasjoner.personopplysning.internal.FAMILIERELASJONSROLLE
+import no.nav.familie.integrasjoner.personopplysning.internal.FORELDERBARNRELASJONROLLE
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedRelasjonerOgAdressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedAdresseBeskyttelse
@@ -79,7 +79,7 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
     fun hentPersonMedRelasjoner(personIdent: String, tema: Tema): PersonMedRelasjoner {
         val hovedperson = hentPersonMedRelasjonerOgAdressebeskyttelse(listOf(personIdent), tema).getOrThrow(personIdent)
         val barnIdenter = hovedperson.forelderBarnRelasjon
-                .filter { it.relatertPersonsRolle == FAMILIERELASJONSROLLE.BARN }
+                .filter { it.relatertPersonsRolle == FORELDERBARNRELASJONROLLE.BARN }
                 .map { it.relatertPersonsIdent }
         val sivilstandIdenter = hovedperson.sivilstand.mapNotNull { it.relatertVedSivilstand }.distinct()
         val fullmaktIdenter = hovedperson.fullmakt.map { it.motpartsPersonident }.distinct()
@@ -102,7 +102,7 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
                                    personIdent: String,
                                    tema: Tema): List<PersonMedAdresseBeskyttelse> {
         val barnsForeldrerIdenter = barnOpplysninger.flatMap { (_, personMedRelasjoner) ->
-            personMedRelasjoner.forelderBarnRelasjon.filter { it.relatertPersonsRolle != FAMILIERELASJONSROLLE.BARN }
+            personMedRelasjoner.forelderBarnRelasjon.filter { it.relatertPersonsRolle != FORELDERBARNRELASJONROLLE.BARN }
         }.filter { it.relatertPersonsIdent != personIdent }.map { it.relatertPersonsIdent }.distinct()
         val barnsForeldrerOpplysninger = hentPersonMedRelasjonerOgAdressebeskyttelse(barnsForeldrerIdenter, tema)
 

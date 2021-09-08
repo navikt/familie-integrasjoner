@@ -15,7 +15,7 @@ import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.SivilstandT
 import no.nav.familie.integrasjoner.personopplysning.domene.status.PersonstatusType
 import no.nav.familie.integrasjoner.personopplysning.domene.tilhørighet.Landkode
 import no.nav.familie.integrasjoner.personopplysning.internal.Adressebeskyttelse
-import no.nav.familie.integrasjoner.personopplysning.internal.FAMILIERELASJONSROLLE
+import no.nav.familie.integrasjoner.personopplysning.internal.FORELDERBARNRELASJONROLLE
 import no.nav.familie.integrasjoner.personopplysning.internal.Fullmakt
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlForelderBarnRelasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedRelasjonerOgAdressebeskyttelse
@@ -133,11 +133,11 @@ class PersonopplysningerServiceTest {
     fun `hentPersonMedRelasjoner skal kalle på pdl 3 ganger, hovedpersonen, relasjonene og barnets andre forelder`() {
         val hovedPerson = "1" to
                 lagPdlPersonMedRelasjoner(familierelasjoner = listOf(PdlForelderBarnRelasjon("2",
-                                                                                             FAMILIERELASJONSROLLE.BARN)),
+                                                                                             FORELDERBARNRELASJONROLLE.BARN)),
                                           sivilstand = listOf(Sivilstand(SIVILSTAND.GIFT, "3")),
                                           fullmakt = listOf(Fullmakt("4")))
         val barn = lagPdlPersonMedRelasjoner(familierelasjoner = listOf(PdlForelderBarnRelasjon("22",
-                                                                                                FAMILIERELASJONSROLLE.FAR)))
+                                                                                                FORELDERBARNRELASJONROLLE.FAR)))
         every { pdlRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(any(), any()) } answers {
             firstArg<List<String>>().map { it to if (it == "2") barn else lagPdlPersonMedRelasjoner() }.toMap()
         }

@@ -77,7 +77,7 @@ data class PdlKjoenn(val kjoenn: KJØNN)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlForelderBarnRelasjon(val relatertPersonsIdent: String,
-                                   val relatertPersonsRolle: FAMILIERELASJONSROLLE)
+                                   val relatertPersonsRolle: FORELDERBARNRELASJONROLLE)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Adressebeskyttelse(
@@ -97,7 +97,7 @@ enum class KJØNN {
     UKJENT
 }
 
-enum class FAMILIERELASJONSROLLE {
+enum class FORELDERBARNRELASJONROLLE {
     BARN,
     FAR,
     MEDMOR,
