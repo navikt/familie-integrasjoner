@@ -38,27 +38,28 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
                       private val dokarkivLogiskVedleggRestClient: DokarkivLogiskVedleggRestClient,
                       private val førstesideGeneratorService: FørstesideGeneratorService) {
 
-    fun ferdistillJournalpost(journalpost: String, journalførendeEnhet: String) {
-        dokarkivRestClient.ferdigstillJournalpost(journalpost, journalførendeEnhet)
+    fun ferdistillJournalpost(journalpost: String, journalførendeEnhet: String, navIdent: String? = null) {
+        dokarkivRestClient.ferdigstillJournalpost(journalpost, journalførendeEnhet, navIdent)
     }
 
-    fun lagJournalpost(arkiverDokumentRequest: ArkiverDokumentRequest): ArkiverDokumentResponse {
+    fun lagJournalpost(arkiverDokumentRequest: ArkiverDokumentRequest, navIdent: String? = null): ArkiverDokumentResponse {
         val request = mapTilOpprettJournalpostRequest(arkiverDokumentRequest)
-        val response = dokarkivRestClient.lagJournalpost(request, arkiverDokumentRequest.forsøkFerdigstill)
+        val response = dokarkivRestClient.lagJournalpost(request, arkiverDokumentRequest.forsøkFerdigstill, navIdent)
         return mapTilArkiverDokumentResponse(response)
     }
 
-    fun lagJournalpostV2(deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest): ArkiverDokumentResponse {
+    fun lagJournalpostV2(deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest,
+                         navIdent: String? = null): ArkiverDokumentResponse {
         val request = mapTilOpprettJournalpostRequest(deprecatedArkiverDokumentRequest)
         val response =
-                dokarkivRestClient.lagJournalpost(request, deprecatedArkiverDokumentRequest.forsøkFerdigstill)
+                dokarkivRestClient.lagJournalpost(request, deprecatedArkiverDokumentRequest.forsøkFerdigstill, navIdent)
         return mapTilArkiverDokumentResponse(response)
     }
 
-    fun lagJournalpostV3(arkiverDokumentRequest: DeprecatedArkiverDokumentRequest2): ArkiverDokumentResponse {
+    fun lagJournalpostV3(arkiverDokumentRequest: DeprecatedArkiverDokumentRequest2, navIdent: String? = null): ArkiverDokumentResponse {
         val request = mapTilOpprettJournalpostRequest(arkiverDokumentRequest)
         val response =
-                dokarkivRestClient.lagJournalpost(request, arkiverDokumentRequest.forsøkFerdigstill)
+                dokarkivRestClient.lagJournalpost(request, arkiverDokumentRequest.forsøkFerdigstill, navIdent)
         return mapTilArkiverDokumentResponse(response)
     }
 
@@ -175,8 +176,10 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
         )
     }
 
-    fun oppdaterJournalpost(request: OppdaterJournalpostRequest, journalpostId: String): OppdaterJournalpostResponse {
-        return dokarkivRestClient.oppdaterJournalpost(supplerDefaultVerdier(request), journalpostId)
+    fun oppdaterJournalpost(request: OppdaterJournalpostRequest,
+                            journalpostId: String,
+                            navIdent: String? = null): OppdaterJournalpostResponse {
+        return dokarkivRestClient.oppdaterJournalpost(supplerDefaultVerdier(request), journalpostId, navIdent)
     }
 
     private fun hentNavnForFnr(fnr: String, behandlingstema: Tema?): String {
@@ -273,6 +276,7 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
     }
 
     companion object {
+
         private val LOG = LoggerFactory.getLogger(DokarkivService::class.java)
     }
 }

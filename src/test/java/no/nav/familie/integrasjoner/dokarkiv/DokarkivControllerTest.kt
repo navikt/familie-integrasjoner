@@ -7,7 +7,18 @@ import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.kontrakter.felles.BrukerIdType
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Tema
-import no.nav.familie.kontrakter.felles.dokarkiv.*
+import no.nav.familie.kontrakter.felles.dokarkiv.ArkiverDokumentResponse
+import no.nav.familie.kontrakter.felles.dokarkiv.DokarkivBruker
+import no.nav.familie.kontrakter.felles.dokarkiv.Dokumenttype
+import no.nav.familie.kontrakter.felles.dokarkiv.FilType
+import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggRequest
+import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggResponse
+import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
+import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostResponse
+import no.nav.familie.kontrakter.felles.dokarkiv.Sak
+import no.nav.familie.kontrakter.felles.dokarkiv.v2.ArkiverDokumentRequest
+import no.nav.familie.kontrakter.felles.dokarkiv.v2.Dokument
+import no.nav.familie.kontrakter.felles.dokarkiv.v2.Filtype
 import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -16,13 +27,14 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockserver.integration.ClientAndServer
 import org.mockserver.junit.jupiter.MockServerExtension
 import org.mockserver.junit.jupiter.MockServerSettings
-import org.mockserver.model.HttpRequest
+import org.mockserver.model.HttpRequest.request
 import org.mockserver.model.HttpResponse.response
 import org.mockserver.model.JsonBody.json
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -33,6 +45,8 @@ import java.nio.file.Files
 import java.util.LinkedList
 import kotlin.test.assertFalse
 import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequest
+import no.nav.familie.kontrakter.felles.dokarkiv.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequestV3
+import no.nav.familie.kontrakter.felles.dokarkiv.Dokument as DeprecatedDokument
 
 @ActiveProfiles(profiles = ["integrasjonstest", "mock-sts", "mock-aktor", "mock-personopplysninger", "mock-pdl"])
 @ExtendWith(MockServerExtension::class)
@@ -67,9 +81,9 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `v3 skal returnere bad request hvis ingen hoveddokumenter`() {
-        val body = ArkiverDokumentRequest("fnr",
-                                          false,
-                                          LinkedList())
+        val body = DeprecatedArkiverDokumentRequestV3("fnr",
+                                                      false,
+                                                      LinkedList())
 
         val responseDeprecated: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
                 restTemplate.exchange(localhost(DOKARKIV_URL_V3),
@@ -83,15 +97,14 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal midlertidig journalføre dokument`() {
-        client.`when`(HttpRequest
-                              .request()
+        client.`when`(request()
                               .withMethod("POST")
                               .withPath("/rest/journalpostapi/v1/journalpost")
                               .withQueryStringParameter("forsoekFerdigstill", "false"))
                 .respond(response().withBody(json(gyldigDokarkivResponse())))
         val body = DeprecatedArkiverDokumentRequest("FNR",
                                                     false,
-                                                    listOf(HOVEDDOKUMENT))
+                                                    listOf(DEPRECATED_HOVEDDOKUMENT))
 
         val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
                 restTemplate.exchange(localhost(DOKARKIV_URL_V2),
@@ -106,16 +119,14 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `v3 skal midlertidig journalføre dokument`() {
-        client.`when`(HttpRequest
-                              .request()
+        client.`when`(request()
                               .withMethod("POST")
                               .withPath("/rest/journalpostapi/v1/journalpost")
                               .withQueryStringParameter("forsoekFerdigstill", "false"))
-                .respond(response()
-                                 .withBody(json(gyldigDokarkivResponse())))
-        val body = ArkiverDokumentRequest("FNR",
-                                          false,
-                                          listOf(HOVEDDOKUMENT))
+                .respond(response().withBody(json(gyldigDokarkivResponse())))
+        val body = DeprecatedArkiverDokumentRequestV3("FNR",
+                                                      false,
+                                                      listOf(DEPRECATED_HOVEDDOKUMENT))
 
         val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
                 restTemplate.exchange(localhost(DOKARKIV_URL_V3),
@@ -129,16 +140,39 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
     }
 
     @Test
-    fun `skal midlertidig journalføre dokument med vedlegg`() {
-        client.`when`(HttpRequest.request()
+    fun `v4 skal sende med navIdent fra header til journalpost`() {
+        client.`when`(request()
                               .withMethod("POST")
                               .withPath("/rest/journalpostapi/v1/journalpost")
                               .withQueryStringParameter("forsoekFerdigstill", "false"))
                 .respond(response().withBody(json(gyldigDokarkivResponse())))
         val body = ArkiverDokumentRequest("FNR",
                                           false,
-                                          listOf(HOVEDDOKUMENT),
-                                          listOf(VEDLEGG))
+                                          listOf(HOVEDDOKUMENT))
+
+        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
+                restTemplate.exchange(localhost(DOKARKIV_URL_V4),
+                                      HttpMethod.POST,
+                                      HttpEntity(body, headersWithNavUserId()))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
+        assertFalse(response.body?.data?.ferdigstilt!!)
+        client.verify(request().withHeader("Nav-User-Id", "k123123"))
+    }
+
+    @Test
+    fun `skal midlertidig journalføre dokument med vedlegg`() {
+        client.`when`(request()
+                              .withMethod("POST")
+                              .withPath("/rest/journalpostapi/v1/journalpost")
+                              .withQueryStringParameter("forsoekFerdigstill", "false"))
+                .respond(response().withBody(json(gyldigDokarkivResponse())))
+        val body = DeprecatedArkiverDokumentRequestV3("FNR",
+                                                      false,
+                                                      listOf(DEPRECATED_HOVEDDOKUMENT),
+                                                      listOf(VEDLEGG))
 
         val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
                 restTemplate.exchange(localhost(DOKARKIV_URL_V3),
@@ -153,7 +187,7 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `dokarkiv returnerer 401`() {
-        client.`when`(HttpRequest.request()
+        client.`when`(request()
                               .withMethod("POST")
                               .withPath("/rest/journalpostapi/v1/journalpost")
                               .withQueryStringParameter("forsoekFerdigstill", "false"))
@@ -163,11 +197,11 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
                                  .withBody("Tekst fra body"))
         val body = DeprecatedArkiverDokumentRequest("FNR",
                                                     false,
-                                                    listOf(Dokument("foo".toByteArray(),
-                                                                    FilType.PDFA,
-                                                                    null,
-                                                                    null,
-                                                                    Dokumenttype.KONTANTSTØTTE_SØKNAD)))
+                                                    listOf(DeprecatedDokument("foo".toByteArray(),
+                                                                              FilType.PDFA,
+                                                                              null,
+                                                                              null,
+                                                                              Dokumenttype.KONTANTSTØTTE_SØKNAD)))
 
         val responseDeprecated: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
                 restTemplate.exchange(localhost(DOKARKIV_URL_V2),
@@ -182,8 +216,7 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
     @Test
     fun `oppdaterJournalpost returnerer OK`() {
         val journalpostId = "12345678"
-        client.`when`(HttpRequest
-                              .request()
+        client.`when`(request()
                               .withMethod("PUT")
                               .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId"))
                 .respond(response().withBody(json(gyldigDokarkivResponse())))
@@ -205,8 +238,7 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
     @Test
     fun `dokarkiv skal logge detaljert feilmelding til secureLogger ved HttpServerErrorExcetion`() {
         val journalpostId = "12345678"
-        client.`when`(HttpRequest
-                              .request()
+        client.`when`(request()
                               .withMethod("PUT")
                               .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId"))
                 .respond(response().withStatusCode(500)
@@ -231,8 +263,7 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `ferdigstill returnerer ok`() {
-        client.`when`(HttpRequest
-                              .request()
+        client.`when`(request()
                               .withMethod("PATCH")
                               .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill"))
                 .respond(response().withStatusCode(200).withBody("Journalpost ferdigstilt"))
@@ -240,16 +271,16 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
         val response: ResponseEntity<Ressurs<Map<String, String>>> =
                 restTemplate.exchange(localhost("$DOKARKIV_URL_V2/123/ferdigstill?journalfoerendeEnhet=9999"),
                                       HttpMethod.PUT,
-                                      HttpEntity(null, headers))
+                                      HttpEntity(null, headersWithNavUserId()))
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        client.verify(request().withHeader("Nav-User-Id", "k123123"))
     }
 
     @Test
     fun `ferdigstill returnerer 400 hvis ikke mulig ferdigstill`() {
-        client.`when`(HttpRequest
-                              .request()
+        client.`when`(request()
                               .withMethod("PATCH")
                               .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill"))
                 .respond(response().withStatusCode(400))
@@ -267,8 +298,7 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal opprette logisk vedlegg`() {
-        client.`when`(HttpRequest
-                              .request()
+        client.`when`(request()
                               .withMethod("POST")
                               .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"))
                 .respond(response()
@@ -287,8 +317,7 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal returnere feil hvis man ikke kan opprette logisk vedlegg`() {
-        client.`when`(HttpRequest
-                              .request()
+        client.`when`(request()
                               .withMethod("POST")
                               .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"))
                 .respond(response()
@@ -308,8 +337,7 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal slette logisk vedlegg`() {
-        client.`when`(HttpRequest
-                              .request()
+        client.`when`(request()
                               .withMethod("DELETE")
                               .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/432"))
                 .respond(response()
@@ -328,8 +356,7 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal returnere feil hvis man ikke kan slette logisk vedlegg`() {
-        client.`when`(HttpRequest
-                              .request()
+        client.`when`(request()
                               .withMethod("DELETE")
                               .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/432"))
                 .respond(response()
@@ -351,21 +378,40 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
                                 StandardCharsets.UTF_8)
     }
 
+    private fun headersWithNavUserId(): HttpHeaders {
+        return headers.apply {
+            add("Nav-User-Id", NAV_USER_ID_VALUE)
+        }
+    }
+
     companion object {
 
         private const val DOKARKIV_URL = "/api/arkiv"
         private const val DOKARKIV_URL_V2 = "${DOKARKIV_URL}/v2/"
         private const val DOKARKIV_URL_V3 = "${DOKARKIV_URL}/v3/"
+        private const val DOKARKIV_URL_V4 = "${DOKARKIV_URL}/v4/"
 
-        private val HOVEDDOKUMENT = Dokument("foo".toByteArray(),
-                                             FilType.PDFA,
-                                             "filnavn",
-                                             null,
-                                             Dokumenttype.KONTANTSTØTTE_SØKNAD)
-        private val VEDLEGG = Dokument("foo".toByteArray(),
-                                       FilType.PDFA,
-                                       "filnavn",
-                                       "Vedlegg",
-                                       Dokumenttype.KONTANTSTØTTE_SØKNAD_VEDLEGG)
+        private const val NAV_USER_ID_VALUE = "k123123"
+
+        private val DEPRECATED_HOVEDDOKUMENT =
+                DeprecatedDokument("foo".toByteArray(),
+                                   FilType.PDFA,
+                                   "filnavn",
+                                   null,
+                                   Dokumenttype.KONTANTSTØTTE_SØKNAD)
+
+        private val HOVEDDOKUMENT =
+                Dokument("foo".toByteArray(),
+                         Filtype.JSON,
+                         "filnavn",
+                         null,
+                         Dokumenttype.KONTANTSTØTTE_SØKNAD)
+
+        private val VEDLEGG =
+                DeprecatedDokument("foo".toByteArray(),
+                                   FilType.PDFA,
+                                   "filnavn",
+                                   "Vedlegg",
+                                   Dokumenttype.KONTANTSTØTTE_SØKNAD_VEDLEGG)
     }
 }
