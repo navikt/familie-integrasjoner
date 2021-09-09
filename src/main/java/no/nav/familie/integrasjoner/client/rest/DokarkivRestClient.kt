@@ -7,9 +7,11 @@ import no.nav.familie.integrasjoner.dokarkiv.client.domene.FerdigstillJournalPos
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.integrasjoner.felles.erSystembruker
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostResponse
 import no.nav.familie.log.mdc.MDCConstants
+import no.nav.security.token.support.spring.SpringTokenValidationContextHolder
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Qualifier
@@ -41,7 +43,7 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
                        ferdigstill: Boolean): OpprettJournalpostResponse {
         val uri = lagJournalpostUri(ferdigstill)
         try {
-            val postForEntity = postForEntity<OpprettJournalpostResponse>(uri, jp, headers())
+            val postForEntity = postForEntity<OpprettJournalpostResponse>(uri, jp, headers("Z994230"))
             if (shouldLog()) {
                 logger.info("Laget journalpostId=${postForEntity.journalpostId} count=${value}")
             }
@@ -54,7 +56,7 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
     fun oppdaterJournalpost(jp: OppdaterJournalpostRequest, journalpostId: String): OppdaterJournalpostResponse {
         val uri = UriComponentsBuilder.fromUri(dokarkivUrl).pathSegment(PATH_JOURNALPOST, journalpostId).build().toUri()
         try {
-            val putForEntity = putForEntity<OppdaterJournalpostResponse>(uri, jp, headers())
+            val putForEntity = putForEntity<OppdaterJournalpostResponse>(uri, jp, headers("Z994708"))
             if (shouldLog()) {
                 logger.info("Oppdater journalpostId=${putForEntity.journalpostId} count=${value}")
             }
@@ -96,7 +98,7 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
         fun ferdigstillJournalpost(journalpostId: String, journalførendeEnhet: String) {
             val uri = ferdigstillJournalpostUri(journalpostId)
             try {
-                patchForEntity<String>(uri, FerdigstillJournalPost(journalførendeEnhet), headers())
+                patchForEntity<String>(uri, FerdigstillJournalPost(journalførendeEnhet), headers("Z994286"))
                 if (shouldLog()) {
                     logger.info("Ferdigstiller journalpostId=${journalpostId} count=${value}")
                 }
@@ -121,16 +123,21 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
             val consumer = MDC.get(MDCConstants.MDC_CONSUMER_ID)
             return consumer == "familie-ef-mottak" || consumer == "srvfamilie-ef-mot"
         }
-        private fun isEfSak() = MDC.get(MDCConstants.MDC_CONSUMER_ID) == "srvfamilie-ef-sak"
+
+        private fun isEfSak(): Boolean {
+            val consumer = MDC.get(MDCConstants.MDC_CONSUMER_ID)
+            return consumer == "srvfamilie-ef-sak" || consumer == "familie-ef-iverksett"
+        }
         private fun shouldLog() = isMottak() || isEfSak()
 
-        fun headers(): HttpHeaders {
+        fun headers(saksbehandler: String): HttpHeaders {
             return HttpHeaders().apply {
+                //if(erSystembruker())
                 if (isEfSak()) {
-                    add("Nav-User-Id", "ef-sak ${value++}")
+                    add("Nav-User-Id", saksbehandler)
                 }
                 if (isMottak()) {
-                    add("Nav-User-Id", "ef-mot ${value++}")
+                    add("Nav-User-Id", saksbehandler)
                 }
             }
         }
