@@ -84,7 +84,6 @@ class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
 
     private fun httpHeaders(): HttpHeaders {
         return HttpHeaders().apply {
-            add(NAV_CALL_ID, MDCOperations.getCallId())
             contentType = MediaType.APPLICATION_JSON
             accept = listOf(MediaType.APPLICATION_JSON)
         }
