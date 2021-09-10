@@ -7,9 +7,9 @@ import no.nav.familie.integrasjoner.dokarkiv.client.domene.FerdigstillJournalPos
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
 import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.familie.integrasjoner.felles.erSystembruker
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostResponse
+import no.nav.familie.log.NavHttpHeaders
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -111,12 +111,10 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
         fun headers(navIdent: String?): HttpHeaders {
             return HttpHeaders().apply {
                 if (!navIdent.isNullOrEmpty()) {
-                    val erSystembruker = erSystembruker()
-                    val matches = NAVIDENT_REGEX.matches(navIdent)
-                    if (erSystembruker && matches) {
-                        add("Nav-User-Id", navIdent)
+                    if (NAVIDENT_REGEX.matches(navIdent)) {
+                        add(NavHttpHeaders.NAV_USER_ID.asString(), navIdent)
                     } else {
-                        logger.warn("Sender ikke med navIdent erSystembruker=$erSystembruker navIdent=$navIdent")
+                        logger.warn("Sender ikke med navIdent navIdent=$navIdent")
                     }
                 }
             }

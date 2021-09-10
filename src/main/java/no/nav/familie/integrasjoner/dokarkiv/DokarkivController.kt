@@ -60,7 +60,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
 
     @PostMapping(path = ["/v2"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun arkiverDokumentV2(@RequestBody @Valid deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest,
-                          @RequestHeader(name = "Nav-User-Id") navIdent: String? = null)
+                          @RequestHeader(name = NAV_USER_ID) navIdent: String? = null)
             : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(success(journalføringService.lagJournalpostV2(deprecatedArkiverDokumentRequest, navIdent),
@@ -69,7 +69,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
 
     @PostMapping(path = ["/v3"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun arkiverDokumentV3(@RequestBody @Valid arkiverDokumentRequest: DeprecatedArkiverDokumentRequest2,
-                          @RequestHeader(name = "Nav-User-Id") navIdent: String? = null)
+                          @RequestHeader(name = NAV_USER_ID) navIdent: String? = null)
             : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(success(journalføringService.lagJournalpostV3(arkiverDokumentRequest, navIdent),
@@ -78,7 +78,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
 
     @PostMapping(path = ["/v4"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun arkiverDokumentV4(@RequestBody @Valid arkiverDokumentRequest: ArkiverDokumentRequest,
-                          @RequestHeader(name = "Nav-User-Id") navIdent: String? = null)
+                          @RequestHeader(name = NAV_USER_ID) navIdent: String? = null)
             : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(success(journalføringService.lagJournalpost(arkiverDokumentRequest, navIdent),
@@ -87,7 +87,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
 
     @PutMapping(path = ["/v2/{journalpostId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun oppdaterJournalpost(@PathVariable(name = "journalpostId") journalpostId: String,
-                            @RequestHeader(name = "Nav-User-Id") navIdent: String? = null,
+                            @RequestHeader(name = NAV_USER_ID) navIdent: String? = null,
                             @RequestBody @Valid oppdaterJournalpostRequest: OppdaterJournalpostRequest)
             : ResponseEntity<Ressurs<OppdaterJournalpostResponse>> {
         val response = journalføringService.oppdaterJournalpost(oppdaterJournalpostRequest, journalpostId, navIdent)
@@ -98,7 +98,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     @ResponseStatus(HttpStatus.OK)
     fun ferdigstillJournalpost(@PathVariable(name = "journalpostId") journalpostId: String,
                                @RequestParam(name = "journalfoerendeEnhet") journalførendeEnhet: String,
-                               @RequestHeader(name = "Nav-User-Id") navIdent: String? = null)
+                               @RequestHeader(name = NAV_USER_ID) navIdent: String? = null)
             : ResponseEntity<Ressurs<Map<String, String>>> {
 
         journalføringService.ferdistillJournalpost(journalpostId, journalførendeEnhet, navIdent)
@@ -130,6 +130,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
 
         private val LOG = LoggerFactory.getLogger(DokarkivController::class.java)
         const val ARKIVERT_OK_MELDING = "Arkivert journalpost OK"
+        const val NAV_USER_ID = "Nav-User-Id"
     }
 
 }
