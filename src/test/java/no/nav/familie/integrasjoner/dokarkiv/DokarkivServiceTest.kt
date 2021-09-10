@@ -33,9 +33,13 @@ import no.nav.familie.kontrakter.felles.dokarkiv.v2.Dokument
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Filtype
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Førsteside
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
+import no.nav.familie.log.mdc.MDCConstants
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.slf4j.MDC
+import java.util.UUID
 import kotlin.test.assertTrue
 
 class DokarkivServiceTest {
@@ -58,6 +62,7 @@ class DokarkivServiceTest {
 
     @BeforeEach
     fun setUp() {
+        MDC.put(MDCConstants.MDC_CALL_ID, UUID.randomUUID().toString()) // settes vanligvis i LogFilter
         MockKAnnotations.init(this)
         dokarkivService = DokarkivService(dokarkivRestClient,
                                           personopplysningerService,
@@ -67,6 +72,11 @@ class DokarkivServiceTest {
                                                            BarnetrygdVedleggMetadata),
                                           dokarkivLogiskVedleggRestClient,
                                           førstesideGeneratorService)
+    }
+
+    @AfterEach
+    internal fun tearDown() {
+        MDC.remove(MDCConstants.MDC_CALL_ID)
     }
 
     @Test
