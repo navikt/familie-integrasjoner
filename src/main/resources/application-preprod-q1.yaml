@@ -71,17 +71,17 @@ SECURITYTOKENSERVICE_URL: https://sts-q2.preprod.local/SecurityTokenServiceProvi
 AKTOERID_URL: https://app-q1.adeo.no/aktoerregister
 PERSON_V3_URL: https://app-q1.adeo.no/tpsws-aura/ws/Person/v3
 ORGANISASJON_V5_URL: https://modapp-q1.adeo.no/ereg/ws/OrganisasjonService/v5
-DOKARKIV_V1_URL: http://dokarkiv.q1
+DOKARKIV_V1_URL: https://dokarkiv-q1.dev.intern.nav.no
 MEDL2_URL: https://app-q2.adeo.no/medl2
-SAF_URL: http://saf.q1
+SAF_URL: https://saf-q1.dev.intern.nav.no
 OPPGAVE_URL: http://oppgave-q1.oppgavehandtering
-FORSTESIDEGENERATOR_URL: https://foerstesidegenerator-q1.dev.adeo.no
+FORSTESIDEGENERATOR_URL: https://foerstesidegenerator-q1.dev.intern.nav.no
 EGEN_ANSATT_URL: https://skjermede-personer-pip.nais.preprod.local
-DOKDIST_URL: http://dokdistfordeling.q1
+DOKDIST_URL: https://dokdistfordeling-q1.dev.intern.nav.no
 ARBEIDSFORDELING_V1_URL: https://app-q1.adeo.no/norg2/ws/Arbeidsfordeling/v1
 AAREG_URL: https://modapp-q1.adeo.no/aareg-services/api
 GOSYS_INFOTRYGDSAK_URL: https://tjenestebuss-q2.adeo.no/nav-cons-sak-gosys-3.0.0Web/sca/GOSYSInfotrygdSakWSEXP
-SKYGGE_SAK_URL: http://sak.q2
+SKYGGE_SAK_URL: https://sak-q1.dev.intern.nav.no
 INFOTRYGD_VEDTAK_URL: https://modapp-q1.adeo.no/infotrygd-ws/InfotrygdVedtak/v1
 NORG2_URL: https://norg2.dev.adeo.no/norg2/
 
