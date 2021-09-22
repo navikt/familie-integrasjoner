@@ -26,6 +26,59 @@ spec:
   azure:
     application:
       enabled: true
+      claims:
+        groups:
+          - id: "de44052d-b062-4497-89a2-0c85b935b808"  # 0000-GA-GOSYS_UTVIDET
+          - id: "69d4a70f-1c83-42a8-8fb8-2f5d54048647"  # 0000-GA-GOSYS_KODE7
+          - id: "87ea7c87-08a2-43bc-83d6-0bfeee92185d"  # 0000-GA-GOSYS_KODE6
+          - id: "93a26831-9866-4410-927b-74ff51a9107c"  # 0000-GA-Barnetrygd-Veileder
+          - id: "d21e00a4-969d-4b28-8782-dc818abfae65"  # 0000-GA-Barnetrygd
+          - id: "9449c153-5a1e-44a7-84c6-7cc7a8867233"  # 0000-GA-Barnetrygd-Beslutter
+          - id: "01166863-22f1-4e16-9785-d7a05a22df74"  # 0000-GA-Enslig-Forsorger-Beslutter
+          - id: "ee5e0b5e-454c-4612-b931-1fe363df7c2c"  # 0000-GA-Enslig-Forsorger-Saksbehandler
+          - id: "19dcbfde-4cdb-4c64-a1ea-ac9802b03339"  # 0000-GA-Enslig-Forsorger-Veileder
+  accessPolicy:
+    inbound:
+      rules:
+        - application: familie-ks-sak
+          namespace: teamfamilie
+          cluster: dev-fss
+        - application: familie-ba-sak
+          namespace: teamfamilie
+          cluster: dev-fss
+        - application: familie-tilbake
+          namespace: teamfamilie
+          cluster: dev-gcp
+        - application: familie-tilbake-lokal
+          namespace: teamfamilie
+          cluster: dev-gcp
+        - application: familie-ks-mottak
+          namespace: teamfamilie
+          cluster: dev-fss
+        - application: familie-ba-mottak
+          namespace: teamfamilie
+          cluster: dev-fss
+        - application: familie-ef-mottak
+          namespace: teamfamilie
+          cluster: dev-fss
+        - application: familie-ef-sak
+          namespace: teamfamilie
+          cluster: dev-gcp
+        - application: familie-ef-sak-lokal
+          namespace: teamfamilie
+          cluster: dev-gcp
+        - application: familie-ef-iverksett
+          namespace: teamfamilie
+          cluster: dev-gcp
+        - application: familie-ef-iverksett-lokal
+          namespace: teamfamilie
+          cluster: dev-gcp
+        - application: familie-ef-personhendelse
+          namespace: teamfamilie
+          cluster: dev-gcp
+        - application: familie-ef-proxy
+          namespace: teamfamilie
+          cluster: dev-fss
   prometheus:
     enabled: true
     path: /internal/prometheus
