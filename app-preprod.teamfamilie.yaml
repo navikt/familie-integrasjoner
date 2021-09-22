@@ -23,6 +23,9 @@ spec:
     enabled: true
   secureLogs:
     enabled: true
+  azure:
+    application:
+      enabled: true
   prometheus:
     enabled: true
     path: /internal/prometheus

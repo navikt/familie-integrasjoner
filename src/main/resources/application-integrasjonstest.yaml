@@ -11,8 +11,8 @@ no.nav.security.jwt:
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${AAD_GRAPH_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       aad-graph:
         resource-url: ${AAD_GRAPH_API_URI}
@@ -20,8 +20,8 @@ no.nav.security.jwt:
         grant-type: client_credentials
         scope: ${AAD_GRAPH_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       dokarkiv-onbehalf-of:
         resource-url: ${DOKARKIV_V1_URL}
@@ -29,8 +29,8 @@ no.nav.security.jwt:
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${DOKARKIV_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       saf-onbehalf-of:
         resource-url: ${SAF_URL}
@@ -38,8 +38,8 @@ no.nav.security.jwt:
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${SAF_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       saf:
         resource-url: ${SAF_URL}
@@ -47,8 +47,8 @@ no.nav.security.jwt:
         grant-type: client_credentials
         scope: ${SAF_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       infotrygd:
         resource-url: ${INFOTRYGD_URL}
@@ -56,8 +56,8 @@ no.nav.security.jwt:
         grant-type: client_credentials
         scope: ${INFOTRYGD_KS_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
 
 SFTP_HOST: localhost

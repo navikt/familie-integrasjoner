@@ -1,7 +1,7 @@
 no.nav.security.jwt:
   issuer.azuread:
     discoveryurl: http://mock-oauth2-server:1111/v2.0/.well-known/openid-configuration
-    accepted_audience: api://${INTEGRASJONER_CLIENT_ID}/.default
+    accepted_audience: api://${AZURE_APP_CLIENT_ID}/.default
     cookie_name: azure_token
   client:
     registration:
@@ -11,7 +11,7 @@ no.nav.security.jwt:
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${INTEGRASJONER_AAD_GRAPH_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
+          client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${INTEGRASJONER_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       aad-graph:
@@ -20,7 +20,7 @@ no.nav.security.jwt:
         grant-type: client_credentials
         scope: ${INTEGRASJONER_AAD_GRAPH_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
+          client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${INTEGRASJONER_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       dokarkiv-onbehalf-of:
@@ -29,8 +29,8 @@ no.nav.security.jwt:
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${DOKARKIV_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       saf-onbehalf-of:
         resource-url: ${SAF_URL}
@@ -38,8 +38,8 @@ no.nav.security.jwt:
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${SAF_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       saf:
         resource-url: ${SAF_URL}
@@ -47,8 +47,8 @@ no.nav.security.jwt:
         grant-type: client_credentials
         scope: ${SAF_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       infotrygd:
         resource-url: ${INFOTRYGD_URL}
@@ -56,7 +56,7 @@ no.nav.security.jwt:
         grant-type: client_credentials
         scope: ${INTEGRASJONER_INFOTRYGD_KS_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
+          client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${INTEGRASJONER_CLIENT_SECRET}
           client-auth-method: client_secret_basic
 
