@@ -63,10 +63,11 @@ class DokarkivRestClient(@Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: 
     private fun oppslagExceptionVed(requestType: String, e: RuntimeException, brukerId: String?): Throwable {
         val message = "Feil ved $requestType av journalpost "
         val sensitiveInfo = if (e is HttpStatusCodeException) e.responseBodyAsString else "$message for bruker $brukerId "
+        val httpStatus = if (e is HttpStatusCodeException) e.statusCode else null
         return OppslagException(message,
                                 "Dokarkiv",
                                 OppslagException.Level.MEDIUM,
-                                HttpStatus.INTERNAL_SERVER_ERROR,
+                                httpStatus,
                                 e,
                                 sensitiveInfo)
     }
