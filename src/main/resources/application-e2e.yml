@@ -12,7 +12,7 @@ no.nav.security.jwt:
         scope: ${INTEGRASJONER_AAD_GRAPH_SCOPE}
         authentication:
           client-id: ${AZURE_APP_CLIENT_ID}
-          client-secret: ${INTEGRASJONER_CLIENT_SECRET}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       aad-graph:
         resource-url: ${AAD_GRAPH_API_URI}
@@ -21,7 +21,7 @@ no.nav.security.jwt:
         scope: ${INTEGRASJONER_AAD_GRAPH_SCOPE}
         authentication:
           client-id: ${AZURE_APP_CLIENT_ID}
-          client-secret: ${INTEGRASJONER_CLIENT_SECRET}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       dokarkiv-onbehalf-of:
         resource-url: ${DOKARKIV_V1_URL}
@@ -57,10 +57,11 @@ no.nav.security.jwt:
         scope: ${INTEGRASJONER_INFOTRYGD_KS_SCOPE}
         authentication:
           client-id: ${AZURE_APP_CLIENT_ID}
-          client-secret: ${INTEGRASJONER_CLIENT_SECRET}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
 
-
+AZURE_APP_CLIENT_ID: ${INTEGRASJONER_CLIENT_ID}
+AZURE_APP_CLIENT_SECRET: ${INTEGRASJONER_CLIENT_SECRET}
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 STS_URL: http://nav-auth-mock:8200/nais-sts/token
 SECURITYTOKENSERVICE_URL: http://vtp:8060/soap/SecurityTokenServiceProvider/
