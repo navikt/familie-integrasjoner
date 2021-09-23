@@ -26,9 +26,6 @@ spec:
   prometheus:
     enabled: true
     path: /internal/prometheus
-  azure:
-    application:
-      enabled: true
   replicas:
     min: 2
     max: 2
