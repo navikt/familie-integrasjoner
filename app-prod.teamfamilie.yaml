@@ -46,35 +46,19 @@ spec:
     inbound:
       rules:
         - application: familie-ks-sak
-          namespace: teamfamilie
-          cluster: prod-fss
         - application: familie-ba-sak
-          namespace: teamfamilie
-          cluster: prod-fss
         - application: familie-tilbake
-          namespace: teamfamilie
           cluster: prod-gcp
         - application: familie-ks-mottak
-          namespace: teamfamilie
-          cluster: prod-fss
         - application: familie-ba-mottak
-          namespace: teamfamilie
-          cluster: prod-fss
         - application: familie-ef-mottak
-          namespace: teamfamilie
-          cluster: prod-fss
         - application: familie-ef-sak
-          namespace: teamfamilie
           cluster: prod-gcp
         - application: familie-ef-iverksett
-          namespace: teamfamilie
           cluster: prod-gcp
         - application: familie-ef-personhendelse
-          namespace: teamfamilie
           cluster: prod-gcp
         - application: familie-ef-proxy
-          namespace: teamfamilie
-          cluster: prod-fss
   replicas:
     min: 2
     max: 2

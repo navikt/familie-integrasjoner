@@ -60,7 +60,6 @@ no.nav.security.jwt:
           client-secret: ${INTEGRASJONER_CLIENT_SECRET}
           client-auth-method: client_secret_basic
 
-AAD_URL: http://vtp:8060/rest/isso/oauth2/access_token
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 STS_URL: http://nav-auth-mock:8200/nais-sts/token

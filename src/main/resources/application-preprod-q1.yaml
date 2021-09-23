@@ -61,7 +61,6 @@ no.nav.security.jwt:
           client-secret: ${CLIENT_SECRET}
           client-auth-method: client_secret_basic
 
-AAD_URL: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
 CLIENT_SECRET: ${AZURE_APP_CLIENT_SECRET}
 INFOTRYGD_KS_SCOPE: ${INFOTRYGD_KS_SCOPE}
 

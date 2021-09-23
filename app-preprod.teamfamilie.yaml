@@ -41,44 +41,25 @@ spec:
     inbound:
       rules:
         - application: familie-ks-sak
-          namespace: teamfamilie
-          cluster: dev-fss
         - application: familie-ba-sak
-          namespace: teamfamilie
-          cluster: dev-fss
         - application: familie-tilbake
-          namespace: teamfamilie
           cluster: dev-gcp
         - application: familie-tilbake-lokal
-          namespace: teamfamilie
           cluster: dev-gcp
         - application: familie-ks-mottak
-          namespace: teamfamilie
-          cluster: dev-fss
         - application: familie-ba-mottak
-          namespace: teamfamilie
-          cluster: dev-fss
         - application: familie-ef-mottak
-          namespace: teamfamilie
-          cluster: dev-fss
         - application: familie-ef-sak
-          namespace: teamfamilie
           cluster: dev-gcp
         - application: familie-ef-sak-lokal
-          namespace: teamfamilie
           cluster: dev-gcp
         - application: familie-ef-iverksett
-          namespace: teamfamilie
           cluster: dev-gcp
         - application: familie-ef-iverksett-lokal
-          namespace: teamfamilie
           cluster: dev-gcp
         - application: familie-ef-personhendelse
-          namespace: teamfamilie
           cluster: dev-gcp
         - application: familie-ef-proxy
-          namespace: teamfamilie
-          cluster: dev-fss
   prometheus:
     enabled: true
     path: /internal/prometheus
