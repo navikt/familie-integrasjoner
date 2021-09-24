@@ -163,6 +163,30 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
     }
 
     @Test
+    fun `v4 skal returnere 409 ved 409 response fra dokarkiv`() {
+        client.`when`(request()
+                              .withMethod("POST")
+                              .withPath("/rest/journalpostapi/v1/journalpost")
+                              .withQueryStringParameter("forsoekFerdigstill", "false"))
+                .respond(response()
+                                .withStatusCode(409)
+                                .withHeader("Content-Type", "application/json;charset=UTF-8")
+                                .withBody("Tekst fra body"))
+        val body = ArkiverDokumentRequest("FNR",
+                                          false,
+                                          listOf(HOVEDDOKUMENT))
+
+        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
+                restTemplate.exchange(localhost(DOKARKIV_URL_V4),
+                                      HttpMethod.POST,
+                                      HttpEntity(body, headersWithNavUserId()))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CONFLICT)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.body?.melding).isEqualTo("[Dokarkiv][Feil ved opprettelse av journalpost ][org.springframework.web.client.HttpClientErrorException\$Conflict]")
+    }
+
+    @Test
     fun `skal midlertidig journalføre dokument med vedlegg`() {
         client.`when`(request()
                               .withMethod("POST")
@@ -208,7 +232,7 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
                                       HttpMethod.POST,
                                       HttpEntity(body, headers))
 
-        assertThat(responseDeprecated.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(responseDeprecated.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
         assertThat(responseDeprecated.body?.status).isEqualTo(Ressurs.Status.FEILET)
         assertThat(responseDeprecated.body?.melding).contains("Unauthorized")
     }
