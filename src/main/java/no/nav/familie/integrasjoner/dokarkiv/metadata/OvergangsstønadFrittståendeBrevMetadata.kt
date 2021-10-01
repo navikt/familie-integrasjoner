@@ -16,7 +16,7 @@ object OvergangsstønadFrittståendeBrevMetadata : Dokumentmetadata {
     override val behandlingstema: Behandlingstema = Behandlingstema.Overgangsstønad
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.OVERGANGSSTØNAD_FRITTSTÅENDE_BREV
-    override val tittel: String = "Vedtak om innvilgelse av overgangsstønad"
+    override val tittel: String = "Brev om overgangsstønad"
     override val brevkode: String = "EFA1"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
