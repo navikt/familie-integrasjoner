@@ -194,7 +194,7 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
         assertThat(response.body?.melding)
                 .contains("Feil ved henting av journalpost=12345678 klientfeilmelding=Kan ikke hente journalpost " +
                           "[SafError(message=Feilet ved henting av data (/journalpost) : null, " +
-                          "exceptionType=TECHNICAL, exception=NullPointerException)]")
+                          "extensions=SafExtension(code=server_error, classification=DataFetchingException))]")
         assertThat(loggingEvents)
                 .extracting<Level, RuntimeException> { obj: ILoggingEvent -> obj.level }
                 .containsExactly(Level.WARN)
