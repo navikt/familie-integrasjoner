@@ -8,16 +8,16 @@ import no.nav.familie.kontrakter.felles.dokarkiv.Dokumenttype
 import org.springframework.stereotype.Component
 
 @Component
-object BarnetilsynTilbakebetalingVedtakMetadata : Dokumentmetadata {
+object OvergangsstønadFrittståendeBrevMetadata : Dokumentmetadata {
 
     override val journalpostType: JournalpostType = JournalpostType.UTGAAENDE
     override val fagsakSystem: Fagsystem = Fagsystem.EF
     override val tema: Tema = Tema.ENF
-    override val behandlingstema: Behandlingstema = Behandlingstema.Tilbakebetaling
+    override val behandlingstema: Behandlingstema = Behandlingstema.Overgangsstønad
     override val kanal: String? = null
-    override val dokumenttype: Dokumenttype = Dokumenttype.BARNETILSYN_TILBAKEKREVING_VEDTAK
-    override val tittel: String? = null
-    override val brevkode: String = Fagsystem.EF.name + "-TILB"
-    override val dokumentKategori: Dokumentkategori = Dokumentkategori.VB
-
+    override val dokumenttype: Dokumenttype = Dokumenttype.OVERGANGSSTØNAD_FRITTSTÅENDE_BREV
+    override val tittel: String = "Brev om overgangsstønad"
+    override val brevkode: String = "EFA2"
+    override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
+

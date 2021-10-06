@@ -4,7 +4,11 @@ import no.nav.familie.integrasjoner.dokarkiv.client.KanIkkeFerdigstilleJournalpo
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
-import no.nav.familie.kontrakter.felles.dokarkiv.*
+import no.nav.familie.kontrakter.felles.dokarkiv.ArkiverDokumentResponse
+import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggRequest
+import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggResponse
+import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
+import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostResponse
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.ArkiverDokumentRequest
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
@@ -14,8 +18,18 @@ import org.springframework.http.ResponseEntity
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
 import org.springframework.web.bind.MethodArgumentNotValidException
-import org.springframework.web.bind.annotation.*
-import java.util.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.bind.annotation.RestController
+import java.util.HashMap
 import java.util.function.Consumer
 import javax.validation.Valid
 import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequest
@@ -45,44 +59,49 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     }
 
     @PostMapping(path = ["/v2"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun arkiverDokumentV2(@RequestBody @Valid deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest)
+    fun arkiverDokumentV2(@RequestBody @Valid deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest,
+                          @RequestHeader(name = NAV_USER_ID) navIdent: String? = null)
             : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(success(journalføringService.lagJournalpostV2(deprecatedArkiverDokumentRequest),
+                .body(success(journalføringService.lagJournalpostV2(deprecatedArkiverDokumentRequest, navIdent),
                               Companion.ARKIVERT_OK_MELDING))
     }
 
     @PostMapping(path = ["/v3"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun arkiverDokumentV3(@RequestBody @Valid arkiverDokumentRequest: DeprecatedArkiverDokumentRequest2)
+    fun arkiverDokumentV3(@RequestBody @Valid arkiverDokumentRequest: DeprecatedArkiverDokumentRequest2,
+                          @RequestHeader(name = NAV_USER_ID) navIdent: String? = null)
             : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(success(journalføringService.lagJournalpostV3(arkiverDokumentRequest),
+                .body(success(journalføringService.lagJournalpostV3(arkiverDokumentRequest, navIdent),
                               Companion.ARKIVERT_OK_MELDING))
     }
 
     @PostMapping(path = ["/v4"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun arkiverDokumentV4(@RequestBody @Valid arkiverDokumentRequest: ArkiverDokumentRequest)
+    fun arkiverDokumentV4(@RequestBody @Valid arkiverDokumentRequest: ArkiverDokumentRequest,
+                          @RequestHeader(name = NAV_USER_ID) navIdent: String? = null)
             : ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(success(journalføringService.lagJournalpost(arkiverDokumentRequest),
+                .body(success(journalføringService.lagJournalpost(arkiverDokumentRequest, navIdent),
                               Companion.ARKIVERT_OK_MELDING))
     }
 
     @PutMapping(path = ["/v2/{journalpostId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun oppdaterJournalpost(@PathVariable(name = "journalpostId") journalpostId: String,
+                            @RequestHeader(name = NAV_USER_ID) navIdent: String? = null,
                             @RequestBody @Valid oppdaterJournalpostRequest: OppdaterJournalpostRequest)
             : ResponseEntity<Ressurs<OppdaterJournalpostResponse>> {
-        val response = journalføringService.oppdaterJournalpost(oppdaterJournalpostRequest, journalpostId)
+        val response = journalføringService.oppdaterJournalpost(oppdaterJournalpostRequest, journalpostId, navIdent)
         return ResponseEntity.ok(success(response, "Oppdatert journalpost $journalpostId sakstilknyttning"))
     }
 
     @PutMapping("/v2/{journalpostId}/ferdigstill")
     @ResponseStatus(HttpStatus.OK)
     fun ferdigstillJournalpost(@PathVariable(name = "journalpostId") journalpostId: String,
-                               @RequestParam(name = "journalfoerendeEnhet")
-                               journalførendeEnhet: String): ResponseEntity<Ressurs<Map<String, String>>> {
+                               @RequestParam(name = "journalfoerendeEnhet") journalførendeEnhet: String,
+                               @RequestHeader(name = NAV_USER_ID) navIdent: String? = null)
+            : ResponseEntity<Ressurs<Map<String, String>>> {
 
-        journalføringService.ferdistillJournalpost(journalpostId, journalførendeEnhet)
+        journalføringService.ferdistillJournalpost(journalpostId, journalførendeEnhet, navIdent)
         return ResponseEntity.ok(success(mapOf("journalpostId" to journalpostId),
                                          "Ferdigstilt journalpost $journalpostId"))
     }
@@ -111,6 +130,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
 
         private val LOG = LoggerFactory.getLogger(DokarkivController::class.java)
         const val ARKIVERT_OK_MELDING = "Arkivert journalpost OK"
+        const val NAV_USER_ID = "Nav-User-Id"
     }
 
 }
