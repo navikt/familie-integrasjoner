@@ -23,6 +23,13 @@ no.nav.security.jwt:
         rolle-id: ${egen_ansatt}
         beskrivelse: NAV-ansatt
 
+sftp:
+  username: ${CREDENTIAL_USERNAME}
+  host: ${SFTP_HOST}
+  port: ${SFTP_PORT:22}
+  privateKey: ${SFTP_PRIVATE_KEY}
+  passphrase: ${SFTP_PASSPHRASE}
+
 management:
   endpoint.health:
     show-details: always
@@ -35,8 +42,8 @@ management:
       info: "status/isAlive"
   metrics.export.prometheus.enabled: true
 
-INTEGRASJONER_CLIENT_ID: "dummy-klient-id"
-CLIENT_SECRET: "dummy-klient-secret"
+AZURE_APP_CLIENT_ID: "dummy-klient-id"
+AZURE_APP_CLIENT_SECRET: "dummy-klient-secret"
 INFOTRYGD_KS_SCOPE: "dummy-scope"
 SAF_SCOPE: "dummy-scope"
 DOKARKIV_SCOPE: "api://972814f3-8bdf-44f8-a191-c2ed00020b54/.default"
@@ -46,5 +53,5 @@ STS_URL: http://security-token-service.default.svc.nais.local/rest/v1/sts/token
 INFOTRYGD_URL: http://infotrygd-kontantstotte.default
 KODEVERK_URL: http://kodeverk.default
 PDL_URL: http://pdl-api.pdl
-DOKARKIV_V1_URL: http://dokarkiv.default
+DOKARKIV_V1_URL: http://dokarkiv.teamdokumenthandtering
 

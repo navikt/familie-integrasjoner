@@ -1,7 +1,7 @@
 no.nav.security.jwt:
   issuer.azuread:
     discoveryurl: http://mock-oauth2-server:1111/v2.0/.well-known/openid-configuration
-    accepted_audience: api://${INTEGRASJONER_CLIENT_ID}/.default
+    accepted_audience: api://${AZURE_APP_CLIENT_ID}/.default
     cookie_name: azure_token
   client:
     registration:
@@ -11,8 +11,8 @@ no.nav.security.jwt:
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${INTEGRASJONER_AAD_GRAPH_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${INTEGRASJONER_CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       aad-graph:
         resource-url: ${AAD_GRAPH_API_URI}
@@ -20,8 +20,8 @@ no.nav.security.jwt:
         grant-type: client_credentials
         scope: ${INTEGRASJONER_AAD_GRAPH_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${INTEGRASJONER_CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       dokarkiv-onbehalf-of:
         resource-url: ${DOKARKIV_V1_URL}
@@ -29,8 +29,8 @@ no.nav.security.jwt:
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${DOKARKIV_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       saf-onbehalf-of:
         resource-url: ${SAF_URL}
@@ -38,8 +38,8 @@ no.nav.security.jwt:
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${SAF_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       saf:
         resource-url: ${SAF_URL}
@@ -47,8 +47,8 @@ no.nav.security.jwt:
         grant-type: client_credentials
         scope: ${SAF_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       infotrygd:
         resource-url: ${INFOTRYGD_URL}
@@ -56,12 +56,12 @@ no.nav.security.jwt:
         grant-type: client_credentials
         scope: ${INTEGRASJONER_INFOTRYGD_KS_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${INTEGRASJONER_CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
 
-AAD_URL: http://vtp:8060/rest/isso/oauth2/access_token
-
+AZURE_APP_CLIENT_ID: ${INTEGRASJONER_CLIENT_ID}
+AZURE_APP_CLIENT_SECRET: ${INTEGRASJONER_CLIENT_SECRET}
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 STS_URL: http://nav-auth-mock:8200/nais-sts/token
 SECURITYTOKENSERVICE_URL: http://vtp:8060/soap/SecurityTokenServiceProvider/
@@ -87,6 +87,10 @@ ORGANISASJON_V5_URL:
 
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw
+
+SFTP_HOST: localhost
+SFTP_PRIVATE_KEY: LS0tLS1CRUdJTiBFQyBQUklWQVRFIEtFWS0tLS0tClByb2MtVHlwZTogNCxFTkNSWVBURUQKREVLLUluZm86IEFFUy0xMjgtQ0JDLDdEMThBQTYwQjJEOTlERTc3RTE2NDU3NDNEOUI2M0Q1CgozeDdyNno0WXdxUWl0Tk5iTzE3b1ExQmsrSEQyR0hQRUwrY1Y1ZDc4YlhYeDJ6ekIxZm8zRG5sdjJWNVI2cTVWClZJcVJxNkV0d2p1YUwybEs5ZW50NGszSS9YRTh4Q3RIL1d0LzE3b3dqZ1pkbDZHZFJCODNCN3FuakN1UEpEVjQKZ2RxMmJzUWF5NzEzd1FEeVI0bnd4R3NmMmxYbUlBOFBlNFFJVTVGM1h0UXIrRm1rL1Jtb0pGbDFONlRCTGdRbwo2WDBCQjNUMUw5Q2dadGQ4Y0VydVViK1hlQUhzTlI2VG1OL3hxaVMzUHdVdWdRdzhzRUd1azI2QWRPMjZjZGs5Cm1xd3lCUWZ3UDdPajhMR3U5NjduRWdCZXVsY25YQ1I4UDR5WVg5L201MFU9Ci0tLS0tRU5EIEVDIFBSSVZBVEUgS0VZLS0tLS0K
+SFTP_PASSPHRASE: Palpatine
 
 logging:
   config: "classpath:logback-e2e.xml"

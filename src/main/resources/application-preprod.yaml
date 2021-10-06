@@ -1,69 +1,68 @@
 no.nav.security.jwt:
   issuer.azuread:
-    discoveryurl: https://login.microsoftonline.com/navq.onmicrosoft.com/v2.0/.well-known/openid-configuration
-    accepted_audience: ${INTEGRASJONER_CLIENT_ID}
+    discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
+    accepted_audience: ${AZURE_APP_CLIENT_ID}
     proxyurl: http://webproxy-nais.nav.no:8088
     cookie_name: azure_token
   client:
     registration:
       aad-graph-onbehalfof:
         resource-url: ${AAD_GRAPH_API_URI}
-        token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
+        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${AAD_GRAPH_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       aad-graph:
         resource-url: ${AAD_GRAPH_API_URI}
-        token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
+        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
         grant-type: client_credentials
         scope: ${AAD_GRAPH_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       dokarkiv-onbehalf-of:
         resource-url: ${DOKARKIV_V1_URL}
-        token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
+        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${DOKARKIV_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       saf-onbehalf-of:
         resource-url: ${SAF_URL}
-        token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
+        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${SAF_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       saf:
         resource-url: ${SAF_URL}
-        token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
+        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
         grant-type: client_credentials
         scope: ${SAF_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       infotrygd:
         resource-url: ${INFOTRYGD_URL}
-        token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
+        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
         grant-type: client_credentials
         scope: ${INFOTRYGD_KS_SCOPE}
         authentication:
-          client-id: ${INTEGRASJONER_CLIENT_ID}
-          client-secret: ${CLIENT_SECRET}
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
 
-AAD_URL: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
-INTEGRASJONER_CLIENT_ID: ${INTEGRASJONER_CLIENT_ID}
-CLIENT_SECRET: ${CLIENT_SECRET}
+INTEGRASJONER_CLIENT_ID: ${AZURE_APP_CLIENT_ID}
+CLIENT_SECRET: ${AZURE_APP_CLIENT_SECRET}
 INFOTRYGD_KS_SCOPE: ${INFOTRYGD_KS_SCOPE}
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
@@ -71,16 +70,17 @@ SECURITYTOKENSERVICE_URL: https://sts-q2.preprod.local/SecurityTokenServiceProvi
 AKTOERID_URL: https://app-q2.adeo.no/aktoerregister
 PERSON_V3_URL: https://app-q2.adeo.no/tpsws-aura/ws/Person/v3
 ORGANISASJON_V5_URL: https://modapp-q1.adeo.no/ereg/ws/OrganisasjonService/v5
-DOKARKIV_V1_URL: http://dokarkiv.q2
+DOKARKIV_V1_URL: https://dokarkiv-q2.dev.intern.nav.no
 MEDL2_URL: https://app-q2.adeo.no/medl2
-SAF_URL: http://saf.q2
+SAF_URL: https://saf-q2.dev.intern.nav.no
 OPPGAVE_URL: https://oppgave.dev.adeo.no
-FORSTESIDEGENERATOR_URL: https://foerstesidegenerator-q1.dev.adeo.no
+FORSTESIDEGENERATOR_URL: https://foerstesidegenerator-q2.dev.intern.nav.no
 EGEN_ANSATT_URL: https://skjermede-personer-pip.nais.preprod.local
-DOKDIST_URL: http://dokdistfordeling.q2
+DOKDIST_URL: https://dokdistfordeling-q2.dev.intern.nav.no
 ARBEIDSFORDELING_V1_URL: https://app-q1.adeo.no/norg2/ws/Arbeidsfordeling/v1
 AAREG_URL: https://modapp-q2.adeo.no/aareg-services/api
 GOSYS_INFOTRYGDSAK_URL: https://tjenestebuss-q2.adeo.no/nav-cons-sak-gosys-3.0.0Web/sca/GOSYSInfotrygdSakWSEXP
-SKYGGE_SAK_URL: http://sak.q2
+SKYGGE_SAK_URL: https://sak-q2.dev.intern.nav.no
 INFOTRYGD_VEDTAK_URL: https://modapp-q1.adeo.no/infotrygd-ws/InfotrygdVedtak/v1
 NORG2_URL: https://norg2.dev.adeo.no/norg2/
+SFTP_HOST: b27apvl00364.preprod.local

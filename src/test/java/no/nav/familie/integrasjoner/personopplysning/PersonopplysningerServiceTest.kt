@@ -15,9 +15,9 @@ import no.nav.familie.integrasjoner.personopplysning.domene.relasjon.SivilstandT
 import no.nav.familie.integrasjoner.personopplysning.domene.status.PersonstatusType
 import no.nav.familie.integrasjoner.personopplysning.domene.tilhørighet.Landkode
 import no.nav.familie.integrasjoner.personopplysning.internal.Adressebeskyttelse
-import no.nav.familie.integrasjoner.personopplysning.internal.FAMILIERELASJONSROLLE
+import no.nav.familie.integrasjoner.personopplysning.internal.FORELDERBARNRELASJONROLLE
 import no.nav.familie.integrasjoner.personopplysning.internal.Fullmakt
-import no.nav.familie.integrasjoner.personopplysning.internal.PdlFamilierelasjon
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlForelderBarnRelasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedRelasjonerOgAdressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.Sivilstand
 import no.nav.familie.kontrakter.felles.Tema
@@ -25,8 +25,8 @@ import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import no.nav.familie.kontrakter.ks.søknad.testdata.SøknadTestdata
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -37,7 +37,7 @@ class PersonopplysningerServiceTest {
 
     private val pdlRestClient = mockk<PdlRestClient>()
 
-    @Before
+    @BeforeEach
     fun setUp() {
         personSoapClient = PersonopplysningerTestConfig().personConsumerMock()
         personopplysningerService = PersonopplysningerService(personSoapClient,
@@ -132,12 +132,12 @@ class PersonopplysningerServiceTest {
     @Test
     fun `hentPersonMedRelasjoner skal kalle på pdl 3 ganger, hovedpersonen, relasjonene og barnets andre forelder`() {
         val hovedPerson = "1" to
-                lagPdlPersonMedRelasjoner(familierelasjoner = listOf(PdlFamilierelasjon("2",
-                                                                                        FAMILIERELASJONSROLLE.BARN)),
+                lagPdlPersonMedRelasjoner(familierelasjoner = listOf(PdlForelderBarnRelasjon("2",
+                                                                                             FORELDERBARNRELASJONROLLE.BARN)),
                                           sivilstand = listOf(Sivilstand(SIVILSTAND.GIFT, "3")),
                                           fullmakt = listOf(Fullmakt("4")))
-        val barn = lagPdlPersonMedRelasjoner(familierelasjoner = listOf(PdlFamilierelasjon("22",
-                                                                                           FAMILIERELASJONSROLLE.FAR)))
+        val barn = lagPdlPersonMedRelasjoner(familierelasjoner = listOf(PdlForelderBarnRelasjon("22",
+                                                                                                FORELDERBARNRELASJONROLLE.FAR)))
         every { pdlRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(any(), any()) } answers {
             firstArg<List<String>>().map { it to if (it == "2") barn else lagPdlPersonMedRelasjoner() }.toMap()
         }
@@ -157,7 +157,7 @@ class PersonopplysningerServiceTest {
         }
     }
 
-    private fun lagPdlPersonMedRelasjoner(familierelasjoner: List<PdlFamilierelasjon> = emptyList(),
+    private fun lagPdlPersonMedRelasjoner(familierelasjoner: List<PdlForelderBarnRelasjon> = emptyList(),
                                           sivilstand: List<Sivilstand> = emptyList(),
                                           fullmakt: List<Fullmakt> = emptyList(),
                                           adressebeskyttelse: List<Adressebeskyttelse> = emptyList()) =

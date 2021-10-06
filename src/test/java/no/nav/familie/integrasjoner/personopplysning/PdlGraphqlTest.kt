@@ -7,14 +7,14 @@ import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningD
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningType
 import no.nav.familie.integrasjoner.geografisktilknytning.PdlHentGeografiskTilknytning
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlHentIdenter
-import no.nav.familie.integrasjoner.personopplysning.internal.PdlResponse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlNavn
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPerson
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlResponse
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 import java.io.File
 
 class PdlGraphqlTest {
@@ -28,8 +28,8 @@ class PdlGraphqlTest {
         assertThat(resp.data.person!!.foedsel.first().foedselsdato).isEqualTo("1955-09-13")
         assertThat(resp.data.person!!.navn.first().fornavn).isEqualTo("ENGASJERT")
         assertThat(resp.data.person!!.kjoenn.first().kjoenn.toString()).isEqualTo("MANN")
-        assertThat(resp.data.person!!.familierelasjoner.first().relatertPersonsIdent).isEqualTo("12345678910")
-        assertThat(resp.data.person!!.familierelasjoner.first().relatertPersonsRolle.toString()).isEqualTo("BARN")
+        assertThat(resp.data.person!!.forelderBarnRelasjon.first().relatertPersonsIdent).isEqualTo("12345678910")
+        assertThat(resp.data.person!!.forelderBarnRelasjon.first().relatertPersonsRolle.toString()).isEqualTo("BARN")
         assertThat(resp.data.person!!.sivilstand.first()!!.type).isEqualTo(SIVILSTAND.UGIFT)
         assertThat(resp.data.person!!.bostedsadresse.first()?.vegadresse?.husnummer).isEqualTo("3")
         assertThat(resp.data.person!!.bostedsadresse.first()?.vegadresse?.matrikkelId).isEqualTo(1234)

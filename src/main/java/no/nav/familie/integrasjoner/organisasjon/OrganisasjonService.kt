@@ -4,6 +4,7 @@ import no.nav.familie.integrasjoner.client.soap.OrganisasjonSoapClient
 import no.nav.familie.kontrakter.felles.organisasjon.Organisasjon
 import no.nav.tjeneste.virksomhet.organisasjon.v5.informasjon.UstrukturertNavn
 import no.nav.tjeneste.virksomhet.organisasjon.v5.meldinger.HentOrganisasjonRequest
+import no.nav.tjeneste.virksomhet.organisasjon.v5.meldinger.ValiderOrganisasjonRequest
 import org.springframework.stereotype.Service
 
 @Service
@@ -23,5 +24,11 @@ class OrganisasjonService(private val organisasjonSoapClient: OrganisasjonSoapCl
 
         return Organisasjon(orgnr, navn)
 
+    }
+
+    fun validerOrganisasjon(orgnr: String): Boolean {
+        val request = ValiderOrganisasjonRequest().apply { orgnummer = orgnr }
+        val respons = organisasjonSoapClient.validerOrganisasjon(request)
+        return respons.isGyldigOrgnummer
     }
 }

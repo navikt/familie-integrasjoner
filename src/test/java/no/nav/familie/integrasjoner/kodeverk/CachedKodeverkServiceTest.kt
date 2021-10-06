@@ -8,7 +8,7 @@ import no.nav.familie.kontrakter.felles.kodeverk.BetydningDto
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkSpråk
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.springframework.cache.annotation.Cacheable
 import java.lang.reflect.Modifier
 import java.time.LocalDate
@@ -69,6 +69,7 @@ class CachedKodeverkServiceTest {
     }
 
     companion object {
+
         private const val POSTNUMMER = "0557"
         private const val POSTSTED = "Oslo"
         private const val LANDKODE = "NOR"
