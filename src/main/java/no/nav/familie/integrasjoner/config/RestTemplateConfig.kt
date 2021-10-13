@@ -50,6 +50,9 @@ class RestTemplateConfig(
         }
     }
 
+    /**
+     * Denne bruker jwt-bearer hvis den finnes, hvis ikke så bruker den client_credentials
+     */
     @Bean("jwtBearer")
     fun restTemplateJwtBearer(consumerIdClientInterceptor: ConsumerIdClientInterceptor,
                               bearerTokenClientInterceptor: BearerTokenClientInterceptor): RestOperations {

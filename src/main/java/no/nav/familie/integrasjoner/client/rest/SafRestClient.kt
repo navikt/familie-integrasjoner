@@ -25,7 +25,7 @@ import java.net.URI
 
 @Service
 class SafRestClient(@Value("\${SAF_URL}") safBaseUrl: URI,
-                    @Qualifier("jwtBearerOboOgSts") val restTemplate: RestOperations)
+                    @Qualifier("jwtBearer") val restTemplate: RestOperations)
     : AbstractPingableRestClient(restTemplate, "saf.journalpost") {
 
     override val pingUri: URI = UriUtil.uri(safBaseUrl, PATH_PING)
