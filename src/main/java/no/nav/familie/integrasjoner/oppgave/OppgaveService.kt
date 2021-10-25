@@ -133,7 +133,8 @@ class OppgaveService constructor(
                 beskrivelse = request.beskrivelse,
                 behandlingstype = request.behandlingstype,
                 tilordnetRessurs = request.tilordnetRessurs?.let { saksbehandlerService.hentNavIdent(it) },
-                behandlesAvApplikasjon = request.behandlesAvApplikasjon
+                behandlesAvApplikasjon = request.behandlesAvApplikasjon,
+                mappeId = request.mappeId
         )
 
         return oppgaveRestClient.opprettOppgave(oppgave)
