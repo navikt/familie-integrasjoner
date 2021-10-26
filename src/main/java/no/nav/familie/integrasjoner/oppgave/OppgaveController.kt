@@ -36,6 +36,11 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         return success(oppgaveService.finnOppgaver(finnOppgaveRequest))
     }
 
+    @PostMapping(path = ["/mappe"])
+    fun finnMapperV1(@RequestBody finnMappeRequest: FinnMappeRequest): Ressurs<FinnMappeResponseDto> {
+        return success(oppgaveService.finnMapper(finnMappeRequest))
+    }
+
     @DateTimeFormat
     @PostMapping(path = ["/{oppgaveId}/fordel"])
     fun fordelOppgave(@PathVariable(name = "oppgaveId") oppgaveId: Long,
