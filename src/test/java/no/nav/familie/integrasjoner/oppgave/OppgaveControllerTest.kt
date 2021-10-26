@@ -22,12 +22,15 @@ import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
+import no.nav.familie.kontrakter.felles.oppgave.IdentGruppe
 import no.nav.familie.kontrakter.felles.oppgave.IdentType
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.kontrakter.felles.oppgave.OppgaveIdent
+import no.nav.familie.kontrakter.felles.oppgave.OppgaveIdentV2
 import no.nav.familie.kontrakter.felles.oppgave.OppgaveResponse
 import no.nav.familie.kontrakter.felles.oppgave.Oppgavetype
 import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgave
+import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgaveRequest
 import no.nav.familie.kontrakter.felles.oppgave.StatusEnum
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -193,6 +196,31 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         )
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
                 restTemplate.exchange(localhost(OPPGAVE_URL),
+                                      HttpMethod.POST,
+                                      HttpEntity(opprettOppgave, headers))
+
+        assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
+    }
+
+    @Test
+    fun `skal opprette oppgave med mappeId, returnere oppgaveid og 201 Created`() {
+
+        stubFor(post("/api/v1/oppgaver").willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
+
+        val opprettOppgave = OpprettOppgaveRequest(
+                ident = OppgaveIdentV2(ident = "123456789012", gruppe = IdentGruppe.AKTOERID),
+                fristFerdigstillelse = LocalDate.now().plusDays(3),
+                behandlingstema = "behandlingstema",
+                enhetsnummer = "enhetsnummer",
+                tema = Tema.ENF,
+                oppgavetype = Oppgavetype.BehandleSak,
+                mappeId = 1234L,
+                saksId = "saksid",
+                beskrivelse = "Oppgavetekst"
+        )
+        val response: ResponseEntity<Ressurs<OppgaveResponse>> =
+                restTemplate.exchange(localhost(OPPRETT_OPPGAVE_URL_V2),
                                       HttpMethod.POST,
                                       HttpEntity(opprettOppgave, headers))
 
@@ -496,6 +524,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     companion object {
 
         private const val OPPGAVE_URL = "/api/oppgave/"
+        private const val OPPRETT_OPPGAVE_URL_V2 = "/api/oppgave/opprett"
         private const val OPPDATER_OPPGAVE_URL = "${OPPGAVE_URL}/oppdater"
         private const val OPPGAVE_ID = 315488374L
         private const val GET_OPPGAVER_URL =
