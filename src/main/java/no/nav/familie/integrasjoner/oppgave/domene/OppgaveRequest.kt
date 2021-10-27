@@ -48,6 +48,6 @@ fun FinnOppgaveRequest.toDto() =
                        fristTom = this.fristTomDato,
                        aktivDatoFom = this.aktivFomDato,
                        aktivDatoTom = this.aktivTomDato,
-                       mappeId = this.enhetsmappe?.value,
+                       mappeId = this.mappeId,
                        aktoerId = this.aktørId,
                        saksreferanse = this.saksreferanse)
