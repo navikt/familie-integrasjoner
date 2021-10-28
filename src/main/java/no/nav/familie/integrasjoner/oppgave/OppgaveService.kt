@@ -176,6 +176,10 @@ class OppgaveService constructor(
         }
     }
 
+    fun finnMapper(finnMappeRequest: FinnMappeRequest): FinnMappeResponseDto {
+        return oppgaveRestClient.finnMapper(finnMappeRequest)
+    }
+
     companion object {
 
         private val LOG = LoggerFactory.getLogger(OppgaveService::class.java)

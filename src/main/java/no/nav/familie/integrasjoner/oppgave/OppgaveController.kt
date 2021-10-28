@@ -4,13 +4,29 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.Tema
-import no.nav.familie.kontrakter.felles.oppgave.*
+import no.nav.familie.kontrakter.felles.oppgave.FinnMappeRequest
+import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
+import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
+import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
+import no.nav.familie.kontrakter.felles.oppgave.Oppgave
+import no.nav.familie.kontrakter.felles.oppgave.OppgavePrioritet
+import no.nav.familie.kontrakter.felles.oppgave.OppgaveResponse
+import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgave
+import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgaveRequest
+import no.nav.familie.kontrakter.felles.oppgave.StatusEnum
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import javax.validation.constraints.Pattern
 
 @RestController
@@ -34,6 +50,11 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     @PostMapping(path = ["/v4"])
     fun finnOppgaverV4(@RequestBody finnOppgaveRequest: FinnOppgaveRequest): Ressurs<FinnOppgaveResponseDto> {
         return success(oppgaveService.finnOppgaver(finnOppgaveRequest))
+    }
+
+    @PostMapping(path = ["/mappe/sok"])
+    fun finnMapperV1(@RequestBody finnMappeRequest: FinnMappeRequest): Ressurs<FinnMappeResponseDto> {
+        return success(oppgaveService.finnMapper(finnMappeRequest))
     }
 
     @DateTimeFormat

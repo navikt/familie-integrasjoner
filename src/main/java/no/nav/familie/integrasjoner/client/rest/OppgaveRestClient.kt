@@ -10,6 +10,8 @@ import no.nav.familie.integrasjoner.oppgave.domene.OppgaveRequest
 import no.nav.familie.integrasjoner.oppgave.domene.limitMotOppgave
 import no.nav.familie.integrasjoner.oppgave.domene.toDto
 import no.nav.familie.kontrakter.felles.Tema
+import no.nav.familie.kontrakter.felles.oppgave.FinnMappeRequest
+import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
@@ -86,6 +88,13 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
                     .build()
                     .toUri()
 
+    fun buildMappeRequestUri(mappeRequest: FinnMappeRequest): URI =
+            UriComponentsBuilder.fromUri(oppgaveBaseUrl)
+                    .path(PATH_MAPPE)
+                    .queryParams(mappeRequest.toQueryParams())
+                    .build()
+                    .toUri()
+
     fun finnOppgaver(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {
 
         val oppgaveRequest = finnOppgaveRequest.toDto()
@@ -111,6 +120,10 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
         }
 
         return FinnOppgaveResponseDto(oppgaverOgAntall.antallTreffTotalt, oppgaver)
+    }
+
+    fun finnMapper(finnMappeRequest: FinnMappeRequest): FinnMappeResponseDto {
+        return getForEntity(buildMappeRequestUri(finnMappeRequest), httpHeaders())
     }
 
     fun oppdaterOppgave(patchDto: Oppgave): Oppgave? {
@@ -196,6 +209,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
 
         private const val PATH_PING = "internal/alive"
         private const val PATH_OPPGAVE = "/api/v1/oppgaver"
+        private const val PATH_MAPPE = "/api/v1/mapper"
         private val KONTANTSTØTTE_TEMA = Tema.KON
         private const val OPPGAVE_TYPE = "BEH_SAK"
         private const val X_CORRELATION_ID = "X-Correlation-ID"
