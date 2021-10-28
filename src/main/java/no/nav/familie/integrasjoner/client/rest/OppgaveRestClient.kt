@@ -88,12 +88,16 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
                     .build()
                     .toUri()
 
-    fun buildMappeRequestUri(mappeRequest: FinnMappeRequest): URI =
-            UriComponentsBuilder.fromUri(oppgaveBaseUrl)
-                    .path(PATH_MAPPE)
-                    .queryParams(mappeRequest.toQueryParams())
-                    .build()
-                    .toUri()
+    fun buildMappeRequestUri(mappeRequest: FinnMappeRequest): URI {
+        return UriComponentsBuilder.fromUri(oppgaveBaseUrl)
+                .path(PATH_MAPPE)
+                .queryParam("enhetsnr", mappeRequest.enhetsnr)
+                .queryParam("opprettetFom", mappeRequest.opprettetFom)
+                .queryParam("limit", mappeRequest.limit)
+                .queryParam("tema", mappeRequest.tema)
+                .build()
+                .toUri()
+    }
 
     fun finnOppgaver(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {
 
