@@ -1,20 +1,11 @@
 package no.nav.familie.integrasjoner.kodeverk
 
 import no.nav.familie.integrasjoner.client.rest.KodeverkClient
+import no.nav.familie.kontrakter.felles.kodeverk.InntektKodeverkDto
+import no.nav.familie.kontrakter.felles.kodeverk.InntektKodeverkType
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
-
-// TODO ta i bruk fra kontrakter
-typealias InntektKodeverkDto = Map<InntektKodeverkType, Map<String, String>>
-enum class InntektKodeverkType(val kodeverk: String) {
-    LOENNSINNTEKT("Loennsbeskrivelse"),
-    NAERINGSINNTEKT("Naeringsinntektsbeskrivelse"),
-    PENSJON_ELLER_TRYGD("PensjonEllerTrygdeBeskrivelse"),
-    YTELSE_FRA_OFFENTLIGE("YtelseFraOffentligeBeskrivelse"),
-    TILLEGSINFORMASJON_KATEGORI("EDAGTilleggsinfoKategorier")
-}
-
 
 @Service
 class CachedKodeverkService(private val kodeverkClient: KodeverkClient) {
