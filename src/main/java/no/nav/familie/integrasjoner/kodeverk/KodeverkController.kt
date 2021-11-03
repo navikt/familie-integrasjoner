@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.kodeverk
 
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.kodeverk.InntektKodeverkDto
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
 import no.nav.security.token.support.core.api.Unprotected
 import org.springframework.http.MediaType
@@ -42,5 +43,9 @@ class KodeverkController(private val kodeverkService: CachedKodeverkService) {
     @GetMapping("/landkoder/eea")
     fun hentEEALand(): ResponseEntity<Ressurs<KodeverkDto>> =
             ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentEEALandkoder()))
+
+    @GetMapping("inntekt")
+    fun hentKodeverkForInntekt(): Ressurs<InntektKodeverkDto> =
+            Ressurs.Companion.success(kodeverkService.hentInntekt())
 
 }

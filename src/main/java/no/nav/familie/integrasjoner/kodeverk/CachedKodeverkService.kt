@@ -1,6 +1,8 @@
 package no.nav.familie.integrasjoner.kodeverk
 
 import no.nav.familie.integrasjoner.client.rest.KodeverkClient
+import no.nav.familie.kontrakter.felles.kodeverk.InntektKodeverkDto
+import no.nav.familie.kontrakter.felles.kodeverk.InntektKodeverkType
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
@@ -23,4 +25,12 @@ class CachedKodeverkService(private val kodeverkClient: KodeverkClient) {
     @Cacheable("kodeverk_eeafregMedHistorikk")
     fun hentEEALandkoder(): KodeverkDto = kodeverkClient.hentEEALandkoder()
 
+    @Cacheable("inntekt")
+    fun hentInntekt(): InntektKodeverkDto {
+        return InntektKodeverkType.values().associateWith {
+            kodeverkClient.hentKodeverk(it.kodeverk).mapTerm()
+        }
+    }
+
 }
+
