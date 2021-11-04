@@ -54,7 +54,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
 
     @PostMapping(path = ["/mappe/sok"])
     @Deprecated(message = "Bruk get under")
-    fun finnMapperV1Deprecated(finnMappeRequest: FinnMappeRequest): Ressurs<FinnMappeResponseDto> {
+    fun finnMapperV1Deprecated(@RequestBody finnMappeRequest: FinnMappeRequest): Ressurs<FinnMappeResponseDto> {
         return success(oppgaveService.finnMapper(finnMappeRequest))
     }
 
