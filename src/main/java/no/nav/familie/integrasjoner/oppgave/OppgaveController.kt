@@ -52,8 +52,8 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         return success(oppgaveService.finnOppgaver(finnOppgaveRequest))
     }
 
-    @PostMapping(path = ["/mappe/sok"])
-    fun finnMapperV1(@RequestBody finnMappeRequest: FinnMappeRequest): Ressurs<FinnMappeResponseDto> {
+    @GetMapping(path = ["/mappe/sok"])
+    fun finnMapperV1(finnMappeRequest: FinnMappeRequest): Ressurs<FinnMappeResponseDto> {
         return success(oppgaveService.finnMapper(finnMappeRequest))
     }
 
