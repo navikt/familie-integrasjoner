@@ -74,20 +74,16 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun testhot() {
+    fun `finnnMApper med gyldig query returnerer mapper`() {
 
         stubFor(get(GET_MAPPER_URL)
                         .willReturn(okJson(objectMapper.writeValueAsString(FinnMappeResponseDto(5, listOf(MappeDto(1, "1")))))))
-
-        val oppgave = FinnMappeRequest(enhetsnr = "1234567891011",
-                                       limit = 50,
-                                       opprettetFom = "dcssdf",
-                                       tema = listOf())
 
         val response: ResponseEntity<Ressurs<FinnMappeResponseDto>> =
                 restTemplate.exchange(localhost("/api/oppgave/mappe/sok?enhetsnr=1234567891011&opprettetFom=dcssdf&limit=50"),
                                       HttpMethod.GET,
                                       HttpEntity(null, headers))
+
         assertThat(response.body?.data?.antallTreffTotalt).isEqualTo(5)
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
     }
