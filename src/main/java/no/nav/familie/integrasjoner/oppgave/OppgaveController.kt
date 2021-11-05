@@ -15,7 +15,6 @@ import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgave
 import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgaveRequest
 import no.nav.familie.kontrakter.felles.oppgave.StatusEnum
 import no.nav.security.token.support.core.api.ProtectedWithClaims
-import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -63,7 +62,6 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         return success(oppgaveService.finnMapper(finnMappeRequest))
     }
 
-    @DateTimeFormat
     @PostMapping(path = ["/{oppgaveId}/fordel"])
     fun fordelOppgave(@PathVariable(name = "oppgaveId") oppgaveId: Long,
                       @RequestParam("saksbehandler") saksbehandler: String?): ResponseEntity<Ressurs<OppgaveResponse>> {
