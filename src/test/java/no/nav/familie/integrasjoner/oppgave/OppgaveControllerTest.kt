@@ -74,7 +74,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `finnnMApper med gyldig query returnerer mapper`() {
+    fun `finnMApper med gyldig query returnerer mapper`() {
 
         stubFor(get(GET_MAPPER_URL)
                         .willReturn(okJson(objectMapper.writeValueAsString(FinnMappeResponseDto(5, listOf(MappeDto(1, "1")))))))
