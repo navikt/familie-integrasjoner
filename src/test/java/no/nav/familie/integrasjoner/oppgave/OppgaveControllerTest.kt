@@ -20,10 +20,13 @@ import no.nav.familie.integrasjoner.config.ApiExceptionHandler
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.oppgave.FinnMappeRequest
+import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.IdentGruppe
 import no.nav.familie.kontrakter.felles.oppgave.IdentType
+import no.nav.familie.kontrakter.felles.oppgave.MappeDto
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.kontrakter.felles.oppgave.OppgaveIdent
 import no.nav.familie.kontrakter.felles.oppgave.OppgaveIdentV2
@@ -68,6 +71,21 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         exceptionHandler.addAppender(listAppender)
         headers.setBearerAuth(lokalTestToken)
 
+    }
+
+    @Test
+    fun `finnMApper med gyldig query returnerer mapper`() {
+
+        stubFor(get(GET_MAPPER_URL)
+                        .willReturn(okJson(objectMapper.writeValueAsString(FinnMappeResponseDto(5, listOf(MappeDto(1, "1")))))))
+
+        val response: ResponseEntity<Ressurs<FinnMappeResponseDto>> =
+                restTemplate.exchange(localhost("/api/oppgave/mappe/sok?enhetsnr=1234567891011&opprettetFom=dcssdf&limit=50"),
+                                      HttpMethod.GET,
+                                      HttpEntity(null, headers))
+
+        assertThat(response.body?.data?.antallTreffTotalt).isEqualTo(5)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
     }
 
     @Test
@@ -529,6 +547,8 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         private const val OPPGAVE_ID = 315488374L
         private const val GET_OPPGAVER_URL =
                 "/api/v1/oppgaver?aktoerId=1234567891011&tema=KON&oppgavetype=BEH_SAK&journalpostId=1"
+        private const val GET_MAPPER_URL =
+                "/api/v1/mapper?enhetsnr=1234567891011&opprettetFom=dcssdf&limit=50"
         private const val GET_OPPGAVE_URL = "/api/v1/oppgaver/$OPPGAVE_ID"
         private const val EKSTRA_BESKRIVELSE = " Ekstra beskrivelse"
     }
