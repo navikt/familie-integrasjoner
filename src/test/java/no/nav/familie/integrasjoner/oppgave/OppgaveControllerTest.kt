@@ -144,7 +144,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 .extracting<String, RuntimeException> { obj: ILoggingEvent -> obj.formattedMessage }
                 .anyMatch {
                     it.contains("[oppgave][Ingen oppgaver funnet for http://localhost:28085/api/v1/oppgaver" +
-                                "?aktoerId=1234567891011&tema=KON&oppgavetype=BEH_SAK&journalpostId=1]")
+                                "?aktoerId=1234567891011&tema=KON&oppgavetype=BEH_SAK&journalpostId=1&statuskategori=AAPEN]")
                 }
         assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
     }
@@ -546,7 +546,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         private const val OPPDATER_OPPGAVE_URL = "${OPPGAVE_URL}/oppdater"
         private const val OPPGAVE_ID = 315488374L
         private const val GET_OPPGAVER_URL =
-                "/api/v1/oppgaver?aktoerId=1234567891011&tema=KON&oppgavetype=BEH_SAK&journalpostId=1"
+                "/api/v1/oppgaver?aktoerId=1234567891011&tema=KON&oppgavetype=BEH_SAK&journalpostId=1&statuskategori=AAPEN"
         private const val GET_MAPPER_URL =
                 "/api/v1/mapper?enhetsnr=1234567891011&opprettetFom=dcssdf&limit=50"
         private const val GET_OPPGAVE_URL = "/api/v1/oppgaver/$OPPGAVE_ID"

@@ -36,7 +36,7 @@ class OppgaveService constructor(
 
     fun oppdaterOppgave(request: Oppgave): Long {
         val oppgave: Oppgave = if (request.id == null) {
-            oppgaveRestClient.finnOppgave(request)
+            oppgaveRestClient.finnÅpenBehandleSakOppgave(request)
         } else {
             oppgaveRestClient.finnOppgaveMedId(request.id!!)
         }
