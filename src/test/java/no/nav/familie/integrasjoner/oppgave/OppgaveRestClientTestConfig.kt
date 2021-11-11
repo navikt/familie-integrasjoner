@@ -52,7 +52,7 @@ class OppgaveRestClientTestConfig {
         } returns FinnOppgaveResponseDto(1, listOf(response))
 
         every {
-            klient.finnOppgave(any())
+            klient.finnÅpenBehandleSakOppgave(any())
         } returns response
 
         every {
