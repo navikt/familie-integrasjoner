@@ -16,7 +16,7 @@ object SkolepengerFrittståendeBrevMetadata : Dokumentmetadata {
     override val behandlingstema: Behandlingstema = Behandlingstema.Skolepenger
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.SKOLEPENGER_FRITTSTÅENDE_BREV
-    override val tittel: String = "Brev om skolepenger"
+    override val tittel: String? = null
     override val brevkode: String = "EFC2"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }

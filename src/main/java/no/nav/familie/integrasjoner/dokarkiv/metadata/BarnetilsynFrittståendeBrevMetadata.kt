@@ -16,7 +16,7 @@ object BarnetilsynFrittståendeBrevMetadata : Dokumentmetadata {
     override val behandlingstema: Behandlingstema = Behandlingstema.Barnetilsyn
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETILSYN_FRITTSTÅENDE_BREV
-    override val tittel: String = "Brev om barnetilsyn"
+    override val tittel: String? = null
     override val brevkode: String = "EFB2"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
