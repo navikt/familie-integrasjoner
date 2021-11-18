@@ -48,7 +48,7 @@ class ArbeidsfordelingService(
             return when (it.gtType) {
                 GeografiskTilknytningType.BYDEL -> it.gtBydel!!
                 GeografiskTilknytningType.KOMMUNE -> it.gtKommune!!
-                GeografiskTilknytningType.UTLAND -> it.gtLand!!
+                GeografiskTilknytningType.UTLAND -> it.gtLand ?: "Ukjent"
                 GeografiskTilknytningType.UDEFINERT -> error("Kan ikke finne nav-kontor fra geografisk tilknytning=[$it]")
             }
         }
