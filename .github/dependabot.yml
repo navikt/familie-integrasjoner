@@ -8,12 +8,16 @@ registries:
     password: "${{secrets.NAV_READ_PACKAGES}}"
 
 updates:
-- package-ecosystem: maven
-  directory: "/"
-  schedule:
-    interval: weekly
-    day: "sunday"
-    time: "04:00"
-  open-pull-requests-limit: 10
-  registries:
-    - familie-felles
+  - package-ecosystem: maven
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: "sunday"
+      time: "04:00"
+    open-pull-requests-limit: 10
+    registries:
+      - familie-felles
+  - package-ecosystem: "github-actions"
+      directory: "/"
+      schedule:
+        interval: "daily"
