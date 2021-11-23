@@ -16,7 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v1
       - name: Read/save maven cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2.1.7
         with:
           path: ~/.github/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
