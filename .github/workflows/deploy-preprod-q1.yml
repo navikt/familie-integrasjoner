@@ -13,19 +13,12 @@ jobs:
     name: Build, push and deploy to dev-fss Q1
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v1
-      - name: Read/save maven cache
-        uses: actions/cache@v1
+      - uses: actions/checkout@v2.4.0
+      - uses: actions/setup-java@v2.4.0
         with:
-          path: ~/.github/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-      - name: Set up JDK 1.11
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.11
+          java-version: 11
+          distribution: 'temurin'
+          cache: 'maven'
       - name: Bygg med maven
         env:
           GITHUB_USERNAME: x-access-token
