@@ -27,3 +27,11 @@ class CacheConfig {
         }
     }
 }
+
+fun <T> CacheManager.getNullable(cache: String, key: String, valueLoader: () -> T?): T? =
+        (getCacheOrThrow(cache)).get(key, valueLoader)
+fun <T> CacheManager.getValue(cache: String, key: String, valueLoader: () -> T): T =
+        this.getNullable(cache, key, valueLoader) ?: error("Finner ikke cache for cache=$cache key=$key")
+
+
+fun CacheManager.getCacheOrThrow(cache: String) = this.getCache(cache) ?: error("Finner ikke cache=$cache")
