@@ -51,15 +51,13 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
     fun lagJournalpostV2(deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest,
                          navIdent: String? = null): ArkiverDokumentResponse {
         val request = mapTilOpprettJournalpostRequest(deprecatedArkiverDokumentRequest)
-        val response =
-                dokarkivRestClient.lagJournalpost(request, deprecatedArkiverDokumentRequest.forsøkFerdigstill, navIdent)
+        val response = dokarkivRestClient.lagJournalpost(request, deprecatedArkiverDokumentRequest.forsøkFerdigstill, navIdent)
         return mapTilArkiverDokumentResponse(response)
     }
 
     fun lagJournalpostV3(arkiverDokumentRequest: DeprecatedArkiverDokumentRequest2, navIdent: String? = null): ArkiverDokumentResponse {
         val request = mapTilOpprettJournalpostRequest(arkiverDokumentRequest)
-        val response =
-                dokarkivRestClient.lagJournalpost(request, arkiverDokumentRequest.forsøkFerdigstill, navIdent)
+        val response = dokarkivRestClient.lagJournalpost(request, arkiverDokumentRequest.forsøkFerdigstill, navIdent)
         return mapTilArkiverDokumentResponse(response)
     }
 
@@ -92,6 +90,7 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
         }
 
         LOG.info("Journalfører fagsak ${sak?.fagsakId} med tittel ${hoveddokument.tittel ?: metadata.tittel}")
+        val eksternReferanseId = arkiverDokumentRequest.eksternReferanseId ?: MDCOperations.getCallId()
         return OpprettJournalpostRequest(journalpostType = metadata.journalpostType,
                                          behandlingstema = metadata.behandlingstema?.value,
                                          kanal = metadata.kanal,
@@ -100,7 +99,7 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
                                          avsenderMottaker = avsenderMottaker,
                                          bruker = dokarkivBruker,
                                          dokumenter = dokumenter.toList(),
-                                         eksternReferanseId = MDCOperations.getCallId(),
+                                         eksternReferanseId = eksternReferanseId,
                                          journalfoerendeEnhet = arkiverDokumentRequest.journalførendeEnhet,
                                          sak = sak)
     }
