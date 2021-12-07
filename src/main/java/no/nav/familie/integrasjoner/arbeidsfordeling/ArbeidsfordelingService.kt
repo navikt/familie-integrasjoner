@@ -11,9 +11,12 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedAdresseBe
 import no.nav.familie.integrasjoner.personopplysning.internal.personIdentMedKode6
 import no.nav.familie.integrasjoner.personopplysning.internal.personMedKode7
 import no.nav.familie.kontrakter.felles.Tema
+import no.nav.familie.kontrakter.felles.annotasjoner.Improvement
 import no.nav.familie.kontrakter.felles.arbeidsfordeling.Enhet
 import no.nav.familie.kontrakter.felles.navkontor.NavKontorEnhet
+import org.slf4j.LoggerFactory
 import org.springframework.cache.CacheManager
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
 @Service
@@ -24,6 +27,8 @@ class ArbeidsfordelingService(
         private val egenAnsattService: EgenAnsattService,
         private val personopplysningerService: PersonopplysningerService,
         private val cacheManager: CacheManager) {
+
+    private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
     fun finnBehandlendeEnhet(tema: Tema,
                              geografi: String?,
@@ -38,10 +43,15 @@ class ArbeidsfordelingService(
         return klient.finnBehandlendeEnhet(tema, personinfo.geografiskTilknytning, personinfo.diskresjonskode)
     }
 
+    @Improvement("Må ta høyde for om personIdent har diskresjonskode eller skjerming/er egen ansatt. Nå krasjer den for de med kode 6")
     fun finnLokaltNavKontor(personIdent: String, tema: Tema): NavKontorEnhet {
         val geografiskTilknytning = pdlRestClient.hentGeografiskTilknytning(personIdent, tema)
 
-        val geografiskTilknytningKode: String = utledGeografiskTilknytningKode(geografiskTilknytning)
+        val geografiskTilknytningKode: String? = utledGeografiskTilknytningKode(geografiskTilknytning)
+        if (geografiskTilknytningKode == null) {
+            secureLogger.info("Fant ikke geografiskTilknytningKode=$geografiskTilknytning for personIdent=$personIdent")
+            error("Kan ikke utlede lokalt navkontor når det ikke finnes en geografisk tilknytning til personen")
+        }
 
         return restClient.hentEnhet(geografiskTilknytningKode)
 
@@ -51,17 +61,19 @@ class ArbeidsfordelingService(
         return restClient.hentNavkontor(enhetsId)
     }
 
-    private fun utledGeografiskTilknytningKode(geografiskTilknytning: GeografiskTilknytningDto): String {
+    private fun utledGeografiskTilknytningKode(geografiskTilknytning: GeografiskTilknytningDto): String? {
         geografiskTilknytning.let {
             return when (it.gtType) {
-                GeografiskTilknytningType.BYDEL -> it.gtBydel!!
-                GeografiskTilknytningType.KOMMUNE -> it.gtKommune!!
-                GeografiskTilknytningType.UTLAND -> it.gtLand ?: "Ukjent"
-                GeografiskTilknytningType.UDEFINERT -> error("Kan ikke finne nav-kontor fra geografisk tilknytning=[$it]")
+                GeografiskTilknytningType.BYDEL -> it.gtBydel
+                GeografiskTilknytningType.KOMMUNE -> it.gtKommune
+                GeografiskTilknytningType.UTLAND -> it.gtLand
+                GeografiskTilknytningType.UDEFINERT -> null
             }
         }
     }
 
+
+    @Cacheable("enhet_for_person_med_relasjoner")
     fun finnBehandlendeEnhetForPersonMedRelasjoner(personIdent: String, tema: Tema): List<Enhet> {
         return cacheManager.getValue("navEnhet", personIdent) {
             val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent, tema)
@@ -71,16 +83,18 @@ class ArbeidsfordelingService(
                     personMedRelasjoner.barn +
                     personMedRelasjoner.barnsForeldrer +
                     personMedRelasjoner.sivilstand
-
             val egneAnsatte = finnEgneAnsatte(aktuellePersoner)
-            val identMedStrengeste = utledPersonIdentMedStrengestSjekk(personIdent = personIdent,
+
+            val personMedStrengestBehov = utledPersonMedStrengestBehov(personIdent = personIdent,
                                                                        personerMedAdresseBeskyttelse = aktuellePersoner,
                                                                        egneAnsatte = egneAnsatte)
-            val personInfo = personopplysningerService.hentPersoninfo(identMedStrengeste)
-            restClient.finnBehandlendeEnhetMedBesteMatch(gjeldendeTema = tema,
-                                                         gjeldendeGeografiskOmråde = personInfo.geografiskTilknytning,
-                                                         gjeldendeDiskresjonskode = personInfo.diskresjonskode,
-                                                         erEgenAnsatt = egneAnsatte.contains(identMedStrengeste))
+            val geografiskTilknytning = pdlRestClient.hentGeografiskTilknytning(personMedStrengestBehov.personIdent, tema)
+
+            restClient.finnBehandlendeEnhetMedBesteMatch(
+                    gjeldendeTema = tema,
+                    gjeldendeGeografiskOmråde = utledGeografiskTilknytningKode(geografiskTilknytning),
+                    gjeldendeDiskresjonskode = personMedStrengestBehov.adressebeskyttelse?.diskresjonskode,
+                    erEgenAnsatt = egneAnsatte.contains(personMedStrengestBehov.personIdent))
         }
 
     }
@@ -88,14 +102,17 @@ class ArbeidsfordelingService(
     private fun finnEgneAnsatte(aktuellePersoner: List<PersonMedAdresseBeskyttelse>) =
             egenAnsattService.erEgenAnsatt(aktuellePersoner.map { it.personIdent }.toSet()).filter { it.value }.keys
 
-    private fun utledPersonIdentMedStrengestSjekk(personIdent: String,
-                                                  personerMedAdresseBeskyttelse: List<PersonMedAdresseBeskyttelse>,
-                                                  egneAnsatte: Set<String>): String {
+    private fun utledPersonMedStrengestBehov(personIdent: String,
+                                             personerMedAdresseBeskyttelse: List<PersonMedAdresseBeskyttelse>,
+                                             egneAnsatte: Set<String>): PersonMedAdresseBeskyttelse {
 
-        return personerMedAdresseBeskyttelse.personIdentMedKode6()
-               ?: egneAnsatte.firstOrNull()
-               ?: personerMedAdresseBeskyttelse.personMedKode7()
-               ?: personIdent
+        val personMedStrengestGrad = personerMedAdresseBeskyttelse.personIdentMedKode6()
+                                     ?: egneAnsatte.firstOrNull()
+                                     ?: personerMedAdresseBeskyttelse.personMedKode7()
+                                     ?: personIdent
+
+        return personerMedAdresseBeskyttelse.find { it.personIdent == personMedStrengestGrad }
+               ?: error("Noe har gått veldig galt ettersom person strengest grad ikke finnes i listen over aktuelle personer")
 
     }
 

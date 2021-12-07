@@ -8,8 +8,6 @@ import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningDto
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningType
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
-import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
-import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.FORTROLIG
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG
@@ -22,7 +20,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager
-import java.time.LocalDate
 
 internal class ArbeidsfordelingServiceTest {
 
@@ -220,7 +217,6 @@ internal class ArbeidsfordelingServiceTest {
         verify { restClient.finnBehandlendeEnhetMedBesteMatch(any(), any(), "SPFO", true) }
     }
 
-
     private fun mockPersonInfo(kode6: Set<String>, kode7: Set<String>, egenAnsatte: Set<String>) {
         val ektefelle = PersonMedAdresseBeskyttelse(ektefelleIdent, utledAdressebeskyttelse(ektefelleIdent, kode6, kode7))
         val fullmakt = PersonMedAdresseBeskyttelse(fullmaktIdent, utledAdressebeskyttelse(fullmaktIdent, kode6, kode7))
@@ -232,7 +228,7 @@ internal class ArbeidsfordelingServiceTest {
                 PersonMedAdresseBeskyttelse(annenForelderZIdent, utledAdressebeskyttelse(annenForelderZIdent, kode6, kode7))
         val relasjonerUtenGradering = PersonMedRelasjoner(
                 personIdent = ident,
-                adressebeskyttelse = null,
+                adressebeskyttelse = utledAdressebeskyttelse(ident, kode6, kode7),
                 sivilstand = listOf(ektefelle),
                 fullmakt = listOf(fullmakt),
                 barn = listOf(barnX, barnZ),
@@ -244,16 +240,13 @@ internal class ArbeidsfordelingServiceTest {
 
         every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } returns egenAnsatte.associateWith { true }
 
-        every { personopplysningerService.hentPersoninfo(any()) } answers {
-            val diskresjonskode = utledDiskresjonskode(firstArg(), kode6, kode7)
-            Personinfo.Builder()
-                    .medFødselsdato(LocalDate.now())
-                    .medNavn("Navn")
-                    .medPersonIdent(PersonIdent(firstArg()))
-                    .medDiskresjonsKode(diskresjonskode)
-                    .medGegrafiskTilknytning("3032")
-                    .build()
-        }
+        every {
+            pdlRestClient.hentGeografiskTilknytning(any(), any())
+        } returns GeografiskTilknytningDto(gtType = GeografiskTilknytningType.KOMMUNE,
+                                           gtBydel = null,
+                                           gtKommune = "3032",
+                                           gtLand = null
+        )
     }
 
     fun utledAdressebeskyttelse(personIdent: String, kode6: Set<String>, kode7: Set<String>): ADRESSEBESKYTTELSEGRADERING? {
@@ -263,14 +256,5 @@ internal class ArbeidsfordelingServiceTest {
             else -> UGRADERT
         }
     }
-
-    fun utledDiskresjonskode(personIdent: String, kode6: Set<String>, kode7: Set<String>): String? {
-        return when {
-            kode6.contains(personIdent) -> "SPSF"
-            kode7.contains(personIdent) -> "SPFO"
-            else -> null
-        }
-    }
-
 
 }

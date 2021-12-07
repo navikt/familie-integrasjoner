@@ -43,7 +43,7 @@ class ArbeidsfordelingRestClient(@Value("\${NORG2_URL}")
                         .toUri(),
                 ArbeidsfordelingKritierie(diskresjonskode = gjeldendeDiskresjonskode,
                                           geografiskOmraade = gjeldendeGeografiskOmråde,
-                                          tema = gjeldendeTema.toString(),
+                                          tema = gjeldendeTema.name,
                                           skjermet = erEgenAnsatt),
 
                 )
