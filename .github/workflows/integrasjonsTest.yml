@@ -9,6 +9,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+          fetch-depth: 0 # hvis ikke så får ikke sonar diff mot HEAD^
       - uses: actions/setup-java@v2
         with:
           java-version: 11
