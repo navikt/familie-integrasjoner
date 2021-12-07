@@ -13,7 +13,7 @@ import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.FinnBehandlendeE
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
-//TODO test for se sonar klage
+
 @Service
 class ArbeidsfordelingClient(private val arbeidsfordelingV1: ArbeidsfordelingV1)
     : AbstractSoapClient("arbeidsfordeling"), Pingable {
