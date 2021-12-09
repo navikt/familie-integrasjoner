@@ -36,7 +36,7 @@ class ArbeidsfordelingRestClient(@Value("\${NORG2_URL}")
                                           gjeldendeGeografiskOmråde: String?,
                                           gjeldendeDiskresjonskode: String?,
                                           erEgenAnsatt: Boolean): List<Enhet> {
-        return postForEntity(
+        return postForEntity<List<NavKontorEnhet>>(
                 UriComponentsBuilder.fromUri(norg2Uri)
                         .pathSegment("api/v1/arbeidsfordeling/enheter/bestmatch")
                         .build()
@@ -46,7 +46,7 @@ class ArbeidsfordelingRestClient(@Value("\${NORG2_URL}")
                                           tema = gjeldendeTema.name,
                                           skjermet = erEgenAnsatt),
 
-                )
+                ).map { Enhet(enhetId = it.enhetNr, enhetNavn = it.navn) }
     }
 
     override val pingUri: URI
