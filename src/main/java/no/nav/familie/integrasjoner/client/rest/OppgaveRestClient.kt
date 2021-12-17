@@ -31,7 +31,7 @@ import kotlin.math.min
 
 @Component
 class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: URI,
-                        @Qualifier("sts") private val restTemplate: RestOperations)
+                        @Qualifier("jwtBearer") private val restTemplate: RestOperations)
     : AbstractPingableRestClient(restTemplate, "oppgave") {
 
     override val pingUri = UriUtil.uri(oppgaveBaseUrl, PATH_PING)
