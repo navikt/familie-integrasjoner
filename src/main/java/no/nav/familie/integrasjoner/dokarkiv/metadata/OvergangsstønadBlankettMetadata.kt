@@ -18,6 +18,6 @@ object OvergangsstønadBlankettMetadata : Dokumentmetadata {
     override val dokumenttype: Dokumenttype = Dokumenttype.OVERGANGSSTØNAD_BLANKETT
     override val tittel: String = "Blankett for overgangsstønad - enslig mor eller far"
     override val brevkode: String? = null
-    override val dokumentKategori: Dokumentkategori = Dokumentkategori.FORVALTNINGSNOTAT
+    override val dokumentKategori: Dokumentkategori = Dokumentkategori.IS
 
 }

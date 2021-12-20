@@ -32,7 +32,7 @@ enum class Dokumentkategori(private val beskrivelse: String) {
     PUBL_BLANKETT_EOS("Pb EØS"),
     ELEKTRONISK_DIALOG("Elektronisk dialog"),
     REFERAT("Referat"),
-    FORVALTNINGSNOTAT("Forvaltningsnotat"),
+    FORVALTNINGSNOTAT("Forvaltningsnotat"), // DENNE BLIR SYNLIG TIL SLUTTBRUKER!
     SOK("Søknad"),
     KA("Klage eller anke")
 }

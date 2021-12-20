@@ -20,7 +20,6 @@ import no.nav.familie.integrasjoner.config.ApiExceptionHandler
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.objectMapper
-import no.nav.familie.kontrakter.felles.oppgave.FinnMappeRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
@@ -53,7 +52,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.time.LocalDate
 
-@ActiveProfiles("integrasjonstest", "mock-sts")
+@ActiveProfiles("integrasjonstest", "mock-oauth")
 @TestPropertySource(properties = ["OPPGAVE_URL=http://localhost:28085"])
 @AutoConfigureWireMock(port = 28085)
 class OppgaveControllerTest : OppslagSpringRunnerTest() {
@@ -77,7 +76,10 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     fun `finnMApper med gyldig query returnerer mapper`() {
 
         stubFor(get(GET_MAPPER_URL)
-                        .willReturn(okJson(objectMapper.writeValueAsString(FinnMappeResponseDto(5, listOf(MappeDto(1, "1")))))))
+                        .willReturn(okJson(objectMapper.writeValueAsString(FinnMappeResponseDto(5,
+                                                                                                listOf(MappeDto(1,
+                                                                                                                "1",
+                                                                                                                "4489")))))))
 
         val response: ResponseEntity<Ressurs<FinnMappeResponseDto>> =
                 restTemplate.exchange(localhost("/api/oppgave/mappe/sok?enhetsnr=1234567891011&opprettetFom=dcssdf&limit=50"),
