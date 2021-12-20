@@ -17,6 +17,6 @@ object BarnetrygdInformasjonsbrevFødselMindreårigMetadata : Dokumentmetadata {
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_INFORMASJONSBREV_FØDSEL_MINDREÅRIG
     override val tittel: String = "Informasjonsbrev fødsel mindreårig"
-    override val brevkode: String = "informasjonsbrevFødselMindreårig"
+    override val brevkode: String = "informasjonsbrev-fodsel-mindreaarig"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }

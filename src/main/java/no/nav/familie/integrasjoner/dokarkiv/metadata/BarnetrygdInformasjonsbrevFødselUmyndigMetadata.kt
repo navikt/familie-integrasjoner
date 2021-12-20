@@ -17,6 +17,6 @@ object BarnetrygdInformasjonsbrevFødselUmyndigMetadata : Dokumentmetadata {
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_INFORMASJONSBREV_FØDSEL_UMYNDIG
     override val tittel: String = "Informasjonsbrev fødsel umyndig"
-    override val brevkode: String = "informasjonsbrevFødselUmyndig"
+    override val brevkode: String = "informasjonsbrev-fodsel-umyndig"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
