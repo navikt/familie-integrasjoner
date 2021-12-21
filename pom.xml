@@ -19,7 +19,7 @@
         <revision>1</revision>
         <sha1></sha1>
         <changelist>-SNAPSHOT</changelist>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <springfox.version>3.0.0</springfox.version>
         <common-java-modules.version>2.2021.12.09_11.47-999457edc68f</common-java-modules.version>
         <felles.version>1.20211215125819_e5c781c</felles.version>
@@ -374,7 +374,7 @@
                     <compilerPlugins>
                         <plugin>spring</plugin>
                     </compilerPlugins>
-                    <jvmTarget>11</jvmTarget>
+                    <jvmTarget>${java.version}</jvmTarget>
                 </configuration>
                 <executions>
                     <execution>
