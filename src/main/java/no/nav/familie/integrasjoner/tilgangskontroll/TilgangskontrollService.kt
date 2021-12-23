@@ -24,7 +24,7 @@ class TilgangskontrollService(private val cachedTilgangskontrollService: CachedT
 
     fun sjekkTilgangTilPersonMedRelasjoner(personIdent: String, tema: Tema): Tilgang {
         if(tema != Tema.ENF || tema != Tema.BAR) {
-            throw IllegalArgumentException("Har ikke lagt inn støtte for andre enn ENF")
+            throw IllegalArgumentException("Har ikke lagt inn støtte for andre enn ENF eller BAR")
         }
         val jwtToken = SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken("azuread")
         return cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner(personIdent, jwtToken, tema)
