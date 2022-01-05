@@ -43,10 +43,16 @@ class InfotrygdController(
         } catch (ex: RestClientResponseException) {
             if (ex.rawStatusCode == 404) {
                 LOG.info("404 mot infotrygd-kontantstotte")
+            } else {
+                LOG.error("Oppslag mot infotrygd-kontantstotte feilet. Status code: ${ex.rawStatusCode}")
+                secureLogger.error(
+                    "Oppslag mot infotrygd-kontantstotte feilet. " +
+                        "feilmelding=${ex.message} responsebody=${ex.responseBodyAsString} exception=$ex"
+                )
             }
             ResponseEntity
                 .status(ex.rawStatusCode)
-                .body(failure("Oppslag mot infotrygd-kontantstøtte feilet", error = ex))
+                .body(failure("Oppslag mot infotrygd-kontantstøtte feilet. ${ex.responseBodyAsString}", error = ex))
         }
     }
 
