@@ -25,12 +25,16 @@ import org.springframework.web.client.RestClientResponseException
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/infotrygd")
-class InfotrygdController(private val infotrygdRestClient: InfotrygdRestClient,
-                          private val infotrygdVedtakSoapClient: InfotrygdVedtakSoapClient) {
+class InfotrygdController(
+    private val infotrygdRestClient: InfotrygdRestClient,
+    private val infotrygdVedtakSoapClient: InfotrygdVedtakSoapClient
+) {
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/harBarnAktivKontantstotte"])
-    fun aktivKontantstøtte(@RequestHeader(name = "Nav-Personident")
-                           fnr: String): ResponseEntity<Ressurs<AktivKontantstøtteInfo>> {
+    fun aktivKontantstøtte(
+        @RequestHeader(name = "Nav-Personident")
+        fnr: String
+    ): ResponseEntity<Ressurs<AktivKontantstøtteInfo>> {
         if (!fnr.matches(Regex("[0-9]+"))) {
             throw HttpClientErrorException(HttpStatus.BAD_REQUEST, "fnr må være et tall")
         }
@@ -41,8 +45,8 @@ class InfotrygdController(private val infotrygdRestClient: InfotrygdRestClient,
                 LOG.info("404 mot infotrygd-kontantstotte")
             }
             ResponseEntity
-                    .status(ex.rawStatusCode)
-                    .body(failure("Oppslag mot infotrygd-kontantstøtte feilet", error = ex))
+                .status(ex.rawStatusCode)
+                .body(failure("Oppslag mot infotrygd-kontantstøtte feilet", error = ex))
         }
     }
 
@@ -56,5 +60,4 @@ class InfotrygdController(private val infotrygdRestClient: InfotrygdRestClient,
         private val LOG = LoggerFactory.getLogger(InfotrygdController::class.java)
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
     }
-
 }
