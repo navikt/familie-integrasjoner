@@ -24,22 +24,6 @@ import org.springframework.web.client.RestClientResponseException
 class InfotrygdController(private val infotrygdRestClient: InfotrygdRestClient,
                           private val infotrygdVedtakSoapClient: InfotrygdVedtakSoapClient) {
 
-    @ExceptionHandler(HttpStatusCodeException::class)
-    fun handleExceptions(ex: HttpStatusCodeException): ResponseEntity<Ressurs<Any>> {
-        if (ex is HttpClientErrorException.NotFound) {
-            LOG.info("404 mot infotrygd-kontantstotte")
-        } else {
-            LOG.error("Oppslag mot infotrygd-kontantstotte feilet. Status code: {}", ex.statusCode)
-            secureLogger.error("Oppslag mot infotrygd-kontantstotte feilet. feilmelding={} responsebody={} exception={}",
-                               ex.message,
-                               ex.responseBodyAsString,
-                               ex)
-        }
-        return ResponseEntity
-                .status(ex.statusCode)
-                .body(failure("Oppslag mot infotrygd-kontanstøtte feilet ${ex.responseBodyAsString}", error = ex))
-    }
-
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/harBarnAktivKontantstotte"])
     fun aktivKontantstøtte(@RequestHeader(name = "Nav-Personident")
                            fnr: String): ResponseEntity<Ressurs<AktivKontantstøtteInfo>> {
