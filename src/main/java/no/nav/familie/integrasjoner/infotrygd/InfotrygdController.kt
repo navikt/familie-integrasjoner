@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpStatusCodeException
+import org.springframework.web.client.RestClientResponseException
 
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
@@ -45,8 +46,16 @@ class InfotrygdController(private val infotrygdRestClient: InfotrygdRestClient,
         if (!fnr.matches(Regex("[0-9]+"))) {
             throw HttpClientErrorException(HttpStatus.BAD_REQUEST, "fnr må være et tall")
         }
-        return ResponseEntity.ok(success(infotrygdRestClient.hentAktivKontantstøtteFor(fnr),
-                                         "Oppslag mot Infotrygd OK"))
+        return try {
+            ResponseEntity.ok(success(infotrygdRestClient.hentAktivKontantstøtteFor(fnr), "Oppslag mot Infotrygd OK"))
+        } catch (ex: RestClientResponseException) {
+            if (ex.rawStatusCode == 404) {
+                LOG.info("404 mot infotrygd-kontantstotte")
+            }
+            ResponseEntity
+                    .status(ex.rawStatusCode)
+                    .body(failure("Oppslag mot infotrygd-kontantstøtte feilet", error = ex))
+        }
     }
 
     @PostMapping("vedtak-perioder")
