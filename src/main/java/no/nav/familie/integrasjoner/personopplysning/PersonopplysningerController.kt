@@ -94,8 +94,8 @@ class PersonopplysningerController(private val personopplysningerService: Person
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["strengeste-adressebeskyttelse/"])
     fun hentStrengesteAdressebeskyttelseForPersonMedRelasjoner(@RequestBody personIdent: PersonIdent,
                                                                @RequestHeader(name = "Nav-Tema")
-                                                               tema: Tema): Ressurs<ADRESSEBESKYTTELSEGRADERING> {
+                                                               tema: Tema): ADRESSEBESKYTTELSEGRADERING {
         val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent.ident, tema)
-        return success(TilgangskontrollUtil.høyesteGraderingen(personMedRelasjoner) ?: ADRESSEBESKYTTELSEGRADERING.UGRADERT)
+        return TilgangskontrollUtil.høyesteGraderingen(personMedRelasjoner) ?: ADRESSEBESKYTTELSEGRADERING.UGRADERT
     }
 }
