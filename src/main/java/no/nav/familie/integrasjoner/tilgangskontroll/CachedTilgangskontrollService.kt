@@ -39,7 +39,7 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
         val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent, tema)
         secureLogger.info("Sjekker tilgang til {}", personMedRelasjoner)
 
-        val høyesteGraderingen = høyesteGraderingen(personMedRelasjoner)
+        val høyesteGraderingen = TilgangskontrollUtil.høyesteGraderingen(personMedRelasjoner)
         return sjekTilgang(høyesteGraderingen, jwtToken, personIdent) { erEgenAnsatt(personMedRelasjoner) }
     }
 
@@ -70,18 +70,7 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
         return egenAnsattService.erEgenAnsatt(relevanteIdenter).any { it.value }
     }
 
-    private fun høyesteGraderingen(personUtvidet: PersonMedRelasjoner): ADRESSEBESKYTTELSEGRADERING? {
-        val adressebeskyttelser =
-                (personUtvidet.adressebeskyttelse?.let { setOf(it) } ?: emptySet<ADRESSEBESKYTTELSEGRADERING>() +
-                 listOf(personUtvidet.sivilstand, personUtvidet.fullmakt, personUtvidet.barn, personUtvidet.barnsForeldrer)
-                         .flatMap { relasjoner -> relasjoner.mapNotNull { it.adressebeskyttelse } })
-        return when {
-            adressebeskyttelser.contains(STRENGT_FORTROLIG_UTLAND) -> STRENGT_FORTROLIG_UTLAND
-            adressebeskyttelser.contains(STRENGT_FORTROLIG) -> STRENGT_FORTROLIG
-            adressebeskyttelser.contains(FORTROLIG) -> FORTROLIG
-            else -> null
-        }
-    }
+
 
     private fun hentTilgangForRolle(adRolle: AdRolle?, jwtToken: JwtToken, personIdent: String): Tilgang {
         val grupper = jwtToken.jwtTokenClaims.getAsList("groups")
