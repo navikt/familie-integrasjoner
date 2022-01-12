@@ -7,11 +7,23 @@ import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSE
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
 
 object TilgangskontrollUtil {
-    fun høyesteGraderingen(personUtvidet: PersonMedRelasjoner): ADRESSEBESKYTTELSEGRADERING? {
+    fun RiktighøyesteGraderingen(personUtvidet: PersonMedRelasjoner): ADRESSEBESKYTTELSEGRADERING? {
         val adressebeskyttelser =
-                (personUtvidet.adressebeskyttelse?.let { setOf(it) } ?: emptySet<ADRESSEBESKYTTELSEGRADERING>() +
+            ((personUtvidet.adressebeskyttelse?.let { setOf(it) } ?: emptySet<ADRESSEBESKYTTELSEGRADERING>()) +
                  listOf(personUtvidet.sivilstand, personUtvidet.fullmakt, personUtvidet.barn, personUtvidet.barnsForeldrer)
                          .flatMap { relasjoner -> relasjoner.mapNotNull { it.adressebeskyttelse } })
+        return when {
+            adressebeskyttelser.contains(STRENGT_FORTROLIG_UTLAND) -> STRENGT_FORTROLIG_UTLAND
+            adressebeskyttelser.contains(STRENGT_FORTROLIG) -> STRENGT_FORTROLIG
+            adressebeskyttelser.contains(FORTROLIG) -> FORTROLIG
+            else -> null
+        }
+    }
+    fun høyesteGraderingen(personUtvidet: PersonMedRelasjoner): ADRESSEBESKYTTELSEGRADERING? {
+        val adressebeskyttelser =
+            (personUtvidet.adressebeskyttelse?.let { setOf(it) } ?: emptySet<ADRESSEBESKYTTELSEGRADERING>() +
+            listOf(personUtvidet.sivilstand, personUtvidet.fullmakt, personUtvidet.barn, personUtvidet.barnsForeldrer)
+                .flatMap { relasjoner -> relasjoner.mapNotNull { it.adressebeskyttelse } })
         return when {
             adressebeskyttelser.contains(STRENGT_FORTROLIG_UTLAND) -> STRENGT_FORTROLIG_UTLAND
             adressebeskyttelser.contains(STRENGT_FORTROLIG) -> STRENGT_FORTROLIG
