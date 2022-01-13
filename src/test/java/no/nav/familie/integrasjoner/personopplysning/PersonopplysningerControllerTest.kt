@@ -181,45 +181,47 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
     fun `hent strengeste adressebeskyttelsegradering for person med relasjoner`() {
         val ident = "12345678901"
         val barnsIdent = "12345678910"
-        client.`when`(
-            HttpRequest.request()
-                .withMethod("POST")
-                .withPath("/rest/pdl/graphql")
-                .withBody(gyldigRequestIdentListe("hentpersoner-relasjoner-adressebeskyttelse.graphql"))
-                .withHeader("Tema", "ENF")
-        )
-            .respond(
-                HttpResponse.response().withBody(
-                    readfile("pdlPersonMedRelasjonerOkResponse.json").replace("IDENT-PLACEHOLDER", ident)
-                        .replace("GRADERING-PLACEHOLDER", "UGRADERT")
-                )
-                    .withHeaders(Header("Content-Type", "application/json"))
-            )
-
-        client.`when`(
-            HttpRequest.request()
-                .withMethod("POST")
-                .withPath("/rest/pdl/graphql")
-                .withBody(gyldigRequestIdentListe("hentpersoner-relasjoner-adressebeskyttelse.graphql", ident = barnsIdent))
-                .withHeader("Tema", "ENF")
-        )
-            .respond(
-                HttpResponse.response()
-                    .withBody(
-                        readfile("pdlPersonMedRelasjonerOkResponse.json").replace("IDENT-PLACEHOLDER", barnsIdent)
-                            .replace("GRADERING-PLACEHOLDER", "STRENGT_FORTROLIG")
-                    )
-                    .withHeaders(Header("Content-Type", "application/json"))
-            )
-
+        mockPdlKall(ident, barnsIdent, "UGRADERT", "STRENGT_FORTROLIG")
         val response = restTemplate.exchange<Ressurs<ADRESSEBESKYTTELSEGRADERING>>(
             uriHentStrengesteGradering,
             HttpMethod.POST,
             HttpEntity(PersonIdent(ident), headers.apply { add("Nav-Tema", "ENF") })
         )
-        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         assertThat(response.body?.data).isEqualTo(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG)
+    }
+
+    private fun mockPdlKall(ident: String, barnsIdent: String, persongradering: String, barngradering: String) {
+        client.`when`(
+                HttpRequest.request()
+                        .withMethod("POST")
+                        .withPath("/rest/pdl/graphql")
+                        .withBody(gyldigRequestIdentListe("hentpersoner-relasjoner-adressebeskyttelse.graphql"))
+                        .withHeader("Tema", "ENF")
+        )
+                .respond(
+                        HttpResponse.response().withBody(
+                                readfile("pdlPersonMedRelasjonerOkResponse.json").replace("IDENT-PLACEHOLDER", ident)
+                                        .replace("GRADERING-PLACEHOLDER", persongradering)
+                        )
+                                .withHeaders(Header("Content-Type", "application/json"))
+                )
+
+        client.`when`(
+                HttpRequest.request()
+                        .withMethod("POST")
+                        .withPath("/rest/pdl/graphql")
+                        .withBody(gyldigRequestIdentListe("hentpersoner-relasjoner-adressebeskyttelse.graphql",
+                                                          ident = barnsIdent))
+                        .withHeader("Tema", "ENF")
+        )
+                .respond(
+                        HttpResponse.response()
+                                .withBody(
+                                        readfile("pdlPersonMedRelasjonerOkResponse.json").replace("IDENT-PLACEHOLDER", barnsIdent)
+                                                .replace("GRADERING-PLACEHOLDER", barngradering)
+                                )
+                                .withHeaders(Header("Content-Type", "application/json"))
+                )
     }
 
     private fun hentPersonInfoFraMockedPdlResponse(responseFile: String): ResponseEntity<Ressurs<Person>> {
