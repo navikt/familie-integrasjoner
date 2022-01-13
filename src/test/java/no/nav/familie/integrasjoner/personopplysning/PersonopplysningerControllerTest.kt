@@ -56,7 +56,7 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
         uriHentIdenter = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}v1/identer/$TEMA").toUriString()
         uriHentAktørId = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}aktorId/$TEMA").toUriString()
         uriHentStrengesteGradering =
-            UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}strengeste-adressebeskyttelse-for-person-med-relsjoner")
+            UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}strengeste-adressebeskyttelse-for-person-med-relasjoner")
                 .toUriString()
     }
 

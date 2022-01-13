@@ -91,7 +91,7 @@ class PersonopplysningerController(private val personopplysningerService: Person
     }
 
 
-    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["strengeste-adressebeskyttelse-for-person-med-relsjoner"])
+    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["strengeste-adressebeskyttelse-for-person-med-relasjoner"])
     fun hentStrengesteAdressebeskyttelseForPersonMedRelasjoner(@RequestBody personIdent: PersonIdent,
                                                                @RequestHeader(name = "Nav-Tema")
                                                                tema: Tema): Ressurs<ADRESSEBESKYTTELSEGRADERING> {
