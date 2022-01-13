@@ -91,11 +91,11 @@ class PersonopplysningerController(private val personopplysningerService: Person
     }
 
 
-    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["strengeste-adressebeskyttelse/"])
+    @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["strengeste-adressebeskyttelse-for-person-med-relsjoner"])
     fun hentStrengesteAdressebeskyttelseForPersonMedRelasjoner(@RequestBody personIdent: PersonIdent,
                                                                @RequestHeader(name = "Nav-Tema")
-                                                               tema: Tema): ADRESSEBESKYTTELSEGRADERING {
+                                                               tema: Tema): Ressurs<ADRESSEBESKYTTELSEGRADERING> {
         val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent.ident, tema)
-        return TilgangskontrollUtil.høyesteGraderingen(personMedRelasjoner) ?: ADRESSEBESKYTTELSEGRADERING.UGRADERT
+        return success(TilgangskontrollUtil.høyesteGraderingen(personMedRelasjoner) ?: ADRESSEBESKYTTELSEGRADERING.UGRADERT)
     }
 }
