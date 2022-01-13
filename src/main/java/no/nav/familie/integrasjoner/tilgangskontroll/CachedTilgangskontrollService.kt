@@ -8,6 +8,7 @@ import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSE
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.FORTROLIG
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG_UTLAND
+import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.UGRADERT
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
 import no.nav.familie.kontrakter.felles.Tema
@@ -70,18 +71,21 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
         return egenAnsattService.erEgenAnsatt(relevanteIdenter).any { it.value }
     }
 
-    private fun høyesteGraderingen(personUtvidet: PersonMedRelasjoner): ADRESSEBESKYTTELSEGRADERING? {
+    fun høyesteGraderingen(personUtvidet: PersonMedRelasjoner): ADRESSEBESKYTTELSEGRADERING? {
         val adressebeskyttelser =
-                (personUtvidet.adressebeskyttelse?.let { setOf(it) } ?: emptySet<ADRESSEBESKYTTELSEGRADERING>() +
-                 listOf(personUtvidet.sivilstand, personUtvidet.fullmakt, personUtvidet.barn, personUtvidet.barnsForeldrer)
-                         .flatMap { relasjoner -> relasjoner.mapNotNull { it.adressebeskyttelse } })
+                    lagListeAvRelasjonersAdressegraderinger(personUtvidet) + personUtvidet.adressebeskyttelse
         return when {
             adressebeskyttelser.contains(STRENGT_FORTROLIG_UTLAND) -> STRENGT_FORTROLIG_UTLAND
             adressebeskyttelser.contains(STRENGT_FORTROLIG) -> STRENGT_FORTROLIG
             adressebeskyttelser.contains(FORTROLIG) -> FORTROLIG
+            adressebeskyttelser.contains(UGRADERT) -> UGRADERT
             else -> null
         }
     }
+
+    private fun lagListeAvRelasjonersAdressegraderinger(personUtvidet: PersonMedRelasjoner) =
+        listOf(personUtvidet.sivilstand, personUtvidet.fullmakt, personUtvidet.barn, personUtvidet.barnsForeldrer)
+            .flatMap { relasjoner -> relasjoner.mapNotNull { it.adressebeskyttelse } }
 
     private fun hentTilgangForRolle(adRolle: AdRolle?, jwtToken: JwtToken, personIdent: String): Tilgang {
         val grupper = jwtToken.jwtTokenClaims.getAsList("groups")

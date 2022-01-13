@@ -7,6 +7,7 @@ import no.nav.familie.integrasjoner.config.TilgangConfig
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
+import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.*
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedAdresseBeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
@@ -62,7 +63,7 @@ internal class CachedTilgangskontrollServiceTest {
 
     @Test
     internal fun `har ikke tilgang når det finnes adressebeskyttelser for enskild person`() {
-        mockHentPersonInfo(ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
+        mockHentPersonInfo(FORTROLIG)
         assertThat(sjekkTilgangTilPerson()).isFalse
         verify(exactly = 0) { egenAnsattService.erEgenAnsatt(any<String>()) }
     }
@@ -85,7 +86,7 @@ internal class CachedTilgangskontrollServiceTest {
     internal fun `har ikke tilgang når søkeren er STRENGT_FORTROLIG og saksbehandler har kode7`() {
         mockHarKode7()
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-                lagPersonMedRelasjoner(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG)
+                lagPersonMedRelasjoner(STRENGT_FORTROLIG)
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
@@ -93,43 +94,91 @@ internal class CachedTilgangskontrollServiceTest {
     internal fun `har tilgang når søkeren er STRENGT_FORTROLIG og saksbehandler har kode6`() {
         mockHarKode6()
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-                lagPersonMedRelasjoner(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG)
+                lagPersonMedRelasjoner(STRENGT_FORTROLIG)
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isTrue
     }
 
     @Test
     internal fun `har ikke tilgang når det finnes adressebeskyttelse for søkeren`() {
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-                lagPersonMedRelasjoner(adressebeskyttelse = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
+                lagPersonMedRelasjoner(adressebeskyttelse = FORTROLIG)
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
     @Test
     internal fun `har ikke tilgang når sivilstand inneholder FORTROLIG`() {
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-                lagPersonMedRelasjoner(sivilstand = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
+                lagPersonMedRelasjoner(sivilstand = FORTROLIG)
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
     @Test
     internal fun `har ikke tilgang når fullmakt inneholder FORTROLIG`() {
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-                lagPersonMedRelasjoner(fullmakt = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
+                lagPersonMedRelasjoner(fullmakt = FORTROLIG)
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
     @Test
     internal fun `har ikke tilgang når barn inneholder FORTROLIG`() {
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-                lagPersonMedRelasjoner(barn = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
+                lagPersonMedRelasjoner(barn = FORTROLIG)
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
     @Test
     internal fun `har ikke tilgang når barnsForeldrer inneholder FORTROLIG`() {
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-                lagPersonMedRelasjoner(barnsForeldrer = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
+                lagPersonMedRelasjoner(barnsForeldrer = FORTROLIG)
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
+    }
+
+    @Test fun `høyesteGraderingen skal returnere høyeste gradering fra barn`(){
+        val person = lagPersonMedRelasjoner(
+            adressebeskyttelse = UGRADERT,
+            barn = STRENGT_FORTROLIG
+        )
+
+        assertThat(cachedTilgangskontrollService.høyesteGraderingen(person)).isEqualTo(STRENGT_FORTROLIG)
+    }
+
+    @Test fun `høyesteGraderingen skal returnere høyeste gradering fra hovedperson`(){
+        val person = lagPersonMedRelasjoner(
+            adressebeskyttelse = STRENGT_FORTROLIG,
+            barn = UGRADERT
+        )
+
+        assertThat(cachedTilgangskontrollService.høyesteGraderingen(person)).isEqualTo(STRENGT_FORTROLIG)
+    }
+
+    @Test fun `høyesteGraderingen skal returnere ugradert `(){
+        val person = lagPersonMedRelasjoner(
+            adressebeskyttelse = null,
+            barn = UGRADERT
+        )
+
+        assertThat(cachedTilgangskontrollService.høyesteGraderingen(person)).isEqualTo(UGRADERT)
+    }
+
+    @Test fun `høyesteGraderingen skal returnere null `(){
+        val person = lagPersonMedRelasjoner(
+            adressebeskyttelse = null,
+            barn = null
+        )
+
+        assertThat(cachedTilgangskontrollService.høyesteGraderingen(person)).isEqualTo(null)
+    }
+
+    @Test fun `høyesteGraderingen skal returnere strengeste gradering hvis mange `(){
+        val person = lagPersonMedRelasjoner(
+            adressebeskyttelse = null,
+            barn = UGRADERT,
+            sivilstand = FORTROLIG,
+            fullmakt = STRENGT_FORTROLIG,
+            barnsForeldrer = STRENGT_FORTROLIG_UTLAND
+        )
+
+        assertThat(cachedTilgangskontrollService.høyesteGraderingen(person)).isEqualTo(STRENGT_FORTROLIG_UTLAND)
     }
 
     private fun sjekkTilgangTilPersonMedRelasjoner() =
@@ -153,7 +202,7 @@ internal class CachedTilgangskontrollServiceTest {
     private fun lagPersonMedBeskyttelse(sivilstand: ADRESSEBESKYTTELSEGRADERING?, personIdent: String) =
             sivilstand?.let { listOf(PersonMedAdresseBeskyttelse(personIdent, it)) } ?: emptyList()
 
-    private fun mockHentPersonInfo(adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING = ADRESSEBESKYTTELSEGRADERING.UGRADERT) {
+    private fun mockHentPersonInfo(adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING = UGRADERT) {
         every { personopplysningerService.hentPersoninfo(any(), any(), any()) } returns
                 Person(fødselsdato = "1980-05-12",
                        navn = "navn",
