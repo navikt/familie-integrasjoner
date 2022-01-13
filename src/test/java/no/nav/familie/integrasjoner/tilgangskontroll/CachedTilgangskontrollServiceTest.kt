@@ -133,54 +133,6 @@ internal class CachedTilgangskontrollServiceTest {
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
-    @Test fun `høyesteGraderingen skal returnere høyeste gradering fra barn`(){
-        val person = lagPersonMedRelasjoner(
-            adressebeskyttelse = UGRADERT,
-            barn = STRENGT_FORTROLIG
-        )
-
-        assertThat(cachedTilgangskontrollService.høyesteGraderingen(person)).isEqualTo(STRENGT_FORTROLIG)
-    }
-
-    @Test fun `høyesteGraderingen skal returnere høyeste gradering fra hovedperson`(){
-        val person = lagPersonMedRelasjoner(
-            adressebeskyttelse = STRENGT_FORTROLIG,
-            barn = UGRADERT
-        )
-
-        assertThat(cachedTilgangskontrollService.høyesteGraderingen(person)).isEqualTo(STRENGT_FORTROLIG)
-    }
-
-    @Test fun `høyesteGraderingen skal returnere ugradert `(){
-        val person = lagPersonMedRelasjoner(
-            adressebeskyttelse = null,
-            barn = UGRADERT
-        )
-
-        assertThat(cachedTilgangskontrollService.høyesteGraderingen(person)).isEqualTo(UGRADERT)
-    }
-
-    @Test fun `høyesteGraderingen skal returnere null `(){
-        val person = lagPersonMedRelasjoner(
-            adressebeskyttelse = null,
-            barn = null
-        )
-
-        assertThat(cachedTilgangskontrollService.høyesteGraderingen(person)).isEqualTo(null)
-    }
-
-    @Test fun `høyesteGraderingen skal returnere strengeste gradering hvis mange `(){
-        val person = lagPersonMedRelasjoner(
-            adressebeskyttelse = null,
-            barn = UGRADERT,
-            sivilstand = FORTROLIG,
-            fullmakt = STRENGT_FORTROLIG,
-            barnsForeldrer = STRENGT_FORTROLIG_UTLAND
-        )
-
-        assertThat(cachedTilgangskontrollService.høyesteGraderingen(person)).isEqualTo(STRENGT_FORTROLIG_UTLAND)
-    }
-
     private fun sjekkTilgangTilPersonMedRelasjoner() =
             cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner("", jwtToken, Tema.ENF).harTilgang
 

@@ -8,7 +8,6 @@ import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSE
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.FORTROLIG
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG_UTLAND
-import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.UGRADERT
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
 import no.nav.familie.kontrakter.felles.Tema
@@ -40,7 +39,7 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
         val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent, tema)
         secureLogger.info("Sjekker tilgang til {}", personMedRelasjoner)
 
-        val høyesteGraderingen = høyesteGraderingen(personMedRelasjoner)
+        val høyesteGraderingen = TilgangskontrollUtil.høyesteGraderingen(personMedRelasjoner)
         return sjekTilgang(høyesteGraderingen, jwtToken, personIdent) { erEgenAnsatt(personMedRelasjoner) }
     }
 
@@ -71,21 +70,6 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
         return egenAnsattService.erEgenAnsatt(relevanteIdenter).any { it.value }
     }
 
-    fun høyesteGraderingen(personUtvidet: PersonMedRelasjoner): ADRESSEBESKYTTELSEGRADERING? {
-        val adressebeskyttelser =
-                    lagListeAvRelasjonersAdressegraderinger(personUtvidet) + personUtvidet.adressebeskyttelse
-        return when {
-            adressebeskyttelser.contains(STRENGT_FORTROLIG_UTLAND) -> STRENGT_FORTROLIG_UTLAND
-            adressebeskyttelser.contains(STRENGT_FORTROLIG) -> STRENGT_FORTROLIG
-            adressebeskyttelser.contains(FORTROLIG) -> FORTROLIG
-            adressebeskyttelser.contains(UGRADERT) -> UGRADERT
-            else -> null
-        }
-    }
-
-    private fun lagListeAvRelasjonersAdressegraderinger(personUtvidet: PersonMedRelasjoner) =
-        listOf(personUtvidet.sivilstand, personUtvidet.fullmakt, personUtvidet.barn, personUtvidet.barnsForeldrer)
-            .flatMap { relasjoner -> relasjoner.mapNotNull { it.adressebeskyttelse } }
 
     private fun hentTilgangForRolle(adRolle: AdRolle?, jwtToken: JwtToken, personIdent: String): Tilgang {
         val grupper = jwtToken.jwtTokenClaims.getAsList("groups")
