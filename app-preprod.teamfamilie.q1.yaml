@@ -41,7 +41,6 @@ spec:
     inbound:
       rules:
         - application: familie-ba-sak
-        - application: familie-ba-sak
           cluster: dev-gcp
         - application: familie-tilbake
           cluster: dev-gcp
