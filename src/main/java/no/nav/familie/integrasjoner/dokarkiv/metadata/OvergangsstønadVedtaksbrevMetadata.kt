@@ -17,7 +17,7 @@ object OvergangsstønadVedtaksbrevMetadata : Dokumentmetadata {
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.VEDTAKSBREV_OVERGANGSSTØNAD
     override val tittel: String? = null
-    override val brevkode: String = "EFA1"
+    override val brevkode: String = "ENF_BREV_OVERGANGSSTØNAD_VEDTAK"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.VB
 }
 
