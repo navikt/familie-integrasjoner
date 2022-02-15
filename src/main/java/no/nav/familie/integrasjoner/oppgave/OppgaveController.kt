@@ -8,6 +8,7 @@ import no.nav.familie.kontrakter.felles.oppgave.FinnMappeRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
+import no.nav.familie.kontrakter.felles.oppgave.MappeDto
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.kontrakter.felles.oppgave.OppgavePrioritet
 import no.nav.familie.kontrakter.felles.oppgave.OppgaveResponse
@@ -61,6 +62,11 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     @GetMapping(path = ["/mappe/sok"])
     fun finnMapperV1(finnMappeRequest: FinnMappeRequest): Ressurs<FinnMappeResponseDto> {
         return success(oppgaveService.finnMapper(finnMappeRequest))
+    }
+
+    @GetMapping(path = ["/mappe/finn/{enhetNr}"])
+    fun finnMapper(@PathVariable enhetNr: String): Ressurs<List<MappeDto>> {
+        return success(oppgaveService.finnMapper(enhetNr))
     }
 
     @DateTimeFormat
