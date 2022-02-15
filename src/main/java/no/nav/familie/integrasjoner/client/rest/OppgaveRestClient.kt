@@ -31,7 +31,7 @@ import kotlin.math.min
 
 @Component
 class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: URI,
-                        @Qualifier("sts") private val restTemplate: RestOperations)
+                        @Qualifier("jwtBearer") private val restTemplate: RestOperations)
     : AbstractPingableRestClient(restTemplate, "oppgave") {
 
     override val pingUri = UriUtil.uri(oppgaveBaseUrl, PATH_PING)
@@ -41,7 +41,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
 
     private val logger = LoggerFactory.getLogger(OppgaveRestClient::class.java)
 
-    fun finnOppgave(request: Oppgave): Oppgave {
+    fun finnÅpenBehandleSakOppgave(request: Oppgave): Oppgave {
         request.takeUnless { it.aktoerId == null } ?: error("Finner ikke aktør id på request")
         request.takeUnless {
             it.journalpostId == null
@@ -177,6 +177,7 @@ class OppgaveRestClient(@Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: UR
                 .queryParam("tema", tema)
                 .queryParam("oppgavetype", OPPGAVE_TYPE)
                 .queryParam("journalpostId", journalpostId)
+                .queryParam("statuskategori", "AAPEN")
                 .build()
                 .toUri()
     }

@@ -46,6 +46,7 @@ AZURE_APP_CLIENT_ID: "dummy-klient-id"
 AZURE_APP_CLIENT_SECRET: "dummy-klient-secret"
 INFOTRYGD_KS_SCOPE: "dummy-scope"
 SAF_SCOPE: "dummy-scope"
+OPPGAVE_SCOPE: "dummy-scope"
 DOKARKIV_SCOPE: "api://972814f3-8bdf-44f8-a191-c2ed00020b54/.default"
 GOSYS_INFOTRYGDSAK_URL: "dummy"
 

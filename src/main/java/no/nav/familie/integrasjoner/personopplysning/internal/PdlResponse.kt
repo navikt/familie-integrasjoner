@@ -104,9 +104,10 @@ enum class FORELDERBARNRELASJONROLLE {
     MOR
 }
 
-enum class ADRESSEBESKYTTELSEGRADERING {
-    STRENGT_FORTROLIG_UTLAND, // Kode 19
-    FORTROLIG, // Kode 7
-    STRENGT_FORTROLIG, // Kode 6
-    UGRADERT
+enum class ADRESSEBESKYTTELSEGRADERING(val diskresjonskode: String?) {
+    STRENGT_FORTROLIG_UTLAND("SPSF"), // Kode 19
+    FORTROLIG("SPFO"), // Kode 7
+    STRENGT_FORTROLIG("SPSF"), // Kode 6
+    UGRADERT(null);
+
 }

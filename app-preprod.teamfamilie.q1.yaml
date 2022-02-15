@@ -29,8 +29,8 @@ spec:
       claims:
         groups:
           - id: "de44052d-b062-4497-89a2-0c85b935b808"  # 0000-GA-GOSYS_UTVIDET
-          - id: "69d4a70f-1c83-42a8-8fb8-2f5d54048647"  # 0000-GA-GOSYS_KODE7
-          - id: "87ea7c87-08a2-43bc-83d6-0bfeee92185d"  # 0000-GA-GOSYS_KODE6
+          - id: "ea930b6b-9397-44d9-b9e6-f4cf527a632a"  # 0000-GA-Fortrolig_Adresse
+          - id: "5ef775f2-61f8-4283-bf3d-8d03f428aa14"  # 0000-GA-Strengt_Fortrolig_Adresse
           - id: "93a26831-9866-4410-927b-74ff51a9107c"  # 0000-GA-Barnetrygd-Veileder
           - id: "d21e00a4-969d-4b28-8782-dc818abfae65"  # 0000-GA-Barnetrygd
           - id: "9449c153-5a1e-44a7-84c6-7cc7a8867233"  # 0000-GA-Barnetrygd-Beslutter
@@ -41,11 +41,21 @@ spec:
     inbound:
       rules:
         - application: familie-ba-sak
+          cluster: dev-gcp
         - application: familie-tilbake
           cluster: dev-gcp
         - application: familie-tilbake-lokal
           cluster: dev-gcp
         - application: familie-ba-mottak
+        - application: familie-ef-mottak
+          cluster: dev-gcp
+        - application: familie-ef-sak
+          cluster: dev-gcp
+        - application: familie-ef-iverksett
+          cluster: dev-gcp
+        - application: familie-ef-personhendelse
+          cluster: dev-gcp
+        - application: familie-ef-proxy
   prometheus:
     enabled: true
     path: /internal/prometheus

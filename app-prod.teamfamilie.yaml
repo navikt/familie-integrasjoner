@@ -47,6 +47,7 @@ spec:
       rules:
         - application: familie-ks-sak
         - application: familie-ba-sak
+          cluster: prod-gcp
         - application: familie-tilbake
           cluster: prod-gcp
         - application: familie-ks-mottak
@@ -67,7 +68,7 @@ spec:
     cpuThresholdPercentage: 50
   resources:
     limits:
-      memory: 2Gi
+      memory: 4Gi
       cpu: 1500m
     requests:
       memory: 1Gi

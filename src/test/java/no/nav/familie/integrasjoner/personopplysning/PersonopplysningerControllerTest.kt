@@ -3,7 +3,9 @@ package no.nav.familie.integrasjoner.personopplysning
 import ch.qos.logback.classic.Logger
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
+import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
+import no.nav.familie.kontrakter.felles.PersonIdent
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.personopplysning.FinnPersonidenterResponse
 import no.nav.familie.kontrakter.felles.personopplysning.Ident
@@ -40,6 +42,7 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
     private lateinit var uriHentPersoninfoEnkel: String
     private lateinit var uriHentIdenter: String
     private lateinit var uriHentAktørId: String
+    private lateinit var uriHentStrengesteGradering: String
 
     @BeforeEach
     fun setUp() {
@@ -52,6 +55,9 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
         uriHentPersoninfoEnkel = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}v1/infoEnkel/$TEMA").toUriString()
         uriHentIdenter = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}v1/identer/$TEMA").toUriString()
         uriHentAktørId = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}aktorId/$TEMA").toUriString()
+        uriHentStrengesteGradering =
+            UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}strengeste-adressebeskyttelse-for-person-med-relasjoner")
+                .toUriString()
     }
 
     @Test
@@ -64,9 +70,11 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
         assertThat(response.body?.data?.navn).isEqualTo(NAVN)
         assertThat(response.body?.data?.kjønn).isEqualTo(KJØNN)
         assertThat(response.body?.data?.familierelasjoner?.stream()?.findFirst()?.get()?.personIdent?.id).isEqualTo(
-                FAMILIERELASJON_PERSONIDENT)
+            FAMILIERELASJON_PERSONIDENT
+        )
         assertThat(response.body?.data?.familierelasjoner?.stream()?.findFirst()?.get()?.relasjonsrolle).isEqualTo(
-                FAMILIERELASJON_RELASJONSROLLE)
+            FAMILIERELASJON_RELASJONSROLLE
+        )
     }
 
     @Test
@@ -102,7 +110,7 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
     @Test
     fun `hent personinfo skal returnere persondata med ukjent bostedadresse og manglende sivilstand`() {
         val response: ResponseEntity<Ressurs<Person>> =
-                hentPersonInfoFraMockedPdlResponse("pdlUkjentBostedAdresseOkResponse.json")
+            hentPersonInfoFraMockedPdlResponse("pdlUkjentBostedAdresseOkResponse.json")
         assertThat(response.body?.data?.bostedsadresse?.ukjentBosted?.bostedskommune).isEqualTo("Oslo")
         assertNull(response.body?.data?.sivilstand)
     }
@@ -126,16 +134,19 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
 
     @Test
     fun `hent personinfo returnerer med feil hvis ikke pdl responderer med 200`() {
-        client.`when`(HttpRequest.request()
-                              .withMethod("POST")
-                              .withPath("/rest/pdl/graphql")
-                              .withBody(gyldigRequest("hentperson-med-relasjoner.graphql"))
+        client.`when`(
+            HttpRequest.request()
+                .withMethod("POST")
+                .withPath("/rest/pdl/graphql")
+                .withBody(gyldigRequest("hentperson-med-relasjoner.graphql"))
         )
-                .respond(HttpResponse.response().withStatusCode(500))
+            .respond(HttpResponse.response().withStatusCode(500))
 
-        val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(uriHentPersoninfo,
-                                                                                           HttpMethod.GET,
-                                                                                           HttpEntity<String>(headers))
+        val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(
+            uriHentPersoninfo,
+            HttpMethod.GET,
+            HttpEntity<String>(headers)
+        )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -144,41 +155,108 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
     @Test
     fun `hent identer til en person`() {
         val ident = "12345678901"
-        client.`when`(HttpRequest.request()
-                              .withMethod("POST")
-                              .withPath("/rest/pdl/graphql")
-                              .withHeader("Tema", TEMA)
+        client.`when`(
+            HttpRequest.request()
+                .withMethod("POST")
+                .withPath("/rest/pdl/graphql")
+                .withHeader("Tema", TEMA)
         )
-                .respond(HttpResponse.response().withBody(readfile("pdlIdenterResponse.json"))
-                                 .withHeaders(Header("Content-Type", "application/json")))
-        val response = restTemplate.exchange<Ressurs<FinnPersonidenterResponse>>(uriHentIdenter,
-                                                                                 HttpMethod.POST,
-                                                                                 HttpEntity(Ident(ident), headers))
+            .respond(
+                HttpResponse.response().withBody(readfile("pdlIdenterResponse.json"))
+                    .withHeaders(Header("Content-Type", "application/json"))
+            )
+        val response = restTemplate.exchange<Ressurs<FinnPersonidenterResponse>>(
+            uriHentIdenter,
+            HttpMethod.POST,
+            HttpEntity(Ident(ident), headers)
+        )
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         assertThat(response.body?.data!!.identer).hasSize(1)
         assertThat(response.body?.data!!.identer.first().personIdent).isEqualTo(ident)
     }
 
-    private fun hentPersonInfoFraMockedPdlResponse(responseFile: String): ResponseEntity<Ressurs<Person>> {
-        client.`when`(HttpRequest.request()
-                              .withMethod("POST")
-                              .withPath("/rest/pdl/graphql")
-                              .withHeader("Tema", TEMA)
-                              .withBody(gyldigRequest("hentperson-med-relasjoner.graphql"))
+
+    @Test
+    fun `hent strengeste adressebeskyttelsegradering for person med relasjoner`() {
+        val ident = "12345678901"
+        val barnsIdent = "12345678910"
+        mockPdlKall(ident, barnsIdent, "UGRADERT", "STRENGT_FORTROLIG")
+        val response = restTemplate.exchange<Ressurs<ADRESSEBESKYTTELSEGRADERING>>(
+            uriHentStrengesteGradering,
+            HttpMethod.POST,
+            HttpEntity(PersonIdent(ident), headers.apply { add("Nav-Tema", "ENF") })
         )
-                .respond(HttpResponse.response().withBody(readfile(responseFile))
-                                 .withHeaders(Header("Content-Type", "application/json")))
+        assertThat(response.body?.data).isEqualTo(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG)
+    }
+
+    private fun mockPdlKall(ident: String, barnsIdent: String, persongradering: String, barngradering: String) {
+        client.`when`(
+                HttpRequest.request()
+                        .withMethod("POST")
+                        .withPath("/rest/pdl/graphql")
+                        .withBody(gyldigRequestIdentListe("hentpersoner-relasjoner-adressebeskyttelse.graphql"))
+                        .withHeader("Tema", "ENF")
+        )
+                .respond(
+                        HttpResponse.response().withBody(
+                                readfile("pdlPersonMedRelasjonerOkResponse.json").replace("IDENT-PLACEHOLDER", ident)
+                                        .replace("GRADERING-PLACEHOLDER", persongradering)
+                        )
+                                .withHeaders(Header("Content-Type", "application/json"))
+                )
+
+        client.`when`(
+                HttpRequest.request()
+                        .withMethod("POST")
+                        .withPath("/rest/pdl/graphql")
+                        .withBody(gyldigRequestIdentListe("hentpersoner-relasjoner-adressebeskyttelse.graphql",
+                                                          ident = barnsIdent))
+                        .withHeader("Tema", "ENF")
+        )
+                .respond(
+                        HttpResponse.response()
+                                .withBody(
+                                        readfile("pdlPersonMedRelasjonerOkResponse.json").replace("IDENT-PLACEHOLDER", barnsIdent)
+                                                .replace("GRADERING-PLACEHOLDER", barngradering)
+                                )
+                                .withHeaders(Header("Content-Type", "application/json"))
+                )
+    }
+
+    private fun hentPersonInfoFraMockedPdlResponse(responseFile: String): ResponseEntity<Ressurs<Person>> {
+        client.`when`(
+            HttpRequest.request()
+                .withMethod("POST")
+                .withPath("/rest/pdl/graphql")
+                .withHeader("Tema", TEMA)
+                .withBody(gyldigRequest("hentperson-med-relasjoner.graphql"))
+        )
+            .respond(
+                HttpResponse.response().withBody(readfile(responseFile))
+                    .withHeaders(Header("Content-Type", "application/json"))
+            )
 
         return restTemplate.exchange(uriHentPersoninfo, HttpMethod.GET, HttpEntity<String>(headers))
     }
 
     private fun gyldigRequest(filnavn: String): String {
         return readfile("pdlGyldigRequest.json")
-                .replace(
-                        "GRAPHQL-PLACEHOLDER",
-                        readfile(filnavn).graphqlCompatible()
-                )
+            .replace(
+                "GRAPHQL-PLACEHOLDER",
+                readfile(filnavn).graphqlCompatible()
+            )
+    }
+
+    private fun gyldigRequestIdentListe(filnavn: String, ident: String = "12345678901"): String {
+        return readfile("pdlGyldigRequestIdentListe.json")
+            .replace(
+                "IDENT-PLACEHOLDER",
+                ident
+            ).replace(
+                "GRAPHQL-PLACEHOLDER",
+                readfile(filnavn).graphqlCompatible()
+            )
     }
 
     private fun readfile(filnavn: String): String {

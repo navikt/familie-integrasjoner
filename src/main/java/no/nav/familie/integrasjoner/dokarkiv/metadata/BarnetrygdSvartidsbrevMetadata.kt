@@ -8,15 +8,15 @@ import no.nav.familie.kontrakter.felles.dokarkiv.Dokumenttype
 import org.springframework.stereotype.Component
 
 @Component
-object SkolepengerFrittståendeBrevMetadata : Dokumentmetadata {
+object BarnetrygdSvartidsbrevMetadata : Dokumentmetadata {
 
     override val journalpostType: JournalpostType = JournalpostType.UTGAAENDE
-    override val fagsakSystem: Fagsystem = Fagsystem.EF
-    override val tema: Tema = Tema.ENF
-    override val behandlingstema: Behandlingstema = Behandlingstema.Skolepenger
+    override val fagsakSystem: Fagsystem = Fagsystem.BA
+    override val tema: Tema = Tema.BAR
+    override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
-    override val dokumenttype: Dokumenttype = Dokumenttype.SKOLEPENGER_FRITTSTÅENDE_BREV
-    override val tittel: String? = null
-    override val brevkode: String = "EFC2"
+    override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_SVARTIDSBREV
+    override val tittel: String = "Svartidsbrev"
+    override val brevkode: String = "svartidsbrev"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
