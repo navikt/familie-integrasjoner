@@ -6,7 +6,18 @@ import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.OppslagException.Level
 import no.nav.familie.integrasjoner.saksbehandler.SaksbehandlerService
 import no.nav.familie.kontrakter.felles.Tema
-import no.nav.familie.kontrakter.felles.oppgave.*
+import no.nav.familie.kontrakter.felles.oppgave.FinnMappeRequest
+import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
+import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
+import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
+import no.nav.familie.kontrakter.felles.oppgave.IdentGruppe
+import no.nav.familie.kontrakter.felles.oppgave.IdentType
+import no.nav.familie.kontrakter.felles.oppgave.MappeDto
+import no.nav.familie.kontrakter.felles.oppgave.Oppgave
+import no.nav.familie.kontrakter.felles.oppgave.OppgaveIdentV2
+import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgave
+import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgaveRequest
+import no.nav.familie.kontrakter.felles.oppgave.StatusEnum
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -20,13 +31,15 @@ class OppgaveService constructor(
         private val saksbehandlerService: SaksbehandlerService,
 ) {
 
+    private val logger = LoggerFactory.getLogger(OppgaveService::class.java)
+
     fun finnOppgaver(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {
         return oppgaveRestClient.finnOppgaver(finnOppgaveRequest)
     }
 
     @Deprecated("Bruk finnOppgaver")
     fun finnOppgaverV3(finnOppgaveRequest: FinnOppgaveRequest): DeprecatedFinnOppgaveResponseDto {
-        LOG.warn("FinnOppgaver V3 er ikke lenger i bruk, gå over til V4.")
+        logger.warn("FinnOppgaver V3 er ikke lenger i bruk, gå over til V4.")
         return oppgaveRestClient.finnOppgaverV3(finnOppgaveRequest)
     }
 
@@ -41,10 +54,10 @@ class OppgaveService constructor(
             oppgaveRestClient.finnOppgaveMedId(request.id!!)
         }
         if (oppgave.status === StatusEnum.FERDIGSTILT) {
-            LOG.info("Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId={} journalpostId={} oppgaveId={}",
-                     oppgave.aktoerId,
-                     oppgave.journalpostId,
-                     oppgave.id)
+            logger.info("Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId={} journalpostId={} oppgaveId={}",
+                        oppgave.aktoerId,
+                        oppgave.journalpostId,
+                        oppgave.id)
         } else {
             val patchOppgaveDto = oppgave.copy(
                     id = oppgave.id,
@@ -153,14 +166,13 @@ class OppgaveService constructor(
                 oppgaveRestClient.oppdaterOppgave(patchOppgaveDto)
             }
 
-            StatusEnum.FERDIGSTILT -> LOG.info("Oppgave er allerede ferdigstilt. oppgaveId=${oppgaveId}")
+            StatusEnum.FERDIGSTILT -> logger.info("Oppgave er allerede ferdigstilt. oppgaveId=${oppgaveId}")
             StatusEnum.FEILREGISTRERT -> throw OppslagException("Oppgave har status feilregistrert og kan ikke oppdateres. " +
                                                                 "oppgaveId=${oppgaveId}",
                                                                 "Oppgave.ferdigstill",
                                                                 Level.MEDIUM,
                                                                 HttpStatus.BAD_REQUEST)
         }
-
     }
 
     private fun erAktørIdEllerFnr(oppgaveIdent: OppgaveIdentV2?) =
@@ -171,7 +183,7 @@ class OppgaveService constructor(
         else try {
             pdlRestClient.hentGjeldendeAktørId(oppgaveIdentV2.ident!!, tema)
         } catch (e: OppslagException) {
-            LOG.warn("Klarte ikke hente aktørId for person fra PDL. Oppretter oppgave uten ident")
+            logger.warn("Klarte ikke hente aktørId for person fra PDL. Oppretter oppgave uten ident")
             null
         }
     }
@@ -180,8 +192,14 @@ class OppgaveService constructor(
         return oppgaveRestClient.finnMapper(finnMappeRequest)
     }
 
-    companion object {
+    fun finnMapper(enhetNr: String): List<MappeDto> {
+        val finnMappeRequest = FinnMappeRequest(enhetsnr = enhetNr, limit = 1000)
+        val mappeRespons = oppgaveRestClient.finnMapper(finnMappeRequest)
 
-        private val LOG = LoggerFactory.getLogger(OppgaveService::class.java)
+        if (mappeRespons.antallTreffTotalt > mappeRespons.mapper.size) {
+            logger.error("Det finnes flere mapper (${mappeRespons.antallTreffTotalt}) " +
+                         "enn vi har hentet ut (${mappeRespons.mapper.size}). Sjekk limit. ")
+        }
+        return mappeRespons.mapper
     }
 }
