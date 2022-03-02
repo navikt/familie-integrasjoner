@@ -19,7 +19,7 @@ public class OppslagException extends RuntimeException {
     }
 
     public OppslagException(String message, String kilde, Level level, HttpStatus httpStatus, Throwable error, String sensitiveInfo) {
-        super(message);
+        super(message, error);
         this.httpStatus = httpStatus == null ? INTERNAL_SERVER_ERROR : httpStatus;
         this.kilde = kilde;
         this.sensitiveInfo = sensitiveInfo;
