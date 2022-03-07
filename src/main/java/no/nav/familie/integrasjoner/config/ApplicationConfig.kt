@@ -2,7 +2,6 @@ package no.nav.familie.integrasjoner.config
 
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.familie.http.client.RetryOAuth2HttpClient
-import no.nav.familie.http.config.INaisProxyCustomizer
 import no.nav.familie.log.filter.LogFilter
 import no.nav.security.token.support.client.core.http.OAuth2HttpClient
 import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client
@@ -26,9 +25,7 @@ import java.time.temporal.ChronoUnit
 @EnableJwtTokenValidation(ignore = ["org.springframework", "springfox.documentation.swagger"])
 @EnableOAuth2Client(cacheEnabled = true)
 @EnableScheduling
-@Import(
-        INaisProxyCustomizer::class
-)
+@Import(NaisProxyCustomizer::class)
 class ApplicationConfig {
 
     private val logger = LoggerFactory.getLogger(ApplicationConfig::class.java)
@@ -47,12 +44,12 @@ class ApplicationConfig {
 
     @Primary
     @Bean
-    fun oAuth2HttpClient(): OAuth2HttpClient {
+    fun oAuth2HttpClient(naisProxyCustomizer: NaisProxyCustomizer): OAuth2HttpClient {
         return RetryOAuth2HttpClient(
-            RestTemplateBuilder()
-                .additionalCustomizers(NaisProxyCustomizer())
-                .setConnectTimeout(Duration.of(2, ChronoUnit.SECONDS))
-                .setReadTimeout(Duration.of(4, ChronoUnit.SECONDS))
+                RestTemplateBuilder()
+                        .additionalCustomizers(naisProxyCustomizer)
+                        .setConnectTimeout(Duration.of(2, ChronoUnit.SECONDS))
+                        .setReadTimeout(Duration.of(4, ChronoUnit.SECONDS))
         )
     }
 }
