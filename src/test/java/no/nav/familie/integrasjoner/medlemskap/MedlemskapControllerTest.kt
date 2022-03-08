@@ -19,7 +19,7 @@ import org.springframework.test.context.TestPropertySource
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
-@ActiveProfiles("integrasjonstest", "mock-sts")
+@ActiveProfiles("integrasjonstest", "mock-oauth")
 @TestPropertySource(properties = ["MEDL2_URL=http://localhost:28085"])
 @AutoConfigureWireMock(port = 28085)
 class MedlemskapControllerTest : OppslagSpringRunnerTest() {
