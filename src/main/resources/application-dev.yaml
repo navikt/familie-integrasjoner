@@ -103,7 +103,7 @@ SKYGGE_SAK_URL: #Mocker lokalt
 INFOTRYGD_VEDTAK_URL: #Mockes lokalt
 NORG2_URL: #Mockes lokalt
 
-MEDL2_URL: #Denne er ikke i bruk da Medl2 mockes ut lokalt
+MEDL2_URL: http://localhost:18321
 SAF_URL: http://localhost:18321/rest/saf
 OPPGAVE_URL: http://localhost:18321
 CREDENTIAL_USERNAME: not-a-real-srvuser
