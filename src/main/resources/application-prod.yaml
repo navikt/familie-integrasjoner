@@ -91,7 +91,7 @@ no.nav.security.jwt:
 INTEGRASJONER_CLIENT_ID: ${AZURE_APP_CLIENT_ID}
 CLIENT_SECRET: ${AZURE_APP_CLIENT_SECRET}
 INFOTRYGD_KS_SCOPE: ${INFOTRYGD_KS_SCOPE}
-DOKARKIV_SCOPE: "api://162b3255-2f72-4399-8f7a-244add9ffaac/.default"
+DOKARKIV_SCOPE: api://prod-fss.teamdokumenthandtering.dokarkiv/.default
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 SECURITYTOKENSERVICE_URL: https://sts.adeo.no/SecurityTokenServiceProvider/
