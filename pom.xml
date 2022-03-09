@@ -17,11 +17,11 @@
 
     <properties>
         <revision>1</revision>
-        <sha1></sha1>
+        <sha1/>
         <changelist>-SNAPSHOT</changelist>
         <java.version>17</java.version>
         <springfox.version>3.0.0</springfox.version>
-        <common-java-modules.version>2.2021.12.09_11.47-999457edc68f</common-java-modules.version>
+        <common-java-modules.version>2.2022.02.02_08.38-0d7a7fabdc04</common-java-modules.version>
         <felles.version>1.20211215125819_e5c781c</felles.version>
         <kontrakt.version>2.0_20220215134524_4eca2c6</kontrakt.version>
         <cxf.version>3.4.5</cxf.version>
