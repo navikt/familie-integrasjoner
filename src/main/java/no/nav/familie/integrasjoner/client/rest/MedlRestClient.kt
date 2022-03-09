@@ -34,7 +34,7 @@ class MedlRestClient(@Value("\${MEDL2_URL}") private val medl2BaseUrl: URI,
 
     companion object {
 
-        private const val PATH_PING = "internal/isAlive"
+        private const val PATH_PING = "api/ping"
         private const val PATH_MEDLEMSKAPSUNNTAK = "api/v1/medlemskapsunntak"
     }
 
