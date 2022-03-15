@@ -21,7 +21,7 @@
         <changelist>-SNAPSHOT</changelist>
         <java.version>17</java.version>
         <springfox.version>3.0.0</springfox.version>
-        <common-java-modules.version>2.2021.12.09_11.47-999457edc68f</common-java-modules.version>
+        <common-java-modules.version>2.2022.03.07_06.26-253d6ee247df</common-java-modules.version>
         <felles.version>1.20211215125819_e5c781c</felles.version>
         <kontrakt.version>2.0_20220315122122_ffe5712</kontrakt.version>
         <cxf.version>3.4.5</cxf.version>
