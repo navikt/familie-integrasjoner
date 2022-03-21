@@ -12,6 +12,12 @@ spring:
     allow-bean-definition-overriding: true
     banner-mode: "off"
 
+springdoc:
+  packagesToScan: no.nav.familie.integrasjoner
+  pathsToMatch: /v3/api-docs,/api/**
+  swagger-ui:
+    disable-swagger-default-url: true
+
 no.nav.security.jwt:
   tilgang:
     grupper:
