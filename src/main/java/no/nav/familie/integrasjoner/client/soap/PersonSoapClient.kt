@@ -58,6 +58,10 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
                                            e)
                 }
                 else -> {
+                    if (e is SOAPFaultException) {
+                        secureLogger.info("SOAPFaultException mot TPS.hentPerson: ${e.message}, fault string: ${e.fault?.faultString}", e)
+                    }
+
                     throw OppslagException("Ukjent feil fra TPS",
                                            "TPS.hentPerson",
                                            OppslagException.Level.KRITISK,
