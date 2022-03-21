@@ -44,17 +44,16 @@ class ArbeidsfordelingService(
     }
 
     @Improvement("Må ta høyde for om personIdent har diskresjonskode eller skjerming/er egen ansatt. Nå krasjer den for de med kode 6")
-    fun finnLokaltNavKontor(personIdent: String, tema: Tema): NavKontorEnhet {
+    fun finnLokaltNavKontor(personIdent: String, tema: Tema): NavKontorEnhet? {
         val geografiskTilknytning = pdlRestClient.hentGeografiskTilknytning(personIdent, tema)
 
         val geografiskTilknytningKode: String? = utledGeografiskTilknytningKode(geografiskTilknytning)
         if (geografiskTilknytningKode == null) {
             secureLogger.info("Fant ikke geografiskTilknytningKode=$geografiskTilknytning for personIdent=$personIdent")
-            error("Kan ikke utlede lokalt navkontor når det ikke finnes en geografisk tilknytning til personen")
+            return null
         }
 
         return restClient.hentEnhet(geografiskTilknytningKode)
-
     }
 
     fun hentNavKontor(enhetsId: String): NavKontorEnhet {
@@ -66,7 +65,7 @@ class ArbeidsfordelingService(
             return when (it.gtType) {
                 GeografiskTilknytningType.BYDEL -> it.gtBydel
                 GeografiskTilknytningType.KOMMUNE -> it.gtKommune
-                GeografiskTilknytningType.UTLAND -> it.gtLand
+                GeografiskTilknytningType.UTLAND -> null
                 GeografiskTilknytningType.UDEFINERT -> null
             }
         }
