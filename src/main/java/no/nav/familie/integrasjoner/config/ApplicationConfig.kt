@@ -22,7 +22,7 @@ import java.time.temporal.ChronoUnit
 @SpringBootConfiguration
 @ComponentScan("no.nav.familie.integrasjoner")
 @ConfigurationPropertiesScan
-@EnableJwtTokenValidation(ignore = ["org.springframework", "springfox.documentation.swagger"])
+@EnableJwtTokenValidation(ignore = ["org.springframework", "org.springdoc"])
 @EnableOAuth2Client(cacheEnabled = true)
 @EnableScheduling
 @Import(NaisProxyCustomizer::class)

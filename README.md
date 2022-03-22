@@ -22,4 +22,4 @@ Nyeste tag er `v0.5`.`./tag.sh -M` vil da pushe tagen `v1.0`, og `./tag.sh -m` v
 Når en ny tag pushes, trigges github action workflowen som heter Deploy-Prod. 
 
 ### Swagger
-http://localhost:8085/swagger-ui/index.html
+http://localhost:8093/swagger-ui.html
