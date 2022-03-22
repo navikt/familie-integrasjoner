@@ -16,9 +16,9 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedAdresseBe
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.arbeidsfordeling.Enhet
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager
 
 internal class ArbeidsfordelingServiceTest {
@@ -59,14 +59,14 @@ internal class ArbeidsfordelingServiceTest {
     }
 
     @Test
-    fun `skal kaste feil ved geografisk tilknytning ikke definert`() {
+    fun `skal returnere null når geografisk tilknytning ikke definert`() {
 
         every {
             pdlRestClient.hentGeografiskTilknytning(ident,
                                                     any())
-        } returns GeografiskTilknytningDto(GeografiskTilknytningType.UDEFINERT, null, null, null)
+        } returns GeografiskTilknytningDto(GeografiskTilknytningType.UDEFINERT, null, null, "Land")
 
-        assertThrows<IllegalStateException> { arbeidsfordelingService.finnLokaltNavKontor(ident, Tema.ENF) }
+        assertThat(arbeidsfordelingService.finnLokaltNavKontor(ident, Tema.ENF)).isNull()
     }
 
     @Test
