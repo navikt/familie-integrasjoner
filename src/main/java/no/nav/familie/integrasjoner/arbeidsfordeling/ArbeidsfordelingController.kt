@@ -57,7 +57,7 @@ class ArbeidsfordelingController(private val service: ArbeidsfordelingService) {
     @PostMapping("/nav-kontor/{tema}")
     fun hentLokaltNavKontor(@PathVariable(name = "tema") tema: Tema,
                             @RequestBody personIdent: PersonIdent)
-            : ResponseEntity<Ressurs<NavKontorEnhet>> {
+            : ResponseEntity<Ressurs<NavKontorEnhet?>> {
         return ResponseEntity.ok(success(service.finnLokaltNavKontor(personIdent.ident, tema)))
     }
 
