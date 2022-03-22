@@ -7,40 +7,46 @@ env:
   IMAGE: ghcr.io/navikt/familie-integrasjoner:${{ github.sha }}
   IMAGE_LATEST: ghcr.io/navikt/familie-integrasjoner:latest
 jobs:
-  deploy-to-prod:
+  build:
     name: Deploy tag til prod-fss
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+          with:
+            persist-credentials: false
+        - name: Sjekk at tag ligger på master
+          run: |
+            commit=$(git rev-parse --short HEAD)
+            if ! [[ $(git branch -r --contains "$commit" | grep -E '(^|\s)origin/master$') ]]; then exit 1; fi
+        - uses: actions/setup-java@v3
+          with:
+            java-version: 17
+            distribution: 'temurin'
+            cache: 'maven'
+        - name: Bygg med maven
+          env:
+            GITHUB_USERNAME: x-access-token
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          run: mvn -B --no-transfer-progress package --settings .m2/maven-settings.xml --file pom.xml
+        - name: Bygg Docker image
+          run: |
+            docker build -t ${IMAGE} -t ${IMAGE_LATEST} .
+        - name: Login to GitHub Container Registry
+          uses: docker/login-action@v1
+          with:
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+        - name: Push Docker image med versjonstag
+          run: docker push ${IMAGE}
+        - name: Push Docker image med 'latest' tag
+          run: docker push ${IMAGE_LATEST}
+  deploy:
+    name: Deploy tag til prod-fss
+    needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          persist-credentials: false
-      - name: Sjekk at tag ligger på master
-        run: |
-          commit=$(git rev-parse --short HEAD)
-          if ! [[ $(git branch -r --contains "$commit" | grep -E '(^|\s)origin/master$') ]]; then exit 1; fi
-      - uses: actions/setup-java@v2
-        with:
-          java-version: 17
-          distribution: 'temurin'
-          cache: 'maven'
-      - name: Bygg med maven
-        env:
-          GITHUB_USERNAME: x-access-token
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn -B --no-transfer-progress package --settings .m2/maven-settings.xml --file pom.xml
-      - name: Bygg Docker image
-        run: |
-          docker build -t ${IMAGE} -t ${IMAGE_LATEST} .
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Push Docker image med versjonstag
-        run: docker push ${IMAGE}
-      - name: Push Docker image med 'latest' tag
-        run: docker push ${IMAGE_LATEST}
+      - uses: actions/checkout@v3
       - name: Deploy til dev-fss team namespace
         uses: nais/deploy/actions/deploy@v1
         env:
