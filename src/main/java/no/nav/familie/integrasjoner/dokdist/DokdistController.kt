@@ -7,7 +7,13 @@ import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.client.HttpClientErrorException
 import javax.validation.Valid
 
 @RestController
@@ -15,24 +21,21 @@ import javax.validation.Valid
 @RequestMapping("/api/dist")
 class DokdistController(private val dokdistService: DokdistService) {
 
-    @ExceptionHandler(KanIkkeDistribuereJournalpostException::class)
-    fun handleKanIkkeDistribuereException(ex: KanIkkeDistribuereJournalpostException): ResponseEntity<Ressurs<Any>> {
-        LOG.warn("Feil ved distribusjon {}", ex.message)
-        return ResponseEntity.badRequest().body(Ressurs.failure(null, error = ex))
+    @ExceptionHandler(HttpClientErrorException::class)
+    fun handleHttpClientException(e: HttpClientErrorException): ResponseEntity<Ressurs<Any>> {
+        secureLogger.warn("Feil ved distribusjon: ${e.message}")
+        return ResponseEntity.status(e.rawStatusCode).body(Ressurs.failure(e.message, error = e))
     }
-
 
     @PostMapping("v1")
     @ResponseStatus(HttpStatus.OK)
-    fun distribuerJournalpost(@RequestBody request: @Valid DistribuerJournalpostRequest)
-            : ResponseEntity<Ressurs<String>>  {
+    fun distribuerJournalpost(@RequestBody request: @Valid DistribuerJournalpostRequest): ResponseEntity<Ressurs<String>> {
 
         val response = dokdistService.distribuerDokumentForJournalpost(request)
         return ResponseEntity.ok(success(response?.bestillingsId ?: throw NullResponseException()))
     }
 
     companion object {
-        private val LOG = LoggerFactory.getLogger(DokdistController::class.java)
+        private val secureLogger = LoggerFactory.getLogger("secureLogger")
     }
-
 }
