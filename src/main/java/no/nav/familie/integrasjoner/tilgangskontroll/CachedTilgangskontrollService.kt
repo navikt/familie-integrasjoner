@@ -26,8 +26,7 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
                key = "#jwtToken.subject.concat(#personIdent)",
                condition = "#personIdent != null && #jwtToken.subject != null")
     fun sjekkTilgang(personIdent: String, jwtToken: JwtToken, tema: Tema): Tilgang {
-        val personInfo = personopplysningerService.hentPersoninfo(personIdent, tema, PersonInfoQuery.ENKEL)
-        val adressebeskyttelse = personInfo.adressebeskyttelseGradering
+        val adressebeskyttelse = personopplysningerService.hentAdressebeskyttelse(personIdent, tema).gradering
 
         return sjekTilgang(adressebeskyttelse, jwtToken, personIdent) { egenAnsattService.erEgenAnsatt(personIdent) }
     }

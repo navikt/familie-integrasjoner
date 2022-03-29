@@ -8,6 +8,7 @@ import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.*
+import no.nav.familie.integrasjoner.personopplysning.internal.Adressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedAdresseBeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
@@ -43,7 +44,7 @@ internal class CachedTilgangskontrollServiceTest {
         every { jwtTokenClaims.getAsList(any()) }.returns(emptyList())
         every { egenAnsattService.erEgenAnsatt(any<String>()) } returns false
         every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } answers
-                { firstArg<Set<String>>().map { it to false }.toMap() }
+                { firstArg<Set<String>>().associateWith { false } }
     }
 
     private fun mockHarKode7() {
@@ -56,14 +57,14 @@ internal class CachedTilgangskontrollServiceTest {
 
     @Test
     internal fun `har tilgang når det ikke finnes noen adressebeskyttelser for enskild person`() {
-        mockHentPersonInfo()
+        mockHentPersonMedAdressebeskyttelse()
         assertThat(sjekkTilgangTilPerson()).isTrue
         verify(exactly = 1) { egenAnsattService.erEgenAnsatt(any<String>()) }
     }
 
     @Test
     internal fun `har ikke tilgang når det finnes adressebeskyttelser for enskild person`() {
-        mockHentPersonInfo(FORTROLIG)
+        mockHentPersonMedAdressebeskyttelse(FORTROLIG)
         assertThat(sjekkTilgangTilPerson()).isFalse
         verify(exactly = 0) { egenAnsattService.erEgenAnsatt(any<String>()) }
     }
@@ -71,7 +72,7 @@ internal class CachedTilgangskontrollServiceTest {
     @Test
     internal fun `har ikke tilgang når det ikke finnes noen adressebeskyttelser for enskild person men er ansatt`() {
         every { egenAnsattService.erEgenAnsatt(any<String>()) } returns true
-        mockHentPersonInfo()
+        mockHentPersonMedAdressebeskyttelse()
         assertThat(sjekkTilgangTilPerson()).isFalse
         verify(exactly = 1) { egenAnsattService.erEgenAnsatt(any<String>()) }
     }
@@ -153,6 +154,10 @@ internal class CachedTilgangskontrollServiceTest {
 
     private fun lagPersonMedBeskyttelse(sivilstand: ADRESSEBESKYTTELSEGRADERING?, personIdent: String) =
             sivilstand?.let { listOf(PersonMedAdresseBeskyttelse(personIdent, it)) } ?: emptyList()
+
+    private fun mockHentPersonMedAdressebeskyttelse(adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING = UGRADERT) {
+        every { personopplysningerService.hentAdressebeskyttelse(any(), any()) } returns Adressebeskyttelse(adressebeskyttelse)
+    }
 
     private fun mockHentPersonInfo(adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING = UGRADERT) {
         every { personopplysningerService.hentPersoninfo(any(), any(), any()) } returns

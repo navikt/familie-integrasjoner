@@ -9,6 +9,8 @@ import no.nav.familie.integrasjoner.personopplysning.domene.PersonIdent
 import no.nav.familie.integrasjoner.personopplysning.domene.PersonhistorikkInfo
 import no.nav.familie.integrasjoner.personopplysning.domene.Personinfo
 import no.nav.familie.integrasjoner.personopplysning.domene.TpsOversetter
+import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
+import no.nav.familie.integrasjoner.personopplysning.internal.Adressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.FORELDERBARNRELASJONROLLE
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedRelasjonerOgAdressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
@@ -96,6 +98,11 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
                                    fullmakt = mapPersonMedRelasjoner(fullmaktIdenter, tilknyttedeIdenterData),
                                    barn = mapPersonMedRelasjoner(barnIdenter, tilknyttedeIdenterData),
                                    barnsForeldrer = barnsForeldrer)
+    }
+
+    fun hentAdressebeskyttelse(personIdent: String, tema: Tema): Adressebeskyttelse {
+        return pdlRestClient.hentAdressebeskyttelse(personIdent, tema).person.adressebeskyttelse.firstOrNull()
+               ?: Adressebeskyttelse(gradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
     }
 
     private fun hentBarnsForeldrer(barnOpplysninger: Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>,

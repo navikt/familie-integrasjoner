@@ -16,6 +16,7 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlIdent
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlIdentRequest
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlIdentRequestVariables
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPerson
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedAdressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonBolkRequest
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonBolkRequestVariables
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedRelasjonerOgAdressebeskyttelse
@@ -41,6 +42,17 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
     : AbstractRestClient(restTemplate, "pdl.personinfo") {
 
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
+
+    fun hentAdressebeskyttelse(personIdent: String, tema: Tema): PdlPersonMedAdressebeskyttelse {
+        val pdlAdressebeskyttelseRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
+                                                            query = HENT_ADRESSEBESKYTTELSE_QUERY)
+
+        val response: PdlResponse<PdlPersonMedAdressebeskyttelse> = postForEntity(pdlUri,
+                                                                                  pdlAdressebeskyttelseRequest,
+                                                                                  httpHeaders(tema))
+
+        return feilsjekkOgReturnerData(response, personIdent)
+    }
 
     fun hentPerson(personIdent: String, tema: Tema, personInfoQuery: PersonInfoQuery): Person {
 
@@ -142,6 +154,15 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         return pdlResponse.data.personBolk.associateBy({ it.ident }, { it.person!! })
     }
 
+    private inline fun <reified T : Any> feilsjekkOgReturnerData(pdlResponse: PdlResponse<T>, personIdent: String): T {
+        if (!pdlResponse.harFeil()) {
+            return pdlResponse.data
+        } else {
+            throw pdlOppslagException(feilmelding = "Feil ved oppslag på person: ${pdlResponse.errorMessages()}",
+                                      personIdent = personIdent)
+        }
+    }
+
     fun hentGjeldendeAktørId(ident: String, tema: Tema): String {
         val pdlIdenter = hentIdenter(ident, "AKTORID", tema, false)
         return pdlIdenter.firstOrNull()?.ident
@@ -214,6 +235,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         private const val PATH_GRAPHQL = "graphql"
         private val HENT_IDENTER_QUERY = hentGraphqlQuery("hentIdenter")
         private val HENT_GEOGRAFISK_TILKNYTNING_QUERY = graphqlQuery("/pdl/geografisk_tilknytning.graphql")
+        private val HENT_ADRESSEBESKYTTELSE_QUERY = graphqlQuery("/pdl/adressebeskyttelse.graphql")
         private val HENT_PERSON_RELASJONER_ADRESSEBESKYTTELSE = hentGraphqlQuery("hentpersoner-relasjoner-adressebeskyttelse")
     }
 }
