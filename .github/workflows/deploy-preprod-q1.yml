@@ -6,7 +6,7 @@ on:
 
 concurrency: q1
 env:
-  IMAGE: ghcr.io/navikt/familie-integrasjoner:${{ github.sha }}
+  IMAGE: ghcr.io/navikt/familie-integrasjoner-q1:${{ github.sha }}
 jobs:
   build:
     if: github.event.pull_request.draft == false
