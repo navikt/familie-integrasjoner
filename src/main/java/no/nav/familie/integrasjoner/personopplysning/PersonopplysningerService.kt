@@ -100,9 +100,8 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
                                    barnsForeldrer = barnsForeldrer)
     }
 
-    @Cacheable(cacheNames = ["ADRESSEBESKYTTELSE"], key = "#personIdent + #tema", condition = "#personIdent != null")
     fun hentAdressebeskyttelse(personIdent: String, tema: Tema): Adressebeskyttelse {
-        return pdlRestClient.hentAdressebeskyttelse(personIdent, tema).person?.adressebeskyttelse?.firstOrNull()
+        return pdlRestClient.hentAdressebeskyttelse(personIdent, tema).person.adressebeskyttelse.firstOrNull()
                ?: Adressebeskyttelse(gradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
     }
 
