@@ -8,7 +8,7 @@ concurrency: preprod
 env:
   IMAGE: ghcr.io/navikt/familie-integrasjoner:${{ github.sha }}
 jobs:
-  build:
+  build-dev:
     if: github.event.pull_request.draft == false
     name: Build and push
     runs-on: ubuntu-latest
