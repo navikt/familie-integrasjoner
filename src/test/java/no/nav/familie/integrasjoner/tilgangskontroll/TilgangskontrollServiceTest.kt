@@ -6,6 +6,7 @@ import no.nav.familie.integrasjoner.config.TilgangConfig
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
+import no.nav.familie.integrasjoner.personopplysning.internal.Adressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
@@ -55,8 +56,8 @@ class TilgangskontrollServiceTest {
     fun `tilgang til egen ansatt gir tilgang hvis saksbehandler har rollen`() {
         every { egenAnsattService.erEgenAnsatt(any<String>()) }
                 .returns(true)
-        every { personopplysningerService.hentPersoninfo("123", any(), any()) }
-                .returns(personMedAdressebeskyttelse(null))
+        every { personopplysningerService.hentAdressebeskyttelse("123", any()) }
+                .returns(Adressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.UGRADERT))
         every { saksbehandler.jwtTokenClaims }
                 .returns(jwtTokenClaims)
         every { jwtTokenClaims.getAsList(any()) }
@@ -72,8 +73,8 @@ class TilgangskontrollServiceTest {
     fun `tilgang til egen ansatt gir ok hvis søker ikke er egen ansatt`() {
         every { egenAnsattService.erEgenAnsatt(any<String>()) }
                 .returns(false)
-        every { personopplysningerService.hentPersoninfo("123", any(), any()) }
-                .returns(personMedAdressebeskyttelse(null))
+        every { personopplysningerService.hentAdressebeskyttelse("123", any()) }
+                .returns(Adressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.UGRADERT))
 
         assertThat(tilgangskontrollService.sjekkTilgang("123", saksbehandler).harTilgang)
                 .isTrue
@@ -140,8 +141,8 @@ class TilgangskontrollServiceTest {
                 .returns(listOf("bob"))
         every { jwtTokenClaims.getAsList(any()) }
                 .returns(listOf(GRUPPE_TILGANG_7))
-        every { personopplysningerService.hentPersoninfo("123", any(), any()) }
-                .returns(personMedAdressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.FORTROLIG))
+        every { personopplysningerService.hentAdressebeskyttelse("123", any()) }
+                .returns(Adressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.FORTROLIG))
 
         assertThat(tilgangskontrollService.sjekkTilgang("123", saksbehandler).harTilgang)
                 .isTrue
