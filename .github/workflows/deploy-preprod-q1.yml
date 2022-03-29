@@ -8,15 +8,15 @@ concurrency: q1
 env:
   IMAGE: ghcr.io/navikt/familie-integrasjoner-q1:${{ github.sha }}
 jobs:
-  deploy-to-dev:
+  build:
     if: github.event.pull_request.draft == false
-    name: Build, push and deploy to dev-fss Q1
+    name: Build and push to dev-fss Q1
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           persist-credentials: false
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-java@v3
         with:
           java-version: 17
           distribution: 'temurin'
@@ -37,6 +37,13 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push Docker image
         run: docker push $IMAGE
+  deploy:
+    if: github.event.pull_request.draft == false
+    name: Deploy to dev-fss q1
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
       - name: Deploy til dev-fss team namespace q1
         uses: nais/deploy/actions/deploy@v1
         env:
