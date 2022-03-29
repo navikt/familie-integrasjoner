@@ -37,7 +37,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push Docker image
         run: docker push $IMAGE
-  deploy:
+  deploy-dev:
     if: github.event.pull_request.draft == false
     name: Deploy to dev-fss
     needs: build
