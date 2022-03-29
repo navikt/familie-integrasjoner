@@ -9,6 +9,7 @@ import no.nav.familie.integrasjoner.geografisktilknytning.PdlHentGeografiskTilkn
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlHentIdenter
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlNavn
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPerson
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedAdressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlResponse
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import org.assertj.core.api.Assertions.assertThat
@@ -74,6 +75,12 @@ class PdlGraphqlTest {
     fun testPdlIdenter() {
         val resp: PdlResponse<PdlHentIdenter> = mapper.readValue(File(getFile("pdl/pdlIdenterResponse.json")))
         assertThat(resp.data.hentIdenter!!.identer).hasSize(1)
+    }
+
+    @Test
+    fun testPdlAdressebeskyttelse() {
+        val resp: PdlResponse<PdlPersonMedAdressebeskyttelse> = mapper.readValue(File(getFile("pdl/pdlAdressebeskyttelseResponse.json")))
+        assertThat(resp.data.person.adressebeskyttelse).hasSize(1)
     }
 
     @Test
