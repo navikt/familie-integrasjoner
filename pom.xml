@@ -17,10 +17,10 @@
 
     <properties>
         <revision>1</revision>
-        <sha1></sha1>
+        <sha1/>
         <changelist>-SNAPSHOT</changelist>
         <java.version>17</java.version>
-        <springdoc.version>1.6.6</springdoc.version>
+        <springdoc.version>1.6.7</springdoc.version>
         <common-java-modules.version>2.2021.12.09_11.47-999457edc68f</common-java-modules.version>
         <felles.version>1.20220310100515_c0dcfc1</felles.version>
         <kontrakt.version>2.0_20220321181602_8d247bd</kontrakt.version>
