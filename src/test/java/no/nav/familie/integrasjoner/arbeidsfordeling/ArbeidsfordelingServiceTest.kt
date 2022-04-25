@@ -8,14 +8,13 @@ import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningDto
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningType
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
-import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
+import no.nav.familie.integrasjoner.personopplysning.internal.*
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.FORTROLIG
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.UGRADERT
-import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedAdresseBeskyttelse
-import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.arbeidsfordeling.Enhet
+import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -25,14 +24,12 @@ internal class ArbeidsfordelingServiceTest {
 
     private val restClient: ArbeidsfordelingRestClient = mockk()
     private val pdlRestClient: PdlRestClient = mockk()
-    private val personopplysningerService: PersonopplysningerService = mockk()
     private val egenAnsattService: EgenAnsattService = mockk()
     private val cacheManager = ConcurrentMapCacheManager()
     private val arbeidsfordelingService =
             ArbeidsfordelingService(klient = mockk(),
                                     restClient = restClient,
                                     pdlRestClient = pdlRestClient,
-                                    personopplysningerService = personopplysningerService,
                                     egenAnsattService = egenAnsattService,
                                     cacheManager = cacheManager)
 
@@ -218,7 +215,21 @@ internal class ArbeidsfordelingServiceTest {
     }
 
     private fun mockPersonInfo(kode6: Set<String>, kode7: Set<String>, egenAnsatte: Set<String>) {
-        val ektefelle = PersonMedAdresseBeskyttelse(ektefelleIdent, utledAdressebeskyttelse(ektefelleIdent, kode6, kode7))
+        val hovedPerson = "1" to
+                lagPdlPersonMedRelasjoner(familierelasjoner = listOf(PdlForelderBarnRelasjon("2",
+                    FORELDERBARNRELASJONROLLE.BARN)),
+                    sivilstand = listOf(Sivilstand(SIVILSTAND.GIFT, "3")),
+                    fullmakt = listOf(Fullmakt("4")))
+        val barn = lagPdlPersonMedRelasjoner(familierelasjoner = listOf(PdlForelderBarnRelasjon("22",
+            FORELDERBARNRELASJONROLLE.FAR)))
+
+        val ektefelle = Person(fødselsdato = "1980-05-12",
+            navn = "Kari Normann",
+            kjønn = "KVINNE",
+            familierelasjoner = setOf(Familierelasjon(personIdent = Personident(id = "12345678910"),
+                relasjonsrolle = "BARN")),
+            adressebeskyttelseGradering = utledAdressebeskyttelse(ektefelleIdent, kode6, kode7),
+            sivilstand = SIVILSTAND.UGIFT)
         val fullmakt = PersonMedAdresseBeskyttelse(fullmaktIdent, utledAdressebeskyttelse(fullmaktIdent, kode6, kode7))
         val barnX = PersonMedAdresseBeskyttelse(barnXIdent, utledAdressebeskyttelse(barnXIdent, kode6, kode7))
         val barnZ = PersonMedAdresseBeskyttelse(barnZIdent, utledAdressebeskyttelse(barnZIdent, kode6, kode7))
@@ -226,17 +237,13 @@ internal class ArbeidsfordelingServiceTest {
                 PersonMedAdresseBeskyttelse(annenForelderXIdent, utledAdressebeskyttelse(annenForelderXIdent, kode6, kode7))
         val annenForelderZ =
                 PersonMedAdresseBeskyttelse(annenForelderZIdent, utledAdressebeskyttelse(annenForelderZIdent, kode6, kode7))
-        val relasjonerUtenGradering = PersonMedRelasjoner(
-                personIdent = ident,
-                adressebeskyttelse = utledAdressebeskyttelse(ident, kode6, kode7),
-                sivilstand = listOf(ektefelle),
-                fullmakt = listOf(fullmakt),
-                barn = listOf(barnX, barnZ),
-                barnsForeldrer = listOf(annenForelderX, annenForelderZ),
-        )
-        every {
-            personopplysningerService.hentPersonMedRelasjoner(ident, any())
-        } returns relasjonerUtenGradering
+
+
+
+        every { pdlRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(any(), any()) } answers {
+            firstArg<List<String>>().map { hovedPerson }.toMap()
+        }
+
 
         every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } returns egenAnsatte.associateWith { true }
 
@@ -256,5 +263,11 @@ internal class ArbeidsfordelingServiceTest {
             else -> UGRADERT
         }
     }
+
+    private fun lagPdlPersonMedRelasjoner(familierelasjoner: List<PdlForelderBarnRelasjon> = emptyList(),
+                                          sivilstand: List<Sivilstand> = emptyList(),
+                                          fullmakt: List<Fullmakt> = emptyList(),
+                                          adressebeskyttelse: List<Adressebeskyttelse> = emptyList()) =
+        PdlPersonMedRelasjonerOgAdressebeskyttelse(familierelasjoner, sivilstand, fullmakt, adressebeskyttelse)
 
 }
