@@ -1,9 +1,9 @@
 package no.nav.familie.integrasjoner.arbeidsfordeling
 
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
+import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.config.getValue
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
-import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningDto
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningType
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
@@ -36,11 +36,11 @@ class ArbeidsfordelingService(
             klient.finnBehandlendeEnhet(tema, geografi, diskresjonskode)
 
     fun finnBehandlendeEnhetForPerson(personIdent: String, tema: Tema): List<Enhet> {
-        val personinfo = personopplysningerService.hentPersoninfo(personIdent)
-                         ?: throw OppslagException("Kan ikke finne personinfo",
-                                                   "arbeidsfordelingservice.finnBehandlendeEnhetForPerson",
-                                                   OppslagException.Level.MEDIUM)
-        return klient.finnBehandlendeEnhet(tema, personinfo.geografiskTilknytning, personinfo.diskresjonskode)
+        val personinfo = personopplysningerService.hentPersoninfo(personIdent, tema, PersonInfoQuery.ENKEL)
+        val geografiskTilknytning = utledGeografiskTilknytningKode(pdlRestClient.hentGeografiskTilknytning(personIdent, tema))
+        val diskresjonskode = personinfo.adressebeskyttelseGradering?.diskresjonskode
+
+        return klient.finnBehandlendeEnhet(tema, geografiskTilknytning, diskresjonskode)
     }
 
     @Improvement("Må ta høyde for om personIdent har diskresjonskode eller skjerming/er egen ansatt. Nå krasjer den for de med kode 6")

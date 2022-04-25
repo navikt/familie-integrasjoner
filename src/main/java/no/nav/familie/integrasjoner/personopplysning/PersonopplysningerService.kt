@@ -56,16 +56,6 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
         return oversetter.tilPersoninfo(PersonIdent(personIdent), response)
     }
 
-    @Cacheable(cacheNames = [PERSON], key = "#personIdent", condition = "#personIdent != null")
-    @Deprecated("Tps er markert for utfasing. PDL er master.")
-    fun hentPersoninfo(personIdent: String): Personinfo {
-        val request: HentPersonRequest =
-                HentPersonRequest().withAktoer(TpsPersonIdent().withIdent(NorskIdent().withIdent(personIdent)))
-                        .withInformasjonsbehov(listOf(Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.ADRESSE))
-        val response: HentPersonResponse = personSoapClient.hentPersonResponse(request)
-        return oversetter.tilPersoninfo(PersonIdent(personIdent), response)
-    }
-
     fun hentPersoninfo(personIdent: String,
                        tema: Tema,
                        personInfoQuery: PersonInfoQuery): Person {
