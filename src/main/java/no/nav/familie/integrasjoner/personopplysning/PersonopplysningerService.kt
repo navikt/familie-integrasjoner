@@ -23,7 +23,6 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Periode
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
