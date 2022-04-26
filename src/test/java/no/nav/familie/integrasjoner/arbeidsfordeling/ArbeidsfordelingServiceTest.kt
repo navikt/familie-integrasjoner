@@ -54,10 +54,6 @@ internal class ArbeidsfordelingServiceTest {
         every {
             restClient.finnBehandlendeEnhetMedBesteMatch(any())
         } returns listOf(Enhet("1234", "En enhet"))
-
-        every {
-            restClient.finnBehandlendeEnheter(any())
-        } returns listOf(Enhet("1234", "Ok"))
     }
 
     @Test
@@ -223,14 +219,14 @@ internal class ArbeidsfordelingServiceTest {
     fun `skal finne behandlende enhet for person med tema ENF`() {
         mockPersonInfoForBehandlendeEnhetForPerson()
         arbeidsfordelingService.finnBehandlendeEnhetForPerson(ident, Tema.ENF)
-        verify { restClient.finnBehandlendeEnheter(match { it.tema == Tema.ENF.name }) }
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.tema == Tema.ENF.name }) }
     }
 
     @Test
     fun `skal finne behandlende enhet for oppfølgingsoppgave for person med tema ENF`() {
         mockPersonInfoForBehandlendeEnhetForPerson()
         arbeidsfordelingService.finnBehandlendeEnhetForOppfølging(ident, Tema.ENF)
-        verify { restClient.finnBehandlendeEnheter(match { it.tema == Tema.OPP.name }) }
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.tema == Tema.OPP.name }) }
     }
 
 
