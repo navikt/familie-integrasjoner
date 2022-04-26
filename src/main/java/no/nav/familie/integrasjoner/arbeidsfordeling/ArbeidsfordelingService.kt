@@ -37,21 +37,13 @@ class ArbeidsfordelingService(
 
     fun finnBehandlendeEnhetForPerson(personIdent: String, tema: Tema): List<Enhet> {
         val kriterie = lagArbeidsfordelingKritierieForPerson(personIdent, tema, tema)
-<<<<<<< HEAD
         return restClient.finnBehandlendeEnhetMedBesteMatch(kriterie)
-=======
-        return restClient.finnBehandlendeEnheter(kriterie)
->>>>>>> master
     }
 
     fun finnBehandlendeEnhetForOppfølging(personIdent: String, tema: Tema): List<Enhet> {
         val kriterie = lagArbeidsfordelingKritierieForPerson(personIdent, tema, Tema.OPP)
 
-<<<<<<< HEAD
         return restClient.finnBehandlendeEnhetMedBesteMatch(kriterie)
-=======
-        return restClient.finnBehandlendeEnheter(kriterie)
->>>>>>> master
     }
 
     private fun lagArbeidsfordelingKritierieForPerson(personIdent: String,
