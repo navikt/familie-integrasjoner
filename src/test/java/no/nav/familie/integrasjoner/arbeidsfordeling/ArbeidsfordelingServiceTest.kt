@@ -12,6 +12,7 @@ import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSE
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.FORTROLIG
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.UGRADERT
+import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedAdresseBeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
 import no.nav.familie.kontrakter.felles.Tema
@@ -47,15 +48,16 @@ internal class ArbeidsfordelingServiceTest {
     @BeforeEach
     internal fun setUp() {
         every {
-            restClient.finnBehandlendeEnhetMedBesteMatch(eq(Tema.ENF),
-                                                         any(),
-                                                         eq("SPSF"),
-                                                         any())
+            restClient.finnBehandlendeEnhetMedBesteMatch(match { it.tema == Tema.ENF.name && it.diskresjonskode == "SPSF" })
         } returns listOf(Enhet("2103", "NAV Vikafossen"))
 
         every {
-            restClient.finnBehandlendeEnhetMedBesteMatch(any(), any(), any(), any())
+            restClient.finnBehandlendeEnhetMedBesteMatch(any())
         } returns listOf(Enhet("1234", "En enhet"))
+
+        every {
+            restClient.finnBehandlendeEnheter(any())
+        } returns listOf(Enhet("1234", "Ok"))
     }
 
     @Test
@@ -93,7 +95,7 @@ internal class ArbeidsfordelingServiceTest {
         mockPersonInfo(emptySet(), emptySet(), emptySet())
         arbeidsfordelingService.finnBehandlendeEnhetForPersonMedRelasjoner(ident, Tema.ENF)
 
-        verify { restClient.finnBehandlendeEnhetMedBesteMatch(any(), any(), null, false) }
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.diskresjonskode == null && it.skjermet == false }) }
     }
 
     @Test
@@ -101,7 +103,7 @@ internal class ArbeidsfordelingServiceTest {
         mockPersonInfo(kode6 = setOf(ident), emptySet(), emptySet())
         arbeidsfordelingService.finnBehandlendeEnhetForPersonMedRelasjoner(ident, Tema.ENF)
 
-        verify { restClient.finnBehandlendeEnhetMedBesteMatch(any(), any(), "SPSF", false) }
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.diskresjonskode == "SPSF" && it.skjermet == false }) }
     }
 
     @Test
@@ -109,7 +111,7 @@ internal class ArbeidsfordelingServiceTest {
         mockPersonInfo(emptySet(), kode7 = setOf(ident), emptySet())
         arbeidsfordelingService.finnBehandlendeEnhetForPersonMedRelasjoner(ident, Tema.ENF)
 
-        verify { restClient.finnBehandlendeEnhetMedBesteMatch(any(), any(), "SPFO", false) }
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.diskresjonskode == "SPFO" && it.skjermet == false }) }
     }
 
     @Test
@@ -117,7 +119,7 @@ internal class ArbeidsfordelingServiceTest {
         mockPersonInfo(emptySet(), emptySet(), egenAnsatte = setOf(ident))
         arbeidsfordelingService.finnBehandlendeEnhetForPersonMedRelasjoner(ident, Tema.ENF)
 
-        verify { restClient.finnBehandlendeEnhetMedBesteMatch(any(), any(), null, true) }
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.diskresjonskode == null && it.skjermet == true }) }
     }
 
     @Test
@@ -125,7 +127,7 @@ internal class ArbeidsfordelingServiceTest {
         mockPersonInfo(kode6 = setOf(barnXIdent), emptySet(), emptySet())
         arbeidsfordelingService.finnBehandlendeEnhetForPersonMedRelasjoner(ident, Tema.ENF)
 
-        verify { restClient.finnBehandlendeEnhetMedBesteMatch(any(), any(), "SPSF", false) }
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.diskresjonskode == "SPSF" && it.skjermet == false }) }
     }
 
     @Test
@@ -133,7 +135,7 @@ internal class ArbeidsfordelingServiceTest {
         mockPersonInfo(kode6 = setOf(ektefelleIdent), emptySet(), emptySet())
         arbeidsfordelingService.finnBehandlendeEnhetForPersonMedRelasjoner(ident, Tema.ENF)
 
-        verify { restClient.finnBehandlendeEnhetMedBesteMatch(any(), any(), "SPSF", false) }
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.diskresjonskode == "SPSF" && it.skjermet == false }) }
     }
 
     @Test
@@ -141,7 +143,7 @@ internal class ArbeidsfordelingServiceTest {
         mockPersonInfo(kode6 = setOf(annenForelderZIdent), emptySet(), emptySet())
         arbeidsfordelingService.finnBehandlendeEnhetForPersonMedRelasjoner(ident, Tema.ENF)
 
-        verify { restClient.finnBehandlendeEnhetMedBesteMatch(any(), any(), "SPSF", false) }
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.diskresjonskode == "SPSF" && it.skjermet == false }) }
     }
 
     @Test
@@ -149,7 +151,7 @@ internal class ArbeidsfordelingServiceTest {
         mockPersonInfo(emptySet(), kode7 = setOf(barnXIdent), emptySet())
         arbeidsfordelingService.finnBehandlendeEnhetForPersonMedRelasjoner(ident, Tema.ENF)
 
-        verify { restClient.finnBehandlendeEnhetMedBesteMatch(any(), any(), "SPFO", false) }
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.diskresjonskode == "SPFO" && it.skjermet == false }) }
     }
 
     @Test
@@ -157,7 +159,7 @@ internal class ArbeidsfordelingServiceTest {
         mockPersonInfo(emptySet(), kode7 = setOf(ektefelleIdent), emptySet())
         arbeidsfordelingService.finnBehandlendeEnhetForPersonMedRelasjoner(ident, Tema.ENF)
 
-        verify { restClient.finnBehandlendeEnhetMedBesteMatch(any(), any(), "SPFO", false) }
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.diskresjonskode == "SPFO" && it.skjermet == false }) }
     }
 
     @Test
@@ -165,7 +167,7 @@ internal class ArbeidsfordelingServiceTest {
         mockPersonInfo(emptySet(), kode7 = setOf(annenForelderXIdent), emptySet())
         arbeidsfordelingService.finnBehandlendeEnhetForPersonMedRelasjoner(ident, Tema.ENF)
 
-        verify { restClient.finnBehandlendeEnhetMedBesteMatch(any(), any(), "SPFO", false) }
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.diskresjonskode == "SPFO" && it.skjermet == false }) }
     }
 
     @Test
@@ -173,7 +175,7 @@ internal class ArbeidsfordelingServiceTest {
         mockPersonInfo(emptySet(), emptySet(), egenAnsatte = setOf(barnXIdent))
         arbeidsfordelingService.finnBehandlendeEnhetForPersonMedRelasjoner(ident, Tema.ENF)
 
-        verify { restClient.finnBehandlendeEnhetMedBesteMatch(any(), any(), null, true) }
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.diskresjonskode == null && it.skjermet == true }) }
     }
 
     @Test
@@ -181,7 +183,7 @@ internal class ArbeidsfordelingServiceTest {
         mockPersonInfo(emptySet(), emptySet(), egenAnsatte = setOf(ektefelleIdent))
         arbeidsfordelingService.finnBehandlendeEnhetForPersonMedRelasjoner(ident, Tema.ENF)
 
-        verify { restClient.finnBehandlendeEnhetMedBesteMatch(any(), any(), null, true) }
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.diskresjonskode == null && it.skjermet == true }) }
     }
 
     @Test
@@ -189,7 +191,7 @@ internal class ArbeidsfordelingServiceTest {
         mockPersonInfo(emptySet(), emptySet(), egenAnsatte = setOf(annenForelderXIdent))
         arbeidsfordelingService.finnBehandlendeEnhetForPersonMedRelasjoner(ident, Tema.ENF)
 
-        verify { restClient.finnBehandlendeEnhetMedBesteMatch(any(), any(), null, true) }
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.diskresjonskode == null && it.skjermet == true }) }
     }
 
 
@@ -198,7 +200,7 @@ internal class ArbeidsfordelingServiceTest {
         mockPersonInfo(emptySet(), kode7 = setOf(barnXIdent), egenAnsatte = setOf(annenForelderXIdent))
         arbeidsfordelingService.finnBehandlendeEnhetForPersonMedRelasjoner(ident, Tema.ENF)
 
-        verify { restClient.finnBehandlendeEnhetMedBesteMatch(any(), any(), null, true) }
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.diskresjonskode == null && it.skjermet == true }) }
     }
 
     @Test
@@ -206,7 +208,7 @@ internal class ArbeidsfordelingServiceTest {
         mockPersonInfo(kode6 = setOf(ektefelleIdent), kode7 = setOf(barnXIdent), egenAnsatte = setOf(annenForelderXIdent))
         arbeidsfordelingService.finnBehandlendeEnhetForPersonMedRelasjoner(ident, Tema.ENF)
 
-        verify { restClient.finnBehandlendeEnhetMedBesteMatch(any(), any(), "SPSF", false) }
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.diskresjonskode == "SPSF" && it.skjermet == false }) }
     }
 
     @Test
@@ -214,7 +216,43 @@ internal class ArbeidsfordelingServiceTest {
         mockPersonInfo(emptySet(), kode7 = setOf(ektefelleIdent, annenForelderXIdent), egenAnsatte = setOf(annenForelderXIdent))
         arbeidsfordelingService.finnBehandlendeEnhetForPersonMedRelasjoner(ident, Tema.ENF)
 
-        verify { restClient.finnBehandlendeEnhetMedBesteMatch(any(), any(), "SPFO", true) }
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.diskresjonskode == "SPFO" && it.skjermet == true }) }
+    }
+
+    @Test
+    fun `skal finne behandlende enhet for person med tema ENF`() {
+        mockPersonInfoForBehandlendeEnhetForPerson()
+        arbeidsfordelingService.finnBehandlendeEnhetForPerson(ident, Tema.ENF)
+        verify { restClient.finnBehandlendeEnheter(match { it.tema == Tema.ENF.name }) }
+    }
+
+    @Test
+    fun `skal finne behandlende enhet for oppfølgingsoppgave for person med tema ENF`() {
+        mockPersonInfoForBehandlendeEnhetForPerson()
+        arbeidsfordelingService.finnBehandlendeEnhetForOppfølging(ident, Tema.ENF)
+        verify { restClient.finnBehandlendeEnheter(match { it.tema == Tema.OPP.name }) }
+    }
+
+
+    private fun mockPersonInfoForBehandlendeEnhetForPerson() {
+        every {
+            personopplysningerService.hentPersoninfo(ident, any(), any())
+        } returns Person("2000-01-01",
+                         navn = "",
+                         kjønn = "",
+                         familierelasjoner = setOf(),
+                         adressebeskyttelseGradering = null,
+                         bostedsadresse = null,
+                         sivilstand = null)
+        every {
+            pdlRestClient.hentGeografiskTilknytning(any(), any())
+        } returns GeografiskTilknytningDto(gtType = GeografiskTilknytningType.KOMMUNE,
+                                           gtBydel = null,
+                                           gtKommune = "3032",
+                                           gtLand = null
+        )
+
+        every { egenAnsattService.erEgenAnsatt(eq(ident)) } returns false
     }
 
     private fun mockPersonInfo(kode6: Set<String>, kode7: Set<String>, egenAnsatte: Set<String>) {
@@ -237,6 +275,7 @@ internal class ArbeidsfordelingServiceTest {
         every {
             personopplysningerService.hentPersonMedRelasjoner(ident, any())
         } returns relasjonerUtenGradering
+
 
         every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } returns egenAnsatte.associateWith { true }
 

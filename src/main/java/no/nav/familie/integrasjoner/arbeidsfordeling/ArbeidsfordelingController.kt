@@ -46,6 +46,13 @@ class ArbeidsfordelingController(private val service: ArbeidsfordelingService) {
         return ResponseEntity.ok(success(service.finnBehandlendeEnhetForPerson(personIdent.ident, tema)))
     }
 
+    @PostMapping("/oppfolging/{tema}")
+    fun hentOppfølgingsenhetForPerson(@PathVariable(name = "tema") tema: Tema,
+                                      @RequestBody personIdent: PersonIdent)
+            : ResponseEntity<Ressurs<List<Enhet>>> {
+        return ResponseEntity.ok(success(service.finnBehandlendeEnhetForOppfølging(personIdent.ident, tema)))
+    }
+
 
     @PostMapping("/enhet/{tema}/med-relasjoner")
     fun hentBehandlendeEnhetForPersonIdentMedRelasjoner(@PathVariable(name = "tema") tema: Tema,
