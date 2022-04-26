@@ -54,7 +54,6 @@ internal class ArbeidsfordelingServiceTest {
         every {
             restClient.finnBehandlendeEnhetMedBesteMatch(any())
         } returns listOf(Enhet("1234", "En enhet"))
-
     }
 
     @Test
