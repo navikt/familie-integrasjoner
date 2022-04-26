@@ -32,21 +32,21 @@ class ArbeidsfordelingRestClient(@Value("\${NORG2_URL}")
                                     .toUri())
     }
 
-    fun finnBehandlendeEnhetMedBesteMatch(gjeldendeTema: no.nav.familie.kontrakter.felles.Tema,
-                                          gjeldendeGeografiskOmråde: String?,
-                                          gjeldendeDiskresjonskode: String?,
-                                          erEgenAnsatt: Boolean): List<Enhet> {
-        return postForEntity<List<NavKontorEnhet>>(
-                UriComponentsBuilder.fromUri(norg2Uri)
-                        .pathSegment("api/v1/arbeidsfordeling/enheter/bestmatch")
-                        .build()
-                        .toUri(),
-                ArbeidsfordelingKritierie(diskresjonskode = gjeldendeDiskresjonskode,
-                                          geografiskOmraade = gjeldendeGeografiskOmråde,
-                                          tema = gjeldendeTema.name,
-                                          skjermet = erEgenAnsatt),
+    fun finnBehandlendeEnhetMedBesteMatch(arbeidsfordelingskriterie: ArbeidsfordelingKritierie): List<Enhet> {
+        val uri = UriComponentsBuilder.fromUri(norg2Uri)
+                .pathSegment("api/v1/arbeidsfordeling/enheter/bestmatch")
+                .build()
+                .toUri()
+        return postForEntity<List<NavKontorEnhet>>(uri, arbeidsfordelingskriterie).map { Enhet(enhetId = it.enhetNr, enhetNavn = it.navn) }
+    }
 
-                ).map { Enhet(enhetId = it.enhetNr, enhetNavn = it.navn) }
+    fun finnBehandlendeEnheter(arbeidsfordelingskriterie: ArbeidsfordelingKritierie): List<Enhet> {
+        val uri = UriComponentsBuilder.fromUri(norg2Uri)
+                .pathSegment("api/v1/arbeidsfordeling/enheter")
+                .build()
+                .toUri()
+        return postForEntity<List<NavKontorEnhet>>(uri, arbeidsfordelingskriterie)
+                .map { Enhet(enhetId = it.enhetNr, enhetNavn = it.navn) }
     }
 
     override val pingUri: URI

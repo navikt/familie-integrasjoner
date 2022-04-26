@@ -1,9 +1,9 @@
 package no.nav.familie.integrasjoner.arbeidsfordeling
 
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
+import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.config.getValue
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
-import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningDto
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningType
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
@@ -36,11 +36,29 @@ class ArbeidsfordelingService(
             klient.finnBehandlendeEnhet(tema, geografi, diskresjonskode)
 
     fun finnBehandlendeEnhetForPerson(personIdent: String, tema: Tema): List<Enhet> {
-        val personinfo = personopplysningerService.hentPersoninfo(personIdent)
-                         ?: throw OppslagException("Kan ikke finne personinfo",
-                                                   "arbeidsfordelingservice.finnBehandlendeEnhetForPerson",
-                                                   OppslagException.Level.MEDIUM)
-        return klient.finnBehandlendeEnhet(tema, personinfo.geografiskTilknytning, personinfo.diskresjonskode)
+        val kriterie = lagArbeidsfordelingKritierieForPerson(personIdent, tema, tema)
+        return restClient.finnBehandlendeEnheter(kriterie)
+    }
+
+    fun finnBehandlendeEnhetForOppfølging(personIdent: String, tema: Tema): List<Enhet> {
+        val kriterie = lagArbeidsfordelingKritierieForPerson(personIdent, tema, Tema.OPP)
+
+        return restClient.finnBehandlendeEnheter(kriterie)
+    }
+
+    private fun lagArbeidsfordelingKritierieForPerson(personIdent: String,
+                                                      pdlTema: Tema,
+                                                      arbeidsfordelingstema: Tema): ArbeidsfordelingKritierie {
+        val personinfo = personopplysningerService.hentPersoninfo(personIdent, pdlTema, PersonInfoQuery.ENKEL)
+        val geografiskTilknytning = utledGeografiskTilknytningKode(pdlRestClient.hentGeografiskTilknytning(personIdent, pdlTema))
+        val diskresjonskode = personinfo.adressebeskyttelseGradering?.diskresjonskode
+
+        return ArbeidsfordelingKritierie(
+                tema = arbeidsfordelingstema.name,
+                diskresjonskode = diskresjonskode,
+                geografiskOmraade = geografiskTilknytning,
+                skjermet = egenAnsattService.erEgenAnsatt(personIdent),
+        )
     }
 
     @Improvement("Må ta høyde for om personIdent har diskresjonskode eller skjerming/er egen ansatt. Nå krasjer den for de med kode 6")
@@ -89,11 +107,13 @@ class ArbeidsfordelingService(
                                                                        egneAnsatte = egneAnsatte)
             val geografiskTilknytning = pdlRestClient.hentGeografiskTilknytning(personMedStrengestBehov.personIdent, tema)
 
-            restClient.finnBehandlendeEnhetMedBesteMatch(
-                    gjeldendeTema = tema,
-                    gjeldendeGeografiskOmråde = utledGeografiskTilknytningKode(geografiskTilknytning),
-                    gjeldendeDiskresjonskode = personMedStrengestBehov.adressebeskyttelse?.diskresjonskode,
-                    erEgenAnsatt = egneAnsatte.contains(personMedStrengestBehov.personIdent))
+            val kriterier = ArbeidsfordelingKritierie(
+                    tema = tema.name,
+                    geografiskOmraade = utledGeografiskTilknytningKode(geografiskTilknytning),
+                    diskresjonskode = personMedStrengestBehov.adressebeskyttelse?.diskresjonskode,
+                    skjermet = egneAnsatte.contains(personMedStrengestBehov.personIdent)
+            )
+            restClient.finnBehandlendeEnhetMedBesteMatch(kriterier)
         }
 
     }

@@ -23,7 +23,6 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.Informasjonsbehov
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.NorskIdent
 import no.nav.tjeneste.virksomhet.person.v3.informasjon.Periode
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest
-import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
@@ -53,16 +52,6 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
                 .withAktoer(TpsPersonIdent().withIdent(NorskIdent().withIdent(personIdent)))
                 .withInformasjonsbehov(listOf(Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.ADRESSE))
         val response = personSoapClient.hentPersonResponse(request)
-        return oversetter.tilPersoninfo(PersonIdent(personIdent), response)
-    }
-
-    @Cacheable(cacheNames = [PERSON], key = "#personIdent", condition = "#personIdent != null")
-    @Deprecated("Tps er markert for utfasing. PDL er master.")
-    fun hentPersoninfo(personIdent: String): Personinfo {
-        val request: HentPersonRequest =
-                HentPersonRequest().withAktoer(TpsPersonIdent().withIdent(NorskIdent().withIdent(personIdent)))
-                        .withInformasjonsbehov(listOf(Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.ADRESSE))
-        val response: HentPersonResponse = personSoapClient.hentPersonResponse(request)
         return oversetter.tilPersoninfo(PersonIdent(personIdent), response)
     }
 
