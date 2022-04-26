@@ -40,15 +40,6 @@ class ArbeidsfordelingRestClient(@Value("\${NORG2_URL}")
         return postForEntity<List<NavKontorEnhet>>(uri, arbeidsfordelingskriterie).map { Enhet(enhetId = it.enhetNr, enhetNavn = it.navn) }
     }
 
-    fun finnBehandlendeEnheter(arbeidsfordelingskriterie: ArbeidsfordelingKritierie): List<Enhet> {
-        val uri = UriComponentsBuilder.fromUri(norg2Uri)
-                .pathSegment("api/v1/arbeidsfordeling/enheter")
-                .build()
-                .toUri()
-        return postForEntity<List<NavKontorEnhet>>(uri, arbeidsfordelingskriterie)
-                .map { Enhet(enhetId = it.enhetNr, enhetNavn = it.navn) }
-    }
-
     override val pingUri: URI
         get() = UriComponentsBuilder.fromUri(norg2Uri).pathSegment("api/ping").build().toUri()
 
