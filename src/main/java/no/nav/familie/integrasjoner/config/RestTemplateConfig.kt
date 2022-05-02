@@ -20,7 +20,8 @@ import org.springframework.web.client.RestTemplate
 @Import(ConsumerIdClientInterceptor::class,
         BearerTokenClientInterceptor::class,
         StsBearerTokenClientInterceptor::class,
-        BearerTokenWithSTSFallbackClientInterceptor::class)
+        BearerTokenWithSTSFallbackClientInterceptor::class,
+        BearerTokenClientCredentialsClientInterceptor::class)
 class RestTemplateConfig(
         private val environment: Environment
 ) {
