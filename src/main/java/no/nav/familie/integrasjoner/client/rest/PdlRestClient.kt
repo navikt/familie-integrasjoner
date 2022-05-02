@@ -1,12 +1,14 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractRestClient
-import no.nav.familie.http.sts.StsRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.felles.graphqlQuery
-import no.nav.familie.integrasjoner.geografisktilknytning.*
+import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningDto
+import no.nav.familie.integrasjoner.geografisktilknytning.PdlGeografiskTilknytningRequest
+import no.nav.familie.integrasjoner.geografisktilknytning.PdlGeografiskTilknytningVariables
+import no.nav.familie.integrasjoner.geografisktilknytning.PdlHentGeografiskTilknytning
 import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.PdlRequestException
 import no.nav.familie.integrasjoner.personopplysning.internal.Familierelasjon
@@ -16,9 +18,9 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlIdent
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlIdentRequest
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlIdentRequestVariables
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPerson
-import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedAdressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonBolkRequest
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonBolkRequestVariables
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedAdressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedRelasjonerOgAdressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonRequest
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonRequestVariables
@@ -37,8 +39,7 @@ import java.net.URI
 
 @Service
 class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
-                    @Qualifier("sts") val restTemplate: RestOperations,
-                    private val stsRestClient: StsRestClient)
+                    @Qualifier("jwtBearer") private val restTemplate: RestOperations)
     : AbstractRestClient(restTemplate, "pdl.personinfo") {
 
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
@@ -210,7 +211,6 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         return HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
             accept = listOf(MediaType.APPLICATION_JSON)
-            add("Nav-Consumer-Token", "Bearer ${stsRestClient.systemOIDCToken}")
             add("Tema", tema.name)
         }
     }
