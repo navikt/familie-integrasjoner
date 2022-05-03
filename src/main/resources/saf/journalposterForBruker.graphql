@@ -21,6 +21,7 @@ query journalposterForBruker($brukerId: BrukerIdInput!,
             kanal
             dokumenter { dokumentInfoId tittel brevkode dokumentstatus dokumentvarianter { variantformat } logiskeVedlegg { logiskVedleggId tittel } }
             relevanteDatoer { dato datotype }
+            eksternReferanseId
         }
     }
 }
