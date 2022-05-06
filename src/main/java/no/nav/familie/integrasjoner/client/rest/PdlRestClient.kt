@@ -67,12 +67,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                     val familierelasjoner: Set<Familierelasjon> =
                             when (personInfoQuery) {
                                 PersonInfoQuery.ENKEL -> emptySet()
-                                PersonInfoQuery.MED_RELASJONER -> {
-                                    response.data.person!!.forelderBarnRelasjon.map { relasjon ->
-                                        Familierelasjon(personIdent = Personident(id = relasjon.relatertPersonsIdent),
-                                                        relasjonsrolle = relasjon.relatertPersonsRolle.toString())
-                                    }.toSet()
-                                }
+                                PersonInfoQuery.MED_RELASJONER -> mapRelasjoner(response)
                             }
                     response.data.person!!.let {
                         Person(fødselsdato = it.foedsel.first().foedselsdato!!,
@@ -105,6 +100,14 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
             }
         }
     }
+
+    private fun mapRelasjoner(response: PdlResponse<PdlPerson>) =
+            response.data.person!!.forelderBarnRelasjon.mapNotNull { relasjon ->
+                relasjon.relatertPersonsIdent?.let { relatertPersonsIdent ->
+                    Familierelasjon(personIdent = Personident(id = relatertPersonsIdent),
+                                    relasjonsrolle = relasjon.relatertPersonsRolle.toString())
+                }
+            }.toSet()
 
     fun hentIdenter(ident: String, gruppe: String, tema: Tema, historikk: Boolean): List<PdlIdent> {
         val pdlPersonRequest = PdlIdentRequest(variables = PdlIdentRequestVariables(ident, gruppe, historikk),

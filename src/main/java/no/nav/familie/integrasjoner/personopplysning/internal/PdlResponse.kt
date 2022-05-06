@@ -81,7 +81,7 @@ data class PdlNavn(val fornavn: String,
 data class PdlKjoenn(val kjoenn: KJØNN)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class PdlForelderBarnRelasjon(val relatertPersonsIdent: String,
+data class PdlForelderBarnRelasjon(val relatertPersonsIdent: String?,
                                    val relatertPersonsRolle: FORELDERBARNRELASJONROLLE)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
