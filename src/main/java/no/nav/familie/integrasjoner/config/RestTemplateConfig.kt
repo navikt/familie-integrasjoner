@@ -30,26 +30,27 @@ class RestTemplateConfig(
     }
 
     @Bean
-    fun restTemplateMedProxy(): RestTemplate {
+    fun restTemplateMedProxy(naisProxyCustomizer: NaisProxyCustomizer): RestTemplate {
         return RestTemplateBuilder()
-                .medProxy()
+                .medProxy(naisProxyCustomizer)
                 .build()
     }
 
     @Bean
-    fun restTemplateBuilderMedProxy(): RestTemplateBuilder {
+    fun restTemplateBuilderMedProxy(naisProxyCustomizer: NaisProxyCustomizer): RestTemplateBuilder {
         return RestTemplateBuilder()
-                .medProxy()
+                .medProxy(naisProxyCustomizer)
     }
 
     /**
      * Denne bruker jwt-bearer hvis den finnes, hvis ikke så bruker den client_credentials
      */
     @Bean("jwtBearer")
-    fun restTemplateJwtBearer(consumerIdClientInterceptor: ConsumerIdClientInterceptor,
+    fun restTemplateJwtBearer(naisProxyCustomizer: NaisProxyCustomizer,
+                              consumerIdClientInterceptor: ConsumerIdClientInterceptor,
                               bearerTokenClientInterceptor: BearerTokenClientInterceptor): RestOperations {
         return RestTemplateBuilder()
-                .medProxy()
+                .medProxy(naisProxyCustomizer)
                 .interceptors(consumerIdClientInterceptor,
                               bearerTokenClientInterceptor,
                               MdcValuesPropagatingClientInterceptor())
@@ -58,10 +59,11 @@ class RestTemplateConfig(
     }
 
     @Bean("jwtBearerOboOgSts")
-    fun restTemplateOboOgSts(consumerIdClientInterceptor: ConsumerIdClientInterceptor,
+    fun restTemplateOboOgSts(naisProxyCustomizer: NaisProxyCustomizer,
+                             consumerIdClientInterceptor: ConsumerIdClientInterceptor,
                              bearerTokenWithSTSFallbackClientInterceptor: BearerTokenWithSTSFallbackClientInterceptor): RestOperations {
         return RestTemplateBuilder()
-                .medProxy()
+                .medProxy(naisProxyCustomizer)
                 .interceptors(consumerIdClientInterceptor,
                               bearerTokenWithSTSFallbackClientInterceptor,
                               MdcValuesPropagatingClientInterceptor())
@@ -90,9 +92,9 @@ class RestTemplateConfig(
                 .build()
     }
 
-    private fun RestTemplateBuilder.medProxy(): RestTemplateBuilder {
+    private fun RestTemplateBuilder.medProxy(naisProxyCustomizer: NaisProxyCustomizer): RestTemplateBuilder {
         return if (trengerProxy()) {
-            this.additionalCustomizers(NaisProxyCustomizer(20_000, 20_000, 20_000))
+            this.additionalCustomizers(naisProxyCustomizer)
         } else {
             this
         }
