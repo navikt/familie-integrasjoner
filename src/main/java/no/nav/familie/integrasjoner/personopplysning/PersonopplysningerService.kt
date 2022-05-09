@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.personopplysning
 
+import no.nav.familie.integrasjoner.client.rest.PdlClientCredentialRestClient
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.client.soap.PersonSoapClient
@@ -34,7 +35,8 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent as TpsPerson
 @ApplicationScope
 class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
                                 private val oversetter: TpsOversetter,
-                                private val pdlRestClient: PdlRestClient) {
+                                private val pdlRestClient: PdlRestClient,
+                                private val pdlClientCredentialRestClient: PdlClientCredentialRestClient) {
 
     @Deprecated("Tps er markert for utfasing. PDL er master.")
     fun hentHistorikkFor(personIdent: String, fom: LocalDate, tom: LocalDate): PersonhistorikkInfo {
@@ -119,7 +121,7 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
     private fun hentPersonMedRelasjonerOgAdressebeskyttelse(personIdenter: List<String>,
                                                             tema: Tema): Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse> {
         if (personIdenter.isEmpty()) return emptyMap()
-        return pdlRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(personIdenter, tema)
+        return pdlClientCredentialRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(personIdenter, tema)
     }
 
     companion object {
