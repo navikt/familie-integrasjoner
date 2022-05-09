@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.config
 
 import no.nav.familie.http.config.NaisProxyCustomizer
+import no.nav.familie.http.interceptor.BearerTokenClientCredentialsClientInterceptor
 import no.nav.familie.http.interceptor.BearerTokenClientInterceptor
 import no.nav.familie.http.interceptor.BearerTokenWithSTSFallbackClientInterceptor
 import no.nav.familie.http.interceptor.ConsumerIdClientInterceptor
@@ -19,7 +20,8 @@ import org.springframework.web.client.RestTemplate
 @Import(ConsumerIdClientInterceptor::class,
         BearerTokenClientInterceptor::class,
         StsBearerTokenClientInterceptor::class,
-        BearerTokenWithSTSFallbackClientInterceptor::class)
+        BearerTokenWithSTSFallbackClientInterceptor::class,
+        BearerTokenClientCredentialsClientInterceptor::class)
 class RestTemplateConfig(
         private val environment: Environment
 ) {
@@ -49,6 +51,19 @@ class RestTemplateConfig(
     fun restTemplateJwtBearer(naisProxyCustomizer: NaisProxyCustomizer,
                               consumerIdClientInterceptor: ConsumerIdClientInterceptor,
                               bearerTokenClientInterceptor: BearerTokenClientInterceptor): RestOperations {
+        return RestTemplateBuilder()
+                .medProxy(naisProxyCustomizer)
+                .interceptors(consumerIdClientInterceptor,
+                              bearerTokenClientInterceptor,
+                              MdcValuesPropagatingClientInterceptor())
+                .requestFactory(this::requestFactory)
+                .build()
+    }
+
+    @Bean("clientCredential")
+    fun restTemplateJwtBearer(naisProxyCustomizer: NaisProxyCustomizer,
+                              consumerIdClientInterceptor: ConsumerIdClientInterceptor,
+                              bearerTokenClientInterceptor: BearerTokenClientCredentialsClientInterceptor): RestOperations {
         return RestTemplateBuilder()
                 .medProxy(naisProxyCustomizer)
                 .interceptors(consumerIdClientInterceptor,
