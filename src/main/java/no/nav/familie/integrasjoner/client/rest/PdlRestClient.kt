@@ -19,6 +19,7 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlPerson
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedAdressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonBolkRequest
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonBolkRequestVariables
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonData
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedRelasjonerOgAdressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonRequest
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonRequestVariables
@@ -63,13 +64,16 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                                                  pdlPersonRequest,
                                                                  httpHeaders(tema))
             if (!response.harFeil()) {
+                val person = response.data.person
+                             ?: throw pdlOppslagException(personIdent = personIdent,
+                                                          feilmelding = "Personobjektet mangler på responsen fra PDL")
                 return Result.runCatching {
                     val familierelasjoner: Set<Familierelasjon> =
                             when (personInfoQuery) {
                                 PersonInfoQuery.ENKEL -> emptySet()
-                                PersonInfoQuery.MED_RELASJONER -> mapRelasjoner(response)
+                                PersonInfoQuery.MED_RELASJONER -> mapRelasjoner(person)
                             }
-                    response.data.person!!.let {
+                    person.let {
                         Person(fødselsdato = it.foedsel.first().foedselsdato!!,
                                navn = it.navn.first().fulltNavn(),
                                kjønn = it.kjoenn.first().kjoenn.toString(),
@@ -101,8 +105,8 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         }
     }
 
-    private fun mapRelasjoner(response: PdlResponse<PdlPerson>) =
-            response.data.person!!.forelderBarnRelasjon.mapNotNull { relasjon ->
+    private fun mapRelasjoner(person: PdlPersonData) =
+            person.forelderBarnRelasjon.mapNotNull { relasjon ->
                 relasjon.relatertPersonsIdent?.let { relatertPersonsIdent ->
                     Familierelasjon(personIdent = Personident(id = relatertPersonsIdent),
                                     relasjonsrolle = relasjon.relatertPersonsRolle.toString())
