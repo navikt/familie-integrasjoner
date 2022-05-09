@@ -31,7 +31,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.util.UriComponentsBuilder
 import kotlin.test.assertNull
 
-@ActiveProfiles("integrasjonstest", "mock-personopplysninger", "mock-oauth")
+@ActiveProfiles("integrasjonstest", "mock-personopplysninger", "mock-sts")
 @ExtendWith(MockServerExtension::class)
 @MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
 class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTest() {
