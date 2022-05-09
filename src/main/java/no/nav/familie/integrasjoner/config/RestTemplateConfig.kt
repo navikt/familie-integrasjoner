@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.config
 
+import no.nav.familie.http.config.NaisProxyCustomizer
 import no.nav.familie.http.interceptor.BearerTokenClientInterceptor
 import no.nav.familie.http.interceptor.BearerTokenWithSTSFallbackClientInterceptor
 import no.nav.familie.http.interceptor.ConsumerIdClientInterceptor
@@ -30,24 +31,15 @@ class RestTemplateConfig(
 
     @Bean
     fun restTemplateMedProxy(): RestTemplate {
-        return if (trengerProxy()) {
-            RestTemplateBuilder()
-                    .additionalCustomizers(NaisProxyCustomizer())
-                    .build()
-        } else {
-            RestTemplateBuilder()
-                    .build()
-        }
+        return RestTemplateBuilder()
+                .medProxy()
+                .build()
     }
 
     @Bean
     fun restTemplateBuilderMedProxy(): RestTemplateBuilder {
-        return if (trengerProxy()) {
-            RestTemplateBuilder()
-                    .additionalCustomizers(NaisProxyCustomizer())
-        } else {
-            RestTemplateBuilder()
-        }
+        return RestTemplateBuilder()
+                .medProxy()
     }
 
     /**
@@ -56,49 +48,30 @@ class RestTemplateConfig(
     @Bean("jwtBearer")
     fun restTemplateJwtBearer(consumerIdClientInterceptor: ConsumerIdClientInterceptor,
                               bearerTokenClientInterceptor: BearerTokenClientInterceptor): RestOperations {
-        return if (trengerProxy()) {
-            RestTemplateBuilder()
-                    .additionalCustomizers(NaisProxyCustomizer())
-                    .interceptors(consumerIdClientInterceptor,
-                                  bearerTokenClientInterceptor,
-                                  MdcValuesPropagatingClientInterceptor())
-                    .requestFactory(this::requestFactory)
-                    .build()
-        } else {
-            RestTemplateBuilder()
-                    .interceptors(consumerIdClientInterceptor,
-                                  bearerTokenClientInterceptor,
-                                  MdcValuesPropagatingClientInterceptor())
-                    .requestFactory(this::requestFactory)
-                    .build()
-        }
+        return RestTemplateBuilder()
+                .medProxy()
+                .interceptors(consumerIdClientInterceptor,
+                              bearerTokenClientInterceptor,
+                              MdcValuesPropagatingClientInterceptor())
+                .requestFactory(this::requestFactory)
+                .build()
     }
 
     @Bean("jwtBearerOboOgSts")
     fun restTemplateOboOgSts(consumerIdClientInterceptor: ConsumerIdClientInterceptor,
                              bearerTokenWithSTSFallbackClientInterceptor: BearerTokenWithSTSFallbackClientInterceptor): RestOperations {
-        return if (trengerProxy()) {
-            RestTemplateBuilder()
-                    .additionalCustomizers(NaisProxyCustomizer())
-                    .interceptors(consumerIdClientInterceptor,
-                                  bearerTokenWithSTSFallbackClientInterceptor,
-                                  MdcValuesPropagatingClientInterceptor())
-                    .requestFactory(this::requestFactory)
-                    .build()
-        } else {
-            RestTemplateBuilder()
-                    .interceptors(consumerIdClientInterceptor,
-                                  bearerTokenWithSTSFallbackClientInterceptor,
-                                  MdcValuesPropagatingClientInterceptor())
-                    .requestFactory(this::requestFactory)
-                    .build()
-        }
+        return RestTemplateBuilder()
+                .medProxy()
+                .interceptors(consumerIdClientInterceptor,
+                              bearerTokenWithSTSFallbackClientInterceptor,
+                              MdcValuesPropagatingClientInterceptor())
+                .requestFactory(this::requestFactory)
+                .build()
     }
 
     @Bean("sts")
     fun restTemplateSts(stsBearerTokenClientInterceptor: StsBearerTokenClientInterceptor,
                         consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations {
-
         return RestTemplateBuilder()
                 .interceptors(consumerIdClientInterceptor,
                               stsBearerTokenClientInterceptor,
@@ -115,6 +88,14 @@ class RestTemplateConfig(
                               MdcValuesPropagatingClientInterceptor())
                 .requestFactory(this::requestFactory)
                 .build()
+    }
+
+    private fun RestTemplateBuilder.medProxy(): RestTemplateBuilder {
+        return if (trengerProxy()) {
+            this.additionalCustomizers(NaisProxyCustomizer(20_000, 20_000, 20_000))
+        } else {
+            this
+        }
     }
 
     private fun requestFactory() = HttpComponentsClientHttpRequestFactory()
