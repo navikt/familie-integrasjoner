@@ -142,7 +142,8 @@ type ForelderBarnRelasjon {
     folkeregistermetadata: Folkeregistermetadata
     metadata: Metadata!
     minRolleForPerson: ForelderBarnRelasjonRolle
-    relatertPersonsIdent: String!
+    relatertPersonUtenFolkeregisteridentifikator: RelatertBiPerson
+    relatertPersonsIdent: String
     relatertPersonsRolle: ForelderBarnRelasjonRolle!
 }
 
@@ -530,6 +531,7 @@ type Query {
     forslagAdresse(parameters: CompletionParameters): AdresseCompletionResult
     hentAdresse(matrikkelId: ID!): KartverketAdresse
     hentGeografiskTilknytning(ident: ID!): GeografiskTilknytning
+    hentGeografiskTilknytningBolk(identer: [ID!]!): [hentGeografiskTilknytningBolkResult!]!
     hentIdenter(grupper: [IdentGruppe!], historikk: Boolean = false, ident: ID!): Identliste
     hentIdenterBolk(grupper: [IdentGruppe!], historikk: Boolean = false, identer: [ID!]!): [HentIdenterBolkResult!]!
     hentPerson(ident: ID!): Person
@@ -686,6 +688,12 @@ type VergemaalEllerFremtidsfullmakt {
     vergeEllerFullmektig: VergeEllerFullmektig!
 }
 
+type hentGeografiskTilknytningBolkResult {
+    code: String!
+    geografiskTilknytning: GeografiskTilknytning
+    ident: String!
+}
+
 enum AdressebeskyttelseGradering {
     FORTROLIG
     STRENGT_FORTROLIG
@@ -776,6 +784,15 @@ enum Sivilstandstype {
     UGIFT
     UOPPGITT
 }
+
+"Format: YYYY-MM-DD (ISO-8601), example: 2017-11-24"
+scalar Date
+
+"Format: YYYY-MM-DDTHH:mm:SS (ISO-8601), example: 2011-12-03T10:15:30"
+scalar DateTime
+
+"Long type"
+scalar Long
 
 input CompletionFieldValue {
     fieldName: String!
@@ -879,13 +896,3 @@ input SearchSorting {
     " Feltnavn ikludert sti til ønsket felt (eksepmel: person.navn.fornavn)"
     fieldName: String!
 }
-
-
-"Format: YYYY-MM-DD (ISO-8601), example: 2017-11-24"
-scalar Date
-
-"Format: YYYY-MM-DDTHH:mm:SS (ISO-8601), example: 2011-12-03T10:15:30"
-scalar DateTime
-
-"Long type"
-scalar Long
