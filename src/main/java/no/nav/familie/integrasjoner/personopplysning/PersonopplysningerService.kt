@@ -73,7 +73,7 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
         val hovedperson = hentPersonMedRelasjonerOgAdressebeskyttelse(listOf(personIdent), tema).getOrThrow(personIdent)
         val barnIdenter = hovedperson.forelderBarnRelasjon
                 .filter { it.relatertPersonsRolle == FORELDERBARNRELASJONROLLE.BARN }
-                .map { it.relatertPersonsIdent }
+                .mapNotNull { it.relatertPersonsIdent }
         val sivilstandIdenter = hovedperson.sivilstand.mapNotNull { it.relatertVedSivilstand }.distinct()
         val fullmaktIdenter = hovedperson.fullmakt.map { it.motpartsPersonident }.distinct()
 
@@ -101,7 +101,7 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
                                    tema: Tema): List<PersonMedAdresseBeskyttelse> {
         val barnsForeldrerIdenter = barnOpplysninger.flatMap { (_, personMedRelasjoner) ->
             personMedRelasjoner.forelderBarnRelasjon.filter { it.relatertPersonsRolle != FORELDERBARNRELASJONROLLE.BARN }
-        }.filter { it.relatertPersonsIdent != personIdent }.map { it.relatertPersonsIdent }.distinct()
+        }.filter { it.relatertPersonsIdent != personIdent }.mapNotNull { it.relatertPersonsIdent }.distinct()
         val barnsForeldrerOpplysninger = hentPersonMedRelasjonerOgAdressebeskyttelse(barnsForeldrerIdenter, tema)
 
         return mapPersonMedRelasjoner(barnsForeldrerIdenter, barnsForeldrerOpplysninger)
