@@ -17,6 +17,6 @@ object BarnetrygdVarselOmRevurderingFraNasjonalTilEøsMetadata : Dokumentmetadat
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_VARSEL_OM_REVURDERING_FRA_NASJONAL_TIL_EØS
     override val tittel: String = "Varsler om revurdering fra nasjonal til EØS"
-    override val brevkode: String = "Varsel om revurdering fra nasjonal til EØS"
+    override val brevkode: String = "varsler-om-revurdering-fra-nasjonal-til-eøs"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }

@@ -17,6 +17,6 @@ object BarnetrygdInnhenteOpplysningerEtterSøknadISedMetadata : Dokumentmetadata
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_INNHENTE_OPPLYSNINGER_ETTER_SØKNAD_I_SED
     override val tittel: String = "Innhente opplysninger etter søknad i SED"
-    override val brevkode: String = "Innhente opplysninger etter søknad i SED"
+    override val brevkode: String = "innhente-opplysninger-etter-søknad-i-sed"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }

@@ -17,6 +17,6 @@ object BarnetrygdVarselOmVedtakEtterSøknadMetadata : Dokumentmetadata {
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_VARSEL_OM_VEDTAK_ETTER_SØKNAD_I_SED
     override val tittel: String = "Varsel om vedtak etter søknad i SED"
-    override val brevkode: String = "Varsel om vedtak etter søknad i SED"
+    override val brevkode: String = "varsel-om-vedtak-etter-søknad-i-sed"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
