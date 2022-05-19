@@ -40,7 +40,7 @@ jobs:
   deploy-dev:
     if: github.event.pull_request.draft == false
     name: Deploy to dev-fss
-    needs: build
+    needs: build-dev
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

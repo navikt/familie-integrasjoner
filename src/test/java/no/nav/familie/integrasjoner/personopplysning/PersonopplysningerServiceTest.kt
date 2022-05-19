@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.personopplysning
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import no.nav.familie.integrasjoner.client.rest.PdlClientCredentialRestClient
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.client.soap.PersonSoapClient
 import no.nav.familie.integrasjoner.felles.OppslagException
@@ -36,13 +37,15 @@ class PersonopplysningerServiceTest {
     private lateinit var personopplysningerService: PersonopplysningerService
 
     private val pdlRestClient = mockk<PdlRestClient>()
+    private val pdlClientCredentialRestClient = mockk<PdlClientCredentialRestClient>()
 
     @BeforeEach
     fun setUp() {
         personSoapClient = PersonopplysningerTestConfig().personConsumerMock()
         personopplysningerService = PersonopplysningerService(personSoapClient,
                                                               TpsOversetter(TpsAdresseOversetter()),
-                                                              pdlRestClient)
+                                                              pdlRestClient,
+                                                              pdlClientCredentialRestClient)
     }
 
     @Test
@@ -138,10 +141,10 @@ class PersonopplysningerServiceTest {
                                           fullmakt = listOf(Fullmakt("4")))
         val barn = lagPdlPersonMedRelasjoner(familierelasjoner = listOf(PdlForelderBarnRelasjon("22",
                                                                                                 FORELDERBARNRELASJONROLLE.FAR)))
-        every { pdlRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(any(), any()) } answers {
+        every { pdlClientCredentialRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(any(), any()) } answers {
             firstArg<List<String>>().map { it to if (it == "2") barn else lagPdlPersonMedRelasjoner() }.toMap()
         }
-        every { pdlRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(listOf("1"), any()) } returns mapOf(hovedPerson)
+        every { pdlClientCredentialRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(listOf("1"), any()) } returns mapOf(hovedPerson)
 
         val hentPersonMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner("1", Tema.ENF)
 
@@ -151,9 +154,9 @@ class PersonopplysningerServiceTest {
         assertThat(hentPersonMedRelasjoner.fullmakt.single().personIdent).isEqualTo("4")
 
         verify(exactly = 1) {
-            pdlRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(listOf("1"), any())
-            pdlRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(listOf("2", "3", "4"), any())
-            pdlRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(listOf("22"), any())
+            pdlClientCredentialRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(listOf("1"), any())
+            pdlClientCredentialRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(listOf("2", "3", "4"), any())
+            pdlClientCredentialRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(listOf("22"), any())
         }
     }
 
