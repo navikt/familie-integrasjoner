@@ -114,33 +114,25 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         val pdlPersonRequest = PdlIdentRequest(variables = PdlIdentRequestVariables(ident, gruppe, historikk),
                                                query = HENT_IDENTER_QUERY)
 
-        try {
-            val response = postForEntity<PdlResponse<PdlHentIdenter>>(pdlUri,
-                                                                      pdlPersonRequest,
-                                                                      pdlHttpHeaders(tema))
-            if (response.harFeil() || response.data.hentIdenter == null) {
-                if (response.harNotFoundFeil()) {
-                    secureLogger.info("Finner ikke ident med gruppe=$gruppe for ident=$ident i PDL")
-                    throw PdlNotFoundException()
-                }
-                throw pdlOppslagException(feilmelding = "Feil ved oppslag på person: ${response.errorMessages()}",
-                                          personIdent = ident)
-            }
-            return response.data.hentIdenter.identer
-        } catch (e: OppslagException) {
-            throw e
+        val response = try {
+            postForEntity<PdlResponse<PdlHentIdenter>>(pdlUri, pdlPersonRequest, pdlHttpHeaders(tema))
         } catch (e: Exception) {
             throw pdlOppslagException(ident, error = e)
         }
+        return feilsjekkOgReturnerData(response, ident) {it.hentIdenter}.identer
     }
 
     private inline fun <reified DATA : Any, reified RESPONSE : Any> feilsjekkOgReturnerData(pdlResponse: PdlResponse<DATA>, personIdent: String, dataMapper: (DATA) -> RESPONSE?): RESPONSE {
         if (pdlResponse.harFeil()) {
+            if (pdlResponse.harNotFoundFeil()) {
+                secureLogger.info("Finner ikke person for ident=$personIdent i PDL")
+                throw PdlNotFoundException()
+            }
             throw pdlOppslagException(feilmelding = "Feil ved oppslag på person: ${pdlResponse.errorMessages()}",
                                       personIdent = personIdent)
         }
         val data = dataMapper.invoke(pdlResponse.data)
-                   ?: throw pdlOppslagException(feilmelding = "Personobjektet mangler på responsen fra PDL",
+                   ?: throw pdlOppslagException(feilmelding = "Feil ved oppslag på person for ident=$personIdent. Objekt mangler på responsen fra PDL",
                                                 personIdent = personIdent)
         return data
     }
