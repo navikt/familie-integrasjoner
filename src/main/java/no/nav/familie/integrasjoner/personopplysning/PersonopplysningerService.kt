@@ -92,7 +92,7 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
     }
 
     fun hentAdressebeskyttelse(personIdent: String, tema: Tema): Adressebeskyttelse {
-        return pdlRestClient.hentAdressebeskyttelse(personIdent, tema).person.adressebeskyttelse.firstOrNull()
+        return pdlRestClient.hentAdressebeskyttelse(personIdent, tema).adressebeskyttelse.firstOrNull()
                ?: Adressebeskyttelse(gradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
     }
 

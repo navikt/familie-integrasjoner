@@ -11,6 +11,7 @@ import no.nav.familie.integrasjoner.geografisktilknytning.PdlGeografiskTilknytni
 import no.nav.familie.integrasjoner.geografisktilknytning.PdlHentGeografiskTilknytning
 import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.internal.Familierelasjon
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlAdressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlHentIdenter
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlIdent
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlIdentRequest
@@ -40,7 +41,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
 
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
 
-    fun hentAdressebeskyttelse(personIdent: String, tema: Tema): PdlPersonMedAdressebeskyttelse {
+    fun hentAdressebeskyttelse(personIdent: String, tema: Tema): PdlAdressebeskyttelse {
         val pdlAdressebeskyttelseRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
                                                             query = HENT_ADRESSEBESKYTTELSE_QUERY)
 
@@ -48,7 +49,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                                                                                   pdlAdressebeskyttelseRequest,
                                                                                   pdlHttpHeaders(tema))
 
-        return feilsjekkOgReturnerData(response, personIdent)
+        return feilsjekkOgReturnerData(response, personIdent) { it.person }
     }
 
     fun hentPerson(personIdent: String, tema: Tema, personInfoQuery: PersonInfoQuery): Person {
@@ -133,13 +134,15 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         }
     }
 
-    private inline fun <reified T : Any> feilsjekkOgReturnerData(pdlResponse: PdlResponse<T>, personIdent: String): T {
-        if (!pdlResponse.harFeil()) {
-            return pdlResponse.data
-        } else {
+    private inline fun <reified DATA : Any, reified RESPONSE : Any> feilsjekkOgReturnerData(pdlResponse: PdlResponse<DATA>, personIdent: String, dataMapper: (DATA) -> RESPONSE?): RESPONSE {
+        if (pdlResponse.harFeil()) {
             throw pdlOppslagException(feilmelding = "Feil ved oppslag på person: ${pdlResponse.errorMessages()}",
                                       personIdent = personIdent)
         }
+        val data = dataMapper.invoke(pdlResponse.data)
+                   ?: throw pdlOppslagException(feilmelding = "Personobjektet mangler på responsen fra PDL",
+                                                personIdent = personIdent)
+        return data
     }
 
     fun hentGjeldendeAktørId(ident: String, tema: Tema): String {
