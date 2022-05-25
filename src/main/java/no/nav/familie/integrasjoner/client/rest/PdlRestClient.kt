@@ -56,50 +56,38 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
 
         val pdlPersonRequest = PdlPersonRequest(variables = PdlPersonRequestVariables(personIdent),
                                                 query = personInfoQuery.graphQL)
-        try {
-            val response = postForEntity<PdlResponse<PdlPerson>>(pdlUri,
-                                                                 pdlPersonRequest,
-                                                                 pdlHttpHeaders(tema))
-            if (!response.harFeil()) {
-                val person = response.data.person
-                             ?: throw pdlOppslagException(personIdent = personIdent,
-                                                          feilmelding = "Personobjektet mangler på responsen fra PDL")
-                return Result.runCatching {
-                    val familierelasjoner: Set<Familierelasjon> =
-                            when (personInfoQuery) {
-                                PersonInfoQuery.ENKEL -> emptySet()
-                                PersonInfoQuery.MED_RELASJONER -> mapRelasjoner(person)
-                            }
-                    person.let {
-                        Person(fødselsdato = it.foedsel.first().foedselsdato!!,
-                               navn = it.navn.first().fulltNavn(),
-                               kjønn = it.kjoenn.first().kjoenn.toString(),
-                               familierelasjoner = familierelasjoner,
-                               adressebeskyttelseGradering = it.adressebeskyttelse.firstOrNull()?.gradering,
-                               bostedsadresse = it.bostedsadresse.firstOrNull(),
-                               sivilstand = it.sivilstand.firstOrNull()?.type)
-                    }
-                }.fold(
-                        onSuccess = { it },
-                        onFailure = {
-                            throw OppslagException("Fant ikke forespurte data på person.",
-                                                   "PdlRestClient",
-                                                   OppslagException.Level.MEDIUM,
-                                                   HttpStatus.NOT_FOUND,
-                                                   it,
-                                                   personIdent)
-                        }
-                )
-            } else {
-                throw pdlOppslagException(feilmelding = "Feil ved oppslag på person: ${response.errorMessages()}",
-                                          personIdent = personIdent)
-            }
-        } catch (e: Exception) {
-            when (e) {
-                is OppslagException -> throw e
-                else -> throw pdlOppslagException(personIdent, error = e)
-            }
+        val response = try {
+            postForEntity<PdlResponse<PdlPerson>>(pdlUri, pdlPersonRequest, pdlHttpHeaders(tema))
+        } catch(e: Exception) {
+            throw pdlOppslagException(personIdent, error = e)
         }
+        val person = feilsjekkOgReturnerData(response, personIdent) { it.person }
+        return Result.runCatching {
+            val familierelasjoner: Set<Familierelasjon> =
+                    when (personInfoQuery) {
+                        PersonInfoQuery.ENKEL -> emptySet()
+                        PersonInfoQuery.MED_RELASJONER -> mapRelasjoner(person)
+                    }
+            person.let {
+                Person(fødselsdato = it.foedsel.first().foedselsdato!!,
+                       navn = it.navn.first().fulltNavn(),
+                       kjønn = it.kjoenn.first().kjoenn.toString(),
+                       familierelasjoner = familierelasjoner,
+                       adressebeskyttelseGradering = it.adressebeskyttelse.firstOrNull()?.gradering,
+                       bostedsadresse = it.bostedsadresse.firstOrNull(),
+                       sivilstand = it.sivilstand.firstOrNull()?.type)
+            }
+        }.fold(
+                onSuccess = { it },
+                onFailure = {
+                    throw OppslagException("Fant ikke forespurte data på person.",
+                                           "PdlRestClient",
+                                           OppslagException.Level.MEDIUM,
+                                           HttpStatus.NOT_FOUND,
+                                           it,
+                                           personIdent)
+                }
+        )
     }
 
     private fun mapRelasjoner(person: PdlPersonData) =
