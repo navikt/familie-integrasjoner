@@ -80,7 +80,7 @@ class PdlGraphqlTest {
     @Test
     fun testPdlAdressebeskyttelse() {
         val resp: PdlResponse<PdlPersonMedAdressebeskyttelse> = mapper.readValue(File(getFile("pdl/pdlAdressebeskyttelseResponse.json")))
-        assertThat(resp.data.person.adressebeskyttelse).hasSize(1)
+        assertThat(resp.data.person?.adressebeskyttelse).hasSize(1)
     }
 
     @Test
