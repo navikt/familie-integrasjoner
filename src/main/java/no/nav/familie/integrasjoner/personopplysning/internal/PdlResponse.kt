@@ -29,7 +29,7 @@ data class PdlBolkResponse<T>(val data: PersonBolk<T>?, val errors: List<PdlErro
     }
 }
 
-data class PdlPersonMedAdressebeskyttelse(val person: PdlAdressebeskyttelse)
+data class PdlPersonMedAdressebeskyttelse(val person: PdlAdressebeskyttelse?)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlAdressebeskyttelse(val adressebeskyttelse: List<Adressebeskyttelse>)
