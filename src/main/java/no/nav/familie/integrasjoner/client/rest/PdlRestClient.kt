@@ -116,11 +116,11 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                 secureLogger.info("Finner ikke person for ident=$personIdent i PDL")
                 throw PdlNotFoundException()
             }
-            throw pdlOppslagException(feilmelding = "Feil ved oppslag på person: ${pdlResponse.errorMessages()}",
+            throw pdlOppslagException(feilmelding = "Feil ved oppslag på person: ${pdlResponse.errorMessages()}. Se secureLogs for mer info.",
                                       personIdent = personIdent)
         }
         val data = dataMapper.invoke(pdlResponse.data)
-                   ?: throw pdlOppslagException(feilmelding = "Feil ved oppslag på person for ident=$personIdent. Objekt mangler på responsen fra PDL",
+                   ?: throw pdlOppslagException(feilmelding = "Feil ved oppslag på person. Objekt mangler på responsen fra PDL. Se secureLogs for mer info.",
                                                 personIdent = personIdent)
         return data
     }
@@ -128,14 +128,14 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
     fun hentGjeldendeAktørId(ident: String, tema: Tema): String {
         val pdlIdenter = hentIdenter(ident, "AKTORID", tema, false)
         return pdlIdenter.firstOrNull()?.ident
-               ?: throw pdlOppslagException(feilmelding = "Kunne ikke finne aktørId for personIdent=$ident i PDL. ",
+               ?: throw pdlOppslagException(feilmelding = "Kunne ikke finne aktørId i PDL. Se secureLogs for mer info.",
                                             personIdent = ident)
     }
 
     fun hentGjeldendePersonident(ident: String, tema: Tema): String {
         val pdlIdenter = hentIdenter(ident, "FOLKEREGISTERIDENT", tema, false)
         return pdlIdenter.firstOrNull()?.ident
-               ?: throw pdlOppslagException(feilmelding = "Kunne ikke finne personIdent for aktørId=$ident i PDL. ",
+               ?: throw pdlOppslagException(feilmelding = "Kunne ikke finne personIdent i PDL. Se secureLogs for mer info. ",
                                             personIdent = ident)
     }
 
