@@ -116,7 +116,7 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
                 secureLogger.info("Finner ikke person for ident=$personIdent i PDL")
                 throw PdlNotFoundException()
             }
-            throw pdlOppslagException(feilmelding = "Feil ved oppslag på person: ${pdlResponse.errorMessages()}",
+            throw pdlOppslagException(feilmelding = "Feil ved oppslag på person med ident=$personIdent: ${pdlResponse.errorMessages()}",
                                       personIdent = personIdent)
         }
         val data = dataMapper.invoke(pdlResponse.data)
