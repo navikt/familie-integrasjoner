@@ -1,6 +1,5 @@
 package no.nav.familie.integrasjoner.tilgangskontroll
 
-import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.config.TilgangConfig
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
 import no.nav.familie.integrasjoner.personopplysning.PdlUnauthorizedException
@@ -29,7 +28,7 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
     fun sjekkTilgang(personIdent: String, jwtToken: JwtToken, tema: Tema): Tilgang {
         return try {
             val adressebeskyttelse = personopplysningerService.hentAdressebeskyttelse(personIdent, tema).gradering
-            sjekTilgang(adressebeskyttelse, jwtToken, personIdent) { egenAnsattService.erEgenAnsatt(personIdent) }
+            hentTilgang(adressebeskyttelse, jwtToken, personIdent) { egenAnsattService.erEgenAnsatt(personIdent) }
         } catch (pdlUnauthorizedException: PdlUnauthorizedException) {
             Tilgang(harTilgang = false)
         }
@@ -43,10 +42,10 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
         secureLogger.info("Sjekker tilgang til {}", personMedRelasjoner)
 
         val høyesteGraderingen = TilgangskontrollUtil.høyesteGraderingen(personMedRelasjoner)
-        return sjekTilgang(høyesteGraderingen, jwtToken, personIdent) { erEgenAnsatt(personMedRelasjoner) }
+        return hentTilgang(høyesteGraderingen, jwtToken, personIdent) { erEgenAnsatt(personMedRelasjoner) }
     }
 
-    private fun sjekTilgang(adressebeskyttelsegradering: ADRESSEBESKYTTELSEGRADERING?,
+    private fun hentTilgang(adressebeskyttelsegradering: ADRESSEBESKYTTELSEGRADERING?,
                             jwtToken: JwtToken,
                             personIdent: String,
                             egenAnsattSjekk: () -> Boolean): Tilgang {
