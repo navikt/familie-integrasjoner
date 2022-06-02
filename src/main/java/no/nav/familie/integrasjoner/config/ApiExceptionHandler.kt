@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.config
 
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
+import no.nav.familie.integrasjoner.personopplysning.PdlUnauthorizedException
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.security.token.support.client.core.OAuth2ClientException
@@ -94,6 +95,11 @@ class ApiExceptionHandler {
     fun handleThrowable(feil: PdlNotFoundException): ResponseEntity<Ressurs<Nothing>> {
         logger.info("Finner ikke personen i PDL")
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(failure(frontendFeilmelding = "Finner ikke personen"))
+    }
+
+    @ExceptionHandler(PdlUnauthorizedException::class)
+    fun handleThrowable(feil: PdlUnauthorizedException): ResponseEntity<Ressurs<Nothing>> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(failure(frontendFeilmelding = "Har ikke tilgang til å slå opp personen i PDL"))
     }
 
     @ExceptionHandler(OppslagException::class)
