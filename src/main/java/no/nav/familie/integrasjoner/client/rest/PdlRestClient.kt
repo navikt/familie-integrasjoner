@@ -10,6 +10,7 @@ import no.nav.familie.integrasjoner.geografisktilknytning.PdlGeografiskTilknytni
 import no.nav.familie.integrasjoner.geografisktilknytning.PdlGeografiskTilknytningVariables
 import no.nav.familie.integrasjoner.geografisktilknytning.PdlHentGeografiskTilknytning
 import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
+import no.nav.familie.integrasjoner.personopplysning.PdlUnauthorizedException
 import no.nav.familie.integrasjoner.personopplysning.internal.Familierelasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlAdressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlHentIdenter
@@ -115,6 +116,10 @@ class PdlRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
             if (pdlResponse.harNotFoundFeil()) {
                 secureLogger.info("Finner ikke person for ident=$personIdent i PDL")
                 throw PdlNotFoundException()
+            }
+            if (pdlResponse.harUnauthorizedFeil()) {
+                secureLogger.info("Har ikke tilgang til person med ident=$personIdent i PDL")
+                throw PdlUnauthorizedException()
             }
             throw pdlOppslagException(feilmelding = "Feil ved oppslag på person: ${pdlResponse.errorMessages()}. Se secureLogs for mer info.",
                                       personIdent = personIdent)

@@ -18,6 +18,10 @@ data class PdlResponse<T>(val data: T,
     fun harNotFoundFeil(): Boolean {
         return errors?.any { it.extensions?.notFound() == true } ?: false
     }
+
+    fun harUnauthorizedFeil(): Boolean {
+        return errors?.any { it.extensions?.unauthorized() == true } ?: false
+    }
 }
 
 data class PersonDataBolk<T>(val ident: String, val code: String, val person: T?)
@@ -61,6 +65,8 @@ data class PdlError(val message: String,
 data class PdlExtensions(val code: String?) {
 
     fun notFound() = code == "not_found"
+
+    fun unauthorized() = code == "unauthorized"
 }
 
 
