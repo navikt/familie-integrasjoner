@@ -6,5 +6,4 @@ import org.slf4j.MDC
 object MDCOperations {
 
     fun getCallId(): String = MDC.get(MDC_CALL_ID)
-
 }

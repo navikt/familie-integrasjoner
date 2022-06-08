@@ -4,7 +4,10 @@ import no.nav.familie.kontrakter.felles.Fil
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.context.annotation.Profile
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping(value = ["/api/adramatch/avstemming"])
@@ -17,5 +20,4 @@ class FiloverføringAdraMatchController(private val sftpClient: FiloverføringAd
         sftpClient.put(fil)
         return Ressurs.success("Fil lastet opp!")
     }
-
 }

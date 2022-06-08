@@ -24,7 +24,7 @@ class OrganisasjonTestConfig {
             organisasjon = Organisasjon().apply { navn = UstrukturertNavn() }
         }
         every { organisasjonSoapClientMock.hentOrganisasjon(any()) }
-                .returns(organisasjon)
+            .returns(organisasjon)
 
         val validerOrganisasjonRespons = ValiderOrganisasjonResponse().apply { isGyldigOrgnummer = true }
         every { organisasjonSoapClientMock.validerOrganisasjon(any()) } returns validerOrganisasjonRespons

@@ -10,29 +10,33 @@ object MedlemskapsinfoMapper {
 
     fun tilMedlemskapsInfo(responsListe: List<MedlemskapsunntakResponse>): Medlemskapsinfo {
         val gyldigePerioder: List<PeriodeInfo> = responsListe
-                .filter { PeriodeStatus.GYLD.name == it.status }
-                .map(this::tilPeriodeInfo)
+            .filter { PeriodeStatus.GYLD.name == it.status }
+            .map(this::tilPeriodeInfo)
         val avvistePerioder: List<PeriodeInfo> = responsListe
-                .filter { PeriodeStatus.AVST.name == it.status }
-                .map(this::tilPeriodeInfo)
+            .filter { PeriodeStatus.AVST.name == it.status }
+            .map(this::tilPeriodeInfo)
         val uavklartePerioder: List<PeriodeInfo> = responsListe
-                .filter { PeriodeStatus.UAVK.name == it.status }
-                .map(this::tilPeriodeInfo)
-        return Medlemskapsinfo(gyldigePerioder = gyldigePerioder,
-                               avvistePerioder = avvistePerioder,
-                               uavklartePerioder = uavklartePerioder,
-                               personIdent = tilPersonIdent(responsListe))
+            .filter { PeriodeStatus.UAVK.name == it.status }
+            .map(this::tilPeriodeInfo)
+        return Medlemskapsinfo(
+            gyldigePerioder = gyldigePerioder,
+            avvistePerioder = avvistePerioder,
+            uavklartePerioder = uavklartePerioder,
+            personIdent = tilPersonIdent(responsListe)
+        )
     }
 
     private fun tilPeriodeInfo(response: MedlemskapsunntakResponse): PeriodeInfo {
-        return PeriodeInfo(periodeStatus = PeriodeStatus.valueOf(response.status),
-                           fom = response.fraOgMed,
-                           tom = response.tilOgMed,
-                           dekning = response.dekning,
-                           grunnlag = response.grunnlag,
-                           gjelderMedlemskapIFolketrygden = response.medlem,
-                           periodeStatusÅrsak =
-                           if (response.statusaarsak == null) null else PeriodeStatusÅrsak.valueOf(response.statusaarsak))
+        return PeriodeInfo(
+            periodeStatus = PeriodeStatus.valueOf(response.status),
+            fom = response.fraOgMed,
+            tom = response.tilOgMed,
+            dekning = response.dekning,
+            grunnlag = response.grunnlag,
+            gjelderMedlemskapIFolketrygden = response.medlem,
+            periodeStatusÅrsak =
+            if (response.statusaarsak == null) null else PeriodeStatusÅrsak.valueOf(response.statusaarsak)
+        )
     }
 
     private fun tilPersonIdent(responseList: List<MedlemskapsunntakResponse>): String {

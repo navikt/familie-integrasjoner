@@ -33,5 +33,4 @@ class KodeverkInitializer(private val cachedKodeverkService: CachedKodeverkServi
             logger.warn("Feilet henting av $navn ${e.message}")
         }
     }
-
 }

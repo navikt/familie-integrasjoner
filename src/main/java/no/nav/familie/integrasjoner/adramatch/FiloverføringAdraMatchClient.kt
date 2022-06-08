@@ -12,10 +12,12 @@ import java.io.ByteArrayInputStream
 class FiloverføringAdraMatchClient(private val config: FiloverføringAdraMatchConfig) {
 
     private val jSch = JSch().apply {
-        addIdentity(config.username,
-                    config.privateKeyDecoded,
-                    null,
-                    config.passphrase.toByteArray())
+        addIdentity(
+            config.username,
+            config.privateKeyDecoded,
+            null,
+            config.passphrase.toByteArray()
+        )
     }
 
     fun put(fil: Fil) {

@@ -19,12 +19,11 @@ object BarnetilsynSøknadMetadata : Dokumentmetadata {
     override val tittel: String = "Søknad om stønad til barnetilsyn - enslig mor eller far i arbeid"
     override val brevkode: String = "NAV 15-00.02"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.SOK
-
 }
 
 // Mulige behandligstema:
-//ab0216	Barnetilsyn - barn under 10 år
-//ab0224	Gjenlevende - stønad til barnetilsyn
-//ab0028    Barnetilsyn
-//ab0086	Barnetilsyn - barn over 10 år
-//ab0145	Barnetilsyn - familiemedlemmer
+// ab0216	Barnetilsyn - barn under 10 år
+// ab0224	Gjenlevende - stønad til barnetilsyn
+// ab0028    Barnetilsyn
+// ab0086	Barnetilsyn - barn over 10 år
+// ab0145	Barnetilsyn - familiemedlemmer

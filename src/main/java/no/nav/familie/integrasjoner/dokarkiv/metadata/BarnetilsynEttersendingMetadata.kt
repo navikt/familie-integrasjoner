@@ -19,5 +19,4 @@ object BarnetilsynEttersendingMetadata : Dokumentmetadata {
     override val tittel: String = "Ettersending barnetilsyn - enslig mor eller far i arbeid"
     override val brevkode: String = "NAVe 15-00.02"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.IS
-
 }

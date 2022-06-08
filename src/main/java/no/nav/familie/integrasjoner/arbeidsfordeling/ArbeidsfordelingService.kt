@@ -21,19 +21,22 @@ import org.springframework.stereotype.Service
 
 @Service
 class ArbeidsfordelingService(
-        private val klient: ArbeidsfordelingClient,
-        private val restClient: ArbeidsfordelingRestClient,
-        private val pdlRestClient: PdlRestClient,
-        private val egenAnsattService: EgenAnsattService,
-        private val personopplysningerService: PersonopplysningerService,
-        private val cacheManager: CacheManager) {
+    private val klient: ArbeidsfordelingClient,
+    private val restClient: ArbeidsfordelingRestClient,
+    private val pdlRestClient: PdlRestClient,
+    private val egenAnsattService: EgenAnsattService,
+    private val personopplysningerService: PersonopplysningerService,
+    private val cacheManager: CacheManager
+) {
 
     private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
-    fun finnBehandlendeEnhet(tema: Tema,
-                             geografi: String?,
-                             diskresjonskode: String?): List<Enhet> =
-            klient.finnBehandlendeEnhet(tema, geografi, diskresjonskode)
+    fun finnBehandlendeEnhet(
+        tema: Tema,
+        geografi: String?,
+        diskresjonskode: String?
+    ): List<Enhet> =
+        klient.finnBehandlendeEnhet(tema, geografi, diskresjonskode)
 
     fun finnBehandlendeEnhetForPerson(personIdent: String, tema: Tema): List<Enhet> {
         val kriterie = lagArbeidsfordelingKritierieForPerson(personIdent, tema, tema)
@@ -46,18 +49,20 @@ class ArbeidsfordelingService(
         return restClient.finnBehandlendeEnhetMedBesteMatch(kriterie)
     }
 
-    private fun lagArbeidsfordelingKritierieForPerson(personIdent: String,
-                                                      pdlTema: Tema,
-                                                      arbeidsfordelingstema: Tema): ArbeidsfordelingKritierie {
+    private fun lagArbeidsfordelingKritierieForPerson(
+        personIdent: String,
+        pdlTema: Tema,
+        arbeidsfordelingstema: Tema
+    ): ArbeidsfordelingKriterie {
         val personinfo = personopplysningerService.hentPersoninfo(personIdent, pdlTema, PersonInfoQuery.ENKEL)
         val geografiskTilknytning = utledGeografiskTilknytningKode(pdlRestClient.hentGeografiskTilknytning(personIdent, pdlTema))
         val diskresjonskode = personinfo.adressebeskyttelseGradering?.diskresjonskode
 
-        return ArbeidsfordelingKritierie(
-                tema = arbeidsfordelingstema.name,
-                diskresjonskode = diskresjonskode,
-                geografiskOmraade = geografiskTilknytning,
-                skjermet = egenAnsattService.erEgenAnsatt(personIdent),
+        return ArbeidsfordelingKriterie(
+            tema = arbeidsfordelingstema.name,
+            diskresjonskode = diskresjonskode,
+            geografiskOmraade = geografiskTilknytning,
+            skjermet = egenAnsattService.erEgenAnsatt(personIdent),
         )
     }
 
@@ -89,51 +94,50 @@ class ArbeidsfordelingService(
         }
     }
 
-
     @Cacheable("enhet_for_person_med_relasjoner")
     fun finnBehandlendeEnhetForPersonMedRelasjoner(personIdent: String, tema: Tema): List<Enhet> {
         return cacheManager.getValue("navEnhet", personIdent) {
             val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent, tema)
 
             val aktuellePersoner: List<PersonMedAdresseBeskyttelse> =
-                    listOf(PersonMedAdresseBeskyttelse(personMedRelasjoner.personIdent, personMedRelasjoner.adressebeskyttelse)) +
+                listOf(PersonMedAdresseBeskyttelse(personMedRelasjoner.personIdent, personMedRelasjoner.adressebeskyttelse)) +
                     personMedRelasjoner.barn +
                     personMedRelasjoner.barnsForeldrer +
                     personMedRelasjoner.sivilstand
             val egneAnsatte = finnEgneAnsatte(aktuellePersoner)
 
-            val personMedStrengestBehov = utledPersonMedStrengestBehov(personIdent = personIdent,
-                                                                       personerMedAdresseBeskyttelse = aktuellePersoner,
-                                                                       egneAnsatte = egneAnsatte)
+            val personMedStrengestBehov = utledPersonMedStrengestBehov(
+                personIdent = personIdent,
+                personerMedAdresseBeskyttelse = aktuellePersoner,
+                egneAnsatte = egneAnsatte
+            )
             val geografiskTilknytning = pdlRestClient.hentGeografiskTilknytning(personMedStrengestBehov.personIdent, tema)
 
-            val kriterier = ArbeidsfordelingKritierie(
-                    tema = tema.name,
-                    geografiskOmraade = utledGeografiskTilknytningKode(geografiskTilknytning),
-                    diskresjonskode = personMedStrengestBehov.adressebeskyttelse?.diskresjonskode,
-                    skjermet = egneAnsatte.contains(personMedStrengestBehov.personIdent)
+            val kriterier = ArbeidsfordelingKriterie(
+                tema = tema.name,
+                geografiskOmraade = utledGeografiskTilknytningKode(geografiskTilknytning),
+                diskresjonskode = personMedStrengestBehov.adressebeskyttelse?.diskresjonskode,
+                skjermet = egneAnsatte.contains(personMedStrengestBehov.personIdent)
             )
             restClient.finnBehandlendeEnhetMedBesteMatch(kriterier)
         }
-
     }
 
     private fun finnEgneAnsatte(aktuellePersoner: List<PersonMedAdresseBeskyttelse>) =
-            egenAnsattService.erEgenAnsatt(aktuellePersoner.map { it.personIdent }.toSet()).filter { it.value }.keys
+        egenAnsattService.erEgenAnsatt(aktuellePersoner.map { it.personIdent }.toSet()).filter { it.value }.keys
 
-    private fun utledPersonMedStrengestBehov(personIdent: String,
-                                             personerMedAdresseBeskyttelse: List<PersonMedAdresseBeskyttelse>,
-                                             egneAnsatte: Set<String>): PersonMedAdresseBeskyttelse {
+    private fun utledPersonMedStrengestBehov(
+        personIdent: String,
+        personerMedAdresseBeskyttelse: List<PersonMedAdresseBeskyttelse>,
+        egneAnsatte: Set<String>
+    ): PersonMedAdresseBeskyttelse {
 
         val personMedStrengestGrad = personerMedAdresseBeskyttelse.personIdentMedKode6()
-                                     ?: egneAnsatte.firstOrNull()
-                                     ?: personerMedAdresseBeskyttelse.personMedKode7()
-                                     ?: personIdent
+            ?: egneAnsatte.firstOrNull()
+            ?: personerMedAdresseBeskyttelse.personMedKode7()
+            ?: personIdent
 
         return personerMedAdresseBeskyttelse.find { it.personIdent == personMedStrengestGrad }
-               ?: error("Noe har gått veldig galt ettersom person strengest grad ikke finnes i listen over aktuelle personer")
-
+            ?: error("Noe har gått veldig galt ettersom person strengest grad ikke finnes i listen over aktuelle personer")
     }
-
-
 }

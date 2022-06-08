@@ -19,5 +19,4 @@ object KontantstøtteTilbakebetalingBrevMetadata : Dokumentmetadata {
     override val tittel: String? = null
     override val brevkode: String = Fagsystem.KS.name + "-TILB"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
-
 }

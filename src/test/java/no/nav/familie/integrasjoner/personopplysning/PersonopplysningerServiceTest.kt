@@ -42,16 +42,18 @@ class PersonopplysningerServiceTest {
     @BeforeEach
     fun setUp() {
         personSoapClient = PersonopplysningerTestConfig().personConsumerMock()
-        personopplysningerService = PersonopplysningerService(personSoapClient,
-                                                              TpsOversetter(TpsAdresseOversetter()),
-                                                              pdlRestClient,
-                                                              pdlClientCredentialRestClient)
+        personopplysningerService = PersonopplysningerService(
+            personSoapClient,
+            TpsOversetter(TpsAdresseOversetter()),
+            pdlRestClient,
+            pdlClientCredentialRestClient
+        )
     }
 
     @Test
     fun personhistorikkInfoSkalGiFeilVedUgyldigAktørId() {
         every { personSoapClient.hentPersonhistorikkResponse(any()) } throws
-                OppslagException("feil", "feil", OppslagException.Level.MEDIUM)
+            OppslagException("feil", "feil", OppslagException.Level.MEDIUM)
         assertThatThrownBy {
             personopplysningerService.hentHistorikkFor(PERSONIDENT, FOM, TOM)
         }.isInstanceOf(OppslagException::class.java)
@@ -60,7 +62,7 @@ class PersonopplysningerServiceTest {
     @Test
     fun personHistorikkSkalGiFeilVedSikkerhetsbegrensning() {
         every { personSoapClient.hentPersonhistorikkResponse(any()) } throws
-                OppslagException("feil", "feil", OppslagException.Level.MEDIUM)
+            OppslagException("feil", "feil", OppslagException.Level.MEDIUM)
         assertThatThrownBy {
             personopplysningerService.hentHistorikkFor(PERSONIDENT, FOM, TOM)
         }.isInstanceOf(OppslagException::class.java)
@@ -69,17 +71,17 @@ class PersonopplysningerServiceTest {
     @Test
     fun personinfoSkalGiFeilVedUgyldigAktørId() {
         every { personSoapClient.hentPersonResponse(any()) } throws
-                OppslagException("feil", "feil", OppslagException.Level.MEDIUM)
+            OppslagException("feil", "feil", OppslagException.Level.MEDIUM)
         assertThatThrownBy {
             personopplysningerService.hentPersoninfoFor(PERSONIDENT)
         }
-                .isInstanceOf(OppslagException::class.java)
+            .isInstanceOf(OppslagException::class.java)
     }
 
     @Test
     fun personinfoSkalGiFeilVedSikkerhetsbegrensning() {
         every { personSoapClient.hentPersonResponse(any()) } throws
-                OppslagException("feil", "feil", OppslagException.Level.MEDIUM)
+            OppslagException("feil", "feil", OppslagException.Level.MEDIUM)
         assertThatThrownBy {
             personopplysningerService.hentPersoninfoFor(PERSONIDENT)
         }.isInstanceOf(OppslagException::class.java)
@@ -127,7 +129,7 @@ class PersonopplysningerServiceTest {
         assertThat(response.adressehistorikk[0].adresse.postnummer).isEqualTo("0560")
         assertThat(response.adressehistorikk[0].adresse.poststed).isEqualTo("OSLO")
         assertThat(response.adressehistorikk[1].adresse.adresseType)
-                .isEqualTo(AdresseType.MIDLERTIDIG_POSTADRESSE_UTLAND)
+            .isEqualTo(AdresseType.MIDLERTIDIG_POSTADRESSE_UTLAND)
         assertThat(response.adressehistorikk[1].adresse.land).isEqualTo("SWE")
         assertThat(response.adressehistorikk[1].adresse.adresselinje1).isEqualTo("TEST 1")
     }
@@ -135,12 +137,24 @@ class PersonopplysningerServiceTest {
     @Test
     fun `hentPersonMedRelasjoner skal kalle på pdl 3 ganger, hovedpersonen, relasjonene og barnets andre forelder`() {
         val hovedPerson = "1" to
-                lagPdlPersonMedRelasjoner(familierelasjoner = listOf(PdlForelderBarnRelasjon("2",
-                                                                                             FORELDERBARNRELASJONROLLE.BARN)),
-                                          sivilstand = listOf(Sivilstand(SIVILSTAND.GIFT, "3")),
-                                          fullmakt = listOf(Fullmakt("4")))
-        val barn = lagPdlPersonMedRelasjoner(familierelasjoner = listOf(PdlForelderBarnRelasjon("22",
-                                                                                                FORELDERBARNRELASJONROLLE.FAR)))
+            lagPdlPersonMedRelasjoner(
+                familierelasjoner = listOf(
+                    PdlForelderBarnRelasjon(
+                        "2",
+                        FORELDERBARNRELASJONROLLE.BARN
+                    )
+                ),
+                sivilstand = listOf(Sivilstand(SIVILSTAND.GIFT, "3")),
+                fullmakt = listOf(Fullmakt("4"))
+            )
+        val barn = lagPdlPersonMedRelasjoner(
+            familierelasjoner = listOf(
+                PdlForelderBarnRelasjon(
+                    "22",
+                    FORELDERBARNRELASJONROLLE.FAR
+                )
+            )
+        )
         every { pdlClientCredentialRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(any(), any()) } answers {
             firstArg<List<String>>().map { it to if (it == "2") barn else lagPdlPersonMedRelasjoner() }.toMap()
         }
@@ -160,11 +174,13 @@ class PersonopplysningerServiceTest {
         }
     }
 
-    private fun lagPdlPersonMedRelasjoner(familierelasjoner: List<PdlForelderBarnRelasjon> = emptyList(),
-                                          sivilstand: List<Sivilstand> = emptyList(),
-                                          fullmakt: List<Fullmakt> = emptyList(),
-                                          adressebeskyttelse: List<Adressebeskyttelse> = emptyList()) =
-            PdlPersonMedRelasjonerOgAdressebeskyttelse(familierelasjoner, sivilstand, fullmakt, adressebeskyttelse)
+    private fun lagPdlPersonMedRelasjoner(
+        familierelasjoner: List<PdlForelderBarnRelasjon> = emptyList(),
+        sivilstand: List<Sivilstand> = emptyList(),
+        fullmakt: List<Fullmakt> = emptyList(),
+        adressebeskyttelse: List<Adressebeskyttelse> = emptyList()
+    ) =
+        PdlPersonMedRelasjonerOgAdressebeskyttelse(familierelasjoner, sivilstand, fullmakt, adressebeskyttelse)
 
     companion object {
 

@@ -18,13 +18,17 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
 @Service
-class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattService,
-                                    private val personopplysningerService: PersonopplysningerService,
-                                    private val tilgangConfig: TilgangConfig) {
+class CachedTilgangskontrollService(
+    private val egenAnsattService: EgenAnsattService,
+    private val personopplysningerService: PersonopplysningerService,
+    private val tilgangConfig: TilgangConfig
+) {
 
-    @Cacheable(cacheNames = [TILGANG_TIL_BRUKER],
-               key = "#jwtToken.subject.concat(#personIdent)",
-               condition = "#personIdent != null && #jwtToken.subject != null")
+    @Cacheable(
+        cacheNames = [TILGANG_TIL_BRUKER],
+        key = "#jwtToken.subject.concat(#personIdent)",
+        condition = "#personIdent != null && #jwtToken.subject != null"
+    )
     fun sjekkTilgang(personIdent: String, jwtToken: JwtToken, tema: Tema): Tilgang {
         return try {
             val adressebeskyttelse = personopplysningerService.hentAdressebeskyttelse(personIdent, tema).gradering
@@ -34,9 +38,11 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
         }
     }
 
-    @Cacheable(cacheNames = ["TILGANG_TIL_PERSON_MED_RELASJONER"],
-               key = "#jwtToken.subject.concat(#personIdent)",
-               condition = "#jwtToken.subject != null")
+    @Cacheable(
+        cacheNames = ["TILGANG_TIL_PERSON_MED_RELASJONER"],
+        key = "#jwtToken.subject.concat(#personIdent)",
+        condition = "#jwtToken.subject != null"
+    )
     fun sjekkTilgangTilPersonMedRelasjoner(personIdent: String, jwtToken: JwtToken, tema: Tema): Tilgang {
         val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent, tema)
         secureLogger.info("Sjekker tilgang til {}", personMedRelasjoner)
@@ -45,10 +51,12 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
         return hentTilgang(høyesteGraderingen, jwtToken, personIdent) { erEgenAnsatt(personMedRelasjoner) }
     }
 
-    private fun hentTilgang(adressebeskyttelsegradering: ADRESSEBESKYTTELSEGRADERING?,
-                            jwtToken: JwtToken,
-                            personIdent: String,
-                            egenAnsattSjekk: () -> Boolean): Tilgang {
+    private fun hentTilgang(
+        adressebeskyttelsegradering: ADRESSEBESKYTTELSEGRADERING?,
+        jwtToken: JwtToken,
+        personIdent: String,
+        egenAnsattSjekk: () -> Boolean
+    ): Tilgang {
         val tilgang = when (adressebeskyttelsegradering) {
             FORTROLIG -> hentTilgangForRolle(tilgangConfig.grupper["kode7"], jwtToken, personIdent)
             STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND ->
@@ -72,14 +80,15 @@ class CachedTilgangskontrollService(private val egenAnsattService: EgenAnsattSer
         return egenAnsattService.erEgenAnsatt(relevanteIdenter).any { it.value }
     }
 
-
     private fun hentTilgangForRolle(adRolle: AdRolle?, jwtToken: JwtToken, personIdent: String): Tilgang {
         val grupper = jwtToken.jwtTokenClaims.getAsList("groups")
         if (grupper.any { it == adRolle?.rolleId }) {
             return Tilgang(true)
         }
-        secureLogger.info("${jwtToken.jwtTokenClaims["preferred_username"]} " +
-                          "har ikke tilgang ${adRolle?.beskrivelse} for $personIdent")
+        secureLogger.info(
+            "${jwtToken.jwtTokenClaims["preferred_username"]} " +
+                "har ikke tilgang ${adRolle?.beskrivelse} for $personIdent"
+        )
         return Tilgang(false, adRolle?.beskrivelse)
     }
 

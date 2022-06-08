@@ -17,13 +17,15 @@ import org.springframework.web.client.RestOperations
 import org.springframework.web.client.RestTemplate
 
 @Configuration
-@Import(ConsumerIdClientInterceptor::class,
-        BearerTokenClientInterceptor::class,
-        StsBearerTokenClientInterceptor::class,
-        BearerTokenWithSTSFallbackClientInterceptor::class,
-        BearerTokenClientCredentialsClientInterceptor::class)
+@Import(
+    ConsumerIdClientInterceptor::class,
+    BearerTokenClientInterceptor::class,
+    StsBearerTokenClientInterceptor::class,
+    BearerTokenWithSTSFallbackClientInterceptor::class,
+    BearerTokenClientCredentialsClientInterceptor::class
+)
 class RestTemplateConfig(
-        private val environment: Environment
+    private val environment: Environment
 ) {
 
     @Bean
@@ -34,77 +36,95 @@ class RestTemplateConfig(
     @Bean
     fun restTemplateMedProxy(naisProxyCustomizer: NaisProxyCustomizer): RestTemplate {
         return RestTemplateBuilder()
-                .medProxy(naisProxyCustomizer)
-                .build()
+            .medProxy(naisProxyCustomizer)
+            .build()
     }
 
     @Bean
     fun restTemplateBuilderMedProxy(naisProxyCustomizer: NaisProxyCustomizer): RestTemplateBuilder {
         return RestTemplateBuilder()
-                .medProxy(naisProxyCustomizer)
+            .medProxy(naisProxyCustomizer)
     }
 
     /**
      * Denne bruker jwt-bearer hvis den finnes, hvis ikke så bruker den client_credentials
      */
     @Bean("jwtBearer")
-    fun restTemplateJwtBearer(naisProxyCustomizer: NaisProxyCustomizer,
-                              consumerIdClientInterceptor: ConsumerIdClientInterceptor,
-                              bearerTokenClientInterceptor: BearerTokenClientInterceptor): RestOperations {
+    fun restTemplateJwtBearer(
+        naisProxyCustomizer: NaisProxyCustomizer,
+        consumerIdClientInterceptor: ConsumerIdClientInterceptor,
+        bearerTokenClientInterceptor: BearerTokenClientInterceptor
+    ): RestOperations {
         return RestTemplateBuilder()
-                .medProxy(naisProxyCustomizer)
-                .interceptors(consumerIdClientInterceptor,
-                              bearerTokenClientInterceptor,
-                              MdcValuesPropagatingClientInterceptor())
-                .requestFactory(this::requestFactory)
-                .build()
+            .medProxy(naisProxyCustomizer)
+            .interceptors(
+                consumerIdClientInterceptor,
+                bearerTokenClientInterceptor,
+                MdcValuesPropagatingClientInterceptor()
+            )
+            .requestFactory(this::requestFactory)
+            .build()
     }
 
     @Bean("clientCredential")
-    fun restTemplateJwtBearer(naisProxyCustomizer: NaisProxyCustomizer,
-                              consumerIdClientInterceptor: ConsumerIdClientInterceptor,
-                              bearerTokenClientInterceptor: BearerTokenClientCredentialsClientInterceptor): RestOperations {
+    fun restTemplateJwtBearer(
+        naisProxyCustomizer: NaisProxyCustomizer,
+        consumerIdClientInterceptor: ConsumerIdClientInterceptor,
+        bearerTokenClientInterceptor: BearerTokenClientCredentialsClientInterceptor
+    ): RestOperations {
         return RestTemplateBuilder()
-                .medProxy(naisProxyCustomizer)
-                .interceptors(consumerIdClientInterceptor,
-                              bearerTokenClientInterceptor,
-                              MdcValuesPropagatingClientInterceptor())
-                .requestFactory(this::requestFactory)
-                .build()
+            .medProxy(naisProxyCustomizer)
+            .interceptors(
+                consumerIdClientInterceptor,
+                bearerTokenClientInterceptor,
+                MdcValuesPropagatingClientInterceptor()
+            )
+            .requestFactory(this::requestFactory)
+            .build()
     }
 
     @Bean("jwtBearerOboOgSts")
-    fun restTemplateOboOgSts(naisProxyCustomizer: NaisProxyCustomizer,
-                             consumerIdClientInterceptor: ConsumerIdClientInterceptor,
-                             bearerTokenWithSTSFallbackClientInterceptor: BearerTokenWithSTSFallbackClientInterceptor): RestOperations {
+    fun restTemplateOboOgSts(
+        naisProxyCustomizer: NaisProxyCustomizer,
+        consumerIdClientInterceptor: ConsumerIdClientInterceptor,
+        bearerTokenWithSTSFallbackClientInterceptor: BearerTokenWithSTSFallbackClientInterceptor
+    ): RestOperations {
         return RestTemplateBuilder()
-                .medProxy(naisProxyCustomizer)
-                .interceptors(consumerIdClientInterceptor,
-                              bearerTokenWithSTSFallbackClientInterceptor,
-                              MdcValuesPropagatingClientInterceptor())
-                .requestFactory(this::requestFactory)
-                .build()
+            .medProxy(naisProxyCustomizer)
+            .interceptors(
+                consumerIdClientInterceptor,
+                bearerTokenWithSTSFallbackClientInterceptor,
+                MdcValuesPropagatingClientInterceptor()
+            )
+            .requestFactory(this::requestFactory)
+            .build()
     }
 
     @Bean("sts")
-    fun restTemplateSts(stsBearerTokenClientInterceptor: StsBearerTokenClientInterceptor,
-                        consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations {
+    fun restTemplateSts(
+        stsBearerTokenClientInterceptor: StsBearerTokenClientInterceptor,
+        consumerIdClientInterceptor: ConsumerIdClientInterceptor
+    ): RestOperations {
         return RestTemplateBuilder()
-                .interceptors(consumerIdClientInterceptor,
-                              stsBearerTokenClientInterceptor,
-                              MdcValuesPropagatingClientInterceptor())
-                .requestFactory(this::requestFactory)
-                .build()
+            .interceptors(
+                consumerIdClientInterceptor,
+                stsBearerTokenClientInterceptor,
+                MdcValuesPropagatingClientInterceptor()
+            )
+            .requestFactory(this::requestFactory)
+            .build()
     }
 
     @Bean("noAuthorize")
     fun restTemplateNoAuthorize(consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations {
 
         return RestTemplateBuilder()
-                .interceptors(consumerIdClientInterceptor,
-                              MdcValuesPropagatingClientInterceptor())
-                .requestFactory(this::requestFactory)
-                .build()
+            .interceptors(
+                consumerIdClientInterceptor,
+                MdcValuesPropagatingClientInterceptor()
+            )
+            .requestFactory(this::requestFactory)
+            .build()
     }
 
     private fun RestTemplateBuilder.medProxy(naisProxyCustomizer: NaisProxyCustomizer): RestTemplateBuilder {
@@ -116,11 +136,11 @@ class RestTemplateConfig(
     }
 
     private fun requestFactory() = HttpComponentsClientHttpRequestFactory()
-            .apply {
-                setConnectionRequestTimeout(20 * 1000)
-                setReadTimeout(20 * 1000)
-                setConnectTimeout(20 * 1000)
-            }
+        .apply {
+            setConnectionRequestTimeout(20 * 1000)
+            setReadTimeout(20 * 1000)
+            setConnectTimeout(20 * 1000)
+        }
 
     private fun trengerProxy(): Boolean {
         return !environment.activeProfiles.any {

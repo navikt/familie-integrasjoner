@@ -35,20 +35,25 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
         headers.setBearerAuth(lokalTestToken)
     }
 
-
     @Test
     fun `dokdist returnerer OK`() {
-        client.`when`(HttpRequest.request()
-                              .withMethod("POST")
-                              .withPath("/rest/v1/distribuerjournalpost"))
-                .respond(HttpResponse.response().withStatusCode(200)
-                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
-                                 .withBody("{\"bestillingsId\": \"1234567\"}"))
+        client.`when`(
+            HttpRequest.request()
+                .withMethod("POST")
+                .withPath("/rest/v1/distribuerjournalpost")
+        )
+            .respond(
+                HttpResponse.response().withStatusCode(200)
+                    .withHeader("Content-Type", "application/json;charset=UTF-8")
+                    .withBody("{\"bestillingsId\": \"1234567\"}")
+            )
 
         val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak")
-        val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(localhost(DOKDIST_URL),
-                                                                              HttpMethod.POST,
-                                                                              HttpEntity(body, headers))
+        val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(
+            localhost(DOKDIST_URL),
+            HttpMethod.POST,
+            HttpEntity(body, headers)
+        )
 
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -57,15 +62,19 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
 
     @Test
     fun `dokdist returnerer OK uten bestillingsId`() {
-        client.`when`(HttpRequest.request()
-                              .withMethod("POST")
-                              .withPath("/rest/v1/distribuerjournalpost"))
-                .respond(HttpResponse.response().withStatusCode(200).withBody(""))
+        client.`when`(
+            HttpRequest.request()
+                .withMethod("POST")
+                .withPath("/rest/v1/distribuerjournalpost")
+        )
+            .respond(HttpResponse.response().withStatusCode(200).withBody(""))
 
         val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak")
-        val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(localhost(DOKDIST_URL),
-                                                                              HttpMethod.POST,
-                                                                              HttpEntity(body, headers))
+        val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(
+            localhost(DOKDIST_URL),
+            HttpMethod.POST,
+            HttpEntity(body, headers)
+        )
 
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -74,22 +83,28 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
 
     @Test
     fun `dokdist returnerer 400`() {
-        client.`when`(HttpRequest.request()
-                              .withMethod("POST")
-                              .withPath("/rest/v1/distribuerjournalpost"))
-                .respond(HttpResponse.response().withStatusCode(400)
-                                 .withHeader("Content-Type", "application/json; charset=utf-8")
-                                 .withBody(badRequestResponse()))
+        client.`when`(
+            HttpRequest.request()
+                .withMethod("POST")
+                .withPath("/rest/v1/distribuerjournalpost")
+        )
+            .respond(
+                HttpResponse.response().withStatusCode(400)
+                    .withHeader("Content-Type", "application/json; charset=utf-8")
+                    .withBody(badRequestResponse())
+            )
 
         val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak")
-        val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(localhost(DOKDIST_URL),
-                                                                              HttpMethod.POST,
-                                                                              HttpEntity(body, headers))
+        val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(
+            localhost(DOKDIST_URL),
+            HttpMethod.POST,
+            HttpEntity(body, headers)
+        )
 
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
         Assertions.assertThat(response.body?.melding)
-                .contains("validering av distribusjonsforespørsel for journalpostId=453492547 feilet, feilmelding=")
+            .contains("validering av distribusjonsforespørsel for journalpostId=453492547 feilet, feilmelding=")
     }
 
     @Throws(IOException::class) private fun badRequestResponse(): String {

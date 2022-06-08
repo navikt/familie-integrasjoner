@@ -29,30 +29,37 @@ class HentJournalpostTestConfig {
 
         every { klient.hentJournalpost(capture(slot)) } answers {
             Journalpost(
-                    journalpostId = slot.captured,
-                    journalposttype = Journalposttype.I,
-                    journalstatus = Journalstatus.MOTTATT,
-                    tema = "BAR",
-                    tittel = "Ent tittel",
-                    behandlingstema = null,
-                    sak = Sak("1111" + slot.captured,
-                              "GSAK",
-                              null,
-                              null, null),
-                    bruker = Bruker("1234567890123", BrukerIdType.AKTOERID),
-                    journalforendeEnhet = "9999",
-                    kanal = "EIA",
-                    dokumenter = listOf(DokumentInfo(
-                            dokumentInfoId = "1234",
-                            tittel = "Søknad om ytelse",
-                            dokumentstatus = Dokumentstatus.FERDIGSTILT,
-                            dokumentvarianter = emptyList(),
-                            logiskeVedlegg = listOf(LogiskVedlegg(
-                                    logiskVedleggId = "0987",
-                                    tittel = "Oppholdstillatelse"
-                            ))
-                    )),
-                    relevanteDatoer = emptyList())
+                journalpostId = slot.captured,
+                journalposttype = Journalposttype.I,
+                journalstatus = Journalstatus.MOTTATT,
+                tema = "BAR",
+                tittel = "Ent tittel",
+                behandlingstema = null,
+                sak = Sak(
+                    "1111" + slot.captured,
+                    "GSAK",
+                    null,
+                    null, null
+                ),
+                bruker = Bruker("1234567890123", BrukerIdType.AKTOERID),
+                journalforendeEnhet = "9999",
+                kanal = "EIA",
+                dokumenter = listOf(
+                    DokumentInfo(
+                        dokumentInfoId = "1234",
+                        tittel = "Søknad om ytelse",
+                        dokumentstatus = Dokumentstatus.FERDIGSTILT,
+                        dokumentvarianter = emptyList(),
+                        logiskeVedlegg = listOf(
+                            LogiskVedlegg(
+                                logiskVedleggId = "0987",
+                                tittel = "Oppholdstillatelse"
+                            )
+                        )
+                    )
+                ),
+                relevanteDatoer = emptyList()
+            )
         }
 
         return klient

@@ -8,6 +8,6 @@ import java.time.LocalDate
 @Service
 class AaregService(private val aaregRestClient: AaregRestClient) {
     fun hentArbeidsforhold(personIdent: String, ansettelsesperiodeFom: LocalDate): List<Arbeidsforhold> {
-            return aaregRestClient.hentArbeidsforhold(personIdent, ansettelsesperiodeFom)
+        return aaregRestClient.hentArbeidsforhold(personIdent, ansettelsesperiodeFom)
     }
 }

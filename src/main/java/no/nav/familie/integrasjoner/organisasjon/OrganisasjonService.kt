@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service
 @Service
 class OrganisasjonService(private val organisasjonSoapClient: OrganisasjonSoapClient) {
 
-
     fun hentOrganisasjon(orgnr: String): Organisasjon {
         val hentOrganisasjonRequest = HentOrganisasjonRequest().apply {
             orgnummer = orgnr
@@ -23,7 +22,6 @@ class OrganisasjonService(private val organisasjonSoapClient: OrganisasjonSoapCl
         val navn = navnelinjer.joinToString(" ").trim()
 
         return Organisasjon(orgnr, navn)
-
     }
 
     fun validerOrganisasjon(orgnr: String): Boolean {

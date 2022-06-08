@@ -19,5 +19,4 @@ object SkolepengerEttersendingMetadata : Dokumentmetadata {
     override val tittel: String = "Ettersending skolepenger - enslig mor eller far"
     override val brevkode: String = "NAVe 15-00.04"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.IS
-
 }

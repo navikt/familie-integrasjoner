@@ -40,10 +40,16 @@ class AaregControllerTest : OppslagSpringRunnerTest() {
         stubFor(get(anyUrl()).willReturn(okJson(gyldigResponse("gyldigResponse.json"))))
 
         val response =
-                restTemplate.postForObject<Ressurs<List<Arbeidsforhold>>>(localhost(ARBEIDSFORHOLD_URL),
-                                                                          HttpEntity(ArbeidsforholdRequest(IDENT,
-                                                                                                           LocalDate.now()),
-                                                                                     headers))
+            restTemplate.postForObject<Ressurs<List<Arbeidsforhold>>>(
+                localhost(ARBEIDSFORHOLD_URL),
+                HttpEntity(
+                    ArbeidsforholdRequest(
+                        IDENT,
+                        LocalDate.now()
+                    ),
+                    headers
+                )
+            )
 
         assertThat(response?.status).isEqualTo(SUKSESS)
         assertThat(response?.getDataOrThrow()).hasSize(1)
@@ -58,24 +64,32 @@ class AaregControllerTest : OppslagSpringRunnerTest() {
         stubFor(get(anyUrl()).willReturn(status(404)))
 
         val response =
-                restTemplate.postForObject<Ressurs<List<Arbeidsforhold>>>(localhost(ARBEIDSFORHOLD_URL),
-                                                                          HttpEntity(ArbeidsforholdRequest(IDENT,
-                                                                                                           LocalDate.now()),
-                                                                                     headers))
+            restTemplate.postForObject<Ressurs<List<Arbeidsforhold>>>(
+                localhost(ARBEIDSFORHOLD_URL),
+                HttpEntity(
+                    ArbeidsforholdRequest(
+                        IDENT,
+                        LocalDate.now()
+                    ),
+                    headers
+                )
+            )
 
         assertThat(response?.status).isEqualTo(FEILET)
         assertThat(response?.melding).contains("[Feil ved oppslag av arbeidsforhold.][org.springframework.web.client.HttpClientErrorException")
     }
 
     private fun gyldigResponse(filnavn: String): String {
-        return Files.readString(ClassPathResource("aareg/$filnavn").file.toPath(),
-                                StandardCharsets.UTF_8)
+        return Files.readString(
+            ClassPathResource("aareg/$filnavn").file.toPath(),
+            StandardCharsets.UTF_8
+        )
     }
 
     companion object {
 
         private const val AAREG_URL = "/api/aareg"
-        private const val ARBEIDSFORHOLD_URL = "${AAREG_URL}/arbeidsforhold"
+        private const val ARBEIDSFORHOLD_URL = "$AAREG_URL/arbeidsforhold"
         private const val IDENT = "01012012345"
     }
 }

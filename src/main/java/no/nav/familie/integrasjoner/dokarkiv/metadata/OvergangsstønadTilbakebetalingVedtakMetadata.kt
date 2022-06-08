@@ -13,11 +13,10 @@ object OvergangsstønadTilbakebetalingVedtakMetadata : Dokumentmetadata {
     override val journalpostType: JournalpostType = JournalpostType.UTGAAENDE
     override val fagsakSystem: Fagsystem = Fagsystem.EF
     override val tema: Tema = Tema.ENF
-    override val behandlingstema: Behandlingstema =            Behandlingstema.Tilbakebetaling
+    override val behandlingstema: Behandlingstema = Behandlingstema.Tilbakebetaling
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.OVERGANGSSTØNAD_TILBAKEKREVING_VEDTAK
     override val tittel: String? = null
     override val brevkode: String = Fagsystem.EF.name + "-TILB"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.VB
-
 }

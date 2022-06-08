@@ -12,22 +12,24 @@ class DevLauncher
 
 fun main(args: Array<String>) {
     val app = SpringApplicationBuilder(ApplicationConfig::class.java)
-            .profiles("dev",
-                      "mock-aktor",
-                      "mock-dokarkiv",
-                      "mock-dokdist",
-                      "mock-egenansatt",
-                      "mock-infotrygd",
-                      "mock-infotrygdsak",
-                      "mock-medlemskap",
-                      "mock-oppgave",
-                      "mock-personopplysninger",
-                      "mock-saf",
-                      "mock-sts",
-                      "mock-kodeverk",
-                      "mock-arbeidsfordeling",
-                      "mock-pdl",
-                      "mock-aareg",
-                      "mock-sak").build()
+        .profiles(
+            "dev",
+            "mock-aktor",
+            "mock-dokarkiv",
+            "mock-dokdist",
+            "mock-egenansatt",
+            "mock-infotrygd",
+            "mock-infotrygdsak",
+            "mock-medlemskap",
+            "mock-oppgave",
+            "mock-personopplysninger",
+            "mock-saf",
+            "mock-sts",
+            "mock-kodeverk",
+            "mock-arbeidsfordeling",
+            "mock-pdl",
+            "mock-aareg",
+            "mock-sak"
+        ).build()
     app.run(*args)
 }

@@ -19,5 +19,4 @@ object BarnetrygdSøknadUtvidetMetadata : Dokumentmetadata {
     override val tittel: String = "Søknad om utvidet barnetrygd"
     override val brevkode: String = "NAV 33-00.09"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.SOK
-
 }

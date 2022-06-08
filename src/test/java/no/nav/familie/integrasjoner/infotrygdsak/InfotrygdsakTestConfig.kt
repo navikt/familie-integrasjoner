@@ -19,7 +19,7 @@ class InfotrygdsakTestConfig {
         val infotrygdServiceMock: InfotrygdsakSoapClient = mockk(relaxed = true)
         val aktivKontantstøtteInfo = ASBOGOSYSBestillInfotrygdSakResponse()
         every { infotrygdServiceMock.opprettInfotrygdsak(any()) }
-                .returns(aktivKontantstøtteInfo)
+            .returns(aktivKontantstøtteInfo)
         return infotrygdServiceMock
     }
 }

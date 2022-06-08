@@ -5,5 +5,5 @@ import no.nav.familie.integrasjoner.client.rest.InfotrygdRestClient
 import org.springframework.stereotype.Component
 
 @Component
-internal class InfotrygdHelsesjekk(infotrygdRestClient: InfotrygdRestClient)
-    : AbstractHealthIndicator(infotrygdRestClient, "helsesjekk.infotrygd")
+internal class InfotrygdHelsesjekk(infotrygdRestClient: InfotrygdRestClient) :
+    AbstractHealthIndicator(infotrygdRestClient, "helsesjekk.infotrygd")

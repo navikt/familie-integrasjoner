@@ -20,4 +20,3 @@ object OvergangsstønadVedtaksbrevMetadata : Dokumentmetadata {
     override val brevkode: String = "ENF_BREV_OVERGANGSSTØNAD_VEDTAK"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.VB
 }
-

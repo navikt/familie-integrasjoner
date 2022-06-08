@@ -11,9 +11,11 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Component
-class MedlRestClient(@Value("\${MEDL2_URL}") private val medl2BaseUrl: URI,
-                     @Qualifier("jwtBearer") private val restTemplate: RestOperations)
-    : AbstractPingableRestClient(restTemplate, "medlemskap") {
+class MedlRestClient(
+    @Value("\${MEDL2_URL}") private val medl2BaseUrl: URI,
+    @Qualifier("jwtBearer") private val restTemplate: RestOperations
+) :
+    AbstractPingableRestClient(restTemplate, "medlemskap") {
 
     override val pingUri: URI = UriComponentsBuilder.fromUri(medl2BaseUrl).pathSegment(PATH_PING).build().toUri()
 
@@ -37,5 +39,4 @@ class MedlRestClient(@Value("\${MEDL2_URL}") private val medl2BaseUrl: URI,
         private const val PATH_PING = "api/ping"
         private const val PATH_MEDLEMSKAPSUNNTAK = "api/v1/medlemskapsunntak"
     }
-
 }

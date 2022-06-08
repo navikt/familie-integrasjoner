@@ -1,11 +1,15 @@
 package no.nav.familie.integrasjoner.personopplysning.internal
 
-data class PdlIdentRequest(val variables: PdlIdentRequestVariables,
-                           val query: String)
+data class PdlIdentRequest(
+    val variables: PdlIdentRequestVariables,
+    val query: String
+)
 
-data class PdlIdentRequestVariables(val ident: String,
-                                    val gruppe: String,
-                                    val historikk: Boolean = false)
+data class PdlIdentRequestVariables(
+    val ident: String,
+    val gruppe: String,
+    val historikk: Boolean = false
+)
 
 data class PdlIdent(val ident: String, val historisk: Boolean)
 

@@ -19,5 +19,4 @@ object KontanstøtteSøknadVedleggMetadata : Dokumentmetadata {
     override val tittel: String? = null
     override val brevkode: String? = null
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.IS
-
 }

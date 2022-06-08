@@ -10,8 +10,8 @@ import no.nav.tjeneste.virksomhet.organisasjon.v5.meldinger.ValiderOrganisasjonR
 import org.springframework.stereotype.Component
 
 @Component
-class OrganisasjonSoapClient(private val organisasjonV5: OrganisasjonV5)
-    : AbstractSoapClient("OrganisasjonV5"), Pingable {
+class OrganisasjonSoapClient(private val organisasjonV5: OrganisasjonV5) :
+    AbstractSoapClient("OrganisasjonV5"), Pingable {
 
     fun hentOrganisasjon(request: HentOrganisasjonRequest): HentOrganisasjonResponse {
         return executeMedMetrics {
@@ -28,5 +28,4 @@ class OrganisasjonSoapClient(private val organisasjonV5: OrganisasjonV5)
     override fun ping() {
         organisasjonV5.ping()
     }
-
 }

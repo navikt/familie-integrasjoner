@@ -17,8 +17,7 @@ object BarnetrygdSøknadEØSMetadata : Dokumentmetadata {
     override val kanal: String = "NAV_NO"
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_EØS
     override val tittel: String = "Tilleggsskjema ved krav om utbetaling av barnetrygd " +
-                                  "og/eller kontantstøtte på grunnlag av regler om eksport etter EØS-avtalen"
+        "og/eller kontantstøtte på grunnlag av regler om eksport etter EØS-avtalen"
     override val brevkode: String = "NAV 34-00.15"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.SOK
-
 }

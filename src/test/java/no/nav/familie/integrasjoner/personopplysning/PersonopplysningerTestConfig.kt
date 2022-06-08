@@ -84,32 +84,34 @@ class PersonopplysningerTestConfig {
         private val FOM_BARNET = LocalDate.of(2018, 5, 1)
         private val NORGE = Landkoder().withValue("NOR")
         private val NORSK_ADRESSE =
-                Bostedsadresse().withStrukturertAdresse(Gateadresse().withGatenavn("Sannergata")
-                                                                .withHusnummer(2)
-                                                                .withPoststed(Postnummer().withValue("0560"))
-                                                                .withLandkode(NORGE))
+            Bostedsadresse().withStrukturertAdresse(
+                Gateadresse().withGatenavn("Sannergata")
+                    .withHusnummer(2)
+                    .withPoststed(Postnummer().withValue("0560"))
+                    .withLandkode(NORGE)
+            )
         private val MOR_PERSON_IDENT =
-                PersonIdent().withIdent(NorskIdent().withIdent(SøknadTestdata.morPersonident))
+            PersonIdent().withIdent(NorskIdent().withIdent(SøknadTestdata.morPersonident))
         private val BARN_PERSON_IDENT =
-                PersonIdent().withIdent(NorskIdent().withIdent(SøknadTestdata.barnPersonident))
+            PersonIdent().withIdent(NorskIdent().withIdent(SøknadTestdata.barnPersonident))
         private val FAR_PERSON_IDENT =
-                PersonIdent().withIdent(NorskIdent().withIdent(SøknadTestdata.farPersonident))
+            PersonIdent().withIdent(NorskIdent().withIdent(SøknadTestdata.farPersonident))
 
         private fun hentPersonHistorikkResponse(erMor: Boolean): HentPersonhistorikkResponse {
             val response = HentPersonhistorikkResponse()
             response.aktoer = if (erMor) MOR_PERSON_IDENT else FAR_PERSON_IDENT
             response.withStatsborgerskapListe(hentStatsborgerskap(false))
-                    .withPersonstatusListe(hentPersonstatus(false))
-                    .withMidlertidigAdressePeriodeListe(hentMidlertidigAdresse())
-                    .withBostedsadressePeriodeListe(hentBostedsadresse(false))
+                .withPersonstatusListe(hentPersonstatus(false))
+                .withMidlertidigAdressePeriodeListe(hentMidlertidigAdresse())
+                .withBostedsadressePeriodeListe(hentBostedsadresse(false))
             return response
         }
 
         private fun hentPersonhistorikkResponseBarn(): HentPersonhistorikkResponse {
             return HentPersonhistorikkResponse().withAktoer(BARN_PERSON_IDENT)
-                    .withStatsborgerskapListe(hentStatsborgerskap(true))
-                    .withBostedsadressePeriodeListe(hentBostedsadresse(true))
-                    .withPersonstatusListe(hentPersonstatus(true))
+                .withStatsborgerskapListe(hentStatsborgerskap(true))
+                .withBostedsadressePeriodeListe(hentBostedsadresse(true))
+                .withPersonstatusListe(hentPersonstatus(true))
         }
 
         private fun hentPersonResponseForMor(): HentPersonResponse {
@@ -126,93 +128,113 @@ class PersonopplysningerTestConfig {
 
         private fun hentPersoninfoMor(): Person {
             return hentStandardPersoninfo()
-                    .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("K")))
-                    .withSivilstand(Sivilstand().withSivilstand(Sivilstander().withValue("GIFT")))
-                    .withPersonnavn(Personnavn().withSammensattNavn("TEST TESTESEN"))
-                    .withHarFraRolleI(hentFamilierelasjonerMor())
-                    .withFoedselsdato(hentFoedselsdato("1990-01-01"))
-                    .withAktoer(MOR_PERSON_IDENT)
+                .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("K")))
+                .withSivilstand(Sivilstand().withSivilstand(Sivilstander().withValue("GIFT")))
+                .withPersonnavn(Personnavn().withSammensattNavn("TEST TESTESEN"))
+                .withHarFraRolleI(hentFamilierelasjonerMor())
+                .withFoedselsdato(hentFoedselsdato("1990-01-01"))
+                .withAktoer(MOR_PERSON_IDENT)
         }
 
         private fun hentPersoninfoFar(): Person {
             return hentStandardPersoninfo()
-                    .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("M")))
-                    .withSivilstand(Sivilstand().withSivilstand(Sivilstander().withValue("GIFT")))
-                    .withPersonnavn(Personnavn().withSammensattNavn("EKTEMANN TESTESEN"))
-                    .withHarFraRolleI(hentFamilierelasjonerFar())
-                    .withFoedselsdato(hentFoedselsdato("1990-01-01"))
-                    .withAktoer(FAR_PERSON_IDENT)
+                .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("M")))
+                .withSivilstand(Sivilstand().withSivilstand(Sivilstander().withValue("GIFT")))
+                .withPersonnavn(Personnavn().withSammensattNavn("EKTEMANN TESTESEN"))
+                .withHarFraRolleI(hentFamilierelasjonerFar())
+                .withFoedselsdato(hentFoedselsdato("1990-01-01"))
+                .withAktoer(FAR_PERSON_IDENT)
         }
 
         private fun hentPersoninfoBarn(): Person {
             return hentStandardPersoninfo()
-                    .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("K")))
-                    .withSivilstand(Sivilstand().withSivilstand(Sivilstander().withValue("UGIF")))
-                    .withPersonnavn(Personnavn().withSammensattNavn("BARN TESTESEN"))
-                    .withHarFraRolleI(hentFamilierelasjonerBarn())
-                    .withFoedselsdato(hentFoedselsdato("2018-05-01"))
-                    .withAktoer(BARN_PERSON_IDENT)
+                .withKjoenn(Kjoenn().withKjoenn(Kjoennstyper().withValue("K")))
+                .withSivilstand(Sivilstand().withSivilstand(Sivilstander().withValue("UGIF")))
+                .withPersonnavn(Personnavn().withSammensattNavn("BARN TESTESEN"))
+                .withHarFraRolleI(hentFamilierelasjonerBarn())
+                .withFoedselsdato(hentFoedselsdato("2018-05-01"))
+                .withAktoer(BARN_PERSON_IDENT)
         }
 
         private fun hentStandardPersoninfo(): Bruker {
             return Bruker()
-                    .withPersonstatus(Personstatus().withPersonstatus(Personstatuser().withValue("BOSA")))
-                    .withGeografiskTilknytning(Bydel().withGeografiskTilknytning("0315"))
-                    .withGjeldendePostadressetype(Postadressetyper().withValue("BOSTEDSADRESSE"))
-                    .withStatsborgerskap(Statsborgerskap().withLand(NORGE))
-                    .withBostedsadresse(NORSK_ADRESSE)
+                .withPersonstatus(Personstatus().withPersonstatus(Personstatuser().withValue("BOSA")))
+                .withGeografiskTilknytning(Bydel().withGeografiskTilknytning("0315"))
+                .withGjeldendePostadressetype(Postadressetyper().withValue("BOSTEDSADRESSE"))
+                .withStatsborgerskap(Statsborgerskap().withLand(NORGE))
+                .withBostedsadresse(NORSK_ADRESSE)
         }
 
         private fun hentFamilierelasjonerMor(): Collection<Familierelasjon> {
             val giftMed = Familierelasjon()
-                    .withHarSammeBosted(true)
-                    .withTilRolle(Familierelasjoner().withValue("EKTE"))
-                    .withTilPerson(Person()
-                                           .withAktoer(PersonIdent()
-                                                               .withIdent(NorskIdent()
-                                                                                  .withIdent(SøknadTestdata.farPersonident)))
-                                           .withFoedselsdato(hentFoedselsdato("1990-01-01"))
-                                           .withPersonnavn(Personnavn().withSammensattNavn("EKTEMANN TESTESEN")))
+                .withHarSammeBosted(true)
+                .withTilRolle(Familierelasjoner().withValue("EKTE"))
+                .withTilPerson(
+                    Person()
+                        .withAktoer(
+                            PersonIdent()
+                                .withIdent(
+                                    NorskIdent()
+                                        .withIdent(SøknadTestdata.farPersonident)
+                                )
+                        )
+                        .withFoedselsdato(hentFoedselsdato("1990-01-01"))
+                        .withPersonnavn(Personnavn().withSammensattNavn("EKTEMANN TESTESEN"))
+                )
             val barnet = Familierelasjon()
-                    .withHarSammeBosted(true)
-                    .withTilRolle(Familierelasjoner().withValue("BARN"))
-                    .withTilPerson(Person().withAktoer(BARN_PERSON_IDENT)
-                                           .withFoedselsdato(hentFoedselsdato("2018-05-01"))
-                                           .withPersonnavn(Personnavn().withSammensattNavn("BARN TESTESEN")))
+                .withHarSammeBosted(true)
+                .withTilRolle(Familierelasjoner().withValue("BARN"))
+                .withTilPerson(
+                    Person().withAktoer(BARN_PERSON_IDENT)
+                        .withFoedselsdato(hentFoedselsdato("2018-05-01"))
+                        .withPersonnavn(Personnavn().withSammensattNavn("BARN TESTESEN"))
+                )
             return listOf(giftMed, barnet)
         }
 
         private fun hentFamilierelasjonerBarn(): Collection<Familierelasjon> {
             val far = Familierelasjon()
-                    .withHarSammeBosted(true)
-                    .withTilRolle(Familierelasjoner().withValue("FARA"))
-                    .withTilPerson(Person().withAktoer(PersonIdent()
-                                                               .withIdent(NorskIdent()
-                                                                                  .withIdent(SøknadTestdata.farPersonident)))
-                                           .withFoedselsdato(hentFoedselsdato("1990-01-01"))
-                                           .withPersonnavn(Personnavn().withSammensattNavn("EKTEMANN TESTESEN")))
+                .withHarSammeBosted(true)
+                .withTilRolle(Familierelasjoner().withValue("FARA"))
+                .withTilPerson(
+                    Person().withAktoer(
+                        PersonIdent()
+                            .withIdent(
+                                NorskIdent()
+                                    .withIdent(SøknadTestdata.farPersonident)
+                            )
+                    )
+                        .withFoedselsdato(hentFoedselsdato("1990-01-01"))
+                        .withPersonnavn(Personnavn().withSammensattNavn("EKTEMANN TESTESEN"))
+                )
             val mor = Familierelasjon()
-                    .withHarSammeBosted(true)
-                    .withTilRolle(Familierelasjoner().withValue("MORA"))
-                    .withTilPerson(Person().withAktoer(MOR_PERSON_IDENT)
-                                           .withFoedselsdato(hentFoedselsdato("1990-01-01"))
-                                           .withPersonnavn(Personnavn().withSammensattNavn("TEST TESTESEN")))
+                .withHarSammeBosted(true)
+                .withTilRolle(Familierelasjoner().withValue("MORA"))
+                .withTilPerson(
+                    Person().withAktoer(MOR_PERSON_IDENT)
+                        .withFoedselsdato(hentFoedselsdato("1990-01-01"))
+                        .withPersonnavn(Personnavn().withSammensattNavn("TEST TESTESEN"))
+                )
             return listOf(far, mor)
         }
 
         private fun hentFamilierelasjonerFar(): Collection<Familierelasjon> {
             val giftMed = Familierelasjon()
-                    .withHarSammeBosted(true)
-                    .withTilRolle(Familierelasjoner().withValue("EKTE"))
-                    .withTilPerson(Person().withAktoer(MOR_PERSON_IDENT)
-                                           .withFoedselsdato(hentFoedselsdato("1990-01-01"))
-                                           .withPersonnavn(Personnavn().withSammensattNavn("TEST TESTESEN")))
+                .withHarSammeBosted(true)
+                .withTilRolle(Familierelasjoner().withValue("EKTE"))
+                .withTilPerson(
+                    Person().withAktoer(MOR_PERSON_IDENT)
+                        .withFoedselsdato(hentFoedselsdato("1990-01-01"))
+                        .withPersonnavn(Personnavn().withSammensattNavn("TEST TESTESEN"))
+                )
             val barnet = Familierelasjon()
-                    .withHarSammeBosted(true)
-                    .withTilRolle(Familierelasjoner().withValue("BARN"))
-                    .withTilPerson(Person().withAktoer(BARN_PERSON_IDENT)
-                                           .withFoedselsdato(hentFoedselsdato("2018-05-01"))
-                                           .withPersonnavn(Personnavn().withSammensattNavn("BARN TESTESEN")))
+                .withHarSammeBosted(true)
+                .withTilRolle(Familierelasjoner().withValue("BARN"))
+                .withTilPerson(
+                    Person().withAktoer(BARN_PERSON_IDENT)
+                        .withFoedselsdato(hentFoedselsdato("2018-05-01"))
+                        .withPersonnavn(Personnavn().withSammensattNavn("BARN TESTESEN"))
+                )
             return listOf(giftMed, barnet)
         }
 
@@ -226,36 +248,46 @@ class PersonopplysningerTestConfig {
 
         private fun hentPersonstatus(erBarnet: Boolean): Collection<PersonstatusPeriode> {
             val personstatusPeriode = PersonstatusPeriode()
-                    .withPersonstatus(Personstatuser().withValue("BOSA"))
-                    .withPeriode(Periode().withFom(DateUtil.convertToXMLGregorianCalendar(if (erBarnet) FOM_BARNET else FOM))
-                                         .withTom(DateUtil.convertToXMLGregorianCalendar(TOM)))
+                .withPersonstatus(Personstatuser().withValue("BOSA"))
+                .withPeriode(
+                    Periode().withFom(DateUtil.convertToXMLGregorianCalendar(if (erBarnet) FOM_BARNET else FOM))
+                        .withTom(DateUtil.convertToXMLGregorianCalendar(TOM))
+                )
             return listOf(personstatusPeriode)
         }
 
         private fun hentStatsborgerskap(erBarnet: Boolean): Collection<StatsborgerskapPeriode> {
             val statsborgerskapPeriode = StatsborgerskapPeriode()
-                    .withStatsborgerskap(Statsborgerskap().withLand(NORGE))
-                    .withPeriode(Periode().withFom(DateUtil.convertToXMLGregorianCalendar(if (erBarnet) FOM_BARNET else FOM))
-                                         .withTom(DateUtil.convertToXMLGregorianCalendar(TOM)))
+                .withStatsborgerskap(Statsborgerskap().withLand(NORGE))
+                .withPeriode(
+                    Periode().withFom(DateUtil.convertToXMLGregorianCalendar(if (erBarnet) FOM_BARNET else FOM))
+                        .withTom(DateUtil.convertToXMLGregorianCalendar(TOM))
+                )
             return listOf(statsborgerskapPeriode)
         }
 
         private fun hentBostedsadresse(erBarnet: Boolean): Collection<BostedsadressePeriode> {
             val bostedsadressePeriode = BostedsadressePeriode()
-                    .withBostedsadresse(NORSK_ADRESSE)
-                    .withPeriode(Periode().withFom(DateUtil.convertToXMLGregorianCalendar(if (erBarnet) FOM_BARNET else FOM))
-                                         .withTom(DateUtil.convertToXMLGregorianCalendar(TOM)))
+                .withBostedsadresse(NORSK_ADRESSE)
+                .withPeriode(
+                    Periode().withFom(DateUtil.convertToXMLGregorianCalendar(if (erBarnet) FOM_BARNET else FOM))
+                        .withTom(DateUtil.convertToXMLGregorianCalendar(TOM))
+                )
             return listOf(bostedsadressePeriode)
         }
 
         private fun hentMidlertidigAdresse(): Collection<MidlertidigPostadresse> {
             val midlertidigPostadresseUtland = MidlertidigPostadresseUtland()
-                    .withUstrukturertAdresse(UstrukturertAdresse().withAdresselinje1("TEST 1")
-                                                     .withAdresselinje2("TEST 2")
-                                                     .withAdresselinje3("TEST 3")
-                                                     .withLandkode(Landkoder().withValue("SWE")))
-                    .withPostleveringsPeriode(Gyldighetsperiode().withFom(DateUtil.convertToXMLGregorianCalendar(FOM))
-                                                      .withTom(DateUtil.convertToXMLGregorianCalendar(TOM)))
+                .withUstrukturertAdresse(
+                    UstrukturertAdresse().withAdresselinje1("TEST 1")
+                        .withAdresselinje2("TEST 2")
+                        .withAdresselinje3("TEST 3")
+                        .withLandkode(Landkoder().withValue("SWE"))
+                )
+                .withPostleveringsPeriode(
+                    Gyldighetsperiode().withFom(DateUtil.convertToXMLGregorianCalendar(FOM))
+                        .withTom(DateUtil.convertToXMLGregorianCalendar(TOM))
+                )
             return listOf(midlertidigPostadresseUtland)
         }
     }

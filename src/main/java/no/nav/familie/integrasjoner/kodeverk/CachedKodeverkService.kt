@@ -31,6 +31,4 @@ class CachedKodeverkService(private val kodeverkClient: KodeverkClient) {
             kodeverkClient.hentKodeverk(it.kodeverk).mapTerm()
         }
     }
-
 }
-

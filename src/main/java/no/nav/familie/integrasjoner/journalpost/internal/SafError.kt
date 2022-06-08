@@ -1,12 +1,13 @@
 package no.nav.familie.integrasjoner.journalpost.internal
 
 data class SafError(
-        val message: String,
-        val extensions: SafExtension)
+    val message: String,
+    val extensions: SafExtension
+)
 
 data class SafExtension(
-        val code: SafErrorCode,
-        val classification: String
+    val code: SafErrorCode,
+    val classification: String
 )
 
 enum class SafErrorCode {

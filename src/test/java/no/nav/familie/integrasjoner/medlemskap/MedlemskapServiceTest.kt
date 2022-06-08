@@ -23,7 +23,7 @@ class MedlemskapServiceTest {
     @Test
     fun skal_gi_tomt_objekt_ved_ingen_treff_i_MEDL() {
         every { medlClient.hentMedlemskapsUnntakResponse(any()) }
-                .returns(emptyList())
+            .returns(emptyList())
 
         val respons = medlemskapService.hentMedlemskapsunntak(TEST_AKTØRID)
 
@@ -64,7 +64,7 @@ class MedlemskapServiceTest {
     @Test
     fun `skal kaste oppslagException ved feil`() {
         every { medlClient.hentMedlemskapsUnntakResponse(any()) }
-                .throws(RuntimeException("Feil ved kall til MEDL2"))
+            .throws(RuntimeException("Feil ved kall til MEDL2"))
 
         assertThrows<OppslagException> { medlemskapService.hentMedlemskapsunntak(TEST_AKTØRID) }
     }

@@ -18,14 +18,16 @@ import javax.security.auth.callback.CallbackHandler
 import javax.xml.namespace.QName
 
 @Configuration
-class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") private val stsUrl: String,
-                    @Value("\${CREDENTIAL_USERNAME}") private val systemuserUsername: String,
-                    @Value("\${CREDENTIAL_PASSWORD}") private val systemuserPwd: String,
-                    @Value("\${PERSON_V3_URL}") private val personV3Url: String,
-                    @Value("\${ARBEIDSFORDELING_V1_URL}") private val arbeidsfordelingUrl: String,
-                    @Value("\${INFOTRYGD_VEDTAK_URL}") private val infotrygdVedtakUrl: String,
-                    @Value("\${ORGANISASJON_V5_URL}") private val organisasjonV5Url: String,
-                    @Value("\${GOSYS_INFOTRYGDSAK_URL}") private val gosysInfotrygdSakUrl: String) {
+class ServiceConfig(
+    @Value("\${SECURITYTOKENSERVICE_URL}") private val stsUrl: String,
+    @Value("\${CREDENTIAL_USERNAME}") private val systemuserUsername: String,
+    @Value("\${CREDENTIAL_PASSWORD}") private val systemuserPwd: String,
+    @Value("\${PERSON_V3_URL}") private val personV3Url: String,
+    @Value("\${ARBEIDSFORDELING_V1_URL}") private val arbeidsfordelingUrl: String,
+    @Value("\${INFOTRYGD_VEDTAK_URL}") private val infotrygdVedtakUrl: String,
+    @Value("\${ORGANISASJON_V5_URL}") private val organisasjonV5Url: String,
+    @Value("\${GOSYS_INFOTRYGDSAK_URL}") private val gosysInfotrygdSakUrl: String
+) {
 
     init {
         System.setProperty("no.nav.modig.security.sts.url", stsUrl)
@@ -36,61 +38,69 @@ class ServiceConfig(@Value("\${SECURITYTOKENSERVICE_URL}") private val stsUrl: S
     @Bean
     fun stsConfig(): StsConfig? {
         return StsConfig.builder()
-                .url(stsUrl)
-                .username(systemuserUsername)
-                .password(systemuserPwd)
-                .build()
+            .url(stsUrl)
+            .username(systemuserUsername)
+            .password(systemuserPwd)
+            .build()
     }
 
     @Bean
     fun personV3Port(): PersonV3 =
-            CXFClient(PersonV3::class.java)
-                    .address(personV3Url)
-                    .timeout(20000, 20000)
-                    .configureStsForSystemUser(stsConfig())
-                    .build()
+        CXFClient(PersonV3::class.java)
+            .address(personV3Url)
+            .timeout(20000, 20000)
+            .configureStsForSystemUser(stsConfig())
+            .build()
 
     @Bean
     fun organisasjonV5Port(): OrganisasjonV5 =
-            CXFClient(OrganisasjonV5::class.java)
-                    .address(organisasjonV5Url)
-                    .timeout(20000, 20000)
-                    .configureStsForSystemUser(stsConfig())
-                    .build()
+        CXFClient(OrganisasjonV5::class.java)
+            .address(organisasjonV5Url)
+            .timeout(20000, 20000)
+            .configureStsForSystemUser(stsConfig())
+            .build()
 
     @Bean
     fun gosysInfotrygdsakPort(): GOSYSInfotrygdSak =
-            CXFClient(GOSYSInfotrygdSak::class.java)
-                    .address(gosysInfotrygdSakUrl)
-                    .wsdl("wsdl/cons-sak-gosys/wsdl/nav-cons-sak-gosys-3.0.0_GOSYSInfotrygdSakWSEXP.wsdl")
-                    .serviceName(QName("http://nav-cons-sak-gosys-3.0.0/no/nav/inf/InfotrygdSak/Binding",
-                                       "GOSYSInfotrygdSakWSEXP_GOSYSInfotrygdSakHttpService"))
-                    .endpointName(QName("http://nav-cons-sak-gosys-3.0.0/no/nav/inf/InfotrygdSak/Binding",
-                                        "GOSYSInfotrygdSakWSEXP_GOSYSInfotrygdSakHttpPort"))
-                    .withOutInterceptor(WSS4JOutInterceptor(SecurityProps(systemuserUsername, systemuserPwd)))
-                    .timeout(20000, 20000)
-                    .build()
+        CXFClient(GOSYSInfotrygdSak::class.java)
+            .address(gosysInfotrygdSakUrl)
+            .wsdl("wsdl/cons-sak-gosys/wsdl/nav-cons-sak-gosys-3.0.0_GOSYSInfotrygdSakWSEXP.wsdl")
+            .serviceName(
+                QName(
+                    "http://nav-cons-sak-gosys-3.0.0/no/nav/inf/InfotrygdSak/Binding",
+                    "GOSYSInfotrygdSakWSEXP_GOSYSInfotrygdSakHttpService"
+                )
+            )
+            .endpointName(
+                QName(
+                    "http://nav-cons-sak-gosys-3.0.0/no/nav/inf/InfotrygdSak/Binding",
+                    "GOSYSInfotrygdSakWSEXP_GOSYSInfotrygdSakHttpPort"
+                )
+            )
+            .withOutInterceptor(WSS4JOutInterceptor(SecurityProps(systemuserUsername, systemuserPwd)))
+            .timeout(20000, 20000)
+            .build()
 
     @Bean
     fun arbeidsfordelingV1(): ArbeidsfordelingV1 =
-            CXFClient(ArbeidsfordelingV1::class.java)
-                    .address(arbeidsfordelingUrl)
-                    .configureStsForSystemUser(stsConfig())
-                    .build()
+        CXFClient(ArbeidsfordelingV1::class.java)
+            .address(arbeidsfordelingUrl)
+            .configureStsForSystemUser(stsConfig())
+            .build()
 
     @Bean
     fun infotrygdVedtak(): InfotrygdVedtakV1 =
-            CXFClient(InfotrygdVedtakV1::class.java)
-                    .address(infotrygdVedtakUrl)
-                    .timeout(10000, 10000)
-                    .configureStsForSystemUser(stsConfig())
-                    .build()
-
+        CXFClient(InfotrygdVedtakV1::class.java)
+            .address(infotrygdVedtakUrl)
+            .timeout(10000, 10000)
+            .configureStsForSystemUser(stsConfig())
+            .build()
 }
 
-
-class SecurityProps(user: String,
-                    password: String) : HashMap<String, Any>() {
+class SecurityProps(
+    user: String,
+    password: String
+) : HashMap<String, Any>() {
 
     init {
         this[WSHandlerConstants.ACTION] = WSHandlerConstants.USERNAME_TOKEN

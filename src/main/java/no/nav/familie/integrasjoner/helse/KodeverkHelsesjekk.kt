@@ -5,5 +5,5 @@ import no.nav.familie.integrasjoner.client.rest.KodeverkClient
 import org.springframework.stereotype.Component
 
 @Component
-internal class KodeverkHelsesjekk(kodeverkClient: KodeverkClient)
-    : AbstractHealthIndicator(kodeverkClient, "helsesjekk.kodeverk")
+internal class KodeverkHelsesjekk(kodeverkClient: KodeverkClient) :
+    AbstractHealthIndicator(kodeverkClient, "helsesjekk.kodeverk")

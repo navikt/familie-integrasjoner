@@ -19,5 +19,4 @@ class SaksbehandlerController(private val saksbehandlerService: SaksbehandlerSer
     fun hentSaksbehandler(@PathVariable id: String): Ressurs<Saksbehandler> { // id kan være azure-id, e-post eller nav-ident
         return Ressurs.success(saksbehandlerService.hentSaksbehandler(id), "Hent saksbehandler OK")
     }
-
 }

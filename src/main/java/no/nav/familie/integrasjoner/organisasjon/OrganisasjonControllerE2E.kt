@@ -26,5 +26,4 @@ class OrganisasjonControllerE2E {
     fun validerOrganisasjon(@PathVariable orgnr: String): Ressurs<Boolean> {
         return success(data = true)
     }
-
 }

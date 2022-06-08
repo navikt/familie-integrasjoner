@@ -64,14 +64,18 @@ class DokarkivServiceTest {
     fun setUp() {
         MDC.put(MDCConstants.MDC_CALL_ID, UUID.randomUUID().toString()) // settes vanligvis i LogFilter
         MockKAnnotations.init(this)
-        dokarkivService = DokarkivService(dokarkivRestClient,
-                                          personopplysningerService,
-                                          DokarkivMetadata(KontanstøtteSøknadMetadata,
-                                                           KontanstøtteSøknadVedleggMetadata,
-                                                           BarnetrygdVedtakMetadata,
-                                                           BarnetrygdVedleggMetadata),
-                                          dokarkivLogiskVedleggRestClient,
-                                          førstesideGeneratorService)
+        dokarkivService = DokarkivService(
+            dokarkivRestClient,
+            personopplysningerService,
+            DokarkivMetadata(
+                KontanstøtteSøknadMetadata,
+                KontanstøtteSøknadVedleggMetadata,
+                BarnetrygdVedtakMetadata,
+                BarnetrygdVedleggMetadata
+            ),
+            dokarkivLogiskVedleggRestClient,
+            førstesideGeneratorService
+        )
     }
 
     @AfterEach
@@ -83,7 +87,7 @@ class DokarkivServiceTest {
     fun `oppdaterJournalpost skal legge til default sakstype`() {
         val slot = slot<OppdaterJournalpostRequest>()
         every { dokarkivRestClient.oppdaterJournalpost(capture(slot), any()) }
-                .answers { OppdaterJournalpostResponse(JOURNALPOST_ID) }
+            .answers { OppdaterJournalpostResponse(JOURNALPOST_ID) }
 
         val bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910")
         val dto = OppdaterJournalpostRequest(bruker = bruker, tema = Tema.ENF, sak = Sak("11111111", "fagsaksystem"))
@@ -101,24 +105,32 @@ class DokarkivServiceTest {
     fun `skal mappe request til opprettJournalpostRequest av type arkiv pdfa`() {
         val slot = slot<OpprettJournalpostRequest>()
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
-                .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
+            .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
 
         every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
-                .answers {
-                    Person(fødselsdato = "1980-05-12",
-                           navn = navn,
-                           kjønn = "KVINNE",
-                           familierelasjoner = emptySet(),
-                           adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                           sivilstand = SIVILSTAND.UGIFT)
-                }
-        val dto = ArkiverDokumentRequest(FNR,
-                                         false,
-                                         listOf(Dokument(PDF_DOK,
-                                                         Filtype.PDFA,
-                                                         FILNAVN,
-                                                         null,
-                                                         Dokumenttype.KONTANTSTØTTE_SØKNAD)))
+            .answers {
+                Person(
+                    fødselsdato = "1980-05-12",
+                    navn = navn,
+                    kjønn = "KVINNE",
+                    familierelasjoner = emptySet(),
+                    adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
+                    sivilstand = SIVILSTAND.UGIFT
+                )
+            }
+        val dto = ArkiverDokumentRequest(
+            FNR,
+            false,
+            listOf(
+                Dokument(
+                    PDF_DOK,
+                    Filtype.PDFA,
+                    FILNAVN,
+                    null,
+                    Dokumenttype.KONTANTSTØTTE_SØKNAD
+                )
+            )
+        )
 
         dokarkivService.lagJournalpost(dto)
 
@@ -134,30 +146,40 @@ class DokarkivServiceTest {
         val slot = slot<OpprettJournalpostRequest>()
 
         every { førstesideGeneratorService.genererForside(any<Førsteside>(), any()) }
-                .answers { PDF_DOK }
+            .answers { PDF_DOK }
 
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
-                .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
+            .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
 
         every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
-                .answers {
-                    Person(fødselsdato = "1980-05-12",
-                           navn = navn,
-                           kjønn = "KVINNE",
-                           familierelasjoner = emptySet(),
-                           adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                           sivilstand = SIVILSTAND.UGIFT)
-                }
-        val dto = ArkiverDokumentRequest(FNR,
-                                         false,
-                                         listOf(Dokument(PDF_DOK,
-                                                         Filtype.PDFA,
-                                                         FILNAVN,
-                                                         null,
-                                                         Dokumenttype.KONTANTSTØTTE_SØKNAD)),
-                                         førsteside = Førsteside(språkkode = Språkkode.NB,
-                                                                 navSkjemaId = "123",
-                                                                 overskriftstittel = "Testoverskrift"))
+            .answers {
+                Person(
+                    fødselsdato = "1980-05-12",
+                    navn = navn,
+                    kjønn = "KVINNE",
+                    familierelasjoner = emptySet(),
+                    adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
+                    sivilstand = SIVILSTAND.UGIFT
+                )
+            }
+        val dto = ArkiverDokumentRequest(
+            FNR,
+            false,
+            listOf(
+                Dokument(
+                    PDF_DOK,
+                    Filtype.PDFA,
+                    FILNAVN,
+                    null,
+                    Dokumenttype.KONTANTSTØTTE_SØKNAD
+                )
+            ),
+            førsteside = Førsteside(
+                språkkode = Språkkode.NB,
+                navSkjemaId = "123",
+                overskriftstittel = "Testoverskrift"
+            )
+        )
 
         dokarkivService.lagJournalpost(dto)
 
@@ -174,27 +196,35 @@ class DokarkivServiceTest {
         val slot = slot<OpprettJournalpostRequest>()
 
         every { førstesideGeneratorService.genererForside(any<Førsteside>(), any()) }
-                .answers { PDF_DOK }
+            .answers { PDF_DOK }
 
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
-                .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
+            .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
 
         every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
-                .answers {
-                    Person(fødselsdato = "1980-05-12",
-                           navn = navn,
-                           kjønn = "KVINNE",
-                           familierelasjoner = emptySet(),
-                           adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                           sivilstand = SIVILSTAND.UGIFT)
-                }
-        val dto = ArkiverDokumentRequest(FNR,
-                                         false,
-                                         listOf(Dokument(PDF_DOK,
-                                                         Filtype.PDFA,
-                                                         FILNAVN,
-                                                         null,
-                                                         Dokumenttype.KONTANTSTØTTE_SØKNAD)))
+            .answers {
+                Person(
+                    fødselsdato = "1980-05-12",
+                    navn = navn,
+                    kjønn = "KVINNE",
+                    familierelasjoner = emptySet(),
+                    adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
+                    sivilstand = SIVILSTAND.UGIFT
+                )
+            }
+        val dto = ArkiverDokumentRequest(
+            FNR,
+            false,
+            listOf(
+                Dokument(
+                    PDF_DOK,
+                    Filtype.PDFA,
+                    FILNAVN,
+                    null,
+                    Dokumenttype.KONTANTSTØTTE_SØKNAD
+                )
+            )
+        )
 
         dokarkivService.lagJournalpost(dto)
 
@@ -211,60 +241,86 @@ class DokarkivServiceTest {
         val slot = slot<OpprettJournalpostRequest>()
 
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
-                .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
+            .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
 
         every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
-                .answers {
-                    Person(fødselsdato = "1980-05-12",
-                           navn = navn,
-                           kjønn = "KVINNE",
-                           familierelasjoner = emptySet(),
-                           adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                           sivilstand = SIVILSTAND.UGIFT)
-                }
+            .answers {
+                Person(
+                    fødselsdato = "1980-05-12",
+                    navn = navn,
+                    kjønn = "KVINNE",
+                    familierelasjoner = emptySet(),
+                    adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
+                    sivilstand = SIVILSTAND.UGIFT
+                )
+            }
 
-        val dto = ArkiverDokumentRequest(FNR,
-                                         false,
-                                         listOf(Dokument(PDF_DOK,
-                                                         Filtype.PDFA,
-                                                         FILNAVN,
-                                                         null,
-                                                         Dokumenttype.BARNETRYGD_VEDTAK)),
-                                         listOf(Dokument(PDF_DOK,
-                                                         Filtype.PDFA,
-                                                         null,
-                                                         TITTEL,
-                                                         Dokumenttype.BARNETRYGD_VEDLEGG)),
-                                         fagsakId = FAGSAK_ID)
+        val dto = ArkiverDokumentRequest(
+            FNR,
+            false,
+            listOf(
+                Dokument(
+                    PDF_DOK,
+                    Filtype.PDFA,
+                    FILNAVN,
+                    null,
+                    Dokumenttype.BARNETRYGD_VEDTAK
+                )
+            ),
+            listOf(
+                Dokument(
+                    PDF_DOK,
+                    Filtype.PDFA,
+                    null,
+                    TITTEL,
+                    Dokumenttype.BARNETRYGD_VEDLEGG
+                )
+            ),
+            fagsakId = FAGSAK_ID
+        )
 
         dokarkivService.lagJournalpost(dto)
 
         val request = slot.captured
-        assertOpprettBarnetrygdVedtakJournalpostRequest(request, PDF_DOK, Sak(fagsakId = FAGSAK_ID,
-                                                                              fagsaksystem = Fagsystem.BA,
-                                                                              sakstype = "FAGSAK"))
+        assertOpprettBarnetrygdVedtakJournalpostRequest(
+            request, PDF_DOK,
+            Sak(
+                fagsakId = FAGSAK_ID,
+                fagsaksystem = Fagsystem.BA,
+                sakstype = "FAGSAK"
+            )
+        )
     }
 
     @Test
     fun `skal mappe request til opprettJournalpostRequest av type ORIGINAL JSON`() {
         val slot = slot<OpprettJournalpostRequest>()
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
-                .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
+            .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
         every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
-                .answers {
-                    Person(fødselsdato = "1980-05-12",
-                           navn = navn,
-                           kjønn = "KVINNE",
-                           familierelasjoner = emptySet(),
-                           adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                           sivilstand = SIVILSTAND.UGIFT)
-                }
+            .answers {
+                Person(
+                    fødselsdato = "1980-05-12",
+                    navn = navn,
+                    kjønn = "KVINNE",
+                    familierelasjoner = emptySet(),
+                    adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
+                    sivilstand = SIVILSTAND.UGIFT
+                )
+            }
 
-        val dto = ArkiverDokumentRequest(FNR, false, listOf(Dokument(JSON_DOK,
-                                                                     Filtype.JSON,
-                                                                     FILNAVN,
-                                                                     null,
-                                                                     Dokumenttype.KONTANTSTØTTE_SØKNAD)))
+        val dto = ArkiverDokumentRequest(
+            FNR, false,
+            listOf(
+                Dokument(
+                    JSON_DOK,
+                    Filtype.JSON,
+                    FILNAVN,
+                    null,
+                    Dokumenttype.KONTANTSTØTTE_SØKNAD
+                )
+            )
+        )
 
         dokarkivService.lagJournalpost(dto)
 
@@ -274,31 +330,42 @@ class DokarkivServiceTest {
             dokarkivRestClient.lagJournalpost(request, false)
         }
 
-        assertOpprettJournalpostRequest(request,
-                                        "JSON",
-                                        JSON_DOK,
-                                        STRUKTURERT_VARIANTFORMAT)
+        assertOpprettJournalpostRequest(
+            request,
+            "JSON",
+            JSON_DOK,
+            STRUKTURERT_VARIANTFORMAT
+        )
     }
 
     @Test
     fun `response fra klient skal returnere arkiverDokumentResponse`() {
         every { dokarkivRestClient.lagJournalpost(any(), any()) }
-                .answers { OpprettJournalpostResponse(journalpostId = JOURNALPOST_ID, journalpostferdigstilt = true) }
+            .answers { OpprettJournalpostResponse(journalpostId = JOURNALPOST_ID, journalpostferdigstilt = true) }
         every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
-                .answers {
-                    Person(fødselsdato = "1980-05-12",
-                           navn = navn,
-                           kjønn = "KVINNE",
-                           familierelasjoner = emptySet(),
-                           adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                           sivilstand = SIVILSTAND.UGIFT)
-                }
+            .answers {
+                Person(
+                    fødselsdato = "1980-05-12",
+                    navn = navn,
+                    kjønn = "KVINNE",
+                    familierelasjoner = emptySet(),
+                    adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
+                    sivilstand = SIVILSTAND.UGIFT
+                )
+            }
 
-        val dto = ArkiverDokumentRequest(FNR, false, listOf(Dokument(JSON_DOK,
-                                                                     Filtype.JSON,
-                                                                     FILNAVN,
-                                                                     null,
-                                                                     Dokumenttype.KONTANTSTØTTE_SØKNAD)))
+        val dto = ArkiverDokumentRequest(
+            FNR, false,
+            listOf(
+                Dokument(
+                    JSON_DOK,
+                    Filtype.JSON,
+                    FILNAVN,
+                    null,
+                    Dokumenttype.KONTANTSTØTTE_SØKNAD
+                )
+            )
+        )
 
         val arkiverDokumentResponse = dokarkivService.lagJournalpost(dto)
 
@@ -306,11 +373,13 @@ class DokarkivServiceTest {
         assertTrue(arkiverDokumentResponse.ferdigstilt)
     }
 
-    private fun assertOpprettJournalpostRequest(request: OpprettJournalpostRequest,
-                                                pdfa: String,
-                                                pdfDok: ByteArray,
-                                                arkivVariantformat: String,
-                                                sak: Sak? = null) {
+    private fun assertOpprettJournalpostRequest(
+        request: OpprettJournalpostRequest,
+        pdfa: String,
+        pdfDok: ByteArray,
+        arkivVariantformat: String,
+        sak: Sak? = null
+    ) {
         assertThat(request.avsenderMottaker!!.id).isEqualTo(FNR)
         assertThat(request.avsenderMottaker!!.idType).isEqualTo(BrukerIdType.FNR)
         assertThat(request.bruker!!.id).isEqualTo(FNR)
@@ -334,9 +403,11 @@ class DokarkivServiceTest {
         }
     }
 
-    private fun assertOpprettBarnetrygdVedtakJournalpostRequest(request: OpprettJournalpostRequest,
-                                                                pdfDok: ByteArray,
-                                                                sak: Sak) {
+    private fun assertOpprettBarnetrygdVedtakJournalpostRequest(
+        request: OpprettJournalpostRequest,
+        pdfDok: ByteArray,
+        sak: Sak
+    ) {
         assertThat(request.avsenderMottaker!!.id).isEqualTo(FNR)
         assertThat(request.avsenderMottaker!!.idType).isEqualTo(BrukerIdType.FNR)
         assertThat(request.bruker!!.id).isEqualTo(FNR)

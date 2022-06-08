@@ -21,5 +21,4 @@ class EgenAnsattController(private val egenAnsattService: EgenAnsattService) {
     fun erEgenAnsatt(@RequestBody(required = true) ident: Ident): ResponseEntity<Ressurs<EgenAnsattResponse>> {
         return ResponseEntity.ok().body(success(data = EgenAnsattResponse(egenAnsattService.erEgenAnsatt(ident.ident))))
     }
-
 }

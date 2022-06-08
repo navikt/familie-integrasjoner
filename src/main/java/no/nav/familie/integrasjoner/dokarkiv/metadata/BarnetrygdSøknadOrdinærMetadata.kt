@@ -8,8 +8,8 @@ import no.nav.familie.kontrakter.felles.dokarkiv.Dokumenttype
 import org.springframework.stereotype.Component
 
 @Component
-object BarnetrygdSøknadOrdinærMetadata
-    : Dokumentmetadata {
+object BarnetrygdSøknadOrdinærMetadata :
+    Dokumentmetadata {
 
     override val journalpostType: JournalpostType = JournalpostType.INNGAAENDE
     override val fagsakSystem: Fagsystem? = null
@@ -20,5 +20,4 @@ object BarnetrygdSøknadOrdinærMetadata
     override val tittel: String = "Søknad om barnetrygd ordinær"
     override val brevkode: String = "NAV 33-00.07"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.SOK
-
 }

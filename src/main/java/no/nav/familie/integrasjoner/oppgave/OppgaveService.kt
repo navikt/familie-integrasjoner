@@ -26,9 +26,9 @@ import java.time.format.DateTimeFormatter
 
 @Service @ApplicationScope
 class OppgaveService constructor(
-        private val oppgaveRestClient: OppgaveRestClient,
-        private val pdlRestClient: PdlRestClient,
-        private val saksbehandlerService: SaksbehandlerService,
+    private val oppgaveRestClient: OppgaveRestClient,
+    private val pdlRestClient: PdlRestClient,
+    private val saksbehandlerService: SaksbehandlerService,
 ) {
 
     private val logger = LoggerFactory.getLogger(OppgaveService::class.java)
@@ -54,15 +54,17 @@ class OppgaveService constructor(
             oppgaveRestClient.finnOppgaveMedId(request.id!!)
         }
         if (oppgave.status === StatusEnum.FERDIGSTILT) {
-            logger.info("Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId={} journalpostId={} oppgaveId={}",
-                        oppgave.aktoerId,
-                        oppgave.journalpostId,
-                        oppgave.id)
+            logger.info(
+                "Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId={} journalpostId={} oppgaveId={}",
+                oppgave.aktoerId,
+                oppgave.journalpostId,
+                oppgave.id
+            )
         } else {
             val patchOppgaveDto = oppgave.copy(
-                    id = oppgave.id,
-                    versjon = oppgave.versjon,
-                    beskrivelse = oppgave.beskrivelse + request.beskrivelse
+                id = oppgave.id,
+                versjon = oppgave.versjon,
+                beskrivelse = oppgave.beskrivelse + request.beskrivelse
             )
             oppgaveRestClient.oppdaterOppgave(patchOppgaveDto)
         }
@@ -80,9 +82,9 @@ class OppgaveService constructor(
             error("Kan ikke fordele oppgave med id $oppgaveId som allerede er ferdigstilt")
         }
         val oppdatertOppgaveDto = oppgave.copy(
-                id = oppgave.id,
-                versjon = oppgave.versjon,
-                tilordnetRessurs = saksbehandlerService.hentNavIdent(saksbehandler)
+            id = oppgave.id,
+            versjon = oppgave.versjon,
+            tilordnetRessurs = saksbehandlerService.hentNavIdent(saksbehandler)
         )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
         return oppgave.id!!
@@ -96,9 +98,9 @@ class OppgaveService constructor(
         }
 
         val oppdatertOppgaveDto = oppgave.copy(
-                id = oppgave.id,
-                versjon = oppgave.versjon,
-                tilordnetRessurs = ""
+            id = oppgave.id,
+            versjon = oppgave.versjon,
+            tilordnetRessurs = ""
         )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
         return oppgave.id!!
@@ -107,23 +109,23 @@ class OppgaveService constructor(
     @Deprecated("Bruk opprettOppgave")
     fun opprettOppgaveV1(request: OpprettOppgave): Long {
         val oppgave = Oppgave(
-                aktoerId = if (request.ident?.type == IdentType.Aktør) request.ident!!.ident else null,
-                orgnr = if (request.ident?.type == IdentType.Organisasjon) request.ident!!.ident else null,
-                saksreferanse = request.saksId,
-                //TODO oppgave-gjengen mente vi kunne sette denne til vår applikasjon, og så kan de gjøre en filtrering på sin
-                //men da må vi få applikasjonen vår inn i Felles kodeverk ellers så får vi feil: Fant ingen kode 'BA' i felles
-                // kodeverk under kodeverk 'Applikasjoner'
-                // behandlesAvApplikasjon = request.tema.fagsaksystem,
-                journalpostId = request.journalpostId,
-                prioritet = request.prioritet,
-                tema = request.tema,
-                tildeltEnhetsnr = request.enhetsnummer,
-                behandlingstema = request.behandlingstema,
-                fristFerdigstillelse = request.fristFerdigstillelse.format(DateTimeFormatter.ISO_DATE),
-                aktivDato = request.aktivFra.format(DateTimeFormatter.ISO_DATE),
-                oppgavetype = request.oppgavetype.value,
-                beskrivelse = request.beskrivelse,
-                behandlingstype = request.behandlingstype
+            aktoerId = if (request.ident?.type == IdentType.Aktør) request.ident!!.ident else null,
+            orgnr = if (request.ident?.type == IdentType.Organisasjon) request.ident!!.ident else null,
+            saksreferanse = request.saksId,
+            // TODO oppgave-gjengen mente vi kunne sette denne til vår applikasjon, og så kan de gjøre en filtrering på sin
+            // men da må vi få applikasjonen vår inn i Felles kodeverk ellers så får vi feil: Fant ingen kode 'BA' i felles
+            // kodeverk under kodeverk 'Applikasjoner'
+            // behandlesAvApplikasjon = request.tema.fagsaksystem,
+            journalpostId = request.journalpostId,
+            prioritet = request.prioritet,
+            tema = request.tema,
+            tildeltEnhetsnr = request.enhetsnummer,
+            behandlingstema = request.behandlingstema,
+            fristFerdigstillelse = request.fristFerdigstillelse.format(DateTimeFormatter.ISO_DATE),
+            aktivDato = request.aktivFra.format(DateTimeFormatter.ISO_DATE),
+            oppgavetype = request.oppgavetype.value,
+            beskrivelse = request.beskrivelse,
+            behandlingstype = request.behandlingstype
         )
 
         return oppgaveRestClient.opprettOppgave(oppgave)
@@ -131,23 +133,23 @@ class OppgaveService constructor(
 
     fun opprettOppgave(request: OpprettOppgaveRequest): Long {
         val oppgave = Oppgave(
-                aktoerId = if (erAktørIdEllerFnr(request.ident)) getAktørId(request.ident!!, request.tema) else null,
-                orgnr = if (request.ident?.gruppe == IdentGruppe.ORGNR) request.ident!!.ident else null,
-                samhandlernr = if (request.ident?.gruppe == IdentGruppe.SAMHANDLERNR) request.ident!!.ident else null,
-                saksreferanse = request.saksId,
-                journalpostId = request.journalpostId,
-                prioritet = request.prioritet,
-                tema = request.tema,
-                tildeltEnhetsnr = request.enhetsnummer,
-                behandlingstema = request.behandlingstema,
-                fristFerdigstillelse = request.fristFerdigstillelse.format(DateTimeFormatter.ISO_DATE),
-                aktivDato = request.aktivFra.format(DateTimeFormatter.ISO_DATE),
-                oppgavetype = request.oppgavetype.value,
-                beskrivelse = request.beskrivelse,
-                behandlingstype = request.behandlingstype,
-                tilordnetRessurs = request.tilordnetRessurs?.let { saksbehandlerService.hentNavIdent(it) },
-                behandlesAvApplikasjon = request.behandlesAvApplikasjon,
-                mappeId = request.mappeId
+            aktoerId = if (erAktørIdEllerFnr(request.ident)) getAktørId(request.ident!!, request.tema) else null,
+            orgnr = if (request.ident?.gruppe == IdentGruppe.ORGNR) request.ident!!.ident else null,
+            samhandlernr = if (request.ident?.gruppe == IdentGruppe.SAMHANDLERNR) request.ident!!.ident else null,
+            saksreferanse = request.saksId,
+            journalpostId = request.journalpostId,
+            prioritet = request.prioritet,
+            tema = request.tema,
+            tildeltEnhetsnr = request.enhetsnummer,
+            behandlingstema = request.behandlingstema,
+            fristFerdigstillelse = request.fristFerdigstillelse.format(DateTimeFormatter.ISO_DATE),
+            aktivDato = request.aktivFra.format(DateTimeFormatter.ISO_DATE),
+            oppgavetype = request.oppgavetype.value,
+            beskrivelse = request.beskrivelse,
+            behandlingstype = request.behandlingstype,
+            tilordnetRessurs = request.tilordnetRessurs?.let { saksbehandlerService.hentNavIdent(it) },
+            behandlesAvApplikasjon = request.behandlesAvApplikasjon,
+            mappeId = request.mappeId
         )
 
         return oppgaveRestClient.opprettOppgave(oppgave)
@@ -159,24 +161,26 @@ class OppgaveService constructor(
         when (oppgave.status) {
             StatusEnum.OPPRETTET, StatusEnum.AAPNET, StatusEnum.UNDER_BEHANDLING -> {
                 val patchOppgaveDto = oppgave.copy(
-                        id = oppgave.id,
-                        versjon = oppgave.versjon,
-                        status = StatusEnum.FERDIGSTILT
+                    id = oppgave.id,
+                    versjon = oppgave.versjon,
+                    status = StatusEnum.FERDIGSTILT
                 )
                 oppgaveRestClient.oppdaterOppgave(patchOppgaveDto)
             }
 
-            StatusEnum.FERDIGSTILT -> logger.info("Oppgave er allerede ferdigstilt. oppgaveId=${oppgaveId}")
-            StatusEnum.FEILREGISTRERT -> throw OppslagException("Oppgave har status feilregistrert og kan ikke oppdateres. " +
-                                                                "oppgaveId=${oppgaveId}",
-                                                                "Oppgave.ferdigstill",
-                                                                Level.MEDIUM,
-                                                                HttpStatus.BAD_REQUEST)
+            StatusEnum.FERDIGSTILT -> logger.info("Oppgave er allerede ferdigstilt. oppgaveId=$oppgaveId")
+            StatusEnum.FEILREGISTRERT -> throw OppslagException(
+                "Oppgave har status feilregistrert og kan ikke oppdateres. " +
+                    "oppgaveId=$oppgaveId",
+                "Oppgave.ferdigstill",
+                Level.MEDIUM,
+                HttpStatus.BAD_REQUEST
+            )
         }
     }
 
     private fun erAktørIdEllerFnr(oppgaveIdent: OppgaveIdentV2?) =
-            oppgaveIdent?.gruppe == IdentGruppe.FOLKEREGISTERIDENT || oppgaveIdent?.gruppe == IdentGruppe.AKTOERID
+        oppgaveIdent?.gruppe == IdentGruppe.FOLKEREGISTERIDENT || oppgaveIdent?.gruppe == IdentGruppe.AKTOERID
 
     private fun getAktørId(oppgaveIdentV2: OppgaveIdentV2, tema: Tema): String? {
         return if (oppgaveIdentV2.gruppe == IdentGruppe.AKTOERID) oppgaveIdentV2.ident
@@ -197,8 +201,10 @@ class OppgaveService constructor(
         val mappeRespons = oppgaveRestClient.finnMapper(finnMappeRequest)
 
         if (mappeRespons.antallTreffTotalt > mappeRespons.mapper.size) {
-            logger.error("Det finnes flere mapper (${mappeRespons.antallTreffTotalt}) " +
-                         "enn vi har hentet ut (${mappeRespons.mapper.size}). Sjekk limit. ")
+            logger.error(
+                "Det finnes flere mapper (${mappeRespons.antallTreffTotalt}) " +
+                    "enn vi har hentet ut (${mappeRespons.mapper.size}). Sjekk limit. "
+            )
         }
         return mappeRespons.mapper
     }
