@@ -4,6 +4,8 @@ import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.kontrakter.felles.Fagsystem
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.dokdist.DistribuerJournalpostRequest
+import no.nav.familie.kontrakter.felles.dokdist.Distribusjonstidspunkt
+import no.nav.familie.kontrakter.felles.dokdist.Distribusjonstype
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -37,15 +39,31 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
 
 
     @Test
-    fun `dokdist returnerer OK`() {
-        client.`when`(HttpRequest.request()
-                              .withMethod("POST")
-                              .withPath("/rest/v1/distribuerjournalpost"))
-                .respond(HttpResponse.response().withStatusCode(200)
-                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
-                                 .withBody("{\"bestillingsId\": \"1234567\"}"))
+    fun `dokdist returnerer OK uten kjernetid og distribusjonstidspunkt`() {
+        mockGodkjentKallMotDokDist()
 
-        val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak")
+        val body2 = """
+            {
+                "journalpostId": "${JOURNALPOST_ID}",
+                "bestillendeFagsystem": "BA",
+                "dokumentProdApp": "ba-sak"
+            }
+        """.trimIndent()
+        headers.set("Content-Type", "application/json")
+        val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(localhost(DOKDIST_URL),
+                                                                              HttpMethod.POST,
+                                                                              HttpEntity(body2, headers))
+
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        Assertions.assertThat(response.body?.data).contains("1234567")
+    }
+
+    @Test
+    fun `dokdist returnerer OK med distribusjonstype`() {
+        mockGodkjentKallMotDokDist()
+
+        val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak", Distribusjonstype.VIKTIG, Distribusjonstidspunkt.KJERNETID)
         val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(localhost(DOKDIST_URL),
                                                                               HttpMethod.POST,
                                                                               HttpEntity(body, headers))
@@ -56,13 +74,36 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
     }
 
     @Test
+    fun `dokdist returnerer OK`() {
+        mockGodkjentKallMotDokDist()
+
+        val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak", null, Distribusjonstidspunkt.KJERNETID)
+        val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(localhost(DOKDIST_URL),
+                                                                              HttpMethod.POST,
+                                                                              HttpEntity(body, headers))
+
+        Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        Assertions.assertThat(response.body?.data).contains("1234567")
+    }
+
+    private fun mockGodkjentKallMotDokDist() {
+        client.`when`(HttpRequest.request()
+                              .withMethod("POST")
+                              .withPath("/rest/v1/distribuerjournalpost"))
+                .respond(HttpResponse.response().withStatusCode(200)
+                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
+                                 .withBody("{\"bestillingsId\": \"1234567\"}"))
+    }
+
+    @Test
     fun `dokdist returnerer OK uten bestillingsId`() {
         client.`when`(HttpRequest.request()
                               .withMethod("POST")
                               .withPath("/rest/v1/distribuerjournalpost"))
                 .respond(HttpResponse.response().withStatusCode(200).withBody(""))
 
-        val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak")
+        val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak", null)
         val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(localhost(DOKDIST_URL),
                                                                               HttpMethod.POST,
                                                                               HttpEntity(body, headers))
@@ -81,7 +122,7 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
                                  .withHeader("Content-Type", "application/json; charset=utf-8")
                                  .withBody(badRequestResponse()))
 
-        val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak")
+        val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak", null)
         val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(localhost(DOKDIST_URL),
                                                                               HttpMethod.POST,
                                                                               HttpEntity(body, headers))
