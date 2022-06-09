@@ -15,6 +15,9 @@ class DokdistService(val dokdistRestClient: DokdistRestClient) {
     private fun mapTilDistribuerJournalpostRequestTo(request: DistribuerJournalpostRequest): DistribuerJournalpostRequestTo {
         return DistribuerJournalpostRequestTo(journalpostId = request.journalpostId,
             bestillendeFagsystem = request.bestillendeFagsystem.name,
-            dokumentProdApp = request.dokumentProdApp)
+            dokumentProdApp = request.dokumentProdApp,
+            distribusjonstidspunkt = request.distribusjonstidspunkt,
+            distribusjonstype = request.distribusjonstype
+        )
     }
 }
