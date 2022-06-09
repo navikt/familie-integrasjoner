@@ -28,6 +28,10 @@ class KodeverkClient(@Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
         return getForEntity(kodeverkUri("Landkoder"))
     }
 
+    fun hentLandkoderISO2(): KodeverkDto {
+        return getForEntity(kodeverkUri("LandkoderISO2"))
+    }
+
     fun hentLandkoderMedHistorikk(): KodeverkDto {
         return getForEntity(kodeverkUri("Landkoder", true))
     }
