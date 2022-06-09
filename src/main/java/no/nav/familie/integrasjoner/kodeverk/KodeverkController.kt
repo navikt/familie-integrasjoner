@@ -40,6 +40,10 @@ class KodeverkController(private val kodeverkService: CachedKodeverkService) {
         return ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentLandkoder().getOrDefault(landkode, "")))
     }
 
+    @GetMapping("/landkoderISO2")
+    fun hentLandkoderISO2(): ResponseEntity<Ressurs<Map<String, String>>> =
+            ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentLandkoderISO2()))
+
     @GetMapping("/landkoder/eea")
     fun hentEEALand(): ResponseEntity<Ressurs<KodeverkDto>> =
             ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentEEALandkoder()))
