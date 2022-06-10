@@ -21,7 +21,7 @@
         <changelist>-SNAPSHOT</changelist>
         <java.version>17</java.version>
         <springdoc.version>1.6.6</springdoc.version>
-        <common-java-modules.version>2.2021.12.09_11.47-999457edc68f</common-java-modules.version>
+        <common-java-modules.version>2.2022.05.31_07.13-5812471780dc</common-java-modules.version>
         <felles.version>1.20220310100515_c0dcfc1</felles.version>
         <kontrakt.version>2.0_20220609092924_6265395</kontrakt.version>
         <cxf.version>3.4.5</cxf.version>
