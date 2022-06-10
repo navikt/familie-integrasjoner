@@ -11,16 +11,18 @@ import org.springframework.web.client.RestOperations
 import java.net.URI
 
 @Component
-class DokdistRestClient(@Value("\${DOKDIST_URL}") private val dokdistUri: URI,
-                        @Qualifier("sts") private val restTemplate: RestOperations)
-    : AbstractPingableRestClient(restTemplate, "dokdist") {
+class DokdistRestClient(
+    @Value("\${DOKDIST_URL}") private val dokdistUri: URI,
+    @Qualifier("sts") private val restTemplate: RestOperations
+) :
+    AbstractPingableRestClient(restTemplate, "dokdist") {
 
     override val pingUri: URI = UriUtil.uri(dokdistUri, PATH_PING)
 
     val distribuerUri = UriUtil.uri(dokdistUri, PATH_DISTRIBUERJOURNALPOST)
 
     fun distribuerJournalpost(req: DistribuerJournalpostRequestTo): DistribuerJournalpostResponseTo? =
-            postForEntity(distribuerUri, req)
+        postForEntity(distribuerUri, req)
 
     companion object {
         private const val PATH_PING = "isAlive"

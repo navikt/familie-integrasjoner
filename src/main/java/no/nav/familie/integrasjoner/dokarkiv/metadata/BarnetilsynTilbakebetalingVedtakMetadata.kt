@@ -19,5 +19,4 @@ object BarnetilsynTilbakebetalingVedtakMetadata : Dokumentmetadata {
     override val tittel: String? = null
     override val brevkode: String = Fagsystem.EF.name + "-TILB"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.VB
-
 }

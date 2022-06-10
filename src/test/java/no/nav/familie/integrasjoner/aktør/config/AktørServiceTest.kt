@@ -46,7 +46,6 @@ class AktørServiceTest {
     @Autowired
     private lateinit var cacheManager: CacheManager
 
-
     @Configuration
     @Profile("AktørServiceTest")
     class AktørClientTestConfig {
@@ -70,17 +69,22 @@ class AktørServiceTest {
         @Bean
         @Primary
         fun aktørService(): AktørService = AktørService(aktørregisterClientMock(), pdlRestClient())
-
     }
 
     @BeforeEach
     fun setUp() {
         every { aktørClient.hentAktørId(eq(PERSONIDENT)) } returns
-                AktørResponse().withAktør(PERSONIDENT, Aktør()
-                        .withIdenter(listOf(Ident().withIdent(TESTAKTORID).withGjeldende(true))))
+            AktørResponse().withAktør(
+                PERSONIDENT,
+                Aktør()
+                    .withIdenter(listOf(Ident().withIdent(TESTAKTORID).withGjeldende(true)))
+            )
         every { aktørClient.hentAktørId(eq(PERSONIDENT_UTEN_IDENT)) } returns
-                AktørResponse().withAktør(PERSONIDENT_UTEN_IDENT, Aktør()
-                        .withIdenter(listOf(Ident().withIdent(null).withGjeldende(true))))
+            AktørResponse().withAktør(
+                PERSONIDENT_UTEN_IDENT,
+                Aktør()
+                    .withIdenter(listOf(Ident().withIdent(null).withGjeldende(true)))
+            )
         every { pdlRestClient.hentGjeldendeAktørId(eq(PERSONIDENT), eq(Tema.ENF)) } returns TESTAKTORID
         every { pdlRestClient.hentGjeldendePersonident(eq(TESTAKTORID), eq(Tema.ENF)) } returns PERSONIDENT
         every { pdlRestClient.hentGjeldendeAktørId(eq(PERSONIDENT_UTEN_IDENT), eq(Tema.ENF)) } throws PdlNotFoundException()
@@ -130,7 +134,6 @@ class AktørServiceTest {
         }
         verify(exactly = 2) { aktørClient.hentAktørId(any()) }
     }
-
 
     @Test
     fun `skal ikke cachea når den feiler`() {

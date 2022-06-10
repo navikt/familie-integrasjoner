@@ -6,7 +6,7 @@ import no.nav.gosys.asbo.infotrygdsak.ASBOGOSYSBestillInfotrygdSakRequest
 import no.nav.gosys.asbo.infotrygdsak.ASBOGOSYSBestillInfotrygdSakResponse
 import java.time.LocalDate
 import java.time.ZoneId
-import java.util.*
+import java.util.GregorianCalendar
 
 object OpprettInfotrygdSakMapper {
 
@@ -14,8 +14,10 @@ object OpprettInfotrygdSakMapper {
         val asboRequest = ASBOGOSYSBestillInfotrygdSakRequest()
         asboRequest.fagomrade = opprettInfotrygdSakRequest.fagomrade
         asboRequest.fnr = opprettInfotrygdSakRequest.fnr
-        asboRequest.motattdato = GregorianCalendar.from((opprettInfotrygdSakRequest.mottattdato ?: LocalDate.now())
-                                                                .atStartOfDay(ZoneId.systemDefault()))
+        asboRequest.motattdato = GregorianCalendar.from(
+            (opprettInfotrygdSakRequest.mottattdato ?: LocalDate.now())
+                .atStartOfDay(ZoneId.systemDefault())
+        )
         asboRequest.mottakerOrganisasjonsEnhetsId = opprettInfotrygdSakRequest.mottakerOrganisasjonsEnhetsId
         asboRequest.oppgaveId = opprettInfotrygdSakRequest.oppgaveId
         asboRequest.oppgaveOrganisasjonsenhetId = opprettInfotrygdSakRequest.oppgaveOrganisasjonsenhetId

@@ -13,19 +13,19 @@ import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.FinnBehandlendeE
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
-
 @Service
-class ArbeidsfordelingClient(private val arbeidsfordelingV1: ArbeidsfordelingV1)
-    : AbstractSoapClient("arbeidsfordeling"), Pingable {
-
+class ArbeidsfordelingClient(private val arbeidsfordelingV1: ArbeidsfordelingV1) :
+    AbstractSoapClient("arbeidsfordeling"), Pingable {
 
     override fun ping() {
         arbeidsfordelingV1.ping()
     }
 
-    fun finnBehandlendeEnhet(gjeldendeTema: no.nav.familie.kontrakter.felles.Tema,
-                             gjeldendeGeografiskOmråde: String?,
-                             gjeldendeDiskresjonskode: String?): List<Enhet> {
+    fun finnBehandlendeEnhet(
+        gjeldendeTema: no.nav.familie.kontrakter.felles.Tema,
+        gjeldendeGeografiskOmråde: String?,
+        gjeldendeDiskresjonskode: String?
+    ): List<Enhet> {
         val request = FinnBehandlendeEnhetListeRequest().apply {
             arbeidsfordelingKriterier = ArbeidsfordelingKriterier().apply {
                 tema = Tema().apply { value = gjeldendeTema.toString() }
@@ -44,17 +44,16 @@ class ArbeidsfordelingClient(private val arbeidsfordelingV1: ArbeidsfordelingV1)
         }
 
         return Result.runCatching { arbeidsfordelingV1.finnBehandlendeEnhetListe(request) }
-                .map { it.behandlendeEnhetListe.map { enhet -> Enhet(enhet.enhetId, enhet.enhetNavn) } }
-                .onFailure {
-                    throw OppslagException(
-                            "Ugyldig input tema=$gjeldendeTema geografiskOmråde=$gjeldendeGeografiskOmråde melding=${it.message}",
-                            "ArbeidsfordelingV1.finnBehandlendeEnhet",
-                            OppslagException.Level.MEDIUM,
-                            HttpStatus.INTERNAL_SERVER_ERROR,
-                            it)
-                }
-                .getOrThrow()
-
-
+            .map { it.behandlendeEnhetListe.map { enhet -> Enhet(enhet.enhetId, enhet.enhetNavn) } }
+            .onFailure {
+                throw OppslagException(
+                    "Ugyldig input tema=$gjeldendeTema geografiskOmråde=$gjeldendeGeografiskOmråde melding=${it.message}",
+                    "ArbeidsfordelingV1.finnBehandlendeEnhet",
+                    OppslagException.Level.MEDIUM,
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    it
+                )
+            }
+            .getOrThrow()
     }
 }

@@ -60,19 +60,23 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
         objectMapper.registerModule(KotlinModule())
 
         (LoggerFactory.getLogger("secureLogger") as Logger)
-                .addAppender(listAppender)
+            .addAppender(listAppender)
     }
 
     @Test
     fun `skal returnere bad request hvis ingen dokumenter`() {
-        val body = DeprecatedArkiverDokumentRequest("fnr",
-                                                    false,
-                                                    LinkedList())
+        val body = DeprecatedArkiverDokumentRequest(
+            "fnr",
+            false,
+            LinkedList()
+        )
 
         val responseDeprecated: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
-                restTemplate.exchange(localhost(DOKARKIV_URL_V2),
-                                      HttpMethod.POST,
-                                      HttpEntity(body, headers))
+            restTemplate.exchange(
+                localhost(DOKARKIV_URL_V2),
+                HttpMethod.POST,
+                HttpEntity(body, headers)
+            )
 
         assertThat(responseDeprecated.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(responseDeprecated.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -81,14 +85,18 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `v3 skal returnere bad request hvis ingen hoveddokumenter`() {
-        val body = DeprecatedArkiverDokumentRequestV3("fnr",
-                                                      false,
-                                                      LinkedList())
+        val body = DeprecatedArkiverDokumentRequestV3(
+            "fnr",
+            false,
+            LinkedList()
+        )
 
         val responseDeprecated: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
-                restTemplate.exchange(localhost(DOKARKIV_URL_V3),
-                                      HttpMethod.POST,
-                                      HttpEntity(body, headers))
+            restTemplate.exchange(
+                localhost(DOKARKIV_URL_V3),
+                HttpMethod.POST,
+                HttpEntity(body, headers)
+            )
 
         assertThat(responseDeprecated.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(responseDeprecated.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -97,19 +105,25 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal midlertidig journalføre dokument`() {
-        client.`when`(request()
-                              .withMethod("POST")
-                              .withPath("/rest/journalpostapi/v1/journalpost")
-                              .withQueryStringParameter("forsoekFerdigstill", "false"))
-                .respond(response().withBody(json(gyldigDokarkivResponse())))
-        val body = DeprecatedArkiverDokumentRequest("FNR",
-                                                    false,
-                                                    listOf(DEPRECATED_HOVEDDOKUMENT))
+        client.`when`(
+            request()
+                .withMethod("POST")
+                .withPath("/rest/journalpostapi/v1/journalpost")
+                .withQueryStringParameter("forsoekFerdigstill", "false")
+        )
+            .respond(response().withBody(json(gyldigDokarkivResponse())))
+        val body = DeprecatedArkiverDokumentRequest(
+            "FNR",
+            false,
+            listOf(DEPRECATED_HOVEDDOKUMENT)
+        )
 
         val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
-                restTemplate.exchange(localhost(DOKARKIV_URL_V2),
-                                      HttpMethod.POST,
-                                      HttpEntity(body, headers))
+            restTemplate.exchange(
+                localhost(DOKARKIV_URL_V2),
+                HttpMethod.POST,
+                HttpEntity(body, headers)
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -119,19 +133,25 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `v3 skal midlertidig journalføre dokument`() {
-        client.`when`(request()
-                              .withMethod("POST")
-                              .withPath("/rest/journalpostapi/v1/journalpost")
-                              .withQueryStringParameter("forsoekFerdigstill", "false"))
-                .respond(response().withBody(json(gyldigDokarkivResponse())))
-        val body = DeprecatedArkiverDokumentRequestV3("FNR",
-                                                      false,
-                                                      listOf(DEPRECATED_HOVEDDOKUMENT))
+        client.`when`(
+            request()
+                .withMethod("POST")
+                .withPath("/rest/journalpostapi/v1/journalpost")
+                .withQueryStringParameter("forsoekFerdigstill", "false")
+        )
+            .respond(response().withBody(json(gyldigDokarkivResponse())))
+        val body = DeprecatedArkiverDokumentRequestV3(
+            "FNR",
+            false,
+            listOf(DEPRECATED_HOVEDDOKUMENT)
+        )
 
         val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
-                restTemplate.exchange(localhost(DOKARKIV_URL_V3),
-                                      HttpMethod.POST,
-                                      HttpEntity(body, headers))
+            restTemplate.exchange(
+                localhost(DOKARKIV_URL_V3),
+                HttpMethod.POST,
+                HttpEntity(body, headers)
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -141,19 +161,25 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `v4 skal sende med navIdent fra header til journalpost`() {
-        client.`when`(request()
-                              .withMethod("POST")
-                              .withPath("/rest/journalpostapi/v1/journalpost")
-                              .withQueryStringParameter("forsoekFerdigstill", "false"))
-                .respond(response().withBody(json(gyldigDokarkivResponse())))
-        val body = ArkiverDokumentRequest("FNR",
-                                          false,
-                                          listOf(HOVEDDOKUMENT))
+        client.`when`(
+            request()
+                .withMethod("POST")
+                .withPath("/rest/journalpostapi/v1/journalpost")
+                .withQueryStringParameter("forsoekFerdigstill", "false")
+        )
+            .respond(response().withBody(json(gyldigDokarkivResponse())))
+        val body = ArkiverDokumentRequest(
+            "FNR",
+            false,
+            listOf(HOVEDDOKUMENT)
+        )
 
         val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
-                restTemplate.exchange(localhost(DOKARKIV_URL_V4),
-                                      HttpMethod.POST,
-                                      HttpEntity(body, headersWithNavUserId()))
+            restTemplate.exchange(
+                localhost(DOKARKIV_URL_V4),
+                HttpMethod.POST,
+                HttpEntity(body, headersWithNavUserId())
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -164,22 +190,30 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `v4 skal returnere 409 ved 409 response fra dokarkiv`() {
-        client.`when`(request()
-                              .withMethod("POST")
-                              .withPath("/rest/journalpostapi/v1/journalpost")
-                              .withQueryStringParameter("forsoekFerdigstill", "false"))
-                .respond(response()
-                                .withStatusCode(409)
-                                .withHeader("Content-Type", "application/json;charset=UTF-8")
-                                .withBody("Tekst fra body"))
-        val body = ArkiverDokumentRequest("FNR",
-                                          false,
-                                          listOf(HOVEDDOKUMENT))
+        client.`when`(
+            request()
+                .withMethod("POST")
+                .withPath("/rest/journalpostapi/v1/journalpost")
+                .withQueryStringParameter("forsoekFerdigstill", "false")
+        )
+            .respond(
+                response()
+                    .withStatusCode(409)
+                    .withHeader("Content-Type", "application/json;charset=UTF-8")
+                    .withBody("Tekst fra body")
+            )
+        val body = ArkiverDokumentRequest(
+            "FNR",
+            false,
+            listOf(HOVEDDOKUMENT)
+        )
 
         val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
-                restTemplate.exchange(localhost(DOKARKIV_URL_V4),
-                                      HttpMethod.POST,
-                                      HttpEntity(body, headersWithNavUserId()))
+            restTemplate.exchange(
+                localhost(DOKARKIV_URL_V4),
+                HttpMethod.POST,
+                HttpEntity(body, headersWithNavUserId())
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.CONFLICT)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -188,20 +222,26 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal midlertidig journalføre dokument med vedlegg`() {
-        client.`when`(request()
-                              .withMethod("POST")
-                              .withPath("/rest/journalpostapi/v1/journalpost")
-                              .withQueryStringParameter("forsoekFerdigstill", "false"))
-                .respond(response().withBody(json(gyldigDokarkivResponse())))
-        val body = DeprecatedArkiverDokumentRequestV3("FNR",
-                                                      false,
-                                                      listOf(DEPRECATED_HOVEDDOKUMENT),
-                                                      listOf(VEDLEGG))
+        client.`when`(
+            request()
+                .withMethod("POST")
+                .withPath("/rest/journalpostapi/v1/journalpost")
+                .withQueryStringParameter("forsoekFerdigstill", "false")
+        )
+            .respond(response().withBody(json(gyldigDokarkivResponse())))
+        val body = DeprecatedArkiverDokumentRequestV3(
+            "FNR",
+            false,
+            listOf(DEPRECATED_HOVEDDOKUMENT),
+            listOf(VEDLEGG)
+        )
 
         val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
-                restTemplate.exchange(localhost(DOKARKIV_URL_V3),
-                                      HttpMethod.POST,
-                                      HttpEntity(body, headers))
+            restTemplate.exchange(
+                localhost(DOKARKIV_URL_V3),
+                HttpMethod.POST,
+                HttpEntity(body, headers)
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -211,26 +251,38 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `dokarkiv returnerer 401`() {
-        client.`when`(request()
-                              .withMethod("POST")
-                              .withPath("/rest/journalpostapi/v1/journalpost")
-                              .withQueryStringParameter("forsoekFerdigstill", "false"))
-                .respond(response()
-                                 .withStatusCode(401)
-                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
-                                 .withBody("Tekst fra body"))
-        val body = DeprecatedArkiverDokumentRequest("FNR",
-                                                    false,
-                                                    listOf(DeprecatedDokument("foo".toByteArray(),
-                                                                              FilType.PDFA,
-                                                                              null,
-                                                                              null,
-                                                                              Dokumenttype.KONTANTSTØTTE_SØKNAD)))
+        client.`when`(
+            request()
+                .withMethod("POST")
+                .withPath("/rest/journalpostapi/v1/journalpost")
+                .withQueryStringParameter("forsoekFerdigstill", "false")
+        )
+            .respond(
+                response()
+                    .withStatusCode(401)
+                    .withHeader("Content-Type", "application/json;charset=UTF-8")
+                    .withBody("Tekst fra body")
+            )
+        val body = DeprecatedArkiverDokumentRequest(
+            "FNR",
+            false,
+            listOf(
+                DeprecatedDokument(
+                    "foo".toByteArray(),
+                    FilType.PDFA,
+                    null,
+                    null,
+                    Dokumenttype.KONTANTSTØTTE_SØKNAD
+                )
+            )
+        )
 
         val responseDeprecated: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
-                restTemplate.exchange(localhost(DOKARKIV_URL_V2),
-                                      HttpMethod.POST,
-                                      HttpEntity(body, headers))
+            restTemplate.exchange(
+                localhost(DOKARKIV_URL_V2),
+                HttpMethod.POST,
+                HttpEntity(body, headers)
+            )
 
         assertThat(responseDeprecated.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
         assertThat(responseDeprecated.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -240,19 +292,25 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
     @Test
     fun `oppdaterJournalpost returnerer OK`() {
         val journalpostId = "12345678"
-        client.`when`(request()
-                              .withMethod("PUT")
-                              .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId"))
-                .respond(response().withBody(json(gyldigDokarkivResponse())))
+        client.`when`(
+            request()
+                .withMethod("PUT")
+                .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId")
+        )
+            .respond(response().withBody(json(gyldigDokarkivResponse())))
 
-        val body = OppdaterJournalpostRequest(bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
-                                              tema = Tema.ENF,
-                                              sak = Sak("11111111", "fagsaksystem"))
+        val body = OppdaterJournalpostRequest(
+            bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
+            tema = Tema.ENF,
+            sak = Sak("11111111", "fagsaksystem")
+        )
 
         val response: ResponseEntity<Ressurs<OppdaterJournalpostResponse>> =
-                restTemplate.exchange(localhost("$DOKARKIV_URL_V2/12345678"),
-                                      HttpMethod.PUT,
-                                      HttpEntity(body, headers))
+            restTemplate.exchange(
+                localhost("$DOKARKIV_URL_V2/12345678"),
+                HttpMethod.PUT,
+                HttpEntity(body, headers)
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -262,40 +320,52 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
     @Test
     fun `dokarkiv skal logge detaljert feilmelding til secureLogger ved HttpServerErrorExcetion`() {
         val journalpostId = "12345678"
-        client.`when`(request()
-                              .withMethod("PUT")
-                              .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId"))
-                .respond(response().withStatusCode(500)
-                                 .withHeader("Content-Type", "application/json;charset=UTF-8")
-                                 .withBody(gyldigDokarkivResponse(500)))
+        client.`when`(
+            request()
+                .withMethod("PUT")
+                .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId")
+        )
+            .respond(
+                response().withStatusCode(500)
+                    .withHeader("Content-Type", "application/json;charset=UTF-8")
+                    .withBody(gyldigDokarkivResponse(500))
+            )
 
-        val body = OppdaterJournalpostRequest(bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
-                                              tema = Tema.ENF,
-                                              sak = Sak("11111111", "fagsaksystem"))
+        val body = OppdaterJournalpostRequest(
+            bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
+            tema = Tema.ENF,
+            sak = Sak("11111111", "fagsaksystem")
+        )
 
         val response: ResponseEntity<Ressurs<OppdaterJournalpostResponse>> =
-                restTemplate.exchange(localhost("$DOKARKIV_URL_V2/12345678"),
-                                      HttpMethod.PUT,
-                                      HttpEntity(body, headers))
+            restTemplate.exchange(
+                localhost("$DOKARKIV_URL_V2/12345678"),
+                HttpMethod.PUT,
+                HttpEntity(body, headers)
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
         assertThat(loggingEvents)
-                .extracting<String, RuntimeException> { obj: ILoggingEvent -> obj.formattedMessage }
-                .anyMatch { message -> message.contains("Fant ikke person med ident: 12345678910") }
+            .extracting<String, RuntimeException> { obj: ILoggingEvent -> obj.formattedMessage }
+            .anyMatch { message -> message.contains("Fant ikke person med ident: 12345678910") }
     }
 
     @Test
     fun `ferdigstill returnerer ok`() {
-        client.`when`(request()
-                              .withMethod("PATCH")
-                              .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill"))
-                .respond(response().withStatusCode(200).withBody("Journalpost ferdigstilt"))
+        client.`when`(
+            request()
+                .withMethod("PATCH")
+                .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill")
+        )
+            .respond(response().withStatusCode(200).withBody("Journalpost ferdigstilt"))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> =
-                restTemplate.exchange(localhost("$DOKARKIV_URL_V2/123/ferdigstill?journalfoerendeEnhet=9999"),
-                                      HttpMethod.PUT,
-                                      HttpEntity(null, headersWithNavUserId()))
+            restTemplate.exchange(
+                localhost("$DOKARKIV_URL_V2/123/ferdigstill?journalfoerendeEnhet=9999"),
+                HttpMethod.PUT,
+                HttpEntity(null, headersWithNavUserId())
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -304,35 +374,44 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `ferdigstill returnerer 400 hvis ikke mulig ferdigstill`() {
-        client.`when`(request()
-                              .withMethod("PATCH")
-                              .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill"))
-                .respond(response().withStatusCode(400))
+        client.`when`(
+            request()
+                .withMethod("PATCH")
+                .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill")
+        )
+            .respond(response().withStatusCode(400))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> =
-                restTemplate.exchange(localhost("$DOKARKIV_URL_V2/123/ferdigstill?journalfoerendeEnhet=9999"),
-                                      HttpMethod.PUT,
-                                      HttpEntity(null, headers))
+            restTemplate.exchange(
+                localhost("$DOKARKIV_URL_V2/123/ferdigstill?journalfoerendeEnhet=9999"),
+                HttpMethod.PUT,
+                HttpEntity(null, headers)
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
         assertThat(response.body?.melding).contains("Kan ikke ferdigstille journalpost 123")
     }
 
-
     @Test
     fun `skal opprette logisk vedlegg`() {
-        client.`when`(request()
-                              .withMethod("POST")
-                              .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"))
-                .respond(response()
-                                 .withStatusCode(200)
-                                 .withBody(json(objectMapper.writeValueAsString(LogiskVedleggResponse(21L)))))
+        client.`when`(
+            request()
+                .withMethod("POST")
+                .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/")
+        )
+            .respond(
+                response()
+                    .withStatusCode(200)
+                    .withBody(json(objectMapper.writeValueAsString(LogiskVedleggResponse(21L))))
+            )
 
         val response: ResponseEntity<Ressurs<LogiskVedleggResponse>> =
-                restTemplate.exchange(localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg"),
-                                      HttpMethod.POST,
-                                      HttpEntity(LogiskVedleggRequest("Ny tittel"), headers))
+            restTemplate.exchange(
+                localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg"),
+                HttpMethod.POST,
+                HttpEntity(LogiskVedleggRequest("Ny tittel"), headers)
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
         assertThat(response.body?.data?.logiskVedleggId).isEqualTo(21L)
@@ -341,36 +420,47 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal returnere feil hvis man ikke kan opprette logisk vedlegg`() {
-        client.`when`(request()
-                              .withMethod("POST")
-                              .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"))
-                .respond(response()
-                                 .withStatusCode(404)
-                                 .withBody("melding fra klient"))
+        client.`when`(
+            request()
+                .withMethod("POST")
+                .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/")
+        )
+            .respond(
+                response()
+                    .withStatusCode(404)
+                    .withBody("melding fra klient")
+            )
 
         val response: ResponseEntity<Ressurs<LogiskVedleggResponse>> =
-                restTemplate.exchange(localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg"),
-                                      HttpMethod.POST,
-                                      HttpEntity(LogiskVedleggRequest("Ny tittel"), headers))
+            restTemplate.exchange(
+                localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg"),
+                HttpMethod.POST,
+                HttpEntity(LogiskVedleggRequest("Ny tittel"), headers)
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.melding).contains("melding fra klient")
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
-
     @Test
     fun `skal slette logisk vedlegg`() {
-        client.`when`(request()
-                              .withMethod("DELETE")
-                              .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/432"))
-                .respond(response()
-                                 .withStatusCode(200))
+        client.`when`(
+            request()
+                .withMethod("DELETE")
+                .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/432")
+        )
+            .respond(
+                response()
+                    .withStatusCode(200)
+            )
 
         val response: ResponseEntity<Ressurs<LogiskVedleggResponse>> =
-                restTemplate.exchange(localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg/432"),
-                                      HttpMethod.DELETE,
-                                      HttpEntity(LogiskVedleggRequest("Ny tittel"), headers))
+            restTemplate.exchange(
+                localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg/432"),
+                HttpMethod.DELETE,
+                HttpEntity(LogiskVedleggRequest("Ny tittel"), headers)
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.data?.logiskVedleggId).isEqualTo(432L)
@@ -380,17 +470,23 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal returnere feil hvis man ikke kan slette logisk vedlegg`() {
-        client.`when`(request()
-                              .withMethod("DELETE")
-                              .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/432"))
-                .respond(response()
-                                 .withStatusCode(404)
-                                 .withBody("sletting feilet"))
+        client.`when`(
+            request()
+                .withMethod("DELETE")
+                .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/432")
+        )
+            .respond(
+                response()
+                    .withStatusCode(404)
+                    .withBody("sletting feilet")
+            )
 
         val response: ResponseEntity<Ressurs<LogiskVedleggResponse>> =
-                restTemplate.exchange(localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg/432"),
-                                      HttpMethod.DELETE,
-                                      HttpEntity(LogiskVedleggRequest("Ny tittel"), headers))
+            restTemplate.exchange(
+                localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg/432"),
+                HttpMethod.DELETE,
+                HttpEntity(LogiskVedleggRequest("Ny tittel"), headers)
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.melding).contains("sletting feilet")
@@ -398,8 +494,10 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
     }
 
     @Throws(IOException::class) private fun gyldigDokarkivResponse(statusKode: Int? = null): String {
-        return Files.readString(ClassPathResource("dokarkiv/gyldig${statusKode ?: ""}response.json").file.toPath(),
-                                StandardCharsets.UTF_8)
+        return Files.readString(
+            ClassPathResource("dokarkiv/gyldig${statusKode ?: ""}response.json").file.toPath(),
+            StandardCharsets.UTF_8
+        )
     }
 
     private fun headersWithNavUserId(): HttpHeaders {
@@ -411,31 +509,37 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
     companion object {
 
         private const val DOKARKIV_URL = "/api/arkiv"
-        private const val DOKARKIV_URL_V2 = "${DOKARKIV_URL}/v2/"
-        private const val DOKARKIV_URL_V3 = "${DOKARKIV_URL}/v3/"
-        private const val DOKARKIV_URL_V4 = "${DOKARKIV_URL}/v4/"
+        private const val DOKARKIV_URL_V2 = "$DOKARKIV_URL/v2/"
+        private const val DOKARKIV_URL_V3 = "$DOKARKIV_URL/v3/"
+        private const val DOKARKIV_URL_V4 = "$DOKARKIV_URL/v4/"
 
         private const val NAV_USER_ID_VALUE = "k123123"
 
         private val DEPRECATED_HOVEDDOKUMENT =
-                DeprecatedDokument("foo".toByteArray(),
-                                   FilType.PDFA,
-                                   "filnavn",
-                                   null,
-                                   Dokumenttype.KONTANTSTØTTE_SØKNAD)
+            DeprecatedDokument(
+                "foo".toByteArray(),
+                FilType.PDFA,
+                "filnavn",
+                null,
+                Dokumenttype.KONTANTSTØTTE_SØKNAD
+            )
 
         private val HOVEDDOKUMENT =
-                Dokument("foo".toByteArray(),
-                         Filtype.JSON,
-                         "filnavn",
-                         null,
-                         Dokumenttype.KONTANTSTØTTE_SØKNAD)
+            Dokument(
+                "foo".toByteArray(),
+                Filtype.JSON,
+                "filnavn",
+                null,
+                Dokumenttype.KONTANTSTØTTE_SØKNAD
+            )
 
         private val VEDLEGG =
-                DeprecatedDokument("foo".toByteArray(),
-                                   FilType.PDFA,
-                                   "filnavn",
-                                   "Vedlegg",
-                                   Dokumenttype.KONTANTSTØTTE_SØKNAD_VEDLEGG)
+            DeprecatedDokument(
+                "foo".toByteArray(),
+                FilType.PDFA,
+                "filnavn",
+                "Vedlegg",
+                Dokumenttype.KONTANTSTØTTE_SØKNAD_VEDLEGG
+            )
     }
 }

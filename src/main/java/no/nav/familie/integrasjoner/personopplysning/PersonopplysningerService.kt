@@ -33,17 +33,19 @@ import no.nav.tjeneste.virksomhet.person.v3.informasjon.PersonIdent as TpsPerson
 
 @Service
 @ApplicationScope
-class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
-                                private val oversetter: TpsOversetter,
-                                private val pdlRestClient: PdlRestClient,
-                                private val pdlClientCredentialRestClient: PdlClientCredentialRestClient) {
+class PersonopplysningerService(
+    private val personSoapClient: PersonSoapClient,
+    private val oversetter: TpsOversetter,
+    private val pdlRestClient: PdlRestClient,
+    private val pdlClientCredentialRestClient: PdlClientCredentialRestClient
+) {
 
     @Deprecated("Tps er markert for utfasing. PDL er master.")
     fun hentHistorikkFor(personIdent: String, fom: LocalDate, tom: LocalDate): PersonhistorikkInfo {
         val request = HentPersonhistorikkRequest()
         request.aktoer = TpsPersonIdent().withIdent(NorskIdent().withIdent(personIdent))
         request.periode = Periode().withFom(DateUtil.convertToXMLGregorianCalendar(fom))
-                .withTom(DateUtil.convertToXMLGregorianCalendar(tom))
+            .withTom(DateUtil.convertToXMLGregorianCalendar(tom))
         val response = personSoapClient.hentPersonhistorikkResponse(request)
         return oversetter.tilPersonhistorikkInfo(PersonIdent(personIdent), response)
     }
@@ -51,15 +53,17 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
     @Deprecated("Tps er markert for utfasing. PDL er master.")
     fun hentPersoninfoFor(personIdent: String?): Personinfo {
         val request: HentPersonRequest = HentPersonRequest()
-                .withAktoer(TpsPersonIdent().withIdent(NorskIdent().withIdent(personIdent)))
-                .withInformasjonsbehov(listOf(Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.ADRESSE))
+            .withAktoer(TpsPersonIdent().withIdent(NorskIdent().withIdent(personIdent)))
+            .withInformasjonsbehov(listOf(Informasjonsbehov.FAMILIERELASJONER, Informasjonsbehov.ADRESSE))
         val response = personSoapClient.hentPersonResponse(request)
         return oversetter.tilPersoninfo(PersonIdent(personIdent), response)
     }
 
-    fun hentPersoninfo(personIdent: String,
-                       tema: Tema,
-                       personInfoQuery: PersonInfoQuery): Person {
+    fun hentPersoninfo(
+        personIdent: String,
+        tema: Tema,
+        personInfoQuery: PersonInfoQuery
+    ): Person {
         return pdlRestClient.hentPerson(personIdent, tema, personInfoQuery)
     }
 
@@ -72,8 +76,8 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
     fun hentPersonMedRelasjoner(personIdent: String, tema: Tema): PersonMedRelasjoner {
         val hovedperson = hentPersonMedRelasjonerOgAdressebeskyttelse(listOf(personIdent), tema).getOrThrow(personIdent)
         val barnIdenter = hovedperson.forelderBarnRelasjon
-                .filter { it.relatertPersonsRolle == FORELDERBARNRELASJONROLLE.BARN }
-                .mapNotNull { it.relatertPersonsIdent }
+            .filter { it.relatertPersonsRolle == FORELDERBARNRELASJONROLLE.BARN }
+            .mapNotNull { it.relatertPersonsIdent }
         val sivilstandIdenter = hovedperson.sivilstand.mapNotNull { it.relatertVedSivilstand }.distinct()
         val fullmaktIdenter = hovedperson.fullmakt.map { it.motpartsPersonident }.distinct()
 
@@ -83,22 +87,26 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
         val barnOpplysninger = tilknyttedeIdenterData.filter { (ident, _) -> barnIdenter.contains(ident) }
         val barnsForeldrer = hentBarnsForeldrer(barnOpplysninger, personIdent, tema)
 
-        return PersonMedRelasjoner(personIdent = personIdent,
-                                   adressebeskyttelse = hovedperson.gradering(),
-                                   sivilstand = mapPersonMedRelasjoner(sivilstandIdenter, tilknyttedeIdenterData),
-                                   fullmakt = mapPersonMedRelasjoner(fullmaktIdenter, tilknyttedeIdenterData),
-                                   barn = mapPersonMedRelasjoner(barnIdenter, tilknyttedeIdenterData),
-                                   barnsForeldrer = barnsForeldrer)
+        return PersonMedRelasjoner(
+            personIdent = personIdent,
+            adressebeskyttelse = hovedperson.gradering(),
+            sivilstand = mapPersonMedRelasjoner(sivilstandIdenter, tilknyttedeIdenterData),
+            fullmakt = mapPersonMedRelasjoner(fullmaktIdenter, tilknyttedeIdenterData),
+            barn = mapPersonMedRelasjoner(barnIdenter, tilknyttedeIdenterData),
+            barnsForeldrer = barnsForeldrer
+        )
     }
 
     fun hentAdressebeskyttelse(personIdent: String, tema: Tema): Adressebeskyttelse {
         return pdlRestClient.hentAdressebeskyttelse(personIdent, tema).adressebeskyttelse.firstOrNull()
-               ?: Adressebeskyttelse(gradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
+            ?: Adressebeskyttelse(gradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
     }
 
-    private fun hentBarnsForeldrer(barnOpplysninger: Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>,
-                                   personIdent: String,
-                                   tema: Tema): List<PersonMedAdresseBeskyttelse> {
+    private fun hentBarnsForeldrer(
+        barnOpplysninger: Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>,
+        personIdent: String,
+        tema: Tema
+    ): List<PersonMedAdresseBeskyttelse> {
         val barnsForeldrerIdenter = barnOpplysninger.flatMap { (_, personMedRelasjoner) ->
             personMedRelasjoner.forelderBarnRelasjon.filter { it.relatertPersonsRolle != FORELDERBARNRELASJONROLLE.BARN }
         }.filter { it.relatertPersonsIdent != personIdent }.mapNotNull { it.relatertPersonsIdent }.distinct()
@@ -107,19 +115,25 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
         return mapPersonMedRelasjoner(barnsForeldrerIdenter, barnsForeldrerOpplysninger)
     }
 
-    private fun mapPersonMedRelasjoner(sivilstandIdenter: List<String>,
-                                       tilknyttedeIdenterData: Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>) =
-            sivilstandIdenter.map { PersonMedAdresseBeskyttelse(it, tilknyttedeIdenterData.getOrThrow(it).gradering()) }
+    private fun mapPersonMedRelasjoner(
+        sivilstandIdenter: List<String>,
+        tilknyttedeIdenterData: Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>
+    ) =
+        sivilstandIdenter.map { PersonMedAdresseBeskyttelse(it, tilknyttedeIdenterData.getOrThrow(it).gradering()) }
 
     private fun PdlPersonMedRelasjonerOgAdressebeskyttelse.gradering() = this.adressebeskyttelse.firstOrNull()?.gradering
 
     private fun Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>.getOrThrow(ident: String) =
-            this[ident] ?: throw OppslagException("Finner ikke $ident i response fra pdl",
-                                                  "pdl",
-                                                  OppslagException.Level.MEDIUM)
+        this[ident] ?: throw OppslagException(
+            "Finner ikke $ident i response fra pdl",
+            "pdl",
+            OppslagException.Level.MEDIUM
+        )
 
-    private fun hentPersonMedRelasjonerOgAdressebeskyttelse(personIdenter: List<String>,
-                                                            tema: Tema): Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse> {
+    private fun hentPersonMedRelasjonerOgAdressebeskyttelse(
+        personIdenter: List<String>,
+        tema: Tema
+    ): Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse> {
         if (personIdenter.isEmpty()) return emptyMap()
         return pdlClientCredentialRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(personIdenter, tema)
     }
@@ -129,4 +143,3 @@ class PersonopplysningerService(private val personSoapClient: PersonSoapClient,
         const val PERSON = "PERSON"
     }
 }
-

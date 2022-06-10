@@ -20,4 +20,3 @@ object BarnetilsynVedtaksbrevMetadata : Dokumentmetadata {
     override val brevkode: String = "ENF_BREV_BARNETILSYN_VEDTAK"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.VB
 }
-

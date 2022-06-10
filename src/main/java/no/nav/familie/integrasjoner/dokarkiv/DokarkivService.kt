@@ -32,11 +32,13 @@ import no.nav.familie.kontrakter.felles.dokarkiv.ArkiverDokumentRequest as Depre
 import no.nav.familie.kontrakter.felles.dokarkiv.Dokument as DeprecatedDokument
 
 @Service
-class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
-                      private val personopplysningerService: PersonopplysningerService,
-                      private val dokarkivMetadata: DokarkivMetadata,
-                      private val dokarkivLogiskVedleggRestClient: DokarkivLogiskVedleggRestClient,
-                      private val førstesideGeneratorService: FørstesideGeneratorService) {
+class DokarkivService(
+    private val dokarkivRestClient: DokarkivRestClient,
+    private val personopplysningerService: PersonopplysningerService,
+    private val dokarkivMetadata: DokarkivMetadata,
+    private val dokarkivLogiskVedleggRestClient: DokarkivLogiskVedleggRestClient,
+    private val førstesideGeneratorService: FørstesideGeneratorService
+) {
 
     fun ferdistillJournalpost(journalpost: String, journalførendeEnhet: String, navIdent: String? = null) {
         dokarkivRestClient.ferdigstillJournalpost(journalpost, journalførendeEnhet, navIdent)
@@ -48,8 +50,10 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
         return mapTilArkiverDokumentResponse(response)
     }
 
-    fun lagJournalpostV2(deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest,
-                         navIdent: String? = null): ArkiverDokumentResponse {
+    fun lagJournalpostV2(
+        deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest,
+        navIdent: String? = null
+    ): ArkiverDokumentResponse {
         val request = mapTilOpprettJournalpostRequest(deprecatedArkiverDokumentRequest)
         val response = dokarkivRestClient.lagJournalpost(request, deprecatedArkiverDokumentRequest.forsøkFerdigstill, navIdent)
         return mapTilArkiverDokumentResponse(response)
@@ -77,78 +81,92 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
             Sak(fagsakId = it, sakstype = "FAGSAK", fagsaksystem = metadata.fagsakSystem)
         }
 
-        //førsteside
+        // førsteside
         arkiverDokumentRequest.førsteside?.also {
             val bytes = førstesideGeneratorService.genererForside(it, arkiverDokumentRequest.fnr)
-            dokumenter += ArkivDokument(brevkode = metadata.brevkode,
-                                        dokumentKategori = metadata.dokumentKategori,
-                                        tittel = arkiverDokumentRequest.førsteside?.overskriftstittel,
-                                        dokumentvarianter = listOf(Dokumentvariant(filtype = "PDFA",
-                                                                                   variantformat = "ARKIV",
-                                                                                   fysiskDokument = bytes,
-                                                                                   filnavn = "førsteside.pdf")))
+            dokumenter += ArkivDokument(
+                brevkode = metadata.brevkode,
+                dokumentKategori = metadata.dokumentKategori,
+                tittel = arkiverDokumentRequest.førsteside?.overskriftstittel,
+                dokumentvarianter = listOf(
+                    Dokumentvariant(
+                        filtype = "PDFA",
+                        variantformat = "ARKIV",
+                        fysiskDokument = bytes,
+                        filnavn = "førsteside.pdf"
+                    )
+                )
+            )
         }
 
         LOG.info("Journalfører fagsak ${sak?.fagsakId} med tittel ${hoveddokument.tittel ?: metadata.tittel}")
         val eksternReferanseId = arkiverDokumentRequest.eksternReferanseId ?: MDCOperations.getCallId()
-        return OpprettJournalpostRequest(journalpostType = metadata.journalpostType,
-                                         behandlingstema = metadata.behandlingstema?.value,
-                                         kanal = metadata.kanal,
-                                         tittel = hoveddokument.tittel ?: metadata.tittel,
-                                         tema = metadata.tema.name,
-                                         avsenderMottaker = avsenderMottaker,
-                                         bruker = dokarkivBruker,
-                                         dokumenter = dokumenter.toList(),
-                                         eksternReferanseId = eksternReferanseId,
-                                         journalfoerendeEnhet = arkiverDokumentRequest.journalførendeEnhet,
-                                         sak = sak)
+        return OpprettJournalpostRequest(
+            journalpostType = metadata.journalpostType,
+            behandlingstema = metadata.behandlingstema?.value,
+            kanal = metadata.kanal,
+            tittel = hoveddokument.tittel ?: metadata.tittel,
+            tema = metadata.tema.name,
+            avsenderMottaker = avsenderMottaker,
+            bruker = dokarkivBruker,
+            dokumenter = dokumenter.toList(),
+            eksternReferanseId = eksternReferanseId,
+            journalfoerendeEnhet = arkiverDokumentRequest.journalførendeEnhet,
+            sak = sak
+        )
     }
 
-    private fun mapTilOpprettJournalpostRequest(arkiverDokumentRequest: DeprecatedArkiverDokumentRequest2)
-            : OpprettJournalpostRequest {
+    private fun mapTilOpprettJournalpostRequest(arkiverDokumentRequest: DeprecatedArkiverDokumentRequest2): OpprettJournalpostRequest {
         val fnr = arkiverDokumentRequest.fnr
 
         val metadata = dokarkivMetadata.getMetadata(arkiverDokumentRequest.hoveddokumentvarianter[0])
         val hoveddokument = mapDeprecatedHoveddokument(arkiverDokumentRequest.hoveddokumentvarianter)
         val vedleggsdokumenter = arkiverDokumentRequest.vedleggsdokumenter.map(this::mapTilArkivdokument).toMutableList()
         val jpsak: Sak? = if (arkiverDokumentRequest.fagsakId != null)
-            Sak(fagsakId = arkiverDokumentRequest.fagsakId,
+            Sak(
+                fagsakId = arkiverDokumentRequest.fagsakId,
                 sakstype = "FAGSAK",
-                fagsaksystem = metadata.fagsakSystem) else null
+                fagsaksystem = metadata.fagsakSystem
+            ) else null
 
         val navn = hentNavnForFnr(fnr = arkiverDokumentRequest.fnr, behandlingstema = metadata.tema)
 
-        //førsteside
+        // førsteside
         val førsteside: ByteArray? = if (arkiverDokumentRequest.førsteside != null)
             førstesideGeneratorService.genererForside(arkiverDokumentRequest.førsteside!!, arkiverDokumentRequest.fnr) else null
 
         if (førsteside != null) {
-            vedleggsdokumenter += ArkivDokument(brevkode = metadata.brevkode,
-                                                dokumentKategori = metadata.dokumentKategori,
-                                                tittel = arkiverDokumentRequest.førsteside?.overskriftsTittel,
-                                                dokumentvarianter = listOf(Dokumentvariant(filtype = "PDFA",
-                                                                                           variantformat = "ARKIV",
-                                                                                           fysiskDokument = førsteside,
-                                                                                           filnavn = "førsteside.pdf")))
+            vedleggsdokumenter += ArkivDokument(
+                brevkode = metadata.brevkode,
+                dokumentKategori = metadata.dokumentKategori,
+                tittel = arkiverDokumentRequest.førsteside?.overskriftsTittel,
+                dokumentvarianter = listOf(
+                    Dokumentvariant(
+                        filtype = "PDFA",
+                        variantformat = "ARKIV",
+                        fysiskDokument = førsteside,
+                        filnavn = "førsteside.pdf"
+                    )
+                )
+            )
         }
 
-        return OpprettJournalpostRequest(journalpostType = metadata.journalpostType,
-                                         behandlingstema = metadata.behandlingstema?.value,
-                                         kanal = metadata.kanal,
-                                         tittel = metadata.tittel,
-                                         tema = metadata.tema.name,
-                                         avsenderMottaker = AvsenderMottaker(fnr, BrukerIdType.FNR, navn),
-                                         bruker = DokarkivBruker(BrukerIdType.FNR, fnr),
-                                         dokumenter = listOf(hoveddokument) + vedleggsdokumenter,
-                                         eksternReferanseId = MDCOperations.getCallId(),
-                                         journalfoerendeEnhet = arkiverDokumentRequest.journalførendeEnhet,
-                                         sak = jpsak)
-
+        return OpprettJournalpostRequest(
+            journalpostType = metadata.journalpostType,
+            behandlingstema = metadata.behandlingstema?.value,
+            kanal = metadata.kanal,
+            tittel = metadata.tittel,
+            tema = metadata.tema.name,
+            avsenderMottaker = AvsenderMottaker(fnr, BrukerIdType.FNR, navn),
+            bruker = DokarkivBruker(BrukerIdType.FNR, fnr),
+            dokumenter = listOf(hoveddokument) + vedleggsdokumenter,
+            eksternReferanseId = MDCOperations.getCallId(),
+            journalfoerendeEnhet = arkiverDokumentRequest.journalførendeEnhet,
+            sak = jpsak
+        )
     }
 
-    private fun mapTilOpprettJournalpostRequest(deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest)
-            : OpprettJournalpostRequest {
-
+    private fun mapTilOpprettJournalpostRequest(deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest): OpprettJournalpostRequest {
 
         val metadata = dokarkivMetadata.getMetadata(deprecatedArkiverDokumentRequest.dokumenter[0])
 
@@ -157,27 +175,32 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
 
         val arkivdokumenter = deprecatedArkiverDokumentRequest.dokumenter.map(this::mapTilArkivdokument)
         val jpsak: Sak? = if (deprecatedArkiverDokumentRequest.fagsakId != null)
-            Sak(fagsakId = deprecatedArkiverDokumentRequest.fagsakId,
+            Sak(
+                fagsakId = deprecatedArkiverDokumentRequest.fagsakId,
                 sakstype = "FAGSAK",
-                fagsaksystem = metadata.fagsakSystem) else null
+                fagsaksystem = metadata.fagsakSystem
+            ) else null
 
-        return OpprettJournalpostRequest(journalpostType = metadata.journalpostType,
-                                         behandlingstema = metadata.behandlingstema?.value,
-                                         kanal = metadata.kanal,
-                                         tittel = metadata.tittel,
-                                         tema = metadata.tema.name,
-                                         avsenderMottaker = AvsenderMottaker(fnr, BrukerIdType.FNR, navn),
-                                         bruker = DokarkivBruker(BrukerIdType.FNR, fnr),
-                                         dokumenter = arkivdokumenter,
-                                         eksternReferanseId = MDCOperations.getCallId(),
-                                         journalfoerendeEnhet = deprecatedArkiverDokumentRequest.journalførendeEnhet,
-                                         sak = jpsak
+        return OpprettJournalpostRequest(
+            journalpostType = metadata.journalpostType,
+            behandlingstema = metadata.behandlingstema?.value,
+            kanal = metadata.kanal,
+            tittel = metadata.tittel,
+            tema = metadata.tema.name,
+            avsenderMottaker = AvsenderMottaker(fnr, BrukerIdType.FNR, navn),
+            bruker = DokarkivBruker(BrukerIdType.FNR, fnr),
+            dokumenter = arkivdokumenter,
+            eksternReferanseId = MDCOperations.getCallId(),
+            journalfoerendeEnhet = deprecatedArkiverDokumentRequest.journalførendeEnhet,
+            sak = jpsak
         )
     }
 
-    fun oppdaterJournalpost(request: OppdaterJournalpostRequest,
-                            journalpostId: String,
-                            navIdent: String? = null): OppdaterJournalpostResponse {
+    fun oppdaterJournalpost(
+        request: OppdaterJournalpostRequest,
+        journalpostId: String,
+        navIdent: String? = null
+    ): OppdaterJournalpostResponse {
         return dokarkivRestClient.oppdaterJournalpost(supplerDefaultVerdier(request), journalpostId, navIdent)
     }
 
@@ -197,12 +220,12 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
             Dokumentvariant(it.filtype.name, variantFormat, it.dokument, it.filnavn)
         }
 
-        return ArkivDokument(brevkode = metadata.brevkode,
-                             dokumentKategori = metadata.dokumentKategori,
-                             tittel = metadata.tittel ?: dokument.tittel,
-                             dokumentvarianter = dokumentvarianter)
-
-
+        return ArkivDokument(
+            brevkode = metadata.brevkode,
+            dokumentKategori = metadata.dokumentKategori,
+            tittel = metadata.tittel ?: dokument.tittel,
+            dokumentvarianter = dokumentvarianter
+        )
     }
 
     private fun mapDeprecatedHoveddokument(dokumenter: List<DeprecatedDokument>): ArkivDokument {
@@ -213,60 +236,78 @@ class DokarkivService(private val dokarkivRestClient: DokarkivRestClient,
             Dokumentvariant(it.filType.name, variantFormat, it.dokument, it.filnavn)
         }
 
-        return ArkivDokument(brevkode = metadata.brevkode,
-                             dokumentKategori = metadata.dokumentKategori,
-                             tittel = metadata.tittel ?: dokument.tittel,
-                             dokumentvarianter = dokumentvarianter)
+        return ArkivDokument(
+            brevkode = metadata.brevkode,
+            dokumentKategori = metadata.dokumentKategori,
+            tittel = metadata.tittel ?: dokument.tittel,
+            dokumentvarianter = dokumentvarianter
+        )
     }
 
     private fun hentVariantformat(dokument: DeprecatedDokument): String {
         return if (dokument.filType == FilType.PDFA) {
-            "ARKIV" //ustrukturert dokumentDto
+            "ARKIV" // ustrukturert dokumentDto
         } else {
-            "ORIGINAL" //strukturert dokumentDto
+            "ORIGINAL" // strukturert dokumentDto
         }
     }
 
     private fun hentVariantformat(dokument: Dokument): String {
         return if (dokument.filtype == Filtype.PDFA) {
-            "ARKIV" //ustrukturert dokumentDto
+            "ARKIV" // ustrukturert dokumentDto
         } else {
-            "ORIGINAL" //strukturert dokumentDto
+            "ORIGINAL" // strukturert dokumentDto
         }
     }
 
     private fun mapTilArkivdokument(dokument: DeprecatedDokument): ArkivDokument {
         val metadata = dokarkivMetadata.getMetadata(dokument)
         val variantFormat: String = hentVariantformat(dokument)
-        return ArkivDokument(brevkode = metadata.brevkode,
-                             dokumentKategori = metadata.dokumentKategori,
-                             tittel = metadata.tittel ?: dokument.tittel,
-                             dokumentvarianter = listOf(Dokumentvariant(dokument.filType.name,
-                                                                        variantFormat,
-                                                                        dokument.dokument,
-                                                                        dokument.filnavn)))
+        return ArkivDokument(
+            brevkode = metadata.brevkode,
+            dokumentKategori = metadata.dokumentKategori,
+            tittel = metadata.tittel ?: dokument.tittel,
+            dokumentvarianter = listOf(
+                Dokumentvariant(
+                    dokument.filType.name,
+                    variantFormat,
+                    dokument.dokument,
+                    dokument.filnavn
+                )
+            )
+        )
     }
 
     private fun mapTilArkivdokument(dokument: Dokument): ArkivDokument {
         val metadata = dokarkivMetadata.getMetadata(dokument)
         val variantFormat: String = hentVariantformat(dokument)
-        return ArkivDokument(brevkode = metadata.brevkode,
-                             dokumentKategori = metadata.dokumentKategori,
-                             tittel = metadata.tittel ?: dokument.tittel,
-                             dokumentvarianter = listOf(Dokumentvariant(dokument.filtype.name,
-                                                                        variantFormat,
-                                                                        dokument.dokument,
-                                                                        dokument.filnavn)))
+        return ArkivDokument(
+            brevkode = metadata.brevkode,
+            dokumentKategori = metadata.dokumentKategori,
+            tittel = metadata.tittel ?: dokument.tittel,
+            dokumentvarianter = listOf(
+                Dokumentvariant(
+                    dokument.filtype.name,
+                    variantFormat,
+                    dokument.dokument,
+                    dokument.filnavn
+                )
+            )
+        )
     }
 
     private fun mapTilArkiverDokumentResponse(response: OpprettJournalpostResponse): ArkiverDokumentResponse {
-        return ArkiverDokumentResponse(response.journalpostId!!,
-                                       response.journalpostferdigstilt ?: false,
-                                       response.dokumenter)
+        return ArkiverDokumentResponse(
+            response.journalpostId!!,
+            response.journalpostferdigstilt ?: false,
+            response.dokumenter
+        )
     }
 
-    fun lagNyttLogiskVedlegg(dokumentInfoId: String,
-                             request: LogiskVedleggRequest): LogiskVedleggResponse {
+    fun lagNyttLogiskVedlegg(
+        dokumentInfoId: String,
+        request: LogiskVedleggRequest
+    ): LogiskVedleggResponse {
         return dokarkivLogiskVedleggRestClient.opprettLogiskVedlegg(dokumentInfoId, request)
     }
 

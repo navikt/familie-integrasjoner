@@ -39,62 +39,86 @@ class PersonopplysningerController(private val personopplysningerService: Person
     @ExceptionHandler(HttpClientErrorException.NotFound::class)
     fun handleRestClientResponseException(e: HttpClientErrorException.NotFound): ResponseEntity<Ressurs<Any>> {
         return ResponseEntity.status(e.rawStatusCode)
-                .body(failure("Feil mot personopplysning. ${e.rawStatusCode} Message=${e.message}", null))
+            .body(failure("Feil mot personopplysning. ${e.rawStatusCode} Message=${e.message}", null))
     }
 
     @ExceptionHandler(Forbidden::class)
     fun handleRestClientResponseException(e: Forbidden): ResponseEntity<Ressurs<Any>> {
         return ResponseEntity.status(e.rawStatusCode)
-                .body(ikkeTilgang("Ikke tilgang mot personopplysning ${e.message}"))
+            .body(ikkeTilgang("Ikke tilgang mot personopplysning ${e.message}"))
     }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v2/historikk"])
     @Deprecated("Tps er markert for utfasing. PDL er master.")
-    fun historikk(@RequestBody(required = true) ident: Ident,
-                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) fomDato: LocalDate,
-                  @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) tomDato: LocalDate)
-            : ResponseEntity<Ressurs<PersonhistorikkInfo>> {
-        return ResponseEntity.ok().body(success(personopplysningerService.hentHistorikkFor(ident.ident, fomDato, tomDato),
-                                                "Hent personhistorikk OK"))
+    fun historikk(
+        @RequestBody(required = true) ident: Ident,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) fomDato: LocalDate,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) tomDato: LocalDate
+    ): ResponseEntity<Ressurs<PersonhistorikkInfo>> {
+        return ResponseEntity.ok().body(
+            success(
+                personopplysningerService.hentHistorikkFor(ident.ident, fomDato, tomDato),
+                "Hent personhistorikk OK"
+            )
+        )
     }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v2/info"])
     @Deprecated("Tps er markert for utfasing. PDL er master.")
     fun personInfo(@RequestBody(required = true) ident: Ident): ResponseEntity<Ressurs<Personinfo>> {
-        return ResponseEntity.ok().body(success(personopplysningerService.hentPersoninfoFor(ident.ident),
-                                                "Hent personinfo OK"))
+        return ResponseEntity.ok().body(
+            success(
+                personopplysningerService.hentPersoninfoFor(ident.ident),
+                "Hent personinfo OK"
+            )
+        )
     }
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/info/{tema}"])
-    fun personInfo(@RequestHeader(name = "Nav-Personident") personIdent: String,
-                   @PathVariable tema: Tema): ResponseEntity<Ressurs<Person>> {
-        return ResponseEntity.ok().body(success(
+    fun personInfo(
+        @RequestHeader(name = "Nav-Personident") personIdent: String,
+        @PathVariable tema: Tema
+    ): ResponseEntity<Ressurs<Person>> {
+        return ResponseEntity.ok().body(
+            success(
                 personopplysningerService.hentPersoninfo(personIdent, tema, PersonInfoQuery.MED_RELASJONER),
-                "Hent personinfo OK"))
+                "Hent personinfo OK"
+            )
+        )
     }
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/infoEnkel/{tema}"])
-    fun personInfoEnkel(@RequestHeader(name = "Nav-Personident") personIdent: String,
-                        @PathVariable tema: Tema): ResponseEntity<Ressurs<Person>> {
-        return ResponseEntity.ok().body(success(
+    fun personInfoEnkel(
+        @RequestHeader(name = "Nav-Personident") personIdent: String,
+        @PathVariable tema: Tema
+    ): ResponseEntity<Ressurs<Person>> {
+        return ResponseEntity.ok().body(
+            success(
                 personopplysningerService.hentPersoninfo(personIdent, tema, PersonInfoQuery.ENKEL),
-                "Hent personinfo OK"))
+                "Hent personinfo OK"
+            )
+        )
     }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/identer/{tema}"])
-    fun hentIdenter(@RequestBody(required = true) ident: Ident,
-                    @PathVariable tema: Tema,
-                    @RequestParam(value = "historikk",
-                                  required = false,
-                                  defaultValue = "false") medHistorikk: Boolean): Ressurs<FinnPersonidenterResponse> {
+    fun hentIdenter(
+        @RequestBody(required = true) ident: Ident,
+        @PathVariable tema: Tema,
+        @RequestParam(
+            value = "historikk",
+            required = false,
+            defaultValue = "false"
+        ) medHistorikk: Boolean
+    ): Ressurs<FinnPersonidenterResponse> {
         return success(personopplysningerService.hentIdenter(ident.ident, tema, medHistorikk))
     }
 
-
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["strengeste-adressebeskyttelse-for-person-med-relasjoner"])
-    fun hentStrengesteAdressebeskyttelseForPersonMedRelasjoner(@RequestBody personIdent: PersonIdent,
-                                                               @RequestHeader(name = "Nav-Tema")
-                                                               tema: Tema): Ressurs<ADRESSEBESKYTTELSEGRADERING> {
+    fun hentStrengesteAdressebeskyttelseForPersonMedRelasjoner(
+        @RequestBody personIdent: PersonIdent,
+        @RequestHeader(name = "Nav-Tema")
+        tema: Tema
+    ): Ressurs<ADRESSEBESKYTTELSEGRADERING> {
         val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent.ident, tema)
         return success(TilgangskontrollUtil.høyesteGraderingen(personMedRelasjoner) ?: ADRESSEBESKYTTELSEGRADERING.UGRADERT)
     }

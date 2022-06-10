@@ -9,9 +9,11 @@ import org.springframework.web.client.RestOperations
 import java.net.URI
 
 @Component
-class EgenAnsattRestClient(@Value("\${EGEN_ANSATT_URL}") private val uri: URI,
-                           @Qualifier("noAuthorize") private val restTemplate: RestOperations)
-    : AbstractPingableRestClient(restTemplate, "egenansatt") {
+class EgenAnsattRestClient(
+    @Value("\${EGEN_ANSATT_URL}") private val uri: URI,
+    @Qualifier("noAuthorize") private val restTemplate: RestOperations
+) :
+    AbstractPingableRestClient(restTemplate, "egenansatt") {
 
     override val pingUri: URI = UriUtil.uri(uri, PATH_PING)
     private val egenAnsattUri: URI = UriUtil.uri(uri, "skjermet")

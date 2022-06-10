@@ -5,4 +5,4 @@ import org.springframework.boot.context.properties.ConstructorBinding
 
 @ConfigurationProperties
 @ConstructorBinding
-data class KodeverkConfig(val KODEVERK_URL: String) 
+data class KodeverkConfig(val KODEVERK_URL: String)

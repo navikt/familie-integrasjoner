@@ -17,7 +17,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-
 class ArbeidsfordelingClientTest {
 
     private val TEMA = Tema.ENF
@@ -28,13 +27,11 @@ class ArbeidsfordelingClientTest {
     @MockK
     lateinit var service: ArbeidsfordelingV1
 
-
     @InjectMockKs
     lateinit var client: ArbeidsfordelingClient
 
     @BeforeEach
     fun setUp() = MockKAnnotations.init(this)
-
 
     @Test
     fun `skal returnere enhet ved søk på tema`() {
@@ -44,10 +41,12 @@ class ArbeidsfordelingClientTest {
             service.finnBehandlendeEnhetListe(capture(requestSlot))
         } returns FinnBehandlendeEnhetListeResponse().apply {
             behandlendeEnhetListe.apply {
-                add(Organisasjonsenhet().apply {
-                    enhetId = ENHET_ID
-                    enhetNavn = "Test"
-                })
+                add(
+                    Organisasjonsenhet().apply {
+                        enhetId = ENHET_ID
+                        enhetNavn = "Test"
+                    }
+                )
             }
         }
 
@@ -66,10 +65,12 @@ class ArbeidsfordelingClientTest {
             service.finnBehandlendeEnhetListe(capture(requestSlot))
         } returns FinnBehandlendeEnhetListeResponse().apply {
             behandlendeEnhetListe.apply {
-                add(Organisasjonsenhet().apply {
-                    enhetId = ENHET_ID
-                    enhetNavn = "Test"
-                })
+                add(
+                    Organisasjonsenhet().apply {
+                        enhetId = ENHET_ID
+                        enhetNavn = "Test"
+                    }
+                )
             }
         }
 

@@ -18,7 +18,7 @@ class InfotrygdTestConfig {
         val infotrygdServiceMock: InfotrygdRestClient = mockk(relaxed = true)
         val aktivKontantstøtteInfo = AktivKontantstøtteInfo(false)
         every { infotrygdServiceMock.hentAktivKontantstøtteFor(any()) }
-                .returns(aktivKontantstøtteInfo)
+            .returns(aktivKontantstøtteInfo)
         return infotrygdServiceMock
     }
 }

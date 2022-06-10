@@ -23,13 +23,19 @@ class PdlTestConfig {
 
         every {
             klient.hentPerson(any(), any(), any())
-        } returns Person(fødselsdato = "1980-05-12",
-                         navn = "Kari Normann",
-                         kjønn = "KVINNE",
-                         familierelasjoner = setOf(Familierelasjon(personIdent = Personident(id = "12345678910"),
-                                                                   relasjonsrolle = "BARN")),
-                         adressebeskyttelseGradering = null,
-                         sivilstand = SIVILSTAND.UGIFT)
+        } returns Person(
+            fødselsdato = "1980-05-12",
+            navn = "Kari Normann",
+            kjønn = "KVINNE",
+            familierelasjoner = setOf(
+                Familierelasjon(
+                    personIdent = Personident(id = "12345678910"),
+                    relasjonsrolle = "BARN"
+                )
+            ),
+            adressebeskyttelseGradering = null,
+            sivilstand = SIVILSTAND.UGIFT
+        )
         return klient
     }
 }

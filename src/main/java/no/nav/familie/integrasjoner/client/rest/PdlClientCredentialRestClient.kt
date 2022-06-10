@@ -19,19 +19,27 @@ import java.net.URI
  * denne burde kun brukes for oppslag, og ikke for utlevering av data fra tjenesten
  */
 @Service
-class PdlClientCredentialRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
-                                    @Qualifier("clientCredential") private val restTemplate: RestOperations)
-    : AbstractRestClient(restTemplate, "pdl.personinfo.cc") {
+class PdlClientCredentialRestClient(
+    @Value("\${PDL_URL}") pdlBaseUrl: URI,
+    @Qualifier("clientCredential") private val restTemplate: RestOperations
+) :
+    AbstractRestClient(restTemplate, "pdl.personinfo.cc") {
 
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
 
-    fun hentPersonMedRelasjonerOgAdressebeskyttelse(identer: List<String>,
-                                                    tema: Tema): Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse> {
-        val request = PdlPersonBolkRequest(variables = PdlPersonBolkRequestVariables(identer),
-                                           query = HENT_PERSON_RELASJONER_ADRESSEBESKYTTELSE)
-        val response = postForEntity<PdlBolkResponse<PdlPersonMedRelasjonerOgAdressebeskyttelse>>(pdlUri,
-                                                                                                  request,
-                                                                                                  pdlHttpHeaders(tema))
+    fun hentPersonMedRelasjonerOgAdressebeskyttelse(
+        identer: List<String>,
+        tema: Tema
+    ): Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse> {
+        val request = PdlPersonBolkRequest(
+            variables = PdlPersonBolkRequestVariables(identer),
+            query = HENT_PERSON_RELASJONER_ADRESSEBESKYTTELSE
+        )
+        val response = postForEntity<PdlBolkResponse<PdlPersonMedRelasjonerOgAdressebeskyttelse>>(
+            pdlUri,
+            request,
+            pdlHttpHeaders(tema)
+        )
         return feilsjekkOgReturnerData(response)
     }
 
@@ -55,4 +63,3 @@ class PdlClientCredentialRestClient(@Value("\${PDL_URL}") pdlBaseUrl: URI,
         private val HENT_PERSON_RELASJONER_ADRESSEBESKYTTELSE = hentPdlGraphqlQuery("hentpersoner-relasjoner-adressebeskyttelse")
     }
 }
-

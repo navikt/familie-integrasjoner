@@ -21,7 +21,7 @@ import java.io.File
 class PdlGraphqlTest {
 
     private val mapper = ObjectMapper()
-            .registerKotlinModule()
+        .registerKotlinModule()
 
     @Test
     fun testDeserialization() {
@@ -86,20 +86,22 @@ class PdlGraphqlTest {
     @Test
     fun testFulltNavn() {
         assertThat(PdlNavn(fornavn = "For", mellomnavn = "Mellom", etternavn = "Etter").fulltNavn())
-                .isEqualTo("For Mellom Etter")
+            .isEqualTo("For Mellom Etter")
         assertThat(PdlNavn(fornavn = "For", etternavn = "Etter").fulltNavn())
-                .isEqualTo("For Etter")
+            .isEqualTo("For Etter")
     }
 
     @Test
     fun testGeografiskTilknytningMapper() {
-        val pdlDto = GeografiskTilknytningDto(gtType = GeografiskTilknytningType.KOMMUNE,
-                                              gtKommune = "0301",
-                                              gtBydel = null,
-                                              gtLand = null)
+        val pdlDto = GeografiskTilknytningDto(
+            gtType = GeografiskTilknytningType.KOMMUNE,
+            gtKommune = "0301",
+            gtBydel = null,
+            gtLand = null
+        )
 
         val resp: PdlResponse<PdlHentGeografiskTilknytning> =
-                mapper.readValue(File(getFile("pdl/pdlGeografiskTilknytningResponse.json")))
+            mapper.readValue(File(getFile("pdl/pdlGeografiskTilknytningResponse.json")))
 
         assertThat(resp.harFeil()).isFalse
         assertThat(resp.data.hentGeografiskTilknytning).usingRecursiveComparison().isEqualTo(pdlDto)
@@ -108,5 +110,4 @@ class PdlGraphqlTest {
     private fun getFile(name: String): String {
         return javaClass.classLoader?.getResource(name)?.file ?: error("Testkonfigurasjon feil")
     }
-
 }

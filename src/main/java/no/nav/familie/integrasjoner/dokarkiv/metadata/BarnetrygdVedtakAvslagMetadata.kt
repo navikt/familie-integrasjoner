@@ -19,5 +19,4 @@ object BarnetrygdVedtakAvslagMetadata : Dokumentmetadata {
     override val tittel: String = "Vedtak om avslag - barnetrygd"
     override val brevkode: String = "BAA1"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.VB
-
 }

@@ -2,7 +2,6 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
-import no.nav.familie.integrasjoner.aktør.domene.Aktør
 import no.nav.familie.integrasjoner.aktør.internal.AktørResponse
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -13,15 +12,17 @@ import java.net.URI
 import javax.ws.rs.core.MediaType
 
 @Component
-class AktørregisterRestClient(@Value("\${AKTOERID_URL}")
-                              private val aktørRegisterUrl: URI,
-                              @Qualifier("sts") restOperations: RestOperations)
-    : AbstractPingableRestClient(restOperations, "aktoer") {
+class AktørregisterRestClient(
+    @Value("\${AKTOERID_URL}")
+    private val aktørRegisterUrl: URI,
+    @Qualifier("sts") restOperations: RestOperations
+) :
+    AbstractPingableRestClient(restOperations, "aktoer") {
 
     override val pingUri: URI = UriUtil.uri(aktørRegisterUrl, PATH_PING)
     private val hentAktørIdUrl = UriUtil.uri(aktørRegisterUrl, PATH_HENT, String.format(QUERY_PARAMS, AKTOERID_IDENTGRUPPE))
     private val hentPersonIdentUrl =
-            UriUtil.uri(aktørRegisterUrl, PATH_HENT, String.format(QUERY_PARAMS, PERSONIDENT_IDENTGRUPPE))
+        UriUtil.uri(aktørRegisterUrl, PATH_HENT, String.format(QUERY_PARAMS, PERSONIDENT_IDENTGRUPPE))
 
     fun hentAktørId(personIdent: String): AktørResponse {
         return getForEntity(hentAktørIdUrl, httpHeaders(personIdent))

@@ -23,15 +23,19 @@ class MedlemskapTestConfig {
     @Throws(Exception::class) fun medlClientMock(): MedlRestClient {
         val medlMock: MedlRestClient = mockk(relaxed = true)
         every { medlMock.hentMedlemskapsUnntakResponse(any()) }
-                .returns(medlemskapResponse())
+            .returns(medlemskapResponse())
         return medlMock
     }
 
     private fun medlemskapResponse(): List<MedlemskapsunntakResponse> {
         val medlemskapResponseBody = File(file)
         return try {
-            listOf(*mapper.readValue(medlemskapResponseBody,
-                                     Array<MedlemskapsunntakResponse>::class.java))
+            listOf(
+                *mapper.readValue(
+                    medlemskapResponseBody,
+                    Array<MedlemskapsunntakResponse>::class.java
+                )
+            )
         } catch (e: IOException) {
             throw RuntimeException("Feil ved mapping av medl2-mock", e)
         }
@@ -42,7 +46,7 @@ class MedlemskapTestConfig {
     companion object {
 
         private val mapper = ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .registerKotlinModule()
-                .registerModule(JavaTimeModule())
+            .registerKotlinModule()
+            .registerModule(JavaTimeModule())
     }
 }

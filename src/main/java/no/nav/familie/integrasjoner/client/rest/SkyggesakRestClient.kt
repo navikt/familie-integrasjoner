@@ -18,9 +18,11 @@ import org.springframework.web.client.RestOperations
 import java.net.URI
 
 @Component
-class SkyggesakRestClient(@Value("\${SKYGGE_SAK_URL}") private val skyggesakUrl: String,
-                          @Qualifier("sts") private val restTemplate: RestOperations)
-    : AbstractPingableRestClient(restTemplate, "skyggesak.sak") {
+class SkyggesakRestClient(
+    @Value("\${SKYGGE_SAK_URL}") private val skyggesakUrl: String,
+    @Qualifier("sts") private val restTemplate: RestOperations
+) :
+    AbstractPingableRestClient(restTemplate, "skyggesak.sak") {
 
     override val pingUri: URI = URI.create("$skyggesakUrl/internal/alive")
     private val sakUri = URI.create("$skyggesakUrl/api/v1/saker")
@@ -37,11 +39,13 @@ class SkyggesakRestClient(@Value("\${SKYGGE_SAK_URL}") private val skyggesakUrl:
             if (e is HttpStatusCodeException && e.responseBodyAsString.isNotEmpty()) {
                 feilmelding += " Response fra Sak = ${e.responseBodyAsString}"
             }
-            throw OppslagException(feilmelding,
-                                   "skyggesak",
-                                   OppslagException.Level.MEDIUM,
-                                   HttpStatus.INTERNAL_SERVER_ERROR,
-                                   e)
+            throw OppslagException(
+                feilmelding,
+                "skyggesak",
+                OppslagException.Level.MEDIUM,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                e
+            )
         }
     }
 
@@ -54,4 +58,3 @@ class SkyggesakRestClient(@Value("\${SKYGGE_SAK_URL}") private val skyggesakUrl:
         private const val X_CORRELATION_ID = "X-Correlation-ID"
     }
 }
-

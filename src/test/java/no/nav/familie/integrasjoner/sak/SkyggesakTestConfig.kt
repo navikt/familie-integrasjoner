@@ -16,6 +16,4 @@ class SkyggesakTestConfig {
     fun SkyggesakMockRestClient(): SkyggesakRestClient {
         return mockk(relaxed = true)
     }
-
-
 }

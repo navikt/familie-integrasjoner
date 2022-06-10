@@ -41,17 +41,22 @@ class SkyggesakControllerTest : OppslagSpringRunnerTest() {
         stubFor(post(anyUrl()).willReturn(okJson(objectMapper.writeValueAsString(request))))
 
         val response =
-                restTemplate.postForObject<Ressurs<List<Nothing>>>(localhost("/api/skyggesak/v1"),
-                                                                   HttpEntity(request,
-                                                                              headers))
+            restTemplate.postForObject<Ressurs<List<Nothing>>>(
+                localhost("/api/skyggesak/v1"),
+                HttpEntity(
+                    request,
+                    headers
+                )
+            )
 
-        verify(postRequestedFor(urlEqualTo("/api/v1/saker"))
-                       .withRequestBody(equalToJson(objectMapper.writeValueAsString(request)))
-                       .withHeader("X-Correlation-ID", equalTo("callIdTest")))
+        verify(
+            postRequestedFor(urlEqualTo("/api/v1/saker"))
+                .withRequestBody(equalToJson(objectMapper.writeValueAsString(request)))
+                .withHeader("X-Correlation-ID", equalTo("callIdTest"))
+        )
 
         assertThat(response?.status).isEqualTo(SUKSESS)
     }
-
 
     @Test
     fun `skal ikke feile hvis skyggesak alt er opprettet i sak`() {
@@ -59,8 +64,10 @@ class SkyggesakControllerTest : OppslagSpringRunnerTest() {
         stubFor(post(anyUrl()).willReturn(status(409)))
 
         val response =
-                restTemplate.postForObject<Ressurs<List<Nothing>>>(localhost("/api/skyggesak/v1"),
-                                                                   HttpEntity(request, headers))
+            restTemplate.postForObject<Ressurs<List<Nothing>>>(
+                localhost("/api/skyggesak/v1"),
+                HttpEntity(request, headers)
+            )
 
         assertThat(response?.status).isEqualTo(SUKSESS)
     }
@@ -71,8 +78,10 @@ class SkyggesakControllerTest : OppslagSpringRunnerTest() {
         stubFor(post(anyUrl()).willReturn(status(500).withBody("{\"feilmelding\" : \"Noe gikk galt\"}")))
 
         val response =
-                restTemplate.postForObject<Ressurs<List<Nothing>>>(localhost("/api/skyggesak/v1"),
-                                                                   HttpEntity(request, headers))
+            restTemplate.postForObject<Ressurs<List<Nothing>>>(
+                localhost("/api/skyggesak/v1"),
+                HttpEntity(request, headers)
+            )
 
         assertThat(response?.status).isEqualTo(Ressurs.Status.FEILET)
         assertThat(response?.melding).contains("Noe gikk galt")

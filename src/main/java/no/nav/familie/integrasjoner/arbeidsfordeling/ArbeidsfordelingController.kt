@@ -24,47 +24,53 @@ import javax.validation.constraints.NotNull
 class ArbeidsfordelingController(private val service: ArbeidsfordelingService) {
 
     @GetMapping("/enhet")
-    fun hentBehandlendeEnhet(@RequestParam(name = "tema") tema: Tema,
-                             @RequestParam(name = "geografi", required = false) geografi: String?,
-                             @RequestParam(name = "diskresjonskode", required = false) diskresjonskode: String?)
-            : ResponseEntity<Ressurs<List<Enhet>>> {
+    fun hentBehandlendeEnhet(
+        @RequestParam(name = "tema") tema: Tema,
+        @RequestParam(name = "geografi", required = false) geografi: String?,
+        @RequestParam(name = "diskresjonskode", required = false) diskresjonskode: String?
+    ): ResponseEntity<Ressurs<List<Enhet>>> {
         return ResponseEntity.ok(success(service.finnBehandlendeEnhet(tema, geografi, diskresjonskode)))
     }
 
     @Deprecated("bruk POST med personident")
     @GetMapping("/enhet/{tema}")
-    fun hentBehandlendeEnhetForPersonIdent(@NotNull @RequestHeader(name = "Nav-Personident") personIdent: String,
-                                           @PathVariable(name = "tema") tema: Tema)
-            : ResponseEntity<Ressurs<List<Enhet>>> {
+    fun hentBehandlendeEnhetForPersonIdent(
+        @NotNull @RequestHeader(name = "Nav-Personident") personIdent: String,
+        @PathVariable(name = "tema") tema: Tema
+    ): ResponseEntity<Ressurs<List<Enhet>>> {
         return ResponseEntity.ok(success(service.finnBehandlendeEnhetForPerson(personIdent, tema)))
     }
 
     @PostMapping("/enhet/{tema}")
-    fun hentBehandlendeEnhetForPersonIdentV2(@PathVariable(name = "tema") tema: Tema,
-                                             @RequestBody personIdent: PersonIdent)
-            : ResponseEntity<Ressurs<List<Enhet>>> {
+    fun hentBehandlendeEnhetForPersonIdentV2(
+        @PathVariable(name = "tema") tema: Tema,
+        @RequestBody personIdent: PersonIdent
+    ): ResponseEntity<Ressurs<List<Enhet>>> {
         return ResponseEntity.ok(success(service.finnBehandlendeEnhetForPerson(personIdent.ident, tema)))
     }
 
     @PostMapping("/oppfolging/{tema}")
-    fun hentOppfølgingsenhetForPerson(@PathVariable(name = "tema") tema: Tema,
-                                      @RequestBody personIdent: PersonIdent)
-            : ResponseEntity<Ressurs<List<Enhet>>> {
+    fun hentOppfølgingsenhetForPerson(
+        @PathVariable(name = "tema") tema: Tema,
+        @RequestBody personIdent: PersonIdent
+    ): ResponseEntity<Ressurs<List<Enhet>>> {
         return ResponseEntity.ok(success(service.finnBehandlendeEnhetForOppfølging(personIdent.ident, tema)))
     }
 
-
     @PostMapping("/enhet/{tema}/med-relasjoner")
-    fun hentBehandlendeEnhetForPersonIdentMedRelasjoner(@PathVariable(name = "tema") tema: Tema,
-                                                        @RequestBody
-                                                        personIdent: PersonIdent): ResponseEntity<Ressurs<List<Enhet>>> {
+    fun hentBehandlendeEnhetForPersonIdentMedRelasjoner(
+        @PathVariable(name = "tema") tema: Tema,
+        @RequestBody
+        personIdent: PersonIdent
+    ): ResponseEntity<Ressurs<List<Enhet>>> {
         return ResponseEntity.ok(success(service.finnBehandlendeEnhetForPersonMedRelasjoner(personIdent.ident, tema)))
     }
 
     @PostMapping("/nav-kontor/{tema}")
-    fun hentLokaltNavKontor(@PathVariable(name = "tema") tema: Tema,
-                            @RequestBody personIdent: PersonIdent)
-            : ResponseEntity<Ressurs<NavKontorEnhet?>> {
+    fun hentLokaltNavKontor(
+        @PathVariable(name = "tema") tema: Tema,
+        @RequestBody personIdent: PersonIdent
+    ): ResponseEntity<Ressurs<NavKontorEnhet?>> {
         return ResponseEntity.ok(success(service.finnLokaltNavKontor(personIdent.ident, tema)))
     }
 
@@ -72,5 +78,4 @@ class ArbeidsfordelingController(private val service: ArbeidsfordelingService) {
     fun hentNavKontor(@PathVariable(name = "enhetsid") enhetsId: String): ResponseEntity<Ressurs<NavKontorEnhet>> {
         return ResponseEntity.ok(success(service.hentNavKontor(enhetsId)))
     }
-
 }

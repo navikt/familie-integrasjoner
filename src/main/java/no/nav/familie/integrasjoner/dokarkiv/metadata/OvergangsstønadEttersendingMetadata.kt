@@ -19,5 +19,4 @@ object OvergangsstønadEttersendingMetadata : Dokumentmetadata {
     override val tittel: String = "Ettersending overgangsstønad - enslig mor eller far"
     override val brevkode: String = "NAVe 15-00.01"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.IS
-
 }

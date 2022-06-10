@@ -3,7 +3,10 @@ package no.nav.familie.integrasjoner.client.soap
 import no.nav.familie.http.client.AbstractSoapClient
 import no.nav.familie.http.client.Pingable
 import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.tjeneste.virksomhet.person.v3.binding.*
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonPersonIkkeFunnet
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonSikkerhetsbegrensning
+import no.nav.tjeneste.virksomhet.person.v3.binding.HentPersonhistorikkPersonIkkeFunnet
+import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonResponse
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonhistorikkRequest
@@ -30,43 +33,53 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
         } catch (e: Exception) {
             when {
                 e is HentPersonSikkerhetsbegrensning -> {
-                    throw OppslagException("Ikke tilgang til å hente personinfo for person",
-                                           "TPS.hentPerson",
-                                           OppslagException.Level.LAV,
-                                           HttpStatus.FORBIDDEN,
-                                           e)
+                    throw OppslagException(
+                        "Ikke tilgang til å hente personinfo for person",
+                        "TPS.hentPerson",
+                        OppslagException.Level.LAV,
+                        HttpStatus.FORBIDDEN,
+                        e
+                    )
                 }
                 e is HentPersonPersonIkkeFunnet -> {
-                    throw OppslagException("Prøver å hente person som ikke finnes i TPS",
-                                           "TPS.hentPerson",
-                                           OppslagException.Level.LAV,
-                                           HttpStatus.NOT_FOUND,
-                                           e)
+                    throw OppslagException(
+                        "Prøver å hente person som ikke finnes i TPS",
+                        "TPS.hentPerson",
+                        OppslagException.Level.LAV,
+                        HttpStatus.NOT_FOUND,
+                        e
+                    )
                 }
                 sjekkOmExceptionErUnexpectedEOFinProlog(e) -> {
-                    throw OppslagException("Unexpected EOF in prolog",
-                                           "TPS.hentPerson",
-                                           OppslagException.Level.LAV,
-                                           HttpStatus.INTERNAL_SERVER_ERROR,
-                                           e)
+                    throw OppslagException(
+                        "Unexpected EOF in prolog",
+                        "TPS.hentPerson",
+                        OppslagException.Level.LAV,
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        e
+                    )
                 }
                 sjekkConnectionReset(e) -> {
-                    throw OppslagException("Connection reset mot TPS.",
-                                           "TPS.hentPerson",
-                                           OppslagException.Level.MEDIUM,
-                                           HttpStatus.INTERNAL_SERVER_ERROR,
-                                           e)
+                    throw OppslagException(
+                        "Connection reset mot TPS.",
+                        "TPS.hentPerson",
+                        OppslagException.Level.MEDIUM,
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        e
+                    )
                 }
                 else -> {
                     if (e is SOAPFaultException) {
                         secureLogger.info("SOAPFaultException mot TPS.hentPerson: ${e.message}, fault string: ${e.fault?.faultString}", e)
                     }
 
-                    throw OppslagException("Ukjent feil fra TPS",
-                                           "TPS.hentPerson",
-                                           OppslagException.Level.KRITISK,
-                                           HttpStatus.INTERNAL_SERVER_ERROR,
-                                           e)
+                    throw OppslagException(
+                        "Ukjent feil fra TPS",
+                        "TPS.hentPerson",
+                        OppslagException.Level.KRITISK,
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        e
+                    )
                 }
             }
         }
@@ -85,32 +98,40 @@ class PersonSoapClient(private val port: PersonV3) : AbstractSoapClient("personV
         } catch (e: Exception) {
             when {
                 e is HentPersonSikkerhetsbegrensning -> {
-                    throw OppslagException("Ikke tilgang til å hente personhistorikkinfo for person",
-                                           "TPS.hentPersonhistorikk",
-                                           OppslagException.Level.LAV,
-                                           HttpStatus.FORBIDDEN,
-                                           e)
+                    throw OppslagException(
+                        "Ikke tilgang til å hente personhistorikkinfo for person",
+                        "TPS.hentPersonhistorikk",
+                        OppslagException.Level.LAV,
+                        HttpStatus.FORBIDDEN,
+                        e
+                    )
                 }
                 e is HentPersonhistorikkPersonIkkeFunnet -> {
-                    throw OppslagException("Prøver å hente historikk for person som ikke finnes i TPS",
-                                           "TPS.hentPersonhistorikk",
-                                           OppslagException.Level.LAV,
-                                           HttpStatus.NOT_FOUND,
-                                           e)
+                    throw OppslagException(
+                        "Prøver å hente historikk for person som ikke finnes i TPS",
+                        "TPS.hentPersonhistorikk",
+                        OppslagException.Level.LAV,
+                        HttpStatus.NOT_FOUND,
+                        e
+                    )
                 }
                 sjekkOmExceptionErUnexpectedEOFinProlog(e) -> {
-                    throw OppslagException("Unexpected EOF in prolog",
-                                           "TPS.hentPersonhistorikk",
-                                           OppslagException.Level.LAV,
-                                           HttpStatus.INTERNAL_SERVER_ERROR,
-                                           e)
+                    throw OppslagException(
+                        "Unexpected EOF in prolog",
+                        "TPS.hentPersonhistorikk",
+                        OppslagException.Level.LAV,
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        e
+                    )
                 }
                 else -> {
-                    throw OppslagException("Ukjent feil fra TPS",
-                                           "TPS.hentPersonhistorikk",
-                                           OppslagException.Level.KRITISK,
-                                           HttpStatus.INTERNAL_SERVER_ERROR,
-                                           e)
+                    throw OppslagException(
+                        "Ukjent feil fra TPS",
+                        "TPS.hentPersonhistorikk",
+                        OppslagException.Level.KRITISK,
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        e
+                    )
                 }
             }
         }

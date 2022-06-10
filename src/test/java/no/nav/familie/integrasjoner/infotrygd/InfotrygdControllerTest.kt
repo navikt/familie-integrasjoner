@@ -39,15 +39,17 @@ class InfotrygdControllerTest(val client: ClientAndServer) : OppslagSpringRunner
     @Test
     fun `skal gi bad request hvis fnr mangler`() {
         val response: ResponseEntity<Ressurs<AktivKontantstøtteInfo>> =
-                restTemplate.exchange(localhost(HAR_BARN_AKTIV_KONTANTSTØTTE),
-                                      HttpMethod.GET,
-                                      HttpEntity<Any>(headers))
+            restTemplate.exchange(
+                localhost(HAR_BARN_AKTIV_KONTANTSTØTTE),
+                HttpMethod.GET,
+                HttpEntity<Any>(headers)
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
         assertThat(response.body?.melding).isEqualTo("Mangler påkrevd request header")
         assertThat(response.body?.stacktrace)
-                .contains("Required request header 'Nav-Personident' for method parameter type String")
+            .contains("Required request header 'Nav-Personident' for method parameter type String")
     }
 
     @Test
@@ -55,9 +57,11 @@ class InfotrygdControllerTest(val client: ClientAndServer) : OppslagSpringRunner
         headers.add("Nav-Personident", "foo")
 
         val response: ResponseEntity<Ressurs<AktivKontantstøtteInfo>> =
-                restTemplate.exchange(localhost(HAR_BARN_AKTIV_KONTANTSTØTTE),
-                                      HttpMethod.GET,
-                                      HttpEntity<Any>(headers))
+            restTemplate.exchange(
+                localhost(HAR_BARN_AKTIV_KONTANTSTØTTE),
+                HttpMethod.GET,
+                HttpEntity<Any>(headers)
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -86,7 +90,7 @@ class InfotrygdControllerTest(val client: ClientAndServer) : OppslagSpringRunner
         spesifiserResponsFraInfotrygd("")
 
         assertThatThrownBy { infotrygdRestClient.hentAktivKontantstøtteFor("12345678901") }
-                .isInstanceOf(IllegalStateException::class.java)
+            .isInstanceOf(IllegalStateException::class.java)
     }
 
     @Test
@@ -99,10 +103,12 @@ class InfotrygdControllerTest(val client: ClientAndServer) : OppslagSpringRunner
     }
 
     private fun spesifiserResponsFraInfotrygd(respons: String) {
-        client.`when`(HttpRequest.request()
-                              .withMethod("GET")
-                              .withPath("/v1/harBarnAktivKontantstotte"))
-                .respond(HttpResponse.response().withHeader("Content-Type", "application/json").withBody(respons))
+        client.`when`(
+            HttpRequest.request()
+                .withMethod("GET")
+                .withPath("/v1/harBarnAktivKontantstotte")
+        )
+            .respond(HttpResponse.response().withHeader("Content-Type", "application/json").withBody(respons))
     }
 
     companion object {

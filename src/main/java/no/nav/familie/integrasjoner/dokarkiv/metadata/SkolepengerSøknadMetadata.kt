@@ -19,5 +19,4 @@ object SkolepengerSøknadMetadata : Dokumentmetadata {
     override val tittel: String = "Søknad om skolepenger - enslig mor eller far"
     override val brevkode: String = "NAV 15-00.04"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.SOK
-
 }

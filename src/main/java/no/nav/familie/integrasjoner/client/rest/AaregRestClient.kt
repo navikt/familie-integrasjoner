@@ -19,22 +19,24 @@ import java.time.LocalDate
 import javax.ws.rs.core.MediaType
 
 @Component
-class AaregRestClient(@Value("\${AAREG_URL}")
-                      private val aaregUrl: URI,
-                      @Qualifier("sts") restOperations: RestOperations,
-                      private val stsRestClient: StsRestClient)
-    : AbstractPingableRestClient(restOperations, "aareg") {
+class AaregRestClient(
+    @Value("\${AAREG_URL}")
+    private val aaregUrl: URI,
+    @Qualifier("sts") restOperations: RestOperations,
+    private val stsRestClient: StsRestClient
+) :
+    AbstractPingableRestClient(restOperations, "aareg") {
 
     /* NAV_CALLID og NAV_CONSUMER_ID trengs for kall til ping */
     override val pingUri: URI = URI.create("$aaregUrl/$PATH_PING")
 
     fun hentArbeidsforhold(personIdent: String, ansettelsesperiodeFom: LocalDate): List<Arbeidsforhold> {
         val uri = UriComponentsBuilder.fromUri(aaregUrl)
-                .path(PATH_ARBEIDSFORHOLD)
-                .queryParam("sporingsinformasjon", "false")
-                .queryParam("ansettelsesperiodeFom", ansettelsesperiodeFom.toString())
-                .queryParam("historikk", "true")
-                .build().toUri()
+            .path(PATH_ARBEIDSFORHOLD)
+            .queryParam("sporingsinformasjon", "false")
+            .queryParam("ansettelsesperiodeFom", ansettelsesperiodeFom.toString())
+            .queryParam("historikk", "true")
+            .build().toUri()
 
         return try {
             getForEntity(uri, httpHeaders(personIdent))
@@ -43,12 +45,14 @@ class AaregRestClient(@Value("\${AAREG_URL}")
             if (e is HttpStatusCodeException && e.responseBodyAsString.isNotEmpty()) {
                 feilmelding += " Response fra aareg = ${e.responseBodyAsString}"
             }
-            throw OppslagException(feilmelding,
-                                   "aareg",
-                                   OppslagException.Level.MEDIUM,
-                                   HttpStatus.INTERNAL_SERVER_ERROR,
-                                   e,
-                                   "Kan ikke hente arbeidsforhold for $personIdent")
+            throw OppslagException(
+                feilmelding,
+                "aareg",
+                OppslagException.Level.MEDIUM,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                e,
+                "Kan ikke hente arbeidsforhold for $personIdent"
+            )
         }
     }
 

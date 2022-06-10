@@ -25,10 +25,12 @@ class ArbeidsfordelingTestConfig {
             arbeidsfordelingV1.finnBehandlendeEnhetListe(any())
         } returns FinnBehandlendeEnhetListeResponse().apply {
             behandlendeEnhetListe.apply {
-                add(Organisasjonsenhet().apply {
-                    enhetId = "4820"
-                    enhetNavn = "NAV Familie- og pensjonsytelser Vadsø"
-                })
+                add(
+                    Organisasjonsenhet().apply {
+                        enhetId = "4820"
+                        enhetNavn = "NAV Familie- og pensjonsytelser Vadsø"
+                    }
+                )
             }
         }
         return arbeidsfordelingV1

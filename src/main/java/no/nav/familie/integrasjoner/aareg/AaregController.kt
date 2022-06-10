@@ -6,7 +6,10 @@ import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.MediaType
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDate
 
 @RestController
@@ -21,7 +24,8 @@ class AaregController(val aaregService: AaregService) {
     }
 }
 
-class ArbeidsforholdRequest(val personIdent: String,
-                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-                            val ansettelsesperiodeFom: LocalDate)
-
+class ArbeidsforholdRequest(
+    val personIdent: String,
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    val ansettelsesperiodeFom: LocalDate
+)

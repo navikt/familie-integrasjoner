@@ -43,29 +43,32 @@ internal class InfotrygdsakControllerTest : OppslagSpringRunnerTest() {
                    |         </bestillSakResponse>
                    |      </sak:bestillInfotrygdSakResponse>
                    |   </soapenv:Body>
-                   |</soapenv:Envelope>""".trimMargin()
+                   |</soapenv:Envelope>
+        """.trimMargin()
         WireMock.stubFor(WireMock.post(WireMock.anyUrl()).willReturn(WireMock.okXml(xmlResponse)))
-        val opprettInfotrygdSakRequest = OpprettInfotrygdSakRequest(fnr = "10108000398",
-                                                                    fagomrade = "ENF",
-                                                                    stonadsklassifisering2 = "OG",
-                                                                    type = "K",
-                                                                    opprettetAv = "B900001",
-                                                                    opprettetAvOrganisasjonsEnhetsId = "4408",
-                                                                    mottakerOrganisasjonsEnhetsId = "4408",
-                                                                    mottattdato = LocalDate.of(2013, 9, 13),
-                                                                    sendBekreftelsesbrev = false,
-                                                                    oppgaveId = "137649517",
-                                                                    oppgaveOrganisasjonsenhetId = "4408")
+        val opprettInfotrygdSakRequest = OpprettInfotrygdSakRequest(
+            fnr = "10108000398",
+            fagomrade = "ENF",
+            stonadsklassifisering2 = "OG",
+            type = "K",
+            opprettetAv = "B900001",
+            opprettetAvOrganisasjonsEnhetsId = "4408",
+            mottakerOrganisasjonsEnhetsId = "4408",
+            mottattdato = LocalDate.of(2013, 9, 13),
+            sendBekreftelsesbrev = false,
+            oppgaveId = "137649517",
+            oppgaveOrganisasjonsenhetId = "4408"
+        )
 
         val response: ResponseEntity<Ressurs<OpprettInfotrygdSakResponse>> =
-                restTemplate.exchange(localhost("/api/infotrygdsak/opprett"),
-                                      HttpMethod.POST,
-                                      HttpEntity<Any>(objectMapper.writeValueAsString(opprettInfotrygdSakRequest), headers))
+            restTemplate.exchange(
+                localhost("/api/infotrygdsak/opprett"),
+                HttpMethod.POST,
+                HttpEntity<Any>(objectMapper.writeValueAsString(opprettInfotrygdSakRequest), headers)
+            )
 
         Assertions.assertThat(response.body!!.data).isNotNull()
-
     }
-
 
     @Test
     fun `skal hente liste med infotrygdsaker`() {
@@ -82,16 +85,18 @@ internal class InfotrygdsakControllerTest : OppslagSpringRunnerTest() {
                    |        </hentSakListeResponse>
                    |      </sak:hentSakListeResponse>
                    |   </soapenv:Body>
-                   |</soapenv:Envelope>""".trimMargin()
+                   |</soapenv:Envelope>
+        """.trimMargin()
         WireMock.stubFor(WireMock.post(WireMock.anyUrl()).willReturn(WireMock.okXml(xmlResponse)))
         val finnInfotrygdsaker = FinnInfotrygdSakerRequest(fnr = "10108000398", fagomrade = "ENF")
 
         val response: ResponseEntity<Ressurs<List<InfotrygdSak>>> =
-                restTemplate.exchange(localhost("/api/infotrygdsak/soek"),
-                                      HttpMethod.POST,
-                                      HttpEntity<Any>(objectMapper.writeValueAsString(finnInfotrygdsaker), headers))
+            restTemplate.exchange(
+                localhost("/api/infotrygdsak/soek"),
+                HttpMethod.POST,
+                HttpEntity<Any>(objectMapper.writeValueAsString(finnInfotrygdsaker), headers)
+            )
 
         Assertions.assertThat(response.body!!.data).isNotNull()
-
     }
 }

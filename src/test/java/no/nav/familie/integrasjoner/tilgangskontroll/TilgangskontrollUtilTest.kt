@@ -3,12 +3,12 @@ package no.nav.familie.integrasjoner.tilgangskontroll
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedAdresseBeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
-import org.junit.jupiter.api.Test
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
 
-internal class TilgangskontrollUtilTest{
+internal class TilgangskontrollUtilTest {
 
-    @Test fun `høyesteGraderingen skal returnere høyeste gradering fra barn`(){
+    @Test fun `høyesteGraderingen skal returnere høyeste gradering fra barn`() {
         val person = lagPersonMedRelasjoner(
             adressebeskyttelse = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
             barn = ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG
@@ -17,7 +17,7 @@ internal class TilgangskontrollUtilTest{
         assertThat(TilgangskontrollUtil.høyesteGraderingen(person)).isEqualTo(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG)
     }
 
-    @Test fun `høyesteGraderingen skal returnere høyeste gradering fra hovedperson`(){
+    @Test fun `høyesteGraderingen skal returnere høyeste gradering fra hovedperson`() {
         val person = lagPersonMedRelasjoner(
             adressebeskyttelse = ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG,
             barn = ADRESSEBESKYTTELSEGRADERING.UGRADERT
@@ -26,7 +26,7 @@ internal class TilgangskontrollUtilTest{
         assertThat(TilgangskontrollUtil.høyesteGraderingen(person)).isEqualTo(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG)
     }
 
-    @Test fun `høyesteGraderingen skal returnere ugradert `(){
+    @Test fun `høyesteGraderingen skal returnere ugradert `() {
         val person = lagPersonMedRelasjoner(
             adressebeskyttelse = null,
             barn = ADRESSEBESKYTTELSEGRADERING.UGRADERT
@@ -35,7 +35,7 @@ internal class TilgangskontrollUtilTest{
         assertThat(TilgangskontrollUtil.høyesteGraderingen(person)).isEqualTo(ADRESSEBESKYTTELSEGRADERING.UGRADERT)
     }
 
-    @Test fun `høyesteGraderingen skal returnere null `(){
+    @Test fun `høyesteGraderingen skal returnere null `() {
         val person = lagPersonMedRelasjoner(
             adressebeskyttelse = null,
             barn = null
@@ -44,7 +44,7 @@ internal class TilgangskontrollUtilTest{
         assertThat(TilgangskontrollUtil.høyesteGraderingen(person)).isEqualTo(null)
     }
 
-    @Test fun `høyesteGraderingen skal returnere strengeste gradering hvis mange `(){
+    @Test fun `høyesteGraderingen skal returnere strengeste gradering hvis mange `() {
         val person = lagPersonMedRelasjoner(
             adressebeskyttelse = null,
             barn = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
@@ -56,17 +56,21 @@ internal class TilgangskontrollUtilTest{
         assertThat(TilgangskontrollUtil.høyesteGraderingen(person)).isEqualTo(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG_UTLAND)
     }
 
-    private fun lagPersonMedRelasjoner(adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING? = null,
-                                       sivilstand: ADRESSEBESKYTTELSEGRADERING? = null,
-                                       fullmakt: ADRESSEBESKYTTELSEGRADERING? = null,
-                                       barn: ADRESSEBESKYTTELSEGRADERING? = null,
-                                       barnsForeldrer: ADRESSEBESKYTTELSEGRADERING? = null): PersonMedRelasjoner {
-        return PersonMedRelasjoner(personIdent = "",
-                                   adressebeskyttelse = adressebeskyttelse,
-                                   sivilstand = lagPersonMedBeskyttelse(sivilstand, "sivilstand"),
-                                   fullmakt = lagPersonMedBeskyttelse(fullmakt, "fullmakt"),
-                                   barn = lagPersonMedBeskyttelse(barn, "barn"),
-                                   barnsForeldrer = lagPersonMedBeskyttelse(barnsForeldrer, "barnsForeldrer"))
+    private fun lagPersonMedRelasjoner(
+        adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING? = null,
+        sivilstand: ADRESSEBESKYTTELSEGRADERING? = null,
+        fullmakt: ADRESSEBESKYTTELSEGRADERING? = null,
+        barn: ADRESSEBESKYTTELSEGRADERING? = null,
+        barnsForeldrer: ADRESSEBESKYTTELSEGRADERING? = null
+    ): PersonMedRelasjoner {
+        return PersonMedRelasjoner(
+            personIdent = "",
+            adressebeskyttelse = adressebeskyttelse,
+            sivilstand = lagPersonMedBeskyttelse(sivilstand, "sivilstand"),
+            fullmakt = lagPersonMedBeskyttelse(fullmakt, "fullmakt"),
+            barn = lagPersonMedBeskyttelse(barn, "barn"),
+            barnsForeldrer = lagPersonMedBeskyttelse(barnsForeldrer, "barnsForeldrer")
+        )
     }
 
     private fun lagPersonMedBeskyttelse(sivilstand: ADRESSEBESKYTTELSEGRADERING?, personIdent: String) =

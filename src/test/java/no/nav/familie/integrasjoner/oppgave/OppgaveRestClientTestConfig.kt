@@ -25,26 +25,29 @@ class OppgaveRestClientTestConfig {
     @Primary
     fun oppgaveMockRestClient(): OppgaveRestClient {
         val klient: OppgaveRestClient = mockk(relaxed = false)
-        val response = Oppgave(id = 42,
-                               aktoerId = "1234",
-                               identer = listOf(OppgaveIdentV2("11111111111", IdentGruppe.FOLKEREGISTERIDENT)),
-                               journalpostId = "1234",
-                               tildeltEnhetsnr = "4820",
-                               tilordnetRessurs = "test@nav.no",
-                               behandlesAvApplikasjon = "FS22",
-                               beskrivelse = "Beskrivelse for oppgave",
-                               tema = Tema.BAR,
-                               oppgavetype = Oppgavetype.Journalføring.value,
-                               opprettetTidspunkt = LocalDate.of(
-                                       2020,
-                                       1,
-                                       1).toString(),
-                               fristFerdigstillelse = LocalDate.of(
-                                       2020,
-                                       2,
-                                       1).toString(),
-                               prioritet = OppgavePrioritet.NORM,
-                               status = StatusEnum.OPPRETTET
+        val response = Oppgave(
+            id = 42,
+            aktoerId = "1234",
+            identer = listOf(OppgaveIdentV2("11111111111", IdentGruppe.FOLKEREGISTERIDENT)),
+            journalpostId = "1234",
+            tildeltEnhetsnr = "4820",
+            tilordnetRessurs = "test@nav.no",
+            behandlesAvApplikasjon = "FS22",
+            beskrivelse = "Beskrivelse for oppgave",
+            tema = Tema.BAR,
+            oppgavetype = Oppgavetype.Journalføring.value,
+            opprettetTidspunkt = LocalDate.of(
+                2020,
+                1,
+                1
+            ).toString(),
+            fristFerdigstillelse = LocalDate.of(
+                2020,
+                2,
+                1
+            ).toString(),
+            prioritet = OppgavePrioritet.NORM,
+            status = StatusEnum.OPPRETTET
         )
 
         every {

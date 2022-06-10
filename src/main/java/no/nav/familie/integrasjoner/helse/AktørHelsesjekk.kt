@@ -5,5 +5,5 @@ import no.nav.familie.integrasjoner.client.rest.AktørregisterRestClient
 import org.springframework.stereotype.Component
 
 @Component
-internal class AktørHelsesjekk(aktørregisterRestClient: AktørregisterRestClient)
-    : AbstractHealthIndicator(aktørregisterRestClient, "helsesjekk.aktoer")
+internal class AktørHelsesjekk(aktørregisterRestClient: AktørregisterRestClient) :
+    AbstractHealthIndicator(aktørregisterRestClient, "helsesjekk.aktoer")

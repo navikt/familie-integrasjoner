@@ -21,5 +21,4 @@ object ArbeidsregistreringsskjemaMetadata : Dokumentmetadata {
 
     // ES Elektronisk skjema  - https://confluence.adeo.no/display/BOA/Dokumentkategori
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.ES
-
 }

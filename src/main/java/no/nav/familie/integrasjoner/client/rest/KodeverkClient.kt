@@ -10,9 +10,11 @@ import org.springframework.web.client.RestOperations
 import java.net.URI
 
 @Component
-class KodeverkClient(@Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
-                     @Qualifier("sts") private val restTemplate: RestOperations)
-    : AbstractPingableRestClient(restTemplate, "kodeverk") {
+class KodeverkClient(
+    @Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
+    @Qualifier("sts") private val restTemplate: RestOperations
+) :
+    AbstractPingableRestClient(restTemplate, "kodeverk") {
 
     override val pingUri: URI = UriUtil.uri(kodeverkUri, PATH_PING)
 
@@ -44,8 +46,10 @@ class KodeverkClient(@Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
         return getForEntity(kodeverkUri(kodeverksnavn))
     }
 
-    private fun kodeverkUri(kodeverksnavn: String,
-                            medHistorikk: Boolean = false): URI {
+    private fun kodeverkUri(
+        kodeverksnavn: String,
+        medHistorikk: Boolean = false
+    ): URI {
         val query = if (medHistorikk) QUERY_MED_HISTORIKK else QUERY
         return UriUtil.uri(kodeverkUri, "api/v1/kodeverk/$kodeverksnavn/koder/betydninger", query)
     }

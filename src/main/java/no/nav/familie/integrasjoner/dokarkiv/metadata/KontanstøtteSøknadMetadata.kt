@@ -19,5 +19,4 @@ object KontanstøtteSøknadMetadata : Dokumentmetadata {
     override val tittel: String = "Søknad om kontantstøtte til småbarnsforeldre"
     override val brevkode: String = "NAV 34-00.08"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.SOK
-
 }

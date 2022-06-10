@@ -30,12 +30,14 @@ internal class ArbeidsfordelingServiceTest {
     private val egenAnsattService: EgenAnsattService = mockk()
     private val cacheManager = ConcurrentMapCacheManager()
     private val arbeidsfordelingService =
-            ArbeidsfordelingService(klient = mockk(),
-                                    restClient = restClient,
-                                    pdlRestClient = pdlRestClient,
-                                    personopplysningerService = personopplysningerService,
-                                    egenAnsattService = egenAnsattService,
-                                    cacheManager = cacheManager)
+        ArbeidsfordelingService(
+            klient = mockk(),
+            restClient = restClient,
+            pdlRestClient = pdlRestClient,
+            personopplysningerService = personopplysningerService,
+            egenAnsattService = egenAnsattService,
+            cacheManager = cacheManager
+        )
 
     val ident = "12345678901"
     val ektefelleIdent = "11111111111"
@@ -60,8 +62,10 @@ internal class ArbeidsfordelingServiceTest {
     fun `skal returnere null når geografisk tilknytning ikke definert`() {
 
         every {
-            pdlRestClient.hentGeografiskTilknytning(ident,
-                                                    any())
+            pdlRestClient.hentGeografiskTilknytning(
+                ident,
+                any()
+            )
         } returns GeografiskTilknytningDto(GeografiskTilknytningType.UDEFINERT, null, null, "Land")
 
         assertThat(arbeidsfordelingService.finnLokaltNavKontor(ident, Tema.ENF)).isNull()
@@ -71,12 +75,16 @@ internal class ArbeidsfordelingServiceTest {
     fun `skal utlede riktig geografisk tilknytning kode`() {
 
         every {
-            pdlRestClient.hentGeografiskTilknytning(ident,
-                                                    any())
-        } returns GeografiskTilknytningDto(gtType = GeografiskTilknytningType.KOMMUNE,
-                                           gtKommune = "2372",
-                                           gtBydel = null,
-                                           gtLand = null)
+            pdlRestClient.hentGeografiskTilknytning(
+                ident,
+                any()
+            )
+        } returns GeografiskTilknytningDto(
+            gtType = GeografiskTilknytningType.KOMMUNE,
+            gtKommune = "2372",
+            gtBydel = null,
+            gtLand = null
+        )
 
         every { restClient.hentEnhet(any()) } returns mockk()
 
@@ -84,7 +92,6 @@ internal class ArbeidsfordelingServiceTest {
 
         verify { restClient.hentEnhet("2372") }
     }
-
 
     @Test
     fun `EnhetForPersonMedRelasjoner - skal hente uten diskresjonskode eller egenansatt når ingen er dette`() {
@@ -190,7 +197,6 @@ internal class ArbeidsfordelingServiceTest {
         verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.diskresjonskode == null && it.skjermet == true }) }
     }
 
-
     @Test
     fun `EnhetForPersonMedRelasjoner - skal hente med egenAnsatt når annenForelder er egen ansatt og barn er kode7`() {
         mockPersonInfo(emptySet(), kode7 = setOf(barnXIdent), egenAnsatte = setOf(annenForelderXIdent))
@@ -229,23 +235,25 @@ internal class ArbeidsfordelingServiceTest {
         verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.tema == Tema.OPP.name }) }
     }
 
-
     private fun mockPersonInfoForBehandlendeEnhetForPerson() {
         every {
             personopplysningerService.hentPersoninfo(ident, any(), any())
-        } returns Person("2000-01-01",
-                         navn = "",
-                         kjønn = "",
-                         familierelasjoner = setOf(),
-                         adressebeskyttelseGradering = null,
-                         bostedsadresse = null,
-                         sivilstand = null)
+        } returns Person(
+            "2000-01-01",
+            navn = "",
+            kjønn = "",
+            familierelasjoner = setOf(),
+            adressebeskyttelseGradering = null,
+            bostedsadresse = null,
+            sivilstand = null
+        )
         every {
             pdlRestClient.hentGeografiskTilknytning(any(), any())
-        } returns GeografiskTilknytningDto(gtType = GeografiskTilknytningType.KOMMUNE,
-                                           gtBydel = null,
-                                           gtKommune = "3032",
-                                           gtLand = null
+        } returns GeografiskTilknytningDto(
+            gtType = GeografiskTilknytningType.KOMMUNE,
+            gtBydel = null,
+            gtKommune = "3032",
+            gtLand = null
         )
 
         every { egenAnsattService.erEgenAnsatt(eq(ident)) } returns false
@@ -257,30 +265,30 @@ internal class ArbeidsfordelingServiceTest {
         val barnX = PersonMedAdresseBeskyttelse(barnXIdent, utledAdressebeskyttelse(barnXIdent, kode6, kode7))
         val barnZ = PersonMedAdresseBeskyttelse(barnZIdent, utledAdressebeskyttelse(barnZIdent, kode6, kode7))
         val annenForelderX =
-                PersonMedAdresseBeskyttelse(annenForelderXIdent, utledAdressebeskyttelse(annenForelderXIdent, kode6, kode7))
+            PersonMedAdresseBeskyttelse(annenForelderXIdent, utledAdressebeskyttelse(annenForelderXIdent, kode6, kode7))
         val annenForelderZ =
-                PersonMedAdresseBeskyttelse(annenForelderZIdent, utledAdressebeskyttelse(annenForelderZIdent, kode6, kode7))
+            PersonMedAdresseBeskyttelse(annenForelderZIdent, utledAdressebeskyttelse(annenForelderZIdent, kode6, kode7))
         val relasjonerUtenGradering = PersonMedRelasjoner(
-                personIdent = ident,
-                adressebeskyttelse = utledAdressebeskyttelse(ident, kode6, kode7),
-                sivilstand = listOf(ektefelle),
-                fullmakt = listOf(fullmakt),
-                barn = listOf(barnX, barnZ),
-                barnsForeldrer = listOf(annenForelderX, annenForelderZ),
+            personIdent = ident,
+            adressebeskyttelse = utledAdressebeskyttelse(ident, kode6, kode7),
+            sivilstand = listOf(ektefelle),
+            fullmakt = listOf(fullmakt),
+            barn = listOf(barnX, barnZ),
+            barnsForeldrer = listOf(annenForelderX, annenForelderZ),
         )
         every {
             personopplysningerService.hentPersonMedRelasjoner(ident, any())
         } returns relasjonerUtenGradering
 
-
         every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } returns egenAnsatte.associateWith { true }
 
         every {
             pdlRestClient.hentGeografiskTilknytning(any(), any())
-        } returns GeografiskTilknytningDto(gtType = GeografiskTilknytningType.KOMMUNE,
-                                           gtBydel = null,
-                                           gtKommune = "3032",
-                                           gtLand = null
+        } returns GeografiskTilknytningDto(
+            gtType = GeografiskTilknytningType.KOMMUNE,
+            gtBydel = null,
+            gtKommune = "3032",
+            gtLand = null
         )
     }
 
@@ -291,5 +299,4 @@ internal class ArbeidsfordelingServiceTest {
             else -> UGRADERT
         }
     }
-
 }

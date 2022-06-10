@@ -14,39 +14,41 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 
 @Component
-class InfotrygdsakSoapClient(private val gosysInfotrygdSak: GOSYSInfotrygdSak)
-    : AbstractSoapClient("GosysInfotrygdSak") {
+class InfotrygdsakSoapClient(private val gosysInfotrygdSak: GOSYSInfotrygdSak) :
+    AbstractSoapClient("GosysInfotrygdSak") {
 
     private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
-    fun opprettInfotrygdsak(asbogosysBestillInfotrygdSakRequest: ASBOGOSYSBestillInfotrygdSakRequest)
-            : ASBOGOSYSBestillInfotrygdSakResponse {
+    fun opprettInfotrygdsak(asbogosysBestillInfotrygdSakRequest: ASBOGOSYSBestillInfotrygdSakRequest): ASBOGOSYSBestillInfotrygdSakResponse {
         try {
             return executeMedMetrics {
                 gosysInfotrygdSak.bestillInfotrygdSak(asbogosysBestillInfotrygdSakRequest)
             }
         } catch (e: BestillInfotrygdSakFaultGOSYSGeneriskMsg) {
             secureLogger.warn("Kan ikke opprette infotrygdsak: ${e.faultInfo}")
-            throw OppslagException("Opprettelse av sak i Infotrygd feilet",
-                                   "Infotrygd.opprettInfotrygdsak",
-                                   OppslagException.Level.MEDIUM,
-                                   HttpStatus.INTERNAL_SERVER_ERROR,
-                                   e)
+            throw OppslagException(
+                "Opprettelse av sak i Infotrygd feilet",
+                "Infotrygd.opprettInfotrygdsak",
+                OppslagException.Level.MEDIUM,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                e
+            )
         }
     }
 
-    fun hentInfotrygdSakListe(asbogosysBestillInfotrygdSakRequest: ASBOGOSYSHentInfotrygdSakListeRequest)
-            : ASBOGOSYSInfotrygdSakListe {
+    fun hentInfotrygdSakListe(asbogosysBestillInfotrygdSakRequest: ASBOGOSYSHentInfotrygdSakListeRequest): ASBOGOSYSInfotrygdSakListe {
         try {
             return executeMedMetrics {
                 gosysInfotrygdSak.hentSakListe(asbogosysBestillInfotrygdSakRequest)
             }
         } catch (e: HentSakListeFaultGOSYSGeneriskMsg) {
-            throw OppslagException("Hent sakliste fra Infotrygd feilet",
-                                   "Infotrygd.hentInfotrygdSakListe",
-                                   OppslagException.Level.MEDIUM,
-                                   HttpStatus.INTERNAL_SERVER_ERROR,
-                                   e)
+            throw OppslagException(
+                "Hent sakliste fra Infotrygd feilet",
+                "Infotrygd.hentInfotrygdSakListe",
+                OppslagException.Level.MEDIUM,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                e
+            )
         }
     }
 }

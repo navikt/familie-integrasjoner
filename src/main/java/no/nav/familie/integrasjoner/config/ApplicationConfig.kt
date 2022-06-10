@@ -57,10 +57,10 @@ class ApplicationConfig {
     @Bean
     fun oAuth2HttpClient(): OAuth2HttpClient {
         return RetryOAuth2HttpClient(
-                RestTemplateBuilder()
-                        .additionalCustomizers(NaisProxyCustomizer(2_000, 2_000, 4_000))
-                        .setConnectTimeout(Duration.of(2, ChronoUnit.SECONDS))
-                        .setReadTimeout(Duration.of(4, ChronoUnit.SECONDS))
+            RestTemplateBuilder()
+                .additionalCustomizers(NaisProxyCustomizer(2_000, 2_000, 4_000))
+                .setConnectTimeout(Duration.of(2, ChronoUnit.SECONDS))
+                .setReadTimeout(Duration.of(4, ChronoUnit.SECONDS))
         )
     }
 }

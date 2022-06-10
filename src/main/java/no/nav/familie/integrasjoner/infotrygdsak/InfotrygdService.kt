@@ -15,7 +15,6 @@ class InfotrygdService(private val infotrygdsakSoapClient: InfotrygdsakSoapClien
         val asboRequest = OpprettInfotrygdSakMapper.tilAsboRequest(opprettInfotrygdSakRequest)
         val opprettInfotrygdsak = infotrygdsakSoapClient.opprettInfotrygdsak(asboRequest)
         return OpprettInfotrygdSakMapper.fraAsboResponse(opprettInfotrygdsak)
-
     }
 
     fun hentInfotrygdSaker(finnInfotrygdSakerRequest: FinnInfotrygdSakerRequest): List<InfotrygdSak> {

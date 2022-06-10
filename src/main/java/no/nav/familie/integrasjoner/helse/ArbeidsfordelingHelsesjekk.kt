@@ -5,5 +5,5 @@ import no.nav.familie.integrasjoner.arbeidsfordeling.ArbeidsfordelingClient
 import org.springframework.stereotype.Component
 
 @Component
-internal class ArbeidsfordelingHelsesjekk(arbeidsfordelingClient: ArbeidsfordelingClient)
-    : AbstractHealthIndicator(arbeidsfordelingClient, "helsesjekk.arbeidsfordelingV1")
+internal class ArbeidsfordelingHelsesjekk(arbeidsfordelingClient: ArbeidsfordelingClient) :
+    AbstractHealthIndicator(arbeidsfordelingClient, "helsesjekk.arbeidsfordelingV1")

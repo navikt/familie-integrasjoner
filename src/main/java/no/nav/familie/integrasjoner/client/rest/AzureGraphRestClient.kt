@@ -13,34 +13,38 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Service
-class AzureGraphRestClient(@Qualifier("jwtBearer") restTemplate: RestOperations,
-                           @Value("\${AAD_GRAPH_API_URI}") private val aadGraphURI: URI)
-    : AbstractRestClient(restTemplate, "AzureGraph") {
+class AzureGraphRestClient(
+    @Qualifier("jwtBearer") restTemplate: RestOperations,
+    @Value("\${AAD_GRAPH_API_URI}") private val aadGraphURI: URI
+) :
+    AbstractRestClient(restTemplate, "AzureGraph") {
 
     val saksbehandlerUri: URI = UriComponentsBuilder.fromUri(aadGraphURI).pathSegment(ME).build().toUri()
 
     fun saksbehandlerUri(id: String): URI =
-            UriComponentsBuilder.fromUri(aadGraphURI)
-                    .pathSegment(USERS, id)
-                    .queryParam("\$select", FELTER)
-                    .build()
-                    .toUri()
+        UriComponentsBuilder.fromUri(aadGraphURI)
+            .pathSegment(USERS, id)
+            .queryParam("\$select", FELTER)
+            .build()
+            .toUri()
 
     fun saksbehandlersøkUri(navIdent: String): URI =
-            UriComponentsBuilder.fromUri(aadGraphURI)
-                    .pathSegment(USERS)
-                    .queryParam("\$search", "\"onPremisesSamAccountName:{navIdent}\"")
-                    .queryParam("\$select", FELTER)
-                    .buildAndExpand(navIdent)
-                    .toUri()
+        UriComponentsBuilder.fromUri(aadGraphURI)
+            .pathSegment(USERS)
+            .queryParam("\$search", "\"onPremisesSamAccountName:{navIdent}\"")
+            .queryParam("\$select", FELTER)
+            .buildAndExpand(navIdent)
+            .toUri()
 
     val grupperUri: URI = UriComponentsBuilder.fromUri(aadGraphURI).pathSegment(ME, GRUPPER).build().toUri()
 
-
     fun finnSaksbehandler(navIdent: String): AzureAdBrukere {
-        return getForEntity(saksbehandlersøkUri(navIdent), HttpHeaders().apply {
-            add("ConsistencyLevel", "eventual")
-        })
+        return getForEntity(
+            saksbehandlersøkUri(navIdent),
+            HttpHeaders().apply {
+                add("ConsistencyLevel", "eventual")
+            }
+        )
     }
 
     fun hentSaksbehandler(): AzureAdBruker {

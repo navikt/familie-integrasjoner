@@ -26,5 +26,4 @@ class OrganisasjonController(private val organisasjonService: OrganisasjonServic
     fun validerOrganisasjon(@PathVariable orgnr: String): Ressurs<Boolean> {
         return success(data = organisasjonService.validerOrganisasjon(orgnr))
     }
-
 }

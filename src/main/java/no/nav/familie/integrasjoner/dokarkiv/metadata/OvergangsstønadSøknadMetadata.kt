@@ -19,5 +19,4 @@ object OvergangsstønadSøknadMetadata : Dokumentmetadata {
     override val tittel: String = "Søknad om overgangsstønad - enslig mor eller far"
     override val brevkode: String = "NAV 15-00.01"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.SOK
-
 }

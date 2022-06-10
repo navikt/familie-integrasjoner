@@ -6,12 +6,14 @@ import java.util.Base64
 
 @ConfigurationProperties("sftp")
 @ConstructorBinding
-class FiloverføringAdraMatchConfig(val username: String,
-                                   val host: String,
-                                   val port: Int,
-                                   privateKey: String,
-                                   val passphrase: String,
-                                   val directory: String = "inbound") {
+class FiloverføringAdraMatchConfig(
+    val username: String,
+    val host: String,
+    val port: Int,
+    privateKey: String,
+    val passphrase: String,
+    val directory: String = "inbound"
+) {
 
     val privateKeyDecoded = base64Decode(privateKey)
 

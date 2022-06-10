@@ -19,5 +19,4 @@ object BarnetrygdTilbakebetalingBrevMetadata : Dokumentmetadata {
     override val tittel: String? = null
     override val brevkode: String = Fagsystem.BA.name + "-TILB"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
-
 }

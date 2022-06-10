@@ -20,4 +20,3 @@ object OvergangsstønadFrittståendeBrevMetadata : Dokumentmetadata {
     override val brevkode: String = "EFA2"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
-

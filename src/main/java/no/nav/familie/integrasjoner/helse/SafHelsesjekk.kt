@@ -5,5 +5,5 @@ import no.nav.familie.integrasjoner.client.rest.SafRestClient
 import org.springframework.stereotype.Component
 
 @Component
-internal class SafHelsesjekk(safRestClient: SafRestClient)
-    : AbstractHealthIndicator(safRestClient, "helsesjekk.saf")
+internal class SafHelsesjekk(safRestClient: SafRestClient) :
+    AbstractHealthIndicator(safRestClient, "helsesjekk.saf")

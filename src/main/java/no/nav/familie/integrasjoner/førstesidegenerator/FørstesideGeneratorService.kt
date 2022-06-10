@@ -13,50 +13,65 @@ import org.springframework.stereotype.Service
 import org.springframework.web.context.annotation.ApplicationScope
 import no.nav.familie.kontrakter.felles.dokarkiv.Førsteside as DeprecatedFørsteside
 
-
 @Service
 @ApplicationScope
 class FørstesideGeneratorService(private val førstesidegeneratorClient: FørstesidegeneratorClient) {
 
     fun genererForside(førsteside: DeprecatedFørsteside, brukerId: String): ByteArray {
         val postFørstesideRequest =
-                PostFørstesideRequest(språkkode = Språkkode.valueOf(førsteside.maalform),
-                                      adresse = Adresse(adresselinje1 = "Nav skanning",
-                                                        adresselinje2 = "Postboks 1400",
-                                                        postnummer = "0109",
-                                                        poststed = "OSLO"),
-                                      bruker = Bruker(brukerId = brukerId,
-                                                      brukerType = Brukertype.PERSON),
-                                      navSkjemaId = førsteside.navSkjemaId, //NAV 33.00-07
-                                      førstesidetype = Førstesidetype.ETTERSENDELSE,
-                                      tema =  Tema.BAR.name,
-                        //"Søknad om barnetrygd ved fødsel - NAV 33.00-07,
-                        // Ettersendelse til søknad om barnetrygd ved fødsel - NAV 33.00-07",
-                                      overskriftstittel = førsteside.overskriftsTittel,
-                                      dokumentlisteFørsteside = arrayListOf(if (førsteside.maalform == "NN") Companion.VEDLAGTEBREV_TEKST_NN
-                                                                            else Companion.VEDLAGTEBREV_TEKST_NB),
-                                      vedleggsliste = arrayListOf(if (førsteside.maalform == "NN") Companion.VEDLAGTEBREV_TEKST_NN
-                                                                  else Companion.VEDLAGTEBREV_TEKST_NB))
+            PostFørstesideRequest(
+                språkkode = Språkkode.valueOf(førsteside.maalform),
+                adresse = Adresse(
+                    adresselinje1 = "Nav skanning",
+                    adresselinje2 = "Postboks 1400",
+                    postnummer = "0109",
+                    poststed = "OSLO"
+                ),
+                bruker = Bruker(
+                    brukerId = brukerId,
+                    brukerType = Brukertype.PERSON
+                ),
+                navSkjemaId = førsteside.navSkjemaId, // NAV 33.00-07
+                førstesidetype = Førstesidetype.ETTERSENDELSE,
+                tema = Tema.BAR.name,
+                // "Søknad om barnetrygd ved fødsel - NAV 33.00-07,
+                // Ettersendelse til søknad om barnetrygd ved fødsel - NAV 33.00-07",
+                overskriftstittel = førsteside.overskriftsTittel,
+                dokumentlisteFørsteside = arrayListOf(
+                    if (førsteside.maalform == "NN") Companion.VEDLAGTEBREV_TEKST_NN
+                    else Companion.VEDLAGTEBREV_TEKST_NB
+                ),
+                vedleggsliste = arrayListOf(
+                    if (førsteside.maalform == "NN") Companion.VEDLAGTEBREV_TEKST_NN
+                    else Companion.VEDLAGTEBREV_TEKST_NB
+                )
+            )
         return førstesidegeneratorClient.genererFørsteside(postFørstesideRequest).førsteside
     }
 
     fun genererForside(førsteside: Førsteside, brukerId: String): ByteArray {
         val postFørstesideRequest =
-                PostFørstesideRequest(språkkode = førsteside.språkkode,
-                                      adresse = Adresse(adresselinje1 = "Nav skanning",
-                                                        adresselinje2 = "Postboks 1400",
-                                                        postnummer = "0109",
-                                                        poststed = "OSLO"),
-                                      bruker = Bruker(brukerId = brukerId,
-                                                      brukerType = Brukertype.PERSON),
-                                      navSkjemaId = førsteside.navSkjemaId, //NAV 33.00-07
-                                      førstesidetype = Førstesidetype.ETTERSENDELSE,
-                                      tema = Tema.BAR.name,
-                        //"Søknad om barnetrygd ved fødsel - NAV 33.00-07,
-                        // Ettersendelse til søknad om barnetrygd ved fødsel - NAV 33.00-07",
-                                      overskriftstittel = førsteside.overskriftstittel,
-                                      dokumentlisteFørsteside = arrayListOf(vedleggstekst(førsteside.språkkode)),
-                                      vedleggsliste = arrayListOf(vedleggstekst(førsteside.språkkode)))
+            PostFørstesideRequest(
+                språkkode = førsteside.språkkode,
+                adresse = Adresse(
+                    adresselinje1 = "Nav skanning",
+                    adresselinje2 = "Postboks 1400",
+                    postnummer = "0109",
+                    poststed = "OSLO"
+                ),
+                bruker = Bruker(
+                    brukerId = brukerId,
+                    brukerType = Brukertype.PERSON
+                ),
+                navSkjemaId = førsteside.navSkjemaId, // NAV 33.00-07
+                førstesidetype = Førstesidetype.ETTERSENDELSE,
+                tema = Tema.BAR.name,
+                // "Søknad om barnetrygd ved fødsel - NAV 33.00-07,
+                // Ettersendelse til søknad om barnetrygd ved fødsel - NAV 33.00-07",
+                overskriftstittel = førsteside.overskriftstittel,
+                dokumentlisteFørsteside = arrayListOf(vedleggstekst(førsteside.språkkode)),
+                vedleggsliste = arrayListOf(vedleggstekst(førsteside.språkkode))
+            )
         return førstesidegeneratorClient.genererFørsteside(postFørstesideRequest).førsteside
     }
 
@@ -67,5 +82,4 @@ class FørstesideGeneratorService(private val førstesidegeneratorClient: Først
         const val VEDLAGTEBREV_TEKST_NN = "Sjå vedlagte brev"
         const val VEDLAGTEBREV_TEKST_NB = "Se vedlagte brev"
     }
-
 }

@@ -18,9 +18,14 @@ class SaksbehandlerControllerE2E {
     @GetMapping(path = ["/{id}"])
     @ProtectedWithClaims(issuer = "azuread")
     fun hentSaksbehandler(@PathVariable id: String): Ressurs<Saksbehandler> {
-        return Ressurs.success(Saksbehandler(azureId = UUID.randomUUID(),
-                                             navIdent = id,
-                                             fornavn = "Mocka",
-                                             etternavn = "Saksbehandler"), "Hent saksbehandler OK")
+        return Ressurs.success(
+            Saksbehandler(
+                azureId = UUID.randomUUID(),
+                navIdent = id,
+                fornavn = "Mocka",
+                etternavn = "Saksbehandler"
+            ),
+            "Hent saksbehandler OK"
+        )
     }
 }

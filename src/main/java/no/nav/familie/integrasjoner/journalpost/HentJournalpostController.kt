@@ -28,7 +28,7 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
         val errorExtMessage = byggFeilmelding(ex)
         LOG.warn(errorBaseMessage, ex)
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(failure(errorBaseMessage + errorExtMessage, error = ex))
+            .body(failure(errorBaseMessage + errorExtMessage, error = ex))
     }
 
     @ExceptionHandler(JournalpostForBrukerException::class)
@@ -37,7 +37,7 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
         val errorExtMessage = byggFeilmelding(ex)
         secureLogger.warn(errorBaseMessage, ex)
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(failure(errorBaseMessage + errorExtMessage, error = ex))
+            .body(failure(errorBaseMessage + errorExtMessage, error = ex))
     }
 
     @ExceptionHandler(JournalpostForbiddenException::class)
@@ -45,8 +45,8 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
         LOG.warn("Bruker eller system ikke tilgang til saf ressurs: ${e.message}")
 
         return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
-                .body(Ressurs.ikkeTilgang(e.message ?: "Bruker eller system har ikke tilgang til saf ressurs"))
+            .status(HttpStatus.FORBIDDEN)
+            .body(Ressurs.ikkeTilgang(e.message ?: "Bruker eller system har ikke tilgang til saf ressurs"))
     }
 
     private fun byggFeilmelding(ex: RuntimeException): String {
@@ -63,38 +63,40 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
         val errorMessage = "Feil ved henting av journalpost. ${ex.message}"
         LOG.warn(errorMessage, ex)
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(failure(errorMessage, error = ex))
+            .body(failure(errorMessage, error = ex))
     }
 
     @GetMapping("sak")
-    fun hentSaksnummer(@RequestParam(name = "journalpostId") journalpostId: String)
-            : ResponseEntity<Ressurs<Map<String, String>>> {
+    fun hentSaksnummer(@RequestParam(name = "journalpostId") journalpostId: String): ResponseEntity<Ressurs<Map<String, String>>> {
         val saksnummer = journalpostService.hentSaksnummer(journalpostId)
-                         ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                 .body(failure("Sak mangler for journalpostId=$journalpostId", null))
+            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(failure("Sak mangler for journalpostId=$journalpostId", null))
 
         return ResponseEntity.ok(success(mapOf("saksnummer" to saksnummer), "OK"))
     }
 
     @GetMapping
-    fun hentJournalpost(@RequestParam(name = "journalpostId") journalpostId: String)
-            : ResponseEntity<Ressurs<Journalpost>> {
+    fun hentJournalpost(@RequestParam(name = "journalpostId") journalpostId: String): ResponseEntity<Ressurs<Journalpost>> {
         return ResponseEntity.ok(success(journalpostService.hentJournalpost(journalpostId), "OK"))
     }
 
     @PostMapping
-    fun hentJournalpostForBruker(@RequestBody journalposterForBrukerRequest: JournalposterForBrukerRequest)
-            : ResponseEntity<Ressurs<List<Journalpost>>> {
+    fun hentJournalpostForBruker(@RequestBody journalposterForBrukerRequest: JournalposterForBrukerRequest): ResponseEntity<Ressurs<List<Journalpost>>> {
         return ResponseEntity.ok(success(journalpostService.finnJournalposter(journalposterForBrukerRequest), "OK"))
     }
 
     @GetMapping("hentdokument/{journalpostId}/{dokumentInfoId}")
-    fun hentDokument(@PathVariable journalpostId: String,
-                     @PathVariable dokumentInfoId: String,
-                     @RequestParam("variantFormat", required = false) variantFormat: String?)
-            : ResponseEntity<Ressurs<ByteArray>> {
-        return ResponseEntity.ok(success(journalpostService.hentDokument(journalpostId, dokumentInfoId, variantFormat ?: "ARKIV"),
-                                         "OK"))
+    fun hentDokument(
+        @PathVariable journalpostId: String,
+        @PathVariable dokumentInfoId: String,
+        @RequestParam("variantFormat", required = false) variantFormat: String?
+    ): ResponseEntity<Ressurs<ByteArray>> {
+        return ResponseEntity.ok(
+            success(
+                journalpostService.hentDokument(journalpostId, dokumentInfoId, variantFormat ?: "ARKIV"),
+                "OK"
+            )
+        )
     }
 
     companion object {

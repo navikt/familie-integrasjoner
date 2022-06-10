@@ -24,8 +24,10 @@ class DokarkivRestClientTestConfig {
     fun dokarkivMockRestClient(): DokarkivRestClient {
         val klient: DokarkivRestClient = mockk(relaxed = true)
         val pattern = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
-        val response = OpprettJournalpostResponse(journalpostId = LocalDateTime.now().format(pattern),
-                                                  journalpostferdigstilt = false)
+        val response = OpprettJournalpostResponse(
+            journalpostId = LocalDateTime.now().format(pattern),
+            journalpostferdigstilt = false
+        )
         every {
             klient.lagJournalpost(any(), any())
         } returns response

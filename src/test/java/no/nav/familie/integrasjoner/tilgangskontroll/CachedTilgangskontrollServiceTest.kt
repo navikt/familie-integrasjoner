@@ -7,7 +7,6 @@ import no.nav.familie.integrasjoner.config.TilgangConfig
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
-import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.*
 import no.nav.familie.integrasjoner.personopplysning.internal.Adressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedAdresseBeskyttelse
@@ -28,11 +27,17 @@ internal class CachedTilgangskontrollServiceTest {
     private val kode7Id = "6"
     private val kode6Id = "7"
 
-    private val tilgangConfig = TilgangConfig(mapOf("kode7" to AdRolle(kode7Id, ""),
-                                                    "kode6" to AdRolle(kode6Id, "")))
-    private val cachedTilgangskontrollService = CachedTilgangskontrollService(egenAnsattService,
-                                                                              personopplysningerService,
-                                                                              tilgangConfig)
+    private val tilgangConfig = TilgangConfig(
+        mapOf(
+            "kode7" to AdRolle(kode7Id, ""),
+            "kode6" to AdRolle(kode6Id, "")
+        )
+    )
+    private val cachedTilgangskontrollService = CachedTilgangskontrollService(
+        egenAnsattService,
+        personopplysningerService,
+        tilgangConfig
+    )
 
     private val jwtToken = mockk<JwtToken>(relaxed = true)
     private val jwtTokenClaims = mockk<JwtTokenClaims>()
@@ -44,7 +49,7 @@ internal class CachedTilgangskontrollServiceTest {
         every { jwtTokenClaims.getAsList(any()) }.returns(emptyList())
         every { egenAnsattService.erEgenAnsatt(any<String>()) } returns false
         every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } answers
-                { firstArg<Set<String>>().associateWith { false } }
+            { firstArg<Set<String>>().associateWith { false } }
     }
 
     private fun mockHarKode7() {
@@ -64,7 +69,7 @@ internal class CachedTilgangskontrollServiceTest {
 
     @Test
     internal fun `har ikke tilgang når det finnes adressebeskyttelser for enskild person`() {
-        mockHentPersonMedAdressebeskyttelse(FORTROLIG)
+        mockHentPersonMedAdressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
         assertThat(sjekkTilgangTilPerson()).isFalse
         verify(exactly = 0) { egenAnsattService.erEgenAnsatt(any<String>()) }
     }
@@ -87,7 +92,7 @@ internal class CachedTilgangskontrollServiceTest {
     internal fun `har ikke tilgang når søkeren er STRENGT_FORTROLIG og saksbehandler har kode7`() {
         mockHarKode7()
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-                lagPersonMedRelasjoner(STRENGT_FORTROLIG)
+            lagPersonMedRelasjoner(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG)
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
@@ -95,77 +100,83 @@ internal class CachedTilgangskontrollServiceTest {
     internal fun `har tilgang når søkeren er STRENGT_FORTROLIG og saksbehandler har kode6`() {
         mockHarKode6()
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-                lagPersonMedRelasjoner(STRENGT_FORTROLIG)
+            lagPersonMedRelasjoner(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG)
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isTrue
     }
 
     @Test
     internal fun `har ikke tilgang når det finnes adressebeskyttelse for søkeren`() {
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-                lagPersonMedRelasjoner(adressebeskyttelse = FORTROLIG)
+            lagPersonMedRelasjoner(adressebeskyttelse = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
     @Test
     internal fun `har ikke tilgang når sivilstand inneholder FORTROLIG`() {
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-                lagPersonMedRelasjoner(sivilstand = FORTROLIG)
+            lagPersonMedRelasjoner(sivilstand = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
     @Test
     internal fun `har ikke tilgang når fullmakt inneholder FORTROLIG`() {
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-                lagPersonMedRelasjoner(fullmakt = FORTROLIG)
+            lagPersonMedRelasjoner(fullmakt = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
     @Test
     internal fun `har ikke tilgang når barn inneholder FORTROLIG`() {
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-                lagPersonMedRelasjoner(barn = FORTROLIG)
+            lagPersonMedRelasjoner(barn = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
     @Test
     internal fun `har ikke tilgang når barnsForeldrer inneholder FORTROLIG`() {
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-                lagPersonMedRelasjoner(barnsForeldrer = FORTROLIG)
+            lagPersonMedRelasjoner(barnsForeldrer = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
     private fun sjekkTilgangTilPersonMedRelasjoner() =
-            cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner("", jwtToken, Tema.ENF).harTilgang
+        cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner("", jwtToken, Tema.ENF).harTilgang
 
     private fun sjekkTilgangTilPerson() = cachedTilgangskontrollService.sjekkTilgang("", jwtToken, Tema.ENF).harTilgang
 
-    private fun lagPersonMedRelasjoner(adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING? = null,
-                                       sivilstand: ADRESSEBESKYTTELSEGRADERING? = null,
-                                       fullmakt: ADRESSEBESKYTTELSEGRADERING? = null,
-                                       barn: ADRESSEBESKYTTELSEGRADERING? = null,
-                                       barnsForeldrer: ADRESSEBESKYTTELSEGRADERING? = null): PersonMedRelasjoner {
-        return PersonMedRelasjoner(personIdent = "",
-                                   adressebeskyttelse = adressebeskyttelse,
-                                   sivilstand = lagPersonMedBeskyttelse(sivilstand, "sivilstand"),
-                                   fullmakt = lagPersonMedBeskyttelse(fullmakt, "fullmakt"),
-                                   barn = lagPersonMedBeskyttelse(barn, "barn"),
-                                   barnsForeldrer = lagPersonMedBeskyttelse(barnsForeldrer, "barnsForeldrer"))
+    private fun lagPersonMedRelasjoner(
+        adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING? = null,
+        sivilstand: ADRESSEBESKYTTELSEGRADERING? = null,
+        fullmakt: ADRESSEBESKYTTELSEGRADERING? = null,
+        barn: ADRESSEBESKYTTELSEGRADERING? = null,
+        barnsForeldrer: ADRESSEBESKYTTELSEGRADERING? = null
+    ): PersonMedRelasjoner {
+        return PersonMedRelasjoner(
+            personIdent = "",
+            adressebeskyttelse = adressebeskyttelse,
+            sivilstand = lagPersonMedBeskyttelse(sivilstand, "sivilstand"),
+            fullmakt = lagPersonMedBeskyttelse(fullmakt, "fullmakt"),
+            barn = lagPersonMedBeskyttelse(barn, "barn"),
+            barnsForeldrer = lagPersonMedBeskyttelse(barnsForeldrer, "barnsForeldrer")
+        )
     }
 
     private fun lagPersonMedBeskyttelse(sivilstand: ADRESSEBESKYTTELSEGRADERING?, personIdent: String) =
-            sivilstand?.let { listOf(PersonMedAdresseBeskyttelse(personIdent, it)) } ?: emptyList()
+        sivilstand?.let { listOf(PersonMedAdresseBeskyttelse(personIdent, it)) } ?: emptyList()
 
-    private fun mockHentPersonMedAdressebeskyttelse(adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING = UGRADERT) {
+    private fun mockHentPersonMedAdressebeskyttelse(adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING = ADRESSEBESKYTTELSEGRADERING.UGRADERT) {
         every { personopplysningerService.hentAdressebeskyttelse(any(), any()) } returns Adressebeskyttelse(adressebeskyttelse)
     }
 
-    private fun mockHentPersonInfo(adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING = UGRADERT) {
+    private fun mockHentPersonInfo(adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING = ADRESSEBESKYTTELSEGRADERING.UGRADERT) {
         every { personopplysningerService.hentPersoninfo(any(), any(), any()) } returns
-                Person(fødselsdato = "1980-05-12",
-                       navn = "navn",
-                       kjønn = "KVINNE",
-                       familierelasjoner = emptySet(),
-                       adressebeskyttelseGradering = adressebeskyttelse,
-                       sivilstand = SIVILSTAND.UGIFT)
+            Person(
+                fødselsdato = "1980-05-12",
+                navn = "navn",
+                kjønn = "KVINNE",
+                familierelasjoner = emptySet(),
+                adressebeskyttelseGradering = adressebeskyttelse,
+                sivilstand = SIVILSTAND.UGIFT
+            )
     }
 }

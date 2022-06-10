@@ -10,14 +10,12 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-
 class FørstesideGeneratorServiceTest {
 
     @MockK
     private lateinit var førstesidegeneratorClient: FørstesidegeneratorClient
 
     private lateinit var førstesideGeneratorService: FørstesideGeneratorService
-
 
     @BeforeEach
     fun setUp() {
@@ -28,16 +26,14 @@ class FørstesideGeneratorServiceTest {
     @Test
     fun `genererFørsteside skal returnere byteArray med pdf`() {
         every { førstesidegeneratorClient.genererFørsteside(any()) }
-                .answers { PostFørstesideResponse(hentBytes()) }
+            .answers { PostFørstesideResponse(hentBytes()) }
 
         val førsteside = Førsteside(maalform = "NB", navSkjemaId = "123", overskriftsTittel = "Testoverskrift")
 
         val resultat = førstesideGeneratorService.genererForside(førsteside, "123")
 
-
         Assertions.assertThat(resultat.size == hentBytes().size)
     }
-
 
     private fun hentBytes(): ByteArray {
         return "PDF".toByteArray(Charsets.UTF_8)

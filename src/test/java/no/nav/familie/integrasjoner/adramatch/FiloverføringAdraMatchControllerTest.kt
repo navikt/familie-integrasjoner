@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.util.UriComponentsBuilder
 
-
 @ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
 class FiloverføringAdraMatchControllerTest : OppslagSpringRunnerTest() {
 
@@ -33,9 +32,11 @@ class FiloverføringAdraMatchControllerTest : OppslagSpringRunnerTest() {
         sftpServer.createDirectory("/inbound")
         val uri = UriComponentsBuilder.fromHttpUrl(localhost(BASE_URL)).toUriString()
         val payload = Fil("file.txt", "Filinnhold".toByteArray())
-        val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(uri,
-                                                                              HttpMethod.PUT,
-                                                                              HttpEntity(payload, headers))
+        val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(
+            uri,
+            HttpMethod.PUT,
+            HttpEntity(payload, headers)
+        )
         assertThat(response.body!!.data).isEqualTo("Fil lastet opp!")
         val fileContent = sftpServer.getFileContent("/inbound/file.txt")
         assertThat(fileContent).isEqualTo("Filinnhold".toByteArray())

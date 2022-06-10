@@ -35,8 +35,7 @@ import javax.validation.constraints.Pattern
 class OppgaveController(private val oppgaveService: OppgaveService) {
 
     @GetMapping(path = ["/{oppgaveId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun hentOppgave(@PathVariable(name = "oppgaveId") oppgaveId: String)
-            : ResponseEntity<Ressurs<Oppgave>> {
+    fun hentOppgave(@PathVariable(name = "oppgaveId") oppgaveId: String): ResponseEntity<Ressurs<Oppgave>> {
         val oppgave = oppgaveService.hentOppgave(oppgaveId.toLong())
         return ResponseEntity.ok().body(success(oppgave, "Hent Oppgave OK"))
     }
@@ -69,19 +68,26 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 
     @PostMapping(path = ["/{oppgaveId}/fordel"])
-    fun fordelOppgave(@PathVariable(name = "oppgaveId") oppgaveId: Long,
-                      @RequestParam("saksbehandler") saksbehandler: String?): ResponseEntity<Ressurs<OppgaveResponse>> {
+    fun fordelOppgave(
+        @PathVariable(name = "oppgaveId") oppgaveId: Long,
+        @RequestParam("saksbehandler") saksbehandler: String?
+    ): ResponseEntity<Ressurs<OppgaveResponse>> {
         Result.runCatching {
             if (saksbehandler == null) oppgaveService.tilbakestillFordelingPåOppgave(oppgaveId)
             else oppgaveService.fordelOppgave(oppgaveId, saksbehandler)
-        }.fold(onSuccess = {
-            return ResponseEntity.ok(success(OppgaveResponse(oppgaveId = oppgaveId),
-                                             if (saksbehandler !== null) "Oppgaven ble tildelt saksbehandler $saksbehandler"
-                                             else "Fordeling på oppgaven ble tilbakestilt"))
-        },
-               onFailure = {
-                   return ResponseEntity.badRequest().body(Ressurs.failure(errorMessage = it.message))
-               }
+        }.fold(
+            onSuccess = {
+                return ResponseEntity.ok(
+                    success(
+                        OppgaveResponse(oppgaveId = oppgaveId),
+                        if (saksbehandler !== null) "Oppgaven ble tildelt saksbehandler $saksbehandler"
+                        else "Fordeling på oppgaven ble tilbakestilt"
+                    )
+                )
+            },
+            onFailure = {
+                return ResponseEntity.badRequest().body(Ressurs.failure(errorMessage = it.message))
+            }
         )
     }
 
@@ -102,14 +108,14 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     fun opprettOppgaveV1(@RequestBody oppgave: OpprettOppgave): ResponseEntity<Ressurs<OppgaveResponse>> {
         val oppgaveId = oppgaveService.opprettOppgaveV1(oppgave)
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(success(OppgaveResponse(oppgaveId = oppgaveId), "Opprett oppgave OK"))
+            .body(success(OppgaveResponse(oppgaveId = oppgaveId), "Opprett oppgave OK"))
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/opprett"])
     fun opprettOppgaveV2(@RequestBody oppgave: OpprettOppgaveRequest): ResponseEntity<Ressurs<OppgaveResponse>> {
         val oppgaveId = oppgaveService.opprettOppgave(oppgave)
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(success(OppgaveResponse(oppgaveId = oppgaveId), "Opprett oppgave OK"))
+            .body(success(OppgaveResponse(oppgaveId = oppgaveId), "Opprett oppgave OK"))
     }
 
     @PatchMapping(path = ["/{oppgaveId}/ferdigstill"])
@@ -119,58 +125,64 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 }
 
-class DeprecatedFinnOppgaveRequest(val tema: String? = null,
-                                   val behandlingstema: String? = null,
-                                   val oppgavetype: String? = null,
-                                   val enhet: String? = null,
-                                   val saksbehandler: String? = null,
-                                   val journalpostId: String? = null,
-                                   val tilordnetRessurs: String? = null,
-                                   val tildeltRessurs: Boolean? = null,
-                                   val opprettetFomTidspunkt: String? = null,
-                                   val opprettetTomTidspunkt: String? = null,
-                                   val fristFomDato: String? = null,
-                                   val fristTomDato: String? = null,
-                                   val aktivFomDato: String? = null,
-                                   val aktivTomDato: String? = null,
-                                   val limit: Long? = null,
-                                   val offset: Long? = null)
+class DeprecatedFinnOppgaveRequest(
+    val tema: String? = null,
+    val behandlingstema: String? = null,
+    val oppgavetype: String? = null,
+    val enhet: String? = null,
+    val saksbehandler: String? = null,
+    val journalpostId: String? = null,
+    val tilordnetRessurs: String? = null,
+    val tildeltRessurs: Boolean? = null,
+    val opprettetFomTidspunkt: String? = null,
+    val opprettetTomTidspunkt: String? = null,
+    val fristFomDato: String? = null,
+    val fristTomDato: String? = null,
+    val aktivFomDato: String? = null,
+    val aktivTomDato: String? = null,
+    val limit: Long? = null,
+    val offset: Long? = null
+)
 
 @Deprecated("Benytt kontrakt")
-data class DeprecatedFinnOppgaveResponseDto(val antallTreffTotalt: Long,
-                                            val oppgaver: List<DeprecatedOppgave>)
+data class DeprecatedFinnOppgaveResponseDto(
+    val antallTreffTotalt: Long,
+    val oppgaver: List<DeprecatedOppgave>
+)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Deprecated("Benytt kontrakt")
-data class DeprecatedOppgave(val id: Long? = null,
-                             val tildeltEnhetsnr: String? = null,
-                             val endretAvEnhetsnr: String? = null,
-                             val opprettetAvEnhetsnr: String? = null,
-                             val journalpostId: String? = null,
-                             val journalpostkilde: String? = null,
-                             val behandlesAvApplikasjon: String? = null,
-                             val saksreferanse: String? = null,
-                             val bnr: String? = null,
-                             val samhandlernr: String? = null,
-                             @field:Pattern(regexp = "[0-9]{13}")
-                             val aktoerId: String? = null,
-                             val orgnr: String? = null,
-                             val tilordnetRessurs: String? = null,
-                             val beskrivelse: String? = null,
-                             val temagruppe: String? = null,
-                             val tema: Tema? = null,
-                             val behandlingstema: String? = null,
-                             val oppgavetype: String? = null,
-                             val behandlingstype: String? = null,
-                             val versjon: Int? = null,
-                             val mappeId: Long? = null,
-                             val fristFerdigstillelse: String? = null,
-                             val aktivDato: String? = null,
-                             val opprettetTidspunkt: String? = null,
-                             val opprettetAv: String? = null,
-                             val endretAv: String? = null,
-                             val ferdigstiltTidspunkt: String? = null,
-                             val endretTidspunkt: String? = null,
-                             val prioritet: OppgavePrioritet? = null,
-                             val status: StatusEnum? = null,
-                             private var metadata: MutableMap<String, String>? = null)
+data class DeprecatedOppgave(
+    val id: Long? = null,
+    val tildeltEnhetsnr: String? = null,
+    val endretAvEnhetsnr: String? = null,
+    val opprettetAvEnhetsnr: String? = null,
+    val journalpostId: String? = null,
+    val journalpostkilde: String? = null,
+    val behandlesAvApplikasjon: String? = null,
+    val saksreferanse: String? = null,
+    val bnr: String? = null,
+    val samhandlernr: String? = null,
+    @field:Pattern(regexp = "[0-9]{13}")
+    val aktoerId: String? = null,
+    val orgnr: String? = null,
+    val tilordnetRessurs: String? = null,
+    val beskrivelse: String? = null,
+    val temagruppe: String? = null,
+    val tema: Tema? = null,
+    val behandlingstema: String? = null,
+    val oppgavetype: String? = null,
+    val behandlingstype: String? = null,
+    val versjon: Int? = null,
+    val mappeId: Long? = null,
+    val fristFerdigstillelse: String? = null,
+    val aktivDato: String? = null,
+    val opprettetTidspunkt: String? = null,
+    val opprettetAv: String? = null,
+    val endretAv: String? = null,
+    val ferdigstiltTidspunkt: String? = null,
+    val endretTidspunkt: String? = null,
+    val prioritet: OppgavePrioritet? = null,
+    val status: StatusEnum? = null,
+    private var metadata: MutableMap<String, String>? = null
+)

@@ -19,6 +19,4 @@ object BarnetrygdInnhenteOpplysningerMetadata : Dokumentmetadata {
     override val tittel: String = "Innhenting av opplysninger - barnetrygd"
     override val brevkode: String = "innhente-opplysninger"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
-
-
 }

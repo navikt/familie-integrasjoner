@@ -15,19 +15,20 @@ class UnitTestLauncher
 
 fun main(args: Array<String>) {
     val app = SpringApplicationBuilder(ApplicationConfig::class.java)
-            .profiles("integrasjonstest",
-                      "mock-aktor",
-                      "mock-dokarkiv",
-                      "mock-dokdist",
-                      "mock-egenansatt",
-                      "mock-infotrygd",
-                      "mock-infotrygdsak",
-                      "mock-medlemskap",
-                      "mock-oppgave",
-                      "mock-personopplysninger",
-                      "mock-saf",
-                      "mock-sts",
-                      "mock-pdl"
-            ).build()
+        .profiles(
+            "integrasjonstest",
+            "mock-aktor",
+            "mock-dokarkiv",
+            "mock-dokdist",
+            "mock-egenansatt",
+            "mock-infotrygd",
+            "mock-infotrygdsak",
+            "mock-medlemskap",
+            "mock-oppgave",
+            "mock-personopplysninger",
+            "mock-saf",
+            "mock-sts",
+            "mock-pdl"
+        ).build()
     app.run(*args)
 }

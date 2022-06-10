@@ -19,5 +19,4 @@ object SkolepengerBlankettSaksbehandlingMetadata : Dokumentmetadata {
     override val tittel: String = "Blankett for skolepenger - enslig mor eller far"
     override val brevkode: String? = null
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.IS
-
 }

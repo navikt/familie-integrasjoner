@@ -18,20 +18,19 @@ class CacheConfig {
     fun cacheManager(): CacheManager = object : ConcurrentMapCacheManager() {
         override fun createConcurrentMapCache(name: String): Cache {
             val concurrentMap = Caffeine
-                    .newBuilder()
-                    .initialCapacity(100)
-                    .maximumSize(1000)
-                    .expireAfterWrite(2, TimeUnit.HOURS)
-                    .recordStats().build<Any, Any>().asMap()
+                .newBuilder()
+                .initialCapacity(100)
+                .maximumSize(1000)
+                .expireAfterWrite(2, TimeUnit.HOURS)
+                .recordStats().build<Any, Any>().asMap()
             return ConcurrentMapCache(name, concurrentMap, true)
         }
     }
 }
 
 fun <T> CacheManager.getNullable(cache: String, key: String, valueLoader: () -> T?): T? =
-        (getCacheOrThrow(cache)).get(key, valueLoader)
+    (getCacheOrThrow(cache)).get(key, valueLoader)
 fun <T> CacheManager.getValue(cache: String, key: String, valueLoader: () -> T): T =
-        this.getNullable(cache, key, valueLoader) ?: error("Finner ikke cache for cache=$cache key=$key")
-
+    this.getNullable(cache, key, valueLoader) ?: error("Finner ikke cache for cache=$cache key=$key")
 
 fun CacheManager.getCacheOrThrow(cache: String) = this.getCache(cache) ?: error("Finner ikke cache=$cache")

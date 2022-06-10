@@ -31,15 +31,21 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal korrekt behandle returobjekt`() {
-        WireMock.stubFor(WireMock.get(WireMock.urlEqualTo("/api/v1/medlemskapsunntak"))
-                                 .willReturn(WireMock.aResponse()
-                                                     .withStatus(200)
-                                                     .withHeader("Content-Type", "application/json")
-                                                     .withBody(gyldigOppgaveResponse("medlrespons.json"))))
+        WireMock.stubFor(
+            WireMock.get(WireMock.urlEqualTo("/api/v1/medlemskapsunntak"))
+                .willReturn(
+                    WireMock.aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(gyldigOppgaveResponse("medlrespons.json"))
+                )
+        )
 
-        val response: ResponseEntity<Ressurs<Medlemskapsinfo>> = restTemplate.exchange(localhost(GET_MEDLEMSKAP_URL),
-                                                                                       HttpMethod.GET,
-                                                                                       HttpEntity(null, headers))
+        val response: ResponseEntity<Ressurs<Medlemskapsinfo>> = restTemplate.exchange(
+            localhost(GET_MEDLEMSKAP_URL),
+            HttpMethod.GET,
+            HttpEntity(null, headers)
+        )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.success(null).status)
@@ -48,21 +54,29 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal kaste feil for ikke funnet`() {
-        WireMock.stubFor(WireMock.get(WireMock.urlEqualTo("/api/v1/medlemskapsunntak"))
-                                 .willReturn(WireMock.aResponse()
-                                                     .withStatus(404)
-                                                     .withHeader("Content-Type", "application/json")))
+        WireMock.stubFor(
+            WireMock.get(WireMock.urlEqualTo("/api/v1/medlemskapsunntak"))
+                .willReturn(
+                    WireMock.aResponse()
+                        .withStatus(404)
+                        .withHeader("Content-Type", "application/json")
+                )
+        )
 
-        val response: ResponseEntity<Ressurs<Medlemskapsinfo>> = restTemplate.exchange(localhost(GET_MEDLEMSKAP_URL),
-                                                                                       HttpMethod.GET,
-                                                                                       HttpEntity(null, headers))
+        val response: ResponseEntity<Ressurs<Medlemskapsinfo>> = restTemplate.exchange(
+            localhost(GET_MEDLEMSKAP_URL),
+            HttpMethod.GET,
+            HttpEntity(null, headers)
+        )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     private fun gyldigOppgaveResponse(filnavn: String): String {
-        return Files.readString(ClassPathResource("medlemskap/$filnavn").file.toPath(),
-                                StandardCharsets.UTF_8)
+        return Files.readString(
+            ClassPathResource("medlemskap/$filnavn").file.toPath(),
+            StandardCharsets.UTF_8
+        )
     }
 
     companion object {
