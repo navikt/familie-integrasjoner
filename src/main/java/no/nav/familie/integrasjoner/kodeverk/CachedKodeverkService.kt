@@ -19,6 +19,9 @@ class CachedKodeverkService(private val kodeverkClient: KodeverkClient) {
     @Cacheable("kodeverk_landkoder")
     fun hentLandkoder(): Map<String, String> = kodeverkClient.hentLandkoder().mapTerm()
 
+    @Cacheable("kodeverk_landkoder_ISO2")
+    fun hentLandkoderISO2(): Map<String, String> = kodeverkClient.hentLandkoderISO2().mapTerm()
+
     @Cacheable("kodeverk_landkoderMedHistorikk")
     fun hentLandkoderMedHistorikk(): KodeverkDto = kodeverkClient.hentLandkoderMedHistorikk()
 

@@ -30,6 +30,10 @@ class KodeverkClient(
         return getForEntity(kodeverkUri("Landkoder"))
     }
 
+    fun hentLandkoderISO2(): KodeverkDto {
+        return getForEntity(kodeverkUri("LandkoderISO2"))
+    }
+
     fun hentLandkoderMedHistorikk(): KodeverkDto {
         return getForEntity(kodeverkUri("Landkoder", true))
     }
