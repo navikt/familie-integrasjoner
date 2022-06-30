@@ -13,7 +13,6 @@ import no.nav.familie.kontrakter.felles.journalpost.Journalpost
 import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
 import no.nav.familie.kontrakter.felles.journalpost.Journalposttype
 import no.nav.familie.kontrakter.felles.journalpost.Journalstatus
-import no.nav.security.token.support.test.JwtTokenGenerator
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -52,7 +51,7 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
     fun setUp() {
         client.reset()
         testLogger.addAppender(listAppender)
-        headers.setBearerAuth(JwtTokenGenerator.signedJWTAsString("testbruker"))
+        headers.setBearerAuth(lagToken("testbruker"))
         uriHentSaksnummer = UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/sak")
             .queryParam("journalpostId", JOURNALPOST_ID).toUriString()
         uriHentJournalpost = UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL))

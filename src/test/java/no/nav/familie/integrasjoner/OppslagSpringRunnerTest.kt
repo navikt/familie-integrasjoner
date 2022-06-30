@@ -2,17 +2,20 @@ package no.nav.familie.integrasjoner
 
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.read.ListAppender
+import no.nav.security.mock.oauth2.MockOAuth2Server
+import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.boot.web.server.LocalServerPort
-import org.springframework.http.HttpEntity
+import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.http.ResponseEntity
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import java.util.UUID
 
+@EnableMockOAuth2Server
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(classes = [UnitTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 abstract class OppslagSpringRunnerTest {
@@ -21,6 +24,10 @@ abstract class OppslagSpringRunnerTest {
     protected val loggingEvents: MutableList<ILoggingEvent> = listAppender.list
     protected val restTemplate = TestRestTemplate()
     protected val headers = HttpHeaders()
+
+    @Suppress("SpringJavaInjectionPointsAutowiringInspection")
+    @Autowired
+    private lateinit var mockOAuth2Server: MockOAuth2Server
 
     @LocalServerPort
     private val port = 0
@@ -45,12 +52,23 @@ abstract class OppslagSpringRunnerTest {
 
     protected val lokalTestToken: String
         get() {
-            val cookie = restTemplate.exchange(localhost("/local/cookie"), HttpMethod.GET, HttpEntity.EMPTY, String::class.java)
-            return tokenFraRespons(cookie)
+            return lagToken()
         }
 
-    private fun tokenFraRespons(cookie: ResponseEntity<String>): String {
-        return cookie.body.split("value\":\"").toTypedArray()[1].split("\"").toTypedArray()[0]
+    fun lagToken(subject: String = "subject"): String {
+        val clientId = UUID.randomUUID().toString()
+        val issuerId = "azuread"
+        return mockOAuth2Server.issueToken(
+            issuerId = issuerId,
+            clientId = clientId,
+            DefaultOAuth2TokenCallback(
+                issuerId = issuerId,
+                subject = subject,
+                audience = listOf("aud-localhost"),
+                claims = emptyMap(),
+                expiry = 3600
+            )
+        ).serialize()
     }
 
     companion object {
