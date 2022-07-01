@@ -1,7 +1,6 @@
 package no.nav.familie.integrasjoner
 
 import no.nav.familie.integrasjoner.config.ApplicationConfig
-import no.nav.security.token.support.test.spring.TokenGeneratorConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
 import org.springframework.boot.builder.SpringApplicationBuilder
@@ -9,7 +8,7 @@ import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Profile
 
 @SpringBootApplication(exclude = [ErrorMvcAutoConfiguration::class])
-@Import(ApplicationConfig::class, TokenGeneratorConfiguration::class)
+@Import(ApplicationConfig::class)
 @Profile("integrasjonstest")
 class UnitTestLauncher
 
