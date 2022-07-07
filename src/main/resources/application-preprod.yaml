@@ -126,7 +126,6 @@ EGEN_ANSATT_URL: https://skjermede-personer-pip.nais.preprod.local
 DOKDIST_URL: https://dokdistfordeling-q2.dev.intern.nav.no
 ARBEIDSFORDELING_V1_URL: https://app-q1.adeo.no/norg2/ws/Arbeidsfordeling/v1
 AAREG_URL: https://modapp-q2.adeo.no/aareg-services/api
-GOSYS_INFOTRYGDSAK_URL: https://tjenestebuss-q2.adeo.no/nav-cons-sak-gosys-3.0.0Web/sca/GOSYSInfotrygdSakWSEXP
 SKYGGE_SAK_URL: https://sak-q2.dev.intern.nav.no
 INFOTRYGD_VEDTAK_URL: https://modapp-q1.adeo.no/infotrygd-ws/InfotrygdVedtak/v1
 NORG2_URL: https://norg2.dev.adeo.no/norg2/
