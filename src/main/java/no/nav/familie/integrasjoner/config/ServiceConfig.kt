@@ -3,7 +3,6 @@ package no.nav.familie.integrasjoner.config
 import no.nav.common.cxf.CXFClient
 import no.nav.common.cxf.StsConfig
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
-import no.nav.tjeneste.virksomhet.infotrygdvedtak.v1.binding.InfotrygdVedtakV1
 import no.nav.tjeneste.virksomhet.organisasjon.v5.binding.OrganisasjonV5
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import org.springframework.beans.factory.annotation.Value
@@ -17,7 +16,6 @@ class ServiceConfig(
     @Value("\${CREDENTIAL_PASSWORD}") private val systemuserPwd: String,
     @Value("\${PERSON_V3_URL}") private val personV3Url: String,
     @Value("\${ARBEIDSFORDELING_V1_URL}") private val arbeidsfordelingUrl: String,
-    @Value("\${INFOTRYGD_VEDTAK_URL}") private val infotrygdVedtakUrl: String,
     @Value("\${ORGANISASJON_V5_URL}") private val organisasjonV5Url: String,
 ) {
 
@@ -56,14 +54,6 @@ class ServiceConfig(
     fun arbeidsfordelingV1(): ArbeidsfordelingV1 =
         CXFClient(ArbeidsfordelingV1::class.java)
             .address(arbeidsfordelingUrl)
-            .configureStsForSystemUser(stsConfig())
-            .build()
-
-    @Bean
-    fun infotrygdVedtak(): InfotrygdVedtakV1 =
-        CXFClient(InfotrygdVedtakV1::class.java)
-            .address(infotrygdVedtakUrl)
-            .timeout(10000, 10000)
             .configureStsForSystemUser(stsConfig())
             .build()
 }
