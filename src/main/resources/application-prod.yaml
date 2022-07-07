@@ -128,7 +128,6 @@ AAREG_URL: https://modapp.adeo.no/aareg-services/api
 SKYGGE_SAK_URL: https://sak.intern.nav.no
 OPPGAVE_URL: https://oppgave.nais.adeo.no
 GOSYS_INFOTRYGDSAK_URL: https://tjenestebuss.adeo.no/nav-cons-sak-gosys-3.0.0Web/sca/GOSYSInfotrygdSakWSEXP
-INFOTRYGD_VEDTAK_URL: https://modapp.adeo.no/infotrygd-ws/InfotrygdVedtak/v1
 NORG2_URL: https://norg2.nais.adeo.no/norg2/
 SFTP_HOST: a01drvl099.adeo.no
 

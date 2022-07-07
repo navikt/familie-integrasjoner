@@ -1,13 +1,10 @@
 package no.nav.familie.integrasjoner.infotrygd
 
 import no.nav.familie.integrasjoner.client.rest.InfotrygdRestClient
-import no.nav.familie.integrasjoner.client.soap.InfotrygdVedtakSoapClient
 import no.nav.familie.integrasjoner.infotrygd.domene.AktivKontantstøtteInfo
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
-import no.nav.familie.kontrakter.felles.ef.PerioderOvergangsstønadRequest
-import no.nav.familie.kontrakter.felles.ef.PerioderOvergangsstønadResponse
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -15,8 +12,6 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -28,7 +23,6 @@ import org.springframework.web.client.HttpStatusCodeException
 @RequestMapping("/api/infotrygd")
 class InfotrygdController(
     private val infotrygdRestClient: InfotrygdRestClient,
-    private val infotrygdVedtakSoapClient: InfotrygdVedtakSoapClient
 ) {
 
     @ExceptionHandler(HttpStatusCodeException::class)
@@ -63,11 +57,6 @@ class InfotrygdController(
                 "Oppslag mot Infotrygd OK"
             )
         )
-    }
-
-    @PostMapping("vedtak-perioder")
-    fun hentVedtaksperioder(@RequestBody request: PerioderOvergangsstønadRequest): Ressurs<PerioderOvergangsstønadResponse> {
-        return success(infotrygdVedtakSoapClient.hentVedtaksperioder(request))
     }
 
     companion object {
