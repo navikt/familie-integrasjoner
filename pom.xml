@@ -23,7 +23,7 @@
         <springdoc.version>1.6.9</springdoc.version>
         <common-java-modules.version>2.2022.06.30_06.19-0603b0416483</common-java-modules.version>
         <felles.version>1.20220610091149_ae616c5</felles.version>
-        <kontrakt.version>2.0_20220628113239_2eb76f0</kontrakt.version>
+        <kontrakt.version>2.0_20220712141639_0440c10</kontrakt.version>
         <cxf.version>3.5.3</cxf.version>
         <token-validation-spring.version>2.1.1</token-validation-spring.version>
         <tjenestespesifikasjoner.version>2594.7c3ac50</tjenestespesifikasjoner.version>
