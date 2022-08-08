@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
+import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.journalpost.JournalpostForBrukerException
 import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
@@ -103,6 +104,7 @@ class SafRestClient(
         return HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
             accept = listOf(MediaType.APPLICATION_JSON)
+            add(NAV_CALL_ID, MDCOperations.getCallId())
         }
     }
 

@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractRestClient
+import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
 import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
 import org.springframework.beans.factory.annotation.Qualifier
@@ -30,6 +31,7 @@ class SafHentDokumentRestClient(
     private fun httpHeaders(): HttpHeaders {
         return HttpHeaders().apply {
             accept = listOf(MediaType.ALL)
+            add(NAV_CALL_ID, MDCOperations.getCallId())
         }
     }
 
