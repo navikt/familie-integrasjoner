@@ -1,11 +1,13 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractRestClient
+import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggResponse
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpStatusCodeException
@@ -29,7 +31,7 @@ class DokarkivLogiskVedleggRestClient(
             .buildAndExpand(dokumentInfoId)
             .toUri()
         try {
-            return postForEntity(uri, request)
+            return postForEntity(uri, request, headers())
         } catch (e: RuntimeException) {
             val responsebody = if (e is HttpStatusCodeException) e.responseBodyAsString else ""
             val message = "Kan ikke opprette logisk vedlegg for dokumentinfo $dokumentInfoId $responsebody"
@@ -69,7 +71,7 @@ class DokarkivLogiskVedleggRestClient(
         AbstractRestClient(restOperations, "dokarkiv.logiskvedlegg.slett") {
 
         fun slettLogiskVedlegg(uri: URI) {
-            deleteForEntity<String>(uri)
+            deleteForEntity<String>(uri, null, headers())
         }
     }
 
@@ -77,5 +79,13 @@ class DokarkivLogiskVedleggRestClient(
 
         private const val PATH_LOGISKVEDLEGG = "rest/journalpostapi/v1/dokumentInfo/{dokumentInfo}/logiskVedlegg/"
         private const val PATH_SLETT_LOGISK_VEDLEGG = "$PATH_LOGISKVEDLEGG/{logiskVedleggId}"
+
+        private const val NAV_CALL_ID = "Nav-Callid"
+
+        private fun headers(): HttpHeaders {
+            return HttpHeaders().apply {
+                add(NAV_CALL_ID, MDCOperations.getCallId())
+            }
+        }
     }
 }

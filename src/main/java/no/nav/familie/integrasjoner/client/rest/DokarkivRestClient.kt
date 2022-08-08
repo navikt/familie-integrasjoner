@@ -6,6 +6,7 @@ import no.nav.familie.integrasjoner.dokarkiv.client.KanIkkeFerdigstilleJournalpo
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.FerdigstillJournalPost
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
+import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostResponse
@@ -116,11 +117,13 @@ class DokarkivRestClient(
         private const val PATH_JOURNALPOST = "rest/journalpostapi/v1/journalpost"
         private const val QUERY_FERDIGSTILL = "forsoekFerdigstill={boolean}"
         private const val PATH_FERDIGSTILL_JOURNALPOST = "rest/journalpostapi/v1/journalpost/%s/ferdigstill"
+        private const val NAV_CALL_ID = "Nav-Callid"
 
         private val NAVIDENT_REGEX = """^[a-zA-Z]\d{6}$""".toRegex()
 
         fun headers(navIdent: String?): HttpHeaders {
             return HttpHeaders().apply {
+                add(NAV_CALL_ID, MDCOperations.getCallId())
                 if (!navIdent.isNullOrEmpty()) {
                     if (NAVIDENT_REGEX.matches(navIdent)) {
                         add(NavHttpHeaders.NAV_USER_ID.asString(), navIdent)
