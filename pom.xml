@@ -210,11 +210,6 @@
             <artifactId>egenansatt-v1-tjenestespesifikasjon</artifactId>
             <version>${tjenestespesifikasjoner.version}</version>
         </dependency>
-        <dependency>
-            <groupId>no.nav.tjenestespesifikasjoner</groupId>
-            <artifactId>cons-sak-gosys-tjenestespesifikasjon</artifactId>
-            <version>${tjenestespesifikasjoner.version}</version>
-        </dependency>
         <!-- Webservices -->
         <dependency>
             <groupId>no.nav.tjenestespesifikasjoner</groupId>
