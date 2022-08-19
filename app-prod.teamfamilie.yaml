@@ -57,6 +57,8 @@ spec:
           cluster: prod-gcp
         - application: familie-ef-sak
           cluster: prod-gcp
+        - application: familie-klage
+          cluster: prod-gcp
         - application: familie-ef-iverksett
           cluster: prod-gcp
         - application: familie-ef-personhendelse

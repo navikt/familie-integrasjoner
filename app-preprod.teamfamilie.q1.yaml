@@ -40,6 +40,8 @@ spec:
   accessPolicy:
     inbound:
       rules:
+        - application: familie-klage
+          cluster: dev-gcp
         - application: familie-ba-sak
           cluster: dev-gcp
         - application: familie-tilbake
