@@ -52,6 +52,10 @@ spec:
         - application: familie-ef-mottak
         - application: familie-ef-mottak
           cluster: dev-gcp
+        - application: familie-klage
+          cluster: dev-gcp
+        - application: familie-klage-lokal
+          cluster: dev-gcp
         - application: familie-ef-sak
           cluster: dev-gcp
         - application: familie-ef-sak-lokal
