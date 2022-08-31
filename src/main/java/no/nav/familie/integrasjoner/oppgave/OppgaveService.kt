@@ -193,19 +193,23 @@ class OppgaveService constructor(
     }
 
     fun finnMapper(finnMappeRequest: FinnMappeRequest): FinnMappeResponseDto {
-        return oppgaveRestClient.finnMapper(finnMappeRequest)
-    }
-
-    fun finnMapper(enhetNr: String): List<MappeDto> {
-        val finnMappeRequest = FinnMappeRequest(enhetsnr = enhetNr, limit = 1000)
         val mappeRespons = oppgaveRestClient.finnMapper(finnMappeRequest)
-
         if (mappeRespons.antallTreffTotalt > mappeRespons.mapper.size) {
             logger.error(
                 "Det finnes flere mapper (${mappeRespons.antallTreffTotalt}) " +
                     "enn vi har hentet ut (${mappeRespons.mapper.size}). Sjekk limit. "
             )
         }
-        return mappeRespons.mapper
+        return mappeRespons.mapperUtenTema()
     }
+
+    fun finnMapper(enhetNr: String): List<MappeDto> {
+        val finnMappeRequest = FinnMappeRequest(enhetsnr = enhetNr, limit = 1000)
+        return finnMapper(finnMappeRequest).mapper
+    }
+}
+
+private fun FinnMappeResponseDto.mapperUtenTema(): FinnMappeResponseDto {
+    val mapperUtenTema = this.mapper.filter { it.tema.isNullOrBlank() }
+    return this.copy(mapper = mapperUtenTema, antallTreffTotalt = mapperUtenTema.size)
 }
