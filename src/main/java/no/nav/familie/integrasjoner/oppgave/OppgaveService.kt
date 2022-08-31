@@ -209,6 +209,9 @@ class OppgaveService constructor(
     }
 }
 
+/**
+ * Vil filtrere bort mapper med tema siden disse er spesifikke for andre ytelser enn våre (f.eks Pensjon og Bidrag)
+ **/
 private fun FinnMappeResponseDto.mapperUtenTema(): FinnMappeResponseDto {
     val mapperUtenTema = this.mapper.filter { it.tema.isNullOrBlank() }
     return this.copy(mapper = mapperUtenTema, antallTreffTotalt = mapperUtenTema.size)
