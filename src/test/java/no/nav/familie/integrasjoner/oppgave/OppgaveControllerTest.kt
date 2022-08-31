@@ -72,7 +72,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `finnMApper med gyldig query returnerer mapper`() {
+    fun `finnMapper med gyldig query returnerer mapper uten tema som skal filtreres bort`() {
 
         stubFor(
             get(GET_MAPPER_URL)
@@ -80,12 +80,23 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                     okJson(
                         objectMapper.writeValueAsString(
                             FinnMappeResponseDto(
-                                5,
+                                3,
                                 listOf(
                                     MappeDto(
                                         1,
-                                        "1",
+                                        "112",
                                         "4489"
+                                    ),
+                                    MappeDto(
+                                        2,
+                                        "132",
+                                        "4489"
+                                    ),
+                                    MappeDto(
+                                        id = 3,
+                                        navn = "123",
+                                        enhetsnr = "4489",
+                                        tema = "PEN"
                                     )
                                 )
                             )
@@ -101,7 +112,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 HttpEntity(null, headers)
             )
 
-        assertThat(response.body?.data?.antallTreffTotalt).isEqualTo(5)
+        assertThat(response.body?.data?.antallTreffTotalt).isEqualTo(2)
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
     }
 
