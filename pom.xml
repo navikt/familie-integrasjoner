@@ -22,7 +22,7 @@
         <java.version>17</java.version>
         <springdoc.version>1.6.9</springdoc.version>
         <common-java-modules.version>2.2022.06.30_06.19-0603b0416483</common-java-modules.version>
-        <felles.version>1.20220610091149_ae616c5</felles.version>
+        <felles.version>1.20220830113732_8222915</felles.version>
         <kontrakt.version>2.0_20220831094750_9782fd7</kontrakt.version>
         <cxf.version>3.5.3</cxf.version>
         <token-validation-spring.version>2.1.1</token-validation-spring.version>
