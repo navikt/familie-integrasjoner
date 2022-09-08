@@ -45,6 +45,8 @@ spec:
       rules:
         - application: familie-ks-sak
           cluster: dev-gcp
+        - application: familie-ks-sak
+          cluster: dev-fss
         - application: familie-ba-sak
           cluster: dev-gcp
         - application: familie-tilbake
