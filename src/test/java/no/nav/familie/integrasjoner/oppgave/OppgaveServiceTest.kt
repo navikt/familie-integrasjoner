@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.oppgave
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.familie.integrasjoner.aktør.AktørService
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.saksbehandler.SaksbehandlerService
@@ -14,10 +15,10 @@ import org.junit.jupiter.api.Test
 internal class OppgaveServiceTest {
 
     val oppgaveRestClient = mockk<OppgaveRestClient>()
-    val pdlRestClient = mockk<PdlRestClient>()
+    val aktørService = mockk<AktørService>()
     val saksbehandlerService = mockk<SaksbehandlerService>()
 
-    val oppgaveService = OppgaveService(oppgaveRestClient, pdlRestClient, saksbehandlerService)
+    val oppgaveService = OppgaveService(oppgaveRestClient, aktørService, saksbehandlerService)
 
     val mapper = listOf(
         MappeDto(
