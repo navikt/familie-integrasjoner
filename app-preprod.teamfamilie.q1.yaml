@@ -56,6 +56,8 @@ spec:
         - application: familie-tilbake-lokal
           cluster: dev-gcp
         - application: familie-ba-mottak
+        - application: familie-baks-mottak
+          cluster: dev-gcp
         - application: familie-ef-mottak
           cluster: dev-gcp
         - application: familie-ef-sak
