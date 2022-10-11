@@ -135,4 +135,3 @@ SFTP_PASSPHRASE: Palpatine
 
 # mock-server
 PDL_URL: http://localhost:1337/rest/api/pdl
-AKTOERID_URL: http://localhost:1337/rest/aktoerregister

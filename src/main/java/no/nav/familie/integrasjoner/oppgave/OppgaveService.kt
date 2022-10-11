@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.oppgave
 
+import no.nav.familie.integrasjoner.aktør.AktørService
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
-import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.OppslagException.Level
 import no.nav.familie.integrasjoner.saksbehandler.SaksbehandlerService
@@ -27,7 +27,7 @@ import java.time.format.DateTimeFormatter
 @Service @ApplicationScope
 class OppgaveService constructor(
     private val oppgaveRestClient: OppgaveRestClient,
-    private val pdlRestClient: PdlRestClient,
+    private val aktørService: AktørService,
     private val saksbehandlerService: SaksbehandlerService,
 ) {
 
@@ -190,13 +190,11 @@ class OppgaveService constructor(
     private fun erAktørIdEllerFnr(oppgaveIdent: OppgaveIdentV2?) =
         oppgaveIdent?.gruppe == IdentGruppe.FOLKEREGISTERIDENT || oppgaveIdent?.gruppe == IdentGruppe.AKTOERID
 
-    private fun getAktørId(oppgaveIdentV2: OppgaveIdentV2, tema: Tema): String? {
-        return if (oppgaveIdentV2.gruppe == IdentGruppe.AKTOERID) oppgaveIdentV2.ident
-        else try {
-            pdlRestClient.hentGjeldendeAktørId(oppgaveIdentV2.ident!!, tema)
-        } catch (e: OppslagException) {
-            logger.warn("Klarte ikke hente aktørId for person fra PDL. Oppretter oppgave uten ident")
-            null
+    private fun getAktørId(oppgaveIdentV2: OppgaveIdentV2, tema: Tema): String {
+        return if (oppgaveIdentV2.gruppe == IdentGruppe.AKTOERID) {
+            oppgaveIdentV2.ident ?: throw IllegalArgumentException("Mangler ident for gruppe=${oppgaveIdentV2.gruppe}")
+        } else {
+            aktørService.getAktørIdFraPdl(oppgaveIdentV2.ident!!, tema)
         }
     }
 
