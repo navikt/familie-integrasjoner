@@ -29,7 +29,7 @@
         <tjenestespesifikasjoner.version>2594.7c3ac50</tjenestespesifikasjoner.version>
         <kotlin.version>1.6.10</kotlin.version>
 
-        <mock-server.version>5.13.2</mock-server.version>
+        <mock-server.version>5.14.0</mock-server.version>
 
         <!--suppress UnresolvedMavenProperty  Ligger som secret i github-->
         <sonar.projectKey>${SONAR_PROJECTKEY}</sonar.projectKey>
