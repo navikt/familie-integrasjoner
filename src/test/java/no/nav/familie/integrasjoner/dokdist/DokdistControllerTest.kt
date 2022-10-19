@@ -152,7 +152,8 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
             .contains("validering av distribusjonsforespørsel for journalpostId=453492547 feilet, feilmelding=")
     }
 
-    @Throws(IOException::class) private fun badRequestResponse(): String {
+    @Throws(IOException::class)
+    private fun badRequestResponse(): String {
         return Files.readString(ClassPathResource("dokdist/badrequest.json").file.toPath(), StandardCharsets.UTF_8)
     }
 

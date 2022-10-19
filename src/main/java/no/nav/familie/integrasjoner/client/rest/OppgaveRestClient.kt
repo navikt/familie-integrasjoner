@@ -51,7 +51,8 @@ class OppgaveRestClient(
 
         val requestUrl = lagRequestUrlMed(
             request.aktoerId!!,
-            request.journalpostId!!, request.tema?.name ?: KONTANTSTØTTE_TEMA.name
+            request.journalpostId!!,
+            request.tema?.name ?: KONTANTSTØTTE_TEMA.name
         )
         return requestOppgaveJson(requestUrl)
     }
@@ -62,7 +63,6 @@ class OppgaveRestClient(
 
     @Deprecated("Bruk finnOppgaver")
     fun finnOppgaverV3(finnOppgaveRequest: FinnOppgaveRequest): DeprecatedFinnOppgaveResponseDto {
-
         val oppgaveRequest = finnOppgaveRequest.toDto()
         var offset = oppgaveRequest.offset
 
@@ -70,8 +70,11 @@ class OppgaveRestClient(
             getForEntity<DeprecatedFinnOppgaveResponseDto>(buildOppgaveRequestUri(oppgaveRequest), httpHeaders())
         val oppgaver: MutableList<DeprecatedOppgave> = oppgaverOgAntall.oppgaver.toMutableList()
         val grense =
-            if (finnOppgaveRequest.limit == null) oppgaverOgAntall.antallTreffTotalt
-            else oppgaveRequest.offset + finnOppgaveRequest.limit!!
+            if (finnOppgaveRequest.limit == null) {
+                oppgaverOgAntall.antallTreffTotalt
+            } else {
+                oppgaveRequest.offset + finnOppgaveRequest.limit!!
+            }
         offset += limitMotOppgave
 
         while (offset < grense) {
@@ -106,7 +109,6 @@ class OppgaveRestClient(
             .toUri()
 
     fun finnOppgaver(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {
-
         val oppgaveRequest = finnOppgaveRequest.toDto()
         var offset = oppgaveRequest.offset
 
@@ -114,8 +116,11 @@ class OppgaveRestClient(
             getForEntity<FinnOppgaveResponseDto>(buildOppgaveRequestUri(oppgaveRequest), httpHeaders())
         val oppgaver: MutableList<Oppgave> = oppgaverOgAntall.oppgaver.toMutableList()
         val grense =
-            if (finnOppgaveRequest.limit == null) oppgaverOgAntall.antallTreffTotalt
-            else oppgaveRequest.offset + finnOppgaveRequest.limit!!
+            if (finnOppgaveRequest.limit == null) {
+                oppgaverOgAntall.antallTreffTotalt
+            } else {
+                oppgaveRequest.offset + finnOppgaveRequest.limit!!
+            }
         offset += limitMotOppgave
 
         while (offset < grense) {

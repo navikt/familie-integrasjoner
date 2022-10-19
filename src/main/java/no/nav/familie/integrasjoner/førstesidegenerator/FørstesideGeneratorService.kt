@@ -38,12 +38,18 @@ class FørstesideGeneratorService(private val førstesidegeneratorClient: Først
                 // Ettersendelse til søknad om barnetrygd ved fødsel - NAV 33.00-07",
                 overskriftstittel = førsteside.overskriftsTittel,
                 dokumentlisteFørsteside = arrayListOf(
-                    if (førsteside.maalform == "NN") Companion.VEDLAGTEBREV_TEKST_NN
-                    else Companion.VEDLAGTEBREV_TEKST_NB
+                    if (førsteside.maalform == "NN") {
+                        Companion.VEDLAGTEBREV_TEKST_NN
+                    } else {
+                        Companion.VEDLAGTEBREV_TEKST_NB
+                    }
                 ),
                 vedleggsliste = arrayListOf(
-                    if (førsteside.maalform == "NN") Companion.VEDLAGTEBREV_TEKST_NN
-                    else Companion.VEDLAGTEBREV_TEKST_NB
+                    if (førsteside.maalform == "NN") {
+                        Companion.VEDLAGTEBREV_TEKST_NN
+                    } else {
+                        Companion.VEDLAGTEBREV_TEKST_NB
+                    }
                 )
             )
         return førstesidegeneratorClient.genererFørsteside(postFørstesideRequest).førsteside

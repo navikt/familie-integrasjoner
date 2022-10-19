@@ -28,7 +28,7 @@ import java.time.format.DateTimeFormatter
 class OppgaveService constructor(
     private val oppgaveRestClient: OppgaveRestClient,
     private val aktørService: AktørService,
-    private val saksbehandlerService: SaksbehandlerService,
+    private val saksbehandlerService: SaksbehandlerService
 ) {
 
     private val logger = LoggerFactory.getLogger(OppgaveService::class.java)

@@ -15,7 +15,6 @@ class SaksbehandlerService(
     private val lengdeNavIdent = 7
 
     fun hentSaksbehandler(id: String): Saksbehandler {
-
         // TODO: Midlertidig for å få ut funksjonalitet. Fjern når ba-sak-e2e fases ut.
         if (environment.activeProfiles.any { it == "e2e" }) {
             return Saksbehandler(

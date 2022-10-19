@@ -60,7 +60,6 @@ class PdlRestClient(
     }
 
     fun hentPerson(personIdent: String, tema: Tema, personInfoQuery: PersonInfoQuery): Person {
-
         val pdlPersonRequest = PdlPersonRequest(
             variables = PdlPersonRequestVariables(personIdent),
             query = personInfoQuery.graphQL
@@ -208,7 +207,6 @@ class PdlRestClient(
         error: Throwable? = null,
         feilmelding: String = "Feil ved oppslag på person. Gav feil: ${error?.message}"
     ): OppslagException {
-
         responsFailure.increment()
         return OppslagException(
             feilmelding,
