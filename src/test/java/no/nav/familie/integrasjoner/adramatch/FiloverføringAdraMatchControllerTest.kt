@@ -28,7 +28,6 @@ class FiloverføringAdraMatchControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal koble opp og laste opp fil`() {
-
         sftpServer.createDirectory("/inbound")
         val uri = UriComponentsBuilder.fromHttpUrl(localhost(BASE_URL)).toUriString()
         val payload = Fil("file.txt", "Filinnhold".toByteArray())

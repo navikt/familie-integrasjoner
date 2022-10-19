@@ -73,7 +73,6 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `finnMapper med gyldig query returnerer mapper uten tema som skal filtreres bort`() {
-
         stubFor(
             get(GET_MAPPER_URL)
                 .willReturn(
@@ -219,7 +218,6 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal oppdatere oppgave med ekstra beskrivelse, returnere oppgaveid og 200 OK`() {
-
         stubFor(get(GET_OPPGAVER_URL).willReturn(okJson(gyldigOppgaveResponse("oppgave.json"))))
 
         stubFor(
@@ -252,7 +250,6 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal opprette oppgave, returnere oppgaveid og 201 Created`() {
-
         stubFor(post("/api/v1/oppgaver").willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
 
         val opprettOppgave = OpprettOppgave(
@@ -278,7 +275,6 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal opprette oppgave med mappeId, returnere oppgaveid og 201 Created`() {
-
         stubFor(post("/api/v1/oppgaver").willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
 
         val opprettOppgave = OpprettOppgaveRequest(
@@ -305,7 +301,6 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal opprette oppgave uten ident, returnere oppgaveid og 201 Created`() {
-
         stubFor(post("/api/v1/oppgaver").willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
 
         val opprettOppgave = OpprettOppgave(
@@ -331,7 +326,6 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `kall mot oppgave ved opprett feiler med bad request, tjenesten vår returernerer 500 og med info om feil i response `() {
-
         stubFor(
             post("/api/v1/oppgaver")
                 .willReturn(

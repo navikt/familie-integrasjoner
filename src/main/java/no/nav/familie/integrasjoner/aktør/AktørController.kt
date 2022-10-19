@@ -23,7 +23,6 @@ class AktørController(private val aktørService: AktørService) {
         @RequestBody(required = true) ident: Ident,
         @PathVariable tema: Tema
     ): ResponseEntity<Ressurs<Map<String, String>>> {
-
         return ResponseEntity.ok(
             success(
                 mapOf("aktørId" to aktørService.getAktørIdFraPdl(ident.ident, tema)),
@@ -37,7 +36,6 @@ class AktørController(private val aktørService: AktørService) {
         @RequestBody(required = true) aktørId: String,
         @PathVariable tema: Tema
     ): ResponseEntity<Ressurs<Map<String, String>>> {
-
         return ResponseEntity.ok(
             success(
                 mapOf("personIdent" to aktørService.getPersonIdentFraPdl(AktørId(aktørId), tema)),

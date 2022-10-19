@@ -30,7 +30,6 @@ class DokdistController(private val dokdistService: DokdistService) {
     @PostMapping("v1")
     @ResponseStatus(HttpStatus.OK)
     fun distribuerJournalpost(@RequestBody request: @Valid DistribuerJournalpostRequest): ResponseEntity<Ressurs<String>> {
-
         val response = dokdistService.distribuerDokumentForJournalpost(request)
         return ResponseEntity.ok(success(response?.bestillingsId ?: throw NullResponseException()))
     }

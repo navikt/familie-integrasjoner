@@ -73,15 +73,21 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         @RequestParam("saksbehandler") saksbehandler: String?
     ): ResponseEntity<Ressurs<OppgaveResponse>> {
         Result.runCatching {
-            if (saksbehandler == null) oppgaveService.tilbakestillFordelingPåOppgave(oppgaveId)
-            else oppgaveService.fordelOppgave(oppgaveId, saksbehandler)
+            if (saksbehandler == null) {
+                oppgaveService.tilbakestillFordelingPåOppgave(oppgaveId)
+            } else {
+                oppgaveService.fordelOppgave(oppgaveId, saksbehandler)
+            }
         }.fold(
             onSuccess = {
                 return ResponseEntity.ok(
                     success(
                         OppgaveResponse(oppgaveId = oppgaveId),
-                        if (saksbehandler !== null) "Oppgaven ble tildelt saksbehandler $saksbehandler"
-                        else "Fordeling på oppgaven ble tilbakestilt"
+                        if (saksbehandler !== null) {
+                            "Oppgaven ble tildelt saksbehandler $saksbehandler"
+                        } else {
+                            "Fordeling på oppgaven ble tilbakestilt"
+                        }
                     )
                 )
             },
