@@ -20,7 +20,7 @@
         <sha1></sha1>
         <changelist>-SNAPSHOT</changelist>
         <java.version>17</java.version>
-        <springdoc.version>1.6.11</springdoc.version>
+        <springdoc.version>1.6.12</springdoc.version>
         <common-java-modules.version>2.2022.09.26_07.11-78a5190823bd</common-java-modules.version>
         <felles.version>1.20221006150009_46021ed</felles.version>
         <kontrakt.version>2.0_20221017113630_9b16b64</kontrakt.version>
