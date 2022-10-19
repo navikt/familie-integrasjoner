@@ -17,6 +17,6 @@ object BarnetrygdForlengetSvartidsbrevInstitusjonMetadata : Dokumentmetadata {
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_FORLENGET_SVARTIDSBREV_INSTITUSJON
     override val tittel: String = "Forlenget svartidsbrev institusjon"
-    override val brevkode: String = "Forlenget svartidsbrev institusjon"
+    override val brevkode: String = "forlenget-svartidsbrev-institusjon"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
