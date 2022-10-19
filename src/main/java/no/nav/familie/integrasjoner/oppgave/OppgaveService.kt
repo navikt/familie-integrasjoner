@@ -176,6 +176,14 @@ class OppgaveService constructor(
                 Level.MEDIUM,
                 HttpStatus.BAD_REQUEST
             )
+
+            null -> throw OppslagException(
+                "Oppgave har ingen status og kan ikke oppdateres. " +
+                    "oppgaveId=$oppgaveId",
+                "Oppgave.ferdigstill",
+                Level.MEDIUM,
+                HttpStatus.BAD_REQUEST
+            )
         }
     }
 
