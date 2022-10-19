@@ -35,7 +35,9 @@ class ArbeidsfordelingController(private val service: ArbeidsfordelingService) {
     @Deprecated("bruk POST med personident")
     @GetMapping("/enhet/{tema}")
     fun hentBehandlendeEnhetForPersonIdent(
-        @NotNull @RequestHeader(name = "Nav-Personident") personIdent: String,
+        @NotNull
+        @RequestHeader(name = "Nav-Personident")
+        personIdent: String,
         @PathVariable(name = "tema") tema: Tema
     ): ResponseEntity<Ressurs<List<Enhet>>> {
         return ResponseEntity.ok(success(service.finnBehandlendeEnhetForPerson(personIdent, tema)))

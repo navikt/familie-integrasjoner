@@ -22,7 +22,6 @@ class MedlRestClient(
     val medlemskapsunntakUri: URI = UriComponentsBuilder.fromUri(medl2BaseUrl).pathSegment(PATH_MEDLEMSKAPSUNNTAK).build().toUri()
 
     fun hentMedlemskapsUnntakResponse(aktørId: String?): List<MedlemskapsunntakResponse> {
-
         val httpHeaders = org.springframework.http.HttpHeaders().apply {
             add(NavHttpHeaders.NAV_PERSONIDENT.asString(), aktørId)
         }

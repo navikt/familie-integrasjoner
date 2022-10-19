@@ -493,7 +493,8 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
-    @Throws(IOException::class) private fun gyldigDokarkivResponse(statusKode: Int? = null): String {
+    @Throws(IOException::class)
+    private fun gyldigDokarkivResponse(statusKode: Int? = null): String {
         return Files.readString(
             ClassPathResource("dokarkiv/gyldig${statusKode ?: ""}response.json").file.toPath(),
             StandardCharsets.UTF_8

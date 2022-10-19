@@ -52,8 +52,12 @@ class PersonopplysningerController(private val personopplysningerService: Person
     @Deprecated("Tps er markert for utfasing. PDL er master.")
     fun historikk(
         @RequestBody(required = true) ident: Ident,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) fomDato: LocalDate,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) tomDato: LocalDate
+        @RequestParam
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        fomDato: LocalDate,
+        @RequestParam
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        tomDato: LocalDate
     ): ResponseEntity<Ressurs<PersonhistorikkInfo>> {
         return ResponseEntity.ok().body(
             success(

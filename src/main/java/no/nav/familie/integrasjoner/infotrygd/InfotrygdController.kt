@@ -22,7 +22,7 @@ import org.springframework.web.client.HttpStatusCodeException
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/infotrygd")
 class InfotrygdController(
-    private val infotrygdRestClient: InfotrygdRestClient,
+    private val infotrygdRestClient: InfotrygdRestClient
 ) {
 
     @ExceptionHandler(HttpStatusCodeException::class)

@@ -117,7 +117,6 @@ class RestTemplateConfig(
 
     @Bean("noAuthorize")
     fun restTemplateNoAuthorize(consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations {
-
         return RestTemplateBuilder()
             .interceptors(
                 consumerIdClientInterceptor,

@@ -45,7 +45,8 @@ class KodeverkControllerTest : OppslagSpringRunnerTest() {
 
         val response: ResponseEntity<Ressurs<KodeverkDto>> = restTemplate.exchange(
             localhost(KODEVERL_EEARG_URL),
-            HttpMethod.GET, null
+            HttpMethod.GET,
+            null
         )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)

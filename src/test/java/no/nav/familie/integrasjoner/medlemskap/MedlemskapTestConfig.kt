@@ -20,7 +20,8 @@ class MedlemskapTestConfig {
     @Bean
     @Profile("mock-medlemskap")
     @Primary
-    @Throws(Exception::class) fun medlClientMock(): MedlRestClient {
+    @Throws(Exception::class)
+    fun medlClientMock(): MedlRestClient {
         val medlMock: MedlRestClient = mockk(relaxed = true)
         every { medlMock.hentMedlemskapsUnntakResponse(any()) }
             .returns(medlemskapResponse())

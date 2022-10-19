@@ -10,9 +10,12 @@ data class SafExtension(
     val classification: String
 )
 
+/* ktlint-disable enum-entry-name-case */
+@Suppress("EnumEntryName")
 enum class SafErrorCode {
     forbidden,
     not_found,
     bad_request,
     server_error
 }
+/* ktlint-enable enum-entry-name-case */

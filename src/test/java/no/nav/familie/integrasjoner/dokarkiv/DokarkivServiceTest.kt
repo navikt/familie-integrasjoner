@@ -283,7 +283,8 @@ class DokarkivServiceTest {
 
         val request = slot.captured
         assertOpprettBarnetrygdVedtakJournalpostRequest(
-            request, PDF_DOK,
+            request,
+            PDF_DOK,
             Sak(
                 fagsakId = FAGSAK_ID,
                 fagsaksystem = Fagsystem.BA,
@@ -310,7 +311,8 @@ class DokarkivServiceTest {
             }
 
         val dto = ArkiverDokumentRequest(
-            FNR, false,
+            FNR,
+            false,
             listOf(
                 Dokument(
                     JSON_DOK,
@@ -355,7 +357,8 @@ class DokarkivServiceTest {
             }
 
         val dto = ArkiverDokumentRequest(
-            FNR, false,
+            FNR,
+            false,
             listOf(
                 Dokument(
                     JSON_DOK,

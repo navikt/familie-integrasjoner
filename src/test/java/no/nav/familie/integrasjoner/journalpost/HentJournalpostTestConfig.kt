@@ -23,7 +23,8 @@ class HentJournalpostTestConfig {
 
     @Bean
     @Profile("mock-saf")
-    @Primary fun safRestClientMock(): SafRestClient {
+    @Primary
+    fun safRestClientMock(): SafRestClient {
         val klient: SafRestClient = mockk(relaxed = true)
         val slot = slot<String>()
 
@@ -39,7 +40,8 @@ class HentJournalpostTestConfig {
                     "1111" + slot.captured,
                     "GSAK",
                     null,
-                    null, null
+                    null,
+                    null
                 ),
                 bruker = Bruker("1234567890123", BrukerIdType.AKTOERID),
                 journalforendeEnhet = "9999",
