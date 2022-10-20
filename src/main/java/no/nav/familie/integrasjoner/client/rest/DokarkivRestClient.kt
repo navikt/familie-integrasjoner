@@ -113,7 +113,7 @@ class DokarkivRestClient(
 
         private val logger = LoggerFactory.getLogger(DokarkivRestClient::class.java)
 
-        private const val PATH_PING = "isAlive"
+        private const val PATH_PING = "actuator/health/liveness"
         private const val PATH_JOURNALPOST = "rest/journalpostapi/v1/journalpost"
         private const val QUERY_FERDIGSTILL = "forsoekFerdigstill={boolean}"
         private const val PATH_FERDIGSTILL_JOURNALPOST = "rest/journalpostapi/v1/journalpost/%s/ferdigstill"
