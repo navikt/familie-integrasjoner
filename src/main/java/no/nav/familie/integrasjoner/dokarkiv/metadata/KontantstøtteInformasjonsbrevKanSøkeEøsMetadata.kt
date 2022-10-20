@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 object KontantstøtteInformasjonsbrevKanSøkeEøsMetadata : Dokumentmetadata {
 
     override val journalpostType: JournalpostType = JournalpostType.UTGAAENDE
-    override val fagsakSystem: Fagsystem = Fagsystem.KS
+    override val fagsakSystem: Fagsystem = Fagsystem.KONT
     override val tema: Tema = Tema.KON
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
