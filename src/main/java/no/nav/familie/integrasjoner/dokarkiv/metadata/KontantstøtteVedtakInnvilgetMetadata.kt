@@ -16,7 +16,7 @@ object KontantstøtteVedtakInnvilgetMetadata : Dokumentmetadata {
     override val behandlingstema: Behandlingstema = Behandlingstema.Kontantstøtte
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.KONTANTSTØTTE_VEDTAK_INNVILGELSE
-    override val tittel: String = "Vedtak om kontantstøtte"
-    override val brevkode: String = "KS04"
+    override val tittel: String = "Vedtak om innvilgelse av kontantstøtte"
+    override val brevkode: String = "vedtak-om-innvilgelse-kontantstøtte"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.VB
 }

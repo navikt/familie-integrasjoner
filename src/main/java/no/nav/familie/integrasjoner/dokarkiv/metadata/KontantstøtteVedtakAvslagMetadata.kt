@@ -17,6 +17,6 @@ object KontantstøtteVedtakAvslagMetadata : Dokumentmetadata {
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.KONTANTSTØTTE_VEDTAK_AVSLAG
     override val tittel: String = "Vedtak om avslag - kontantstøtte"
-    override val brevkode: String = "KS01"
+    override val brevkode: String = "vedtak-om-avslag-kontantstøtte"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.VB
 }
