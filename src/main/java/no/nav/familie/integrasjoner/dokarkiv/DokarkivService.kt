@@ -82,7 +82,7 @@ class DokarkivService(
 
         // førsteside
         arkiverDokumentRequest.førsteside?.also {
-            val bytes = førstesideGeneratorService.genererForside(it, arkiverDokumentRequest.fnr)
+            val bytes = førstesideGeneratorService.genererForside(it, arkiverDokumentRequest.fnr, metadata.tema)
             dokumenter += ArkivDokument(
                 brevkode = metadata.brevkode,
                 dokumentKategori = metadata.dokumentKategori,
