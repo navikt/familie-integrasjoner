@@ -145,7 +145,7 @@ class DokarkivServiceTest {
     fun `skal generere førsteside hvis førsteside er med i request`() {
         val slot = slot<OpprettJournalpostRequest>()
 
-        every { førstesideGeneratorService.genererForside(any<Førsteside>(), any()) }
+        every { førstesideGeneratorService.genererForside(any<Førsteside>(), any(), any()) }
             .answers { PDF_DOK }
 
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
@@ -195,7 +195,7 @@ class DokarkivServiceTest {
     fun `skal ikke generere førsteside hvis førsteside mangler i request`() {
         val slot = slot<OpprettJournalpostRequest>()
 
-        every { førstesideGeneratorService.genererForside(any<Førsteside>(), any()) }
+        every { førstesideGeneratorService.genererForside(any<Førsteside>(), any(), any()) }
             .answers { PDF_DOK }
 
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
@@ -283,7 +283,8 @@ class DokarkivServiceTest {
 
         val request = slot.captured
         assertOpprettBarnetrygdVedtakJournalpostRequest(
-            request, PDF_DOK,
+            request,
+            PDF_DOK,
             Sak(
                 fagsakId = FAGSAK_ID,
                 fagsaksystem = Fagsystem.BA,
@@ -310,7 +311,8 @@ class DokarkivServiceTest {
             }
 
         val dto = ArkiverDokumentRequest(
-            FNR, false,
+            FNR,
+            false,
             listOf(
                 Dokument(
                     JSON_DOK,
@@ -355,7 +357,8 @@ class DokarkivServiceTest {
             }
 
         val dto = ArkiverDokumentRequest(
-            FNR, false,
+            FNR,
+            false,
             listOf(
                 Dokument(
                     JSON_DOK,

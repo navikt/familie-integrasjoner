@@ -25,7 +25,7 @@ class DokdistRestClient(
         postForEntity(distribuerUri, req)
 
     companion object {
-        private const val PATH_PING = "isAlive"
+        private const val PATH_PING = "actuator/health/liveness"
         private const val PATH_DISTRIBUERJOURNALPOST = "rest/v1/distribuerjournalpost"
     }
 }

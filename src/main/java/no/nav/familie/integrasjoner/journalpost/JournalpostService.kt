@@ -17,7 +17,9 @@ class JournalpostService @Autowired constructor(
         val journalpost = safRestClient.hentJournalpost(journalpostId)
         return if (journalpost.sak != null && journalpost.sak?.arkivsaksystem == "GSAK") {
             journalpost.sak?.arkivsaksnummer
-        } else null
+        } else {
+            null
+        }
     }
 
     fun hentJournalpost(journalpostId: String): Journalpost {

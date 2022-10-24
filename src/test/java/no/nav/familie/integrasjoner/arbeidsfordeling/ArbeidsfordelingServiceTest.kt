@@ -60,7 +60,6 @@ internal class ArbeidsfordelingServiceTest {
 
     @Test
     fun `skal returnere null når geografisk tilknytning ikke definert`() {
-
         every {
             pdlRestClient.hentGeografiskTilknytning(
                 ident,
@@ -73,7 +72,6 @@ internal class ArbeidsfordelingServiceTest {
 
     @Test
     fun `skal utlede riktig geografisk tilknytning kode`() {
-
         every {
             pdlRestClient.hentGeografiskTilknytning(
                 ident,
@@ -274,7 +272,7 @@ internal class ArbeidsfordelingServiceTest {
             sivilstand = listOf(ektefelle),
             fullmakt = listOf(fullmakt),
             barn = listOf(barnX, barnZ),
-            barnsForeldrer = listOf(annenForelderX, annenForelderZ),
+            barnsForeldrer = listOf(annenForelderX, annenForelderZ)
         )
         every {
             personopplysningerService.hentPersonMedRelasjoner(ident, any())

@@ -66,7 +66,6 @@ class DokarkivService(
     }
 
     private fun mapTilOpprettJournalpostRequest(arkiverDokumentRequest: ArkiverDokumentRequest): OpprettJournalpostRequest {
-
         val dokarkivBruker = DokarkivBruker(BrukerIdType.FNR, arkiverDokumentRequest.fnr)
         val hoveddokument = arkiverDokumentRequest.hoveddokumentvarianter[0]
         val metadata = dokarkivMetadata.getMetadata(hoveddokument)
@@ -83,7 +82,7 @@ class DokarkivService(
 
         // førsteside
         arkiverDokumentRequest.førsteside?.also {
-            val bytes = førstesideGeneratorService.genererForside(it, arkiverDokumentRequest.fnr)
+            val bytes = førstesideGeneratorService.genererForside(it, arkiverDokumentRequest.fnr, metadata.tema)
             dokumenter += ArkivDokument(
                 brevkode = metadata.brevkode,
                 dokumentKategori = metadata.dokumentKategori,
@@ -122,18 +121,24 @@ class DokarkivService(
         val metadata = dokarkivMetadata.getMetadata(arkiverDokumentRequest.hoveddokumentvarianter[0])
         val hoveddokument = mapDeprecatedHoveddokument(arkiverDokumentRequest.hoveddokumentvarianter)
         val vedleggsdokumenter = arkiverDokumentRequest.vedleggsdokumenter.map(this::mapTilArkivdokument).toMutableList()
-        val jpsak: Sak? = if (arkiverDokumentRequest.fagsakId != null)
+        val jpsak: Sak? = if (arkiverDokumentRequest.fagsakId != null) {
             Sak(
                 fagsakId = arkiverDokumentRequest.fagsakId,
                 sakstype = "FAGSAK",
                 fagsaksystem = metadata.fagsakSystem
-            ) else null
+            )
+        } else {
+            null
+        }
 
         val navn = hentNavnForFnr(fnr = arkiverDokumentRequest.fnr, behandlingstema = metadata.tema)
 
         // førsteside
-        val førsteside: ByteArray? = if (arkiverDokumentRequest.førsteside != null)
-            førstesideGeneratorService.genererForside(arkiverDokumentRequest.førsteside!!, arkiverDokumentRequest.fnr) else null
+        val førsteside: ByteArray? = if (arkiverDokumentRequest.førsteside != null) {
+            førstesideGeneratorService.genererForside(arkiverDokumentRequest.førsteside!!, arkiverDokumentRequest.fnr)
+        } else {
+            null
+        }
 
         if (førsteside != null) {
             vedleggsdokumenter += ArkivDokument(
@@ -167,19 +172,21 @@ class DokarkivService(
     }
 
     private fun mapTilOpprettJournalpostRequest(deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest): OpprettJournalpostRequest {
-
         val metadata = dokarkivMetadata.getMetadata(deprecatedArkiverDokumentRequest.dokumenter[0])
 
         val fnr = deprecatedArkiverDokumentRequest.fnr
         val navn = hentNavnForFnr(fnr = fnr, behandlingstema = metadata.tema)
 
         val arkivdokumenter = deprecatedArkiverDokumentRequest.dokumenter.map(this::mapTilArkivdokument)
-        val jpsak: Sak? = if (deprecatedArkiverDokumentRequest.fagsakId != null)
+        val jpsak: Sak? = if (deprecatedArkiverDokumentRequest.fagsakId != null) {
             Sak(
                 fagsakId = deprecatedArkiverDokumentRequest.fagsakId,
                 sakstype = "FAGSAK",
                 fagsaksystem = metadata.fagsakSystem
-            ) else null
+            )
+        } else {
+            null
+        }
 
         return OpprettJournalpostRequest(
             journalpostType = metadata.journalpostType,

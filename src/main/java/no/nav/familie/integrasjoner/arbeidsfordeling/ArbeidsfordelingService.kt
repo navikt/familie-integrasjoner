@@ -62,7 +62,7 @@ class ArbeidsfordelingService(
             tema = arbeidsfordelingstema.name,
             diskresjonskode = diskresjonskode,
             geografiskOmraade = geografiskTilknytning,
-            skjermet = egenAnsattService.erEgenAnsatt(personIdent),
+            skjermet = egenAnsattService.erEgenAnsatt(personIdent)
         )
     }
 
@@ -131,7 +131,6 @@ class ArbeidsfordelingService(
         personerMedAdresseBeskyttelse: List<PersonMedAdresseBeskyttelse>,
         egneAnsatte: Set<String>
     ): PersonMedAdresseBeskyttelse {
-
         val personMedStrengestGrad = personerMedAdresseBeskyttelse.personIdentMedKode6()
             ?: egneAnsatte.firstOrNull()
             ?: personerMedAdresseBeskyttelse.personMedKode7()

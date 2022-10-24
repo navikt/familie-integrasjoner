@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.HttpStatusCodeException
 
-@RestController @RequestMapping("/api/journalpost") @ProtectedWithClaims(issuer = "azuread")
+@RestController
+@RequestMapping("/api/journalpost")
+@ProtectedWithClaims(issuer = "azuread")
 class HentJournalpostController(private val journalpostService: JournalpostService) {
 
     @ExceptionHandler(JournalpostRestClientException::class)

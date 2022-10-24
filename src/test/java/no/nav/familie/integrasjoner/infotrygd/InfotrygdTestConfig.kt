@@ -14,7 +14,8 @@ class InfotrygdTestConfig {
 
     @Bean
     @Profile("mock-infotrygd")
-    @Primary fun infotrygdRestClientMock(): InfotrygdRestClient {
+    @Primary
+    fun infotrygdRestClientMock(): InfotrygdRestClient {
         val infotrygdServiceMock: InfotrygdRestClient = mockk(relaxed = true)
         val aktivKontantstøtteInfo = AktivKontantstøtteInfo(false)
         every { infotrygdServiceMock.hentAktivKontantstøtteFor(any()) }

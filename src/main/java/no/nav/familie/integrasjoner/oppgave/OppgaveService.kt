@@ -28,7 +28,7 @@ import java.time.format.DateTimeFormatter
 class OppgaveService constructor(
     private val oppgaveRestClient: OppgaveRestClient,
     private val aktørService: AktørService,
-    private val saksbehandlerService: SaksbehandlerService,
+    private val saksbehandlerService: SaksbehandlerService
 ) {
 
     private val logger = LoggerFactory.getLogger(OppgaveService::class.java)
@@ -171,6 +171,14 @@ class OppgaveService constructor(
             StatusEnum.FERDIGSTILT -> logger.info("Oppgave er allerede ferdigstilt. oppgaveId=$oppgaveId")
             StatusEnum.FEILREGISTRERT -> throw OppslagException(
                 "Oppgave har status feilregistrert og kan ikke oppdateres. " +
+                    "oppgaveId=$oppgaveId",
+                "Oppgave.ferdigstill",
+                Level.MEDIUM,
+                HttpStatus.BAD_REQUEST
+            )
+
+            null -> throw OppslagException(
+                "Oppgave har ingen status og kan ikke oppdateres. " +
                     "oppgaveId=$oppgaveId",
                 "Oppgave.ferdigstill",
                 Level.MEDIUM,

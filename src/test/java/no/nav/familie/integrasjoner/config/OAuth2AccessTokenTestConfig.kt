@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 import org.springframework.context.annotation.Profile
 
-@Configuration @Profile("mock-oauth")
+@Configuration
+@Profile("mock-oauth")
 class OAuth2AccessTokenTestConfig {
 
     @Bean

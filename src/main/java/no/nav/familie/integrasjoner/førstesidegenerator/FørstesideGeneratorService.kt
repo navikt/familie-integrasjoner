@@ -38,18 +38,24 @@ class FørstesideGeneratorService(private val førstesidegeneratorClient: Først
                 // Ettersendelse til søknad om barnetrygd ved fødsel - NAV 33.00-07",
                 overskriftstittel = førsteside.overskriftsTittel,
                 dokumentlisteFørsteside = arrayListOf(
-                    if (førsteside.maalform == "NN") Companion.VEDLAGTEBREV_TEKST_NN
-                    else Companion.VEDLAGTEBREV_TEKST_NB
+                    if (førsteside.maalform == "NN") {
+                        Companion.VEDLAGTEBREV_TEKST_NN
+                    } else {
+                        Companion.VEDLAGTEBREV_TEKST_NB
+                    }
                 ),
                 vedleggsliste = arrayListOf(
-                    if (førsteside.maalform == "NN") Companion.VEDLAGTEBREV_TEKST_NN
-                    else Companion.VEDLAGTEBREV_TEKST_NB
+                    if (førsteside.maalform == "NN") {
+                        Companion.VEDLAGTEBREV_TEKST_NN
+                    } else {
+                        Companion.VEDLAGTEBREV_TEKST_NB
+                    }
                 )
             )
         return førstesidegeneratorClient.genererFørsteside(postFørstesideRequest).førsteside
     }
 
-    fun genererForside(førsteside: Førsteside, brukerId: String): ByteArray {
+    fun genererForside(førsteside: Førsteside, brukerId: String, tema: Tema): ByteArray {
         val postFørstesideRequest =
             PostFørstesideRequest(
                 språkkode = førsteside.språkkode,
@@ -65,7 +71,7 @@ class FørstesideGeneratorService(private val førstesidegeneratorClient: Først
                 ),
                 navSkjemaId = førsteside.navSkjemaId, // NAV 33.00-07
                 førstesidetype = Førstesidetype.ETTERSENDELSE,
-                tema = Tema.BAR.name,
+                tema = tema.name,
                 // "Søknad om barnetrygd ved fødsel - NAV 33.00-07,
                 // Ettersendelse til søknad om barnetrygd ved fødsel - NAV 33.00-07",
                 overskriftstittel = førsteside.overskriftstittel,
