@@ -57,7 +57,6 @@ spec:
         - application: familie-tilbake
           cluster: prod-gcp
         - application: familie-ks-mottak
-        - application: familie-ba-mottak
         - application: familie-baks-mottak
           cluster: prod-gcp
         - application: familie-ef-mottak
