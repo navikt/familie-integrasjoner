@@ -13,5 +13,6 @@ query Journalpost($journalpostId: String!) {
         kanal
         dokumenter { dokumentInfoId tittel brevkode dokumentstatus dokumentvarianter { variantformat filnavn } logiskeVedlegg { logiskVedleggId tittel } }
         relevanteDatoer { dato datotype }
+        eksternReferanseId
     }
 }

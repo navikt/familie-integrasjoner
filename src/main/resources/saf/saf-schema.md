@@ -1,0 +1,1 @@
+sql-schema er kopi fra https://github.com/navikt/saf/blob/master/app/src/main/resources/schemas/saf.graphqls
