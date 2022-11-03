@@ -24,7 +24,13 @@ class DokdistController(private val dokdistService: DokdistService) {
     @ExceptionHandler(HttpClientErrorException::class)
     fun handleHttpClientException(e: HttpClientErrorException): ResponseEntity<Ressurs<Any>> {
         secureLogger.warn("Feil ved distribusjon: ${e.message}")
-        return ResponseEntity.status(e.rawStatusCode).body(Ressurs.failure(e.message, error = e))
+        val ressurs: Ressurs<Any> = Ressurs(
+            data = e.responseBodyAsString,
+            status = Ressurs.Status.FEILET,
+            melding = e.message.toString(),
+            stacktrace = e.stackTraceToString()
+        )
+        return ResponseEntity.status(e.rawStatusCode).body(ressurs)
     }
 
     @PostMapping("v1")
@@ -35,6 +41,7 @@ class DokdistController(private val dokdistService: DokdistService) {
     }
 
     companion object {
+
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
     }
 }
