@@ -17,6 +17,6 @@ object BarnetrygdVarselOmÅrligRevurderingEøsMedInnhentingAvOpplysningerMetadat
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_VARSEL_OM_ÅRLIG_REVURDERING_EØS_MED_INNHENTING_AV_OPPLYSNINGER
     override val tittel: String = "Varsel om årlig revurdering EØS med innhenting av opplysninger"
-    override val brevkode: String = "varsel-om-årlig-revurdering-eøs-med-innhenting-av-opplysninger"
+    override val brevkode: String = "varselårligrevurdering-eøs-henting-opplysninger"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
