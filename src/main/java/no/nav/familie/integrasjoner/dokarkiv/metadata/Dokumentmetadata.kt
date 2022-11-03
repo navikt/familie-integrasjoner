@@ -15,7 +15,7 @@ interface Dokumentmetadata {
     val kanal: String?
     val dokumenttype: Dokumenttype
     val tittel: String?
-    val brevkode: String?
+    val brevkode: String? // NB: Maks lengde som er støttet i joark er 50 tegn
     val dokumentKategori: Dokumentkategori
 }
 
