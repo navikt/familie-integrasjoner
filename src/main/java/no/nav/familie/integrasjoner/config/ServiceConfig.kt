@@ -4,7 +4,6 @@ import no.nav.common.cxf.CXFClient
 import no.nav.common.cxf.StsConfig
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
 import no.nav.tjeneste.virksomhet.organisasjon.v5.binding.OrganisasjonV5
-import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -14,7 +13,6 @@ class ServiceConfig(
     @Value("\${SECURITYTOKENSERVICE_URL}") private val stsUrl: String,
     @Value("\${CREDENTIAL_USERNAME}") private val systemuserUsername: String,
     @Value("\${CREDENTIAL_PASSWORD}") private val systemuserPwd: String,
-    @Value("\${PERSON_V3_URL}") private val personV3Url: String,
     @Value("\${ARBEIDSFORDELING_V1_URL}") private val arbeidsfordelingUrl: String,
     @Value("\${ORGANISASJON_V5_URL}") private val organisasjonV5Url: String
 ) {
@@ -33,14 +31,6 @@ class ServiceConfig(
             .password(systemuserPwd)
             .build()
     }
-
-    @Bean
-    fun personV3Port(): PersonV3 =
-        CXFClient(PersonV3::class.java)
-            .address(personV3Url)
-            .timeout(20000, 20000)
-            .configureStsForSystemUser(stsConfig())
-            .build()
 
     @Bean
     fun organisasjonV5Port(): OrganisasjonV5 =
