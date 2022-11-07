@@ -110,7 +110,6 @@ AZURE_APP_CLIENT_SECRET: ${INTEGRASJONER_CLIENT_SECRET}
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 STS_URL: http://nav-auth-mock:8200/nais-sts/token
 SECURITYTOKENSERVICE_URL: http://vtp:8060/soap/SecurityTokenServiceProvider/
-PERSON_V3_URL: https://vtp:8063/soap/tpsws/ws/Person/v3
 INFOTRYGD_URL: http://vtp:8060/rest/infotrygd-kontantstotte
 EGEN_ANSATT_URL: #Mockes ut lokalt
 FORSTESIDEGENERATOR_URL:

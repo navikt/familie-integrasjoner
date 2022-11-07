@@ -13,7 +13,6 @@ class ServiceConfig(
     @Value("\${SECURITYTOKENSERVICE_URL}") private val stsUrl: String,
     @Value("\${CREDENTIAL_USERNAME}") private val systemuserUsername: String,
     @Value("\${CREDENTIAL_PASSWORD}") private val systemuserPwd: String,
-    @Value("\${PERSON_V3_URL}") private val personV3Url: String,
     @Value("\${ARBEIDSFORDELING_V1_URL}") private val arbeidsfordelingUrl: String,
     @Value("\${ORGANISASJON_V5_URL}") private val organisasjonV5Url: String
 ) {

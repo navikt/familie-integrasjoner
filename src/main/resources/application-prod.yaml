@@ -114,7 +114,6 @@ PDL_SCOPE: api://prod-fss.pdl.pdl-api/.default
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 SECURITYTOKENSERVICE_URL: https://sts.adeo.no/SecurityTokenServiceProvider/
-PERSON_V3_URL: https://app.adeo.no/tpsws-aura/ws/Person/v3
 ORGANISASJON_V5_URL: https://modapp.adeo.no/ereg/ws/OrganisasjonService/v5
 MEDL2_URL: https://medlemskap-medl-api.intern.nav.no
 DOKARKIV_V1_URL: https://dokarkiv.intern.nav.no
