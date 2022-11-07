@@ -4,7 +4,6 @@ import no.nav.common.cxf.CXFClient
 import no.nav.common.cxf.StsConfig
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
 import no.nav.tjeneste.virksomhet.organisasjon.v5.binding.OrganisasjonV5
-import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -33,14 +32,6 @@ class ServiceConfig(
             .password(systemuserPwd)
             .build()
     }
-
-    @Bean
-    fun personV3Port(): PersonV3 =
-        CXFClient(PersonV3::class.java)
-            .address(personV3Url)
-            .timeout(20000, 20000)
-            .configureStsForSystemUser(stsConfig())
-            .build()
 
     @Bean
     fun organisasjonV5Port(): OrganisasjonV5 =
