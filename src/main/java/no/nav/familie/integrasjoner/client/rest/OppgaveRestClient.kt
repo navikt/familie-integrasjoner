@@ -6,6 +6,7 @@ import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.oppgave.DeprecatedFinnOppgaveResponseDto
 import no.nav.familie.integrasjoner.oppgave.DeprecatedOppgave
+import no.nav.familie.integrasjoner.oppgave.OppgaveByttEnhet
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveRequest
 import no.nav.familie.integrasjoner.oppgave.domene.limitMotOppgave
 import no.nav.familie.integrasjoner.oppgave.domene.toDto
@@ -168,6 +169,32 @@ class OppgaveRestClient(
                     feilmelding,
                     "Oppgave.oppdaterOppgave",
                     OppslagException.Level.KRITISK,
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    it
+                )
+            }
+        )
+    }
+
+    fun oppdaterEnhet(byttEnhetPatch: OppgaveByttEnhet): Oppgave? {
+        return Result.runCatching {
+            patchForEntity<Oppgave>(
+                requestUrl(byttEnhetPatch.id),
+                byttEnhetPatch,
+                httpHeaders()
+            )
+        }.fold(
+            onSuccess = { it },
+            onFailure = {
+                var feilmelding = "Feil ved bytte av enhet for oppgave for ${byttEnhetPatch.id}."
+                if (it is HttpStatusCodeException) {
+                    feilmelding += " Response fra oppgave = ${it.responseBodyAsString}"
+                }
+
+                throw OppslagException(
+                    feilmelding,
+                    "Oppgave.byttEnhet",
+                    OppslagException.Level.MEDIUM,
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     it
                 )

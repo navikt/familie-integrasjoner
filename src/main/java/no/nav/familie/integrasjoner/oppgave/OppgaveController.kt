@@ -129,6 +129,12 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         oppgaveService.ferdigstill(oppgaveId)
         return ResponseEntity.ok(success(OppgaveResponse(oppgaveId = oppgaveId), "ferdigstill OK"))
     }
+
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/{oppgaveId}/enhet/{enhet}"])
+    fun tilordneOppgaveNyEnhet(@PathVariable(name = "oppgaveId") oppgaveId: Long, @PathVariable(name = "enhet") enhet: String): ResponseEntity<Ressurs<OppgaveResponse>> {
+        oppgaveService.tilordneEnhet(oppgaveId, enhet)
+        return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
+    }
 }
 
 class DeprecatedFinnOppgaveRequest(

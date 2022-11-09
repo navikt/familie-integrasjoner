@@ -213,7 +213,19 @@ class OppgaveService constructor(
         val finnMappeRequest = FinnMappeRequest(enhetsnr = enhetNr, limit = 1000)
         return finnMapper(finnMappeRequest).mapper
     }
+
+    fun tilordneEnhet(oppgaveId: Long, enhet: String) {
+        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
+        oppgaveRestClient.oppdaterEnhet(OppgaveByttEnhet(oppgaveId, enhet, oppgave.versjon!!, null))
+    }
 }
+
+data class OppgaveByttEnhet(
+    val id: Long,
+    val enhet: String,
+    val versjon: Int,
+    val mappeId: Long? = null
+)
 
 /**
  * Vil filtrere bort mapper med tema siden disse er spesifikke for andre ytelser enn våre (f.eks Pensjon og Bidrag)
