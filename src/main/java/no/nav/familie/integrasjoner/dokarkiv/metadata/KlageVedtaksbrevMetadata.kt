@@ -11,7 +11,7 @@ abstract class KlageVedtak(
     override val fagsakSystem: Fagsystem,
     final override val tema: Tema,
     final override val behandlingstema: Behandlingstema,
-    override val dokumenttype: Dokumenttype,
+    override val dokumenttype: Dokumenttype
 ) : Dokumentmetadata {
 
     override val journalpostType: JournalpostType = JournalpostType.UTGAAENDE
