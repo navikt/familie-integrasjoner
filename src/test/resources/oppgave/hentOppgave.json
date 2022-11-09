@@ -16,6 +16,7 @@
   ],
   "aktoerId": "1234567891011",
   "beskrivelse": "Behandle sak",
+  "mappeId": 1234,
   "tema": "KON",
   "behandlingstema": "ab0084",
   "oppgavetype": "BEH_SAK",

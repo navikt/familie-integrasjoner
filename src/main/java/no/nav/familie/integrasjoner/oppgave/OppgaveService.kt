@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.oppgave
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import no.nav.familie.integrasjoner.aktør.AktørService
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
@@ -214,10 +215,10 @@ class OppgaveService constructor(
         return finnMapper(finnMappeRequest).mapper
     }
 
-    fun tilordneEnhet(oppgaveId: Long, enhet: String) {
-        logger.info("tilordne enhet")
+    fun tilordneEnhet(oppgaveId: Long, enhet: String, fjernMappeFraOppgave: Boolean) {
         val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
-        oppgaveRestClient.oppdaterEnhet(OppgaveByttEnhet(oppgaveId, enhet, oppgave.versjon!!, null))
+        val mappeId = if (fjernMappeFraOppgave) null else oppgave.mappeId
+        oppgaveRestClient.oppdaterEnhet(OppgaveByttEnhet(oppgaveId, enhet, oppgave.versjon!!, mappeId))
     }
 }
 
@@ -225,7 +226,7 @@ data class OppgaveByttEnhet(
     val id: Long,
     val enhet: String,
     val versjon: Int,
-    val mappeId: Long? = null
+    @JsonInclude(JsonInclude.Include.ALWAYS) val mappeId: Long? = null
 )
 
 /**

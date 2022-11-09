@@ -681,7 +681,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `skal endre enhet`() {
+    fun `Endre enhet på mappe skal endre enhet og sette mappe til null hvis fjernMappeFraOppgave-flagg satt til true`() {
         stubFor(get("/api/v1/oppgaver/$OPPGAVE_ID").willReturn(okJson(gyldigOppgaveResponse("hentOppgave.json"))))
 
         stubFor(
@@ -706,7 +706,41 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
-                localhost("$OPPGAVE_URL/$OPPGAVE_ID/enhet/4833"),
+                localhost("$OPPGAVE_URL/$OPPGAVE_ID/enhet/4833?fjernMappeFraOppgave=true"),
+                HttpMethod.POST,
+                HttpEntity(oppgave, headers)
+            )
+        assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    @Test
+    fun `Endre enhet på mappe skal endre enhet og beholde mappe hvis fjernMappeFraOppgave-flagg satt til false`() {
+        stubFor(get("/api/v1/oppgaver/$OPPGAVE_ID").willReturn(okJson(gyldigOppgaveResponse("hentOppgave.json"))))
+
+        stubFor(
+            patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
+                .withRequestBody(
+                    WireMock.equalToJson("""{"id":315488374,"enhet": "4833","versjon":1,"mappeId":1234}""")
+                )
+                .willReturn(
+                    aResponse()
+                        .withStatus(201)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(gyldigOppgaveResponse("ferdigstilt_oppgave.json"))
+                )
+        )
+
+        val oppgave = Oppgave(
+            aktoerId = "1234567891011",
+            journalpostId = "1",
+            beskrivelse = EKSTRA_BESKRIVELSE,
+            tema = null
+        )
+
+        val response: ResponseEntity<Ressurs<OppgaveResponse>> =
+            restTemplate.exchange(
+                localhost("$OPPGAVE_URL/$OPPGAVE_ID/enhet/4833?fjernMappeFraOppgave=true"),
                 HttpMethod.POST,
                 HttpEntity(oppgave, headers)
             )
