@@ -215,6 +215,7 @@ class OppgaveService constructor(
     }
 
     fun tilordneEnhet(oppgaveId: Long, enhet: String) {
+        logger.info("tilordne enhet")
         val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
         oppgaveRestClient.oppdaterEnhet(OppgaveByttEnhet(oppgaveId, enhet, oppgave.versjon!!, null))
     }
