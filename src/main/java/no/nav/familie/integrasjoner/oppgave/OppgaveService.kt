@@ -224,7 +224,7 @@ class OppgaveService constructor(
 
 data class OppgaveByttEnhet(
     val id: Long,
-    val enhet: String,
+    val tildeltEnhetsnr: String,
     val versjon: Int,
     @JsonInclude(JsonInclude.Include.ALWAYS) val mappeId: Long? = null
 )

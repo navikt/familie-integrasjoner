@@ -70,8 +70,6 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         oppgaveServiceLogger.addAppender(listAppender)
         exceptionHandler.addAppender(listAppender)
         headers.setBearerAuth(lokalTestToken)
-
-        WireMock.resetAllRequests()
     }
 
     @Test
@@ -689,7 +687,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
                 .withRequestBody(
-                    WireMock.equalToJson("""{"id":315488374,"enhet": "4833","versjon":1,"mappeId":null}""")
+                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":null}""")
                 )
                 .willReturn(
                     aResponse()
@@ -723,7 +721,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
                 .withRequestBody(
-                    WireMock.equalToJson("""{"id":315488374,"enhet": "4833","versjon":1,"mappeId":1234}""")
+                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":1234}""")
                 )
                 .willReturn(
                     aResponse()
@@ -757,7 +755,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
                 .withRequestBody(
-                    WireMock.equalToJson("""{"id":315488374,"enhet": "4833","versjon":1,"mappeId":1234}""")
+                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":1234}""")
                 )
                 .willReturn(
                     aResponse()
