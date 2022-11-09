@@ -135,3 +135,6 @@ CREDENTIAL_PASSWORD: not-a-real-pw
 strengt_fortrolig_adresse: Ingen tilgang
 fortrolig_adresse: Ingen tilgang
 egen_ansatt: Ingen tilgang
+
+wiremock:
+  reset-mappings-after-each-test: true

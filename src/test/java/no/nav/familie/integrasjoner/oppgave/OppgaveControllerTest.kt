@@ -70,6 +70,8 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         oppgaveServiceLogger.addAppender(listAppender)
         exceptionHandler.addAppender(listAppender)
         headers.setBearerAuth(lokalTestToken)
+
+        WireMock.resetAllRequests()
     }
 
     @Test
@@ -740,12 +742,47 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
-                localhost("$OPPGAVE_URL/$OPPGAVE_ID/enhet/4833?fjernMappeFraOppgave=true"),
+                localhost("$OPPGAVE_URL/$OPPGAVE_ID/enhet/4833?fjernMappeFraOppgave=false"),
                 HttpMethod.POST,
                 HttpEntity(oppgave, headers)
             )
         assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    @Test
+    fun `Endre enhet på mappe skal feile når oppgave returnerer bad request`() {
+        stubFor(get("/api/v1/oppgaver/$OPPGAVE_ID").willReturn(okJson(gyldigOppgaveResponse("hentOppgave.json"))))
+
+        stubFor(
+            patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
+                .withRequestBody(
+                    WireMock.equalToJson("""{"id":315488374,"enhet": "4833","versjon":1,"mappeId":1234}""")
+                )
+                .willReturn(
+                    aResponse()
+                        .withStatus(400)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(""""{uuid":"123","feilmelding":"Mappe finnes ikke for enhet"} """)
+                )
+        )
+
+        val oppgave = Oppgave(
+            aktoerId = "1234567891011",
+            journalpostId = "1",
+            beskrivelse = EKSTRA_BESKRIVELSE,
+            tema = null
+        )
+
+        val response: ResponseEntity<Ressurs<OppgaveResponse>> =
+            restTemplate.exchange(
+                localhost("$OPPGAVE_URL/$OPPGAVE_ID/enhet/4833?fjernMappeFraOppgave=false"),
+                HttpMethod.POST,
+                HttpEntity(oppgave, headers)
+            )
+        assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(response.body?.melding).contains("[Oppgave.byttEnhet][Feil ved bytte av enhet for oppgave for $OPPGAVE_ID")
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
     private fun gyldigOppgaveResponse(filnavn: String): String {
