@@ -1,6 +1,8 @@
 package no.nav.familie.integrasjoner.oppgave
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.Tema
@@ -128,6 +130,23 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     fun ferdigstillOppgave(@PathVariable(name = "oppgaveId") oppgaveId: Long): ResponseEntity<Ressurs<OppgaveResponse>> {
         oppgaveService.ferdigstill(oppgaveId)
         return ResponseEntity.ok(success(OppgaveResponse(oppgaveId = oppgaveId), "ferdigstill OK"))
+    }
+
+    @Operation(description = "Flytter oppgaven fra en enhet til en annen enhet.")
+    @PatchMapping(path = ["/{oppgaveId}/enhet/{enhet}"])
+    fun tilordneOppgaveNyEnhet(
+        @Parameter(description = "Oppgavens id")
+        @PathVariable(name = "oppgaveId")
+        oppgaveId: Long,
+        @Parameter(description = "Enhet oppgaven skal flytte til")
+        @PathVariable(name = "enhet")
+        enhet: String,
+        @Parameter(description = "Settes til true hvis man ønsker å flytte en oppgave uten å ta med seg mappa opp på oppgaven. Noen mapper hører spesifikt til en enhet, og man får da ikke flyttet oppgaven uten at mappen fjernes ")
+        @RequestParam(name = "fjernMappeFraOppgave")
+        fjernMappeFraOppgave: Boolean
+    ): ResponseEntity<Ressurs<OppgaveResponse>> {
+        oppgaveService.tilordneEnhet(oppgaveId, enhet, fjernMappeFraOppgave)
+        return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
     }
 }
 

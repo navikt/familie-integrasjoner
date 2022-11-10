@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.oppgave
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import no.nav.familie.integrasjoner.aktør.AktørService
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
@@ -213,7 +214,20 @@ class OppgaveService constructor(
         val finnMappeRequest = FinnMappeRequest(enhetsnr = enhetNr, limit = 1000)
         return finnMapper(finnMappeRequest).mapper
     }
+
+    fun tilordneEnhet(oppgaveId: Long, enhet: String, fjernMappeFraOppgave: Boolean) {
+        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
+        val mappeId = if (fjernMappeFraOppgave) null else oppgave.mappeId
+        oppgaveRestClient.oppdaterEnhet(OppgaveByttEnhet(oppgaveId, enhet, oppgave.versjon!!, mappeId))
+    }
 }
+
+data class OppgaveByttEnhet(
+    val id: Long,
+    val tildeltEnhetsnr: String,
+    val versjon: Int,
+    @JsonInclude(JsonInclude.Include.ALWAYS) val mappeId: Long? = null
+)
 
 /**
  * Vil filtrere bort mapper med tema siden disse er spesifikke for andre ytelser enn våre (f.eks Pensjon og Bidrag)
