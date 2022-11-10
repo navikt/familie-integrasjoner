@@ -707,7 +707,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
                 localhost("$OPPGAVE_URL/$OPPGAVE_ID/enhet/4833?fjernMappeFraOppgave=true"),
-                HttpMethod.POST,
+                HttpMethod.PATCH,
                 HttpEntity(oppgave, headers)
             )
         assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
@@ -741,7 +741,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
                 localhost("$OPPGAVE_URL/$OPPGAVE_ID/enhet/4833?fjernMappeFraOppgave=false"),
-                HttpMethod.POST,
+                HttpMethod.PATCH,
                 HttpEntity(oppgave, headers)
             )
         assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
@@ -775,7 +775,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
                 localhost("$OPPGAVE_URL/$OPPGAVE_ID/enhet/4833?fjernMappeFraOppgave=false"),
-                HttpMethod.POST,
+                HttpMethod.PATCH,
                 HttpEntity(oppgave, headers)
             )
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)

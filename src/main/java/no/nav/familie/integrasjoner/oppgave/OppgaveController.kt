@@ -133,7 +133,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 
     @Operation(description = "Flytter oppgaven fra en enhet til en annen enhet.")
-    @PostMapping(path = ["/{oppgaveId}/enhet/{enhet}"])
+    @PatchMapping(path = ["/{oppgaveId}/enhet/{enhet}"])
     fun tilordneOppgaveNyEnhet(
         @Parameter(description = "Oppgavens id")
         @PathVariable(name = "oppgaveId")
