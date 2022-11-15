@@ -34,6 +34,11 @@ class KodeverkClient(
         return getForEntity(kodeverkUri("LandkoderISO2"))
     }
 
+    fun hentLandkoderSammensattISO2(): KodeverkDto {
+        val uri = UriUtil.uri(kodeverkUri, "/kodeverk/api/v1/hierarki/LandkoderSammensattISO2/noder")
+        return getForEntity(uri)
+    }
+
     fun hentLandkoderMedHistorikk(): KodeverkDto {
         return getForEntity(kodeverkUri("Landkoder", true))
     }
