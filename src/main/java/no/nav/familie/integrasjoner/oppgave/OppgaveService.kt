@@ -38,12 +38,6 @@ class OppgaveService constructor(
         return oppgaveRestClient.finnOppgaver(finnOppgaveRequest)
     }
 
-    @Deprecated("Bruk finnOppgaver")
-    fun finnOppgaverV3(finnOppgaveRequest: FinnOppgaveRequest): DeprecatedFinnOppgaveResponseDto {
-        logger.warn("FinnOppgaver V3 er ikke lenger i bruk, gå over til V4.")
-        return oppgaveRestClient.finnOppgaverV3(finnOppgaveRequest)
-    }
-
     fun hentOppgave(oppgaveId: Long): Oppgave {
         return oppgaveRestClient.finnOppgaveMedId(oppgaveId)
     }

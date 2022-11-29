@@ -4,8 +4,6 @@ import io.micrometer.core.instrument.Metrics
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.familie.integrasjoner.oppgave.DeprecatedFinnOppgaveResponseDto
-import no.nav.familie.integrasjoner.oppgave.DeprecatedOppgave
 import no.nav.familie.integrasjoner.oppgave.OppgaveByttEnhet
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveRequest
 import no.nav.familie.integrasjoner.oppgave.domene.limitMotOppgave
@@ -60,39 +58,6 @@ class OppgaveRestClient(
 
     fun finnOppgaveMedId(oppgaveId: Long): Oppgave {
         return getForEntity(requestUrl(oppgaveId), httpHeaders())
-    }
-
-    @Deprecated("Bruk finnOppgaver")
-    fun finnOppgaverV3(finnOppgaveRequest: FinnOppgaveRequest): DeprecatedFinnOppgaveResponseDto {
-        val oppgaveRequest = finnOppgaveRequest.toDto()
-        var offset = oppgaveRequest.offset
-
-        val oppgaverOgAntall =
-            getForEntity<DeprecatedFinnOppgaveResponseDto>(buildOppgaveRequestUri(oppgaveRequest), httpHeaders())
-        val oppgaver: MutableList<DeprecatedOppgave> = oppgaverOgAntall.oppgaver.toMutableList()
-        val grense =
-            if (finnOppgaveRequest.limit == null) {
-                oppgaverOgAntall.antallTreffTotalt
-            } else {
-                oppgaveRequest.offset + finnOppgaveRequest.limit!!
-            }
-        offset += limitMotOppgave
-
-        while (offset < grense) {
-            val nyeOppgaver: DeprecatedFinnOppgaveResponseDto =
-                getForEntity(
-                    buildOppgaveRequestUri(
-                        oppgaveRequest.copy(
-                            offset = offset,
-                            limit = min((grense - offset), limitMotOppgave)
-                        )
-                    ),
-                    httpHeaders()
-                )
-            oppgaver.addAll(nyeOppgaver.oppgaver)
-            offset += limitMotOppgave
-        }
-        return DeprecatedFinnOppgaveResponseDto(oppgaverOgAntall.antallTreffTotalt, oppgaver)
     }
 
     fun buildOppgaveRequestUri(oppgaveRequest: OppgaveRequest): URI =
