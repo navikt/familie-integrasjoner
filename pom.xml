@@ -27,7 +27,7 @@
         <cxf.version>3.5.4</cxf.version>
         <token-validation-spring.version>2.1.7</token-validation-spring.version>
         <tjenestespesifikasjoner.version>2606.1f6354e</tjenestespesifikasjoner.version>
-        <kotlin.version>1.7.20</kotlin.version>
+        <kotlin.version>1.7.22</kotlin.version>
 
         <mock-server.version>5.14.0</mock-server.version>
 
