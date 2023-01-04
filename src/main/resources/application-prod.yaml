@@ -122,7 +122,7 @@ FORSTESIDEGENERATOR_URL: https://foerstesidegenerator.intern.nav.no
 EGEN_ANSATT_URL: https://skjermede-personer-pip.nais.adeo.no
 DOKDIST_URL: https://dokdistfordeling.intern.nav.no
 ARBEIDSFORDELING_V1_URL: https://app.adeo.no/norg2/ws/Arbeidsfordeling/v1
-AAREG_URL: https://modapp.adeo.no/aareg-services/api
+AAREG_URL: https://aareg-services.intern.nav.no/api
 SKYGGE_SAK_URL: https://sak.intern.nav.no
 OPPGAVE_URL: https://oppgave.nais.adeo.no
 NORG2_URL: https://norg2.nais.adeo.no/norg2/
