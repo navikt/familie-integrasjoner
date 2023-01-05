@@ -123,7 +123,7 @@ FORSTESIDEGENERATOR_URL: https://foerstesidegenerator-q2.dev.intern.nav.no
 EGEN_ANSATT_URL: https://skjermede-personer-pip.nais.preprod.local
 DOKDIST_URL: https://dokdistfordeling-q2.dev.intern.nav.no
 ARBEIDSFORDELING_V1_URL: https://app-q1.adeo.no/norg2/ws/Arbeidsfordeling/v1
-AAREG_URL: https://modapp-q2.adeo.no/aareg-services/api
+AAREG_URL: https://aareg-services.dev.intern.nav.no/api
 SKYGGE_SAK_URL: https://sak-q2.dev.intern.nav.no
 NORG2_URL: https://norg2.dev.adeo.no/norg2/
 SFTP_HOST: b27apvl00364.preprod.local
