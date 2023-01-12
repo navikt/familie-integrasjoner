@@ -27,6 +27,20 @@ class PdlClientCredentialRestClient(
 
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
 
+    fun hentIdenter(identer: List<String>, tema: Tema): Map<String, String> {
+        val pdlPersonRequest = PdlPersonBolkRequest(
+            variables = PdlPersonBolkRequestVariables(identer),
+            query = HENT_IDENTER_BOLK_QUERY
+        )
+
+        val response = postForEntity<PdlBolkResponse<Map<String, Any>>>(
+            pdlUri,
+            pdlPersonRequest,
+            pdlHttpHeaders(tema)
+        )
+        return response.data?.let { it.personBolk.map { it.ident to it.code }.toMap() } ?: emptyMap()
+    }
+
     fun hentPersonMedRelasjonerOgAdressebeskyttelse(
         identer: List<String>,
         tema: Tema
@@ -60,6 +74,7 @@ class PdlClientCredentialRestClient(
     companion object {
 
         private const val PATH_GRAPHQL = "graphql"
+        private val HENT_IDENTER_BOLK_QUERY = hentPdlGraphqlQuery("hentIdenterBolk")
         private val HENT_PERSON_RELASJONER_ADRESSEBESKYTTELSE = hentPdlGraphqlQuery("hentpersoner-relasjoner-adressebeskyttelse")
     }
 }
