@@ -1,6 +1,5 @@
 package no.nav.familie.integrasjoner.oppgave.domene
 
-import no.nav.familie.kontrakter.felles.abstraction.QueryObject
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -32,7 +31,7 @@ data class OppgaveRequest(
     val aktivDatoTom: LocalDate?,
     val mappeId: Long?,
     val aktoerId: String?
-) : QueryObject()
+)
 
 fun FinnOppgaveRequest.toDto() =
     OppgaveRequest(
