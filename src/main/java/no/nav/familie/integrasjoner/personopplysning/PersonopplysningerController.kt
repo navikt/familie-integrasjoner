@@ -49,8 +49,8 @@ class PersonopplysningerController(
     }
 
     @PostMapping("{tema}/bolk")
-    fun hentPersoner(@PathVariable tema: Tema, @RequestBody(required = true) identer: List<String>): Map<String, String> {
-        return pdlClientCredentialRestClient.hentIdenter(identer, tema)
+    fun hentPersoner(@PathVariable tema: Tema, @RequestBody(required = true) identer: List<String>): Ressurs<Map<String, String>> {
+        return Ressurs.success(pdlClientCredentialRestClient.hentIdenter(identer, tema))
     }
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/info/{tema}"])
