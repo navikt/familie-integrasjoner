@@ -1,6 +1,5 @@
 package no.nav.familie.integrasjoner.personopplysning
 
-import no.nav.familie.integrasjoner.client.rest.PdlClientCredentialRestClient
 import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
@@ -32,8 +31,7 @@ import org.springframework.web.client.HttpClientErrorException.Forbidden
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/personopplysning")
 class PersonopplysningerController(
-    private val personopplysningerService: PersonopplysningerService,
-    private val pdlClientCredentialRestClient: PdlClientCredentialRestClient
+    private val personopplysningerService: PersonopplysningerService
     ) {
 
     @ExceptionHandler(HttpClientErrorException.NotFound::class)
@@ -50,7 +48,7 @@ class PersonopplysningerController(
 
     @PostMapping("{tema}/bolk")
     fun hentPersoner(@PathVariable tema: Tema, @RequestBody(required = true) identer: List<String>): Ressurs<Map<String, String>> {
-        return Ressurs.success(pdlClientCredentialRestClient.hentIdenter(identer, tema))
+        return Ressurs.success(personopplysningerService.hentIdenter(identer, tema))
     }
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/info/{tema}"])
