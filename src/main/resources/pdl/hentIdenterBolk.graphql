@@ -1,0 +1,7 @@
+query($identer: [ID!]!){
+    personBolk: hentIdenterBolk(identer: $identer) {
+        code
+        ident
+        code
+    }
+}
