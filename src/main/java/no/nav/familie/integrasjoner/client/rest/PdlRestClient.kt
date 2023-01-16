@@ -191,7 +191,11 @@ class PdlRestClient(
                     personIdent = personIdent
                 )
             }
-            return response.data.hentGeografiskTilknytning ?: throw PdlNotFoundException()
+            if (response.data.hentGeografiskTilknytning == null) {
+                secureLogger.info("Finner ikke geografisk tilknytning for ident=$personIdent i PDL")
+                throw PdlNotFoundException()
+            }
+            return response.data.hentGeografiskTilknytning
         } catch (e: Exception) {
             when (e) {
                 is OppslagException -> throw e
