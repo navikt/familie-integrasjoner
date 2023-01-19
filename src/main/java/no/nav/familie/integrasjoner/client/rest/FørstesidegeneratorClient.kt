@@ -36,11 +36,11 @@ class FørstesidegeneratorClient(
                 }
 
                 throw OppslagException(
-                    feilmelding,
-                    "førstesidegenerator.genererFørsteside",
-                    OppslagException.Level.MEDIUM,
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    it
+                    /* message = */ feilmelding,
+                    /* kilde = */ "førstesidegenerator.genererFørsteside",
+                    /* level = */ OppslagException.Level.MEDIUM,
+                    /* httpStatus = */ HttpStatus.INTERNAL_SERVER_ERROR,
+                    /* error = */ it
                 )
             }
             .getOrThrow()
