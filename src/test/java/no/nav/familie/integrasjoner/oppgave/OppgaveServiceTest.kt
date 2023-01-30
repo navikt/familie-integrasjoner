@@ -23,14 +23,14 @@ internal class OppgaveServiceTest {
         MappeDto(
             id = 1,
             navn = "132",
-            enhetsnr = "4483"
+            enhetsnr = "4483",
         ),
         MappeDto(
             id = 2,
             navn = "123",
             enhetsnr = "4483",
-            tema = "PEN"
-        )
+            tema = "PEN",
+        ),
     )
     val expectedResponse = FinnMappeResponseDto(antallTreffTotalt = 2, mapper = mapper)
 
@@ -49,7 +49,7 @@ internal class OppgaveServiceTest {
             tema = listOf(),
             enhetsnr = "4483",
             opprettetFom = null,
-            limit = 1000
+            limit = 1000,
         )
         val response = oppgaveService.finnMapper(finnMappeRequest)
         assertThat(response.antallTreffTotalt).isEqualTo(1)

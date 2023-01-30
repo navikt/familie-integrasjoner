@@ -91,13 +91,13 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
     fun hentDokument(
         @PathVariable journalpostId: String,
         @PathVariable dokumentInfoId: String,
-        @RequestParam("variantFormat", required = false) variantFormat: String?
+        @RequestParam("variantFormat", required = false) variantFormat: String?,
     ): ResponseEntity<Ressurs<ByteArray>> {
         return ResponseEntity.ok(
             success(
                 journalpostService.hentDokument(journalpostId, dokumentInfoId, variantFormat ?: "ARKIV"),
-                "OK"
-            )
+                "OK",
+            ),
         )
     }
 

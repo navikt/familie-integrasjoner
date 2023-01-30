@@ -18,7 +18,7 @@ class DokdistService(val dokdistRestClient: DokdistRestClient) {
             bestillendeFagsystem = request.bestillendeFagsystem.name,
             dokumentProdApp = request.dokumentProdApp,
             distribusjonstidspunkt = request.distribusjonstidspunkt,
-            distribusjonstype = request.distribusjonstype
+            distribusjonstype = request.distribusjonstype,
         )
     }
 }

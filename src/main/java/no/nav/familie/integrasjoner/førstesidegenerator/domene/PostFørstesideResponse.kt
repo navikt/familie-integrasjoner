@@ -6,5 +6,5 @@ class PostFørstesideResponse(
     @JsonProperty("foersteside")
     val førsteside: ByteArray,
     @JsonProperty("loepenummer")
-    val løpenummer: String? = null
+    val løpenummer: String? = null,
 )

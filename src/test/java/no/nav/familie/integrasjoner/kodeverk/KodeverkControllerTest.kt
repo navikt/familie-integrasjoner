@@ -39,14 +39,14 @@ class KodeverkControllerTest : OppslagSpringRunnerTest() {
                 aResponse()
                     .withStatus(200)
                     .withHeader("Content-Type", "application/json")
-                    .withBody(objectMapper.writeValueAsString(kodeverk))
-            )
+                    .withBody(objectMapper.writeValueAsString(kodeverk)),
+            ),
         )
 
         val response: ResponseEntity<Ressurs<KodeverkDto>> = restTemplate.exchange(
             localhost(KODEVERL_EEARG_URL),
             HttpMethod.GET,
-            null
+            null,
         )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)

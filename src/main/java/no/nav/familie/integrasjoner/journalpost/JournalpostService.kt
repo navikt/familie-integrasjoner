@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 @Service
 class JournalpostService @Autowired constructor(
     private val safRestClient: SafRestClient,
-    private val safHentDokumentRestClient: SafHentDokumentRestClient
+    private val safHentDokumentRestClient: SafHentDokumentRestClient,
 ) {
 
     fun hentSaksnummer(journalpostId: String): String? {

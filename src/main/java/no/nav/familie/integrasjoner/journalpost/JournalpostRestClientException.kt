@@ -8,7 +8,7 @@ class JournalpostRestClientException(message: String?, cause: Throwable?, val jo
 class JournalpostForBrukerException(
     message: String?,
     cause: Throwable?,
-    val journalposterForBrukerRequest: JournalposterForBrukerRequest
+    val journalposterForBrukerRequest: JournalposterForBrukerRequest,
 ) :
     RuntimeException(message, cause)
 

@@ -20,7 +20,7 @@ import java.net.URI
 @Component
 class SkyggesakRestClient(
     @Value("\${SKYGGE_SAK_URL}") private val skyggesakUrl: String,
-    @Qualifier("sts") private val restTemplate: RestOperations
+    @Qualifier("sts") private val restTemplate: RestOperations,
 ) :
     AbstractPingableRestClient(restTemplate, "skyggesak.sak") {
 
@@ -44,7 +44,7 @@ class SkyggesakRestClient(
                 "skyggesak",
                 OppslagException.Level.MEDIUM,
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                e
+                e,
             )
         }
     }

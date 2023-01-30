@@ -13,7 +13,7 @@ import java.net.URI
 @Component
 class DokdistRestClient(
     @Value("\${DOKDIST_URL}") private val dokdistUri: URI,
-    @Qualifier("sts") private val restTemplate: RestOperations
+    @Qualifier("sts") private val restTemplate: RestOperations,
 ) :
     AbstractPingableRestClient(restTemplate, "dokdist") {
 

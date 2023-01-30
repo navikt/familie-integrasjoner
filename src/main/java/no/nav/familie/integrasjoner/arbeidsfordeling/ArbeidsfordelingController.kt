@@ -27,7 +27,7 @@ class ArbeidsfordelingController(private val service: ArbeidsfordelingService) {
     fun hentBehandlendeEnhet(
         @RequestParam(name = "tema") tema: Tema,
         @RequestParam(name = "geografi", required = false) geografi: String?,
-        @RequestParam(name = "diskresjonskode", required = false) diskresjonskode: String?
+        @RequestParam(name = "diskresjonskode", required = false) diskresjonskode: String?,
     ): ResponseEntity<Ressurs<List<Enhet>>> {
         return ResponseEntity.ok(success(service.finnBehandlendeEnhet(tema, geografi, diskresjonskode)))
     }
@@ -38,7 +38,7 @@ class ArbeidsfordelingController(private val service: ArbeidsfordelingService) {
         @NotNull
         @RequestHeader(name = "Nav-Personident")
         personIdent: String,
-        @PathVariable(name = "tema") tema: Tema
+        @PathVariable(name = "tema") tema: Tema,
     ): ResponseEntity<Ressurs<List<Enhet>>> {
         return ResponseEntity.ok(success(service.finnBehandlendeEnhetForPerson(personIdent, tema)))
     }
@@ -46,7 +46,7 @@ class ArbeidsfordelingController(private val service: ArbeidsfordelingService) {
     @PostMapping("/enhet/{tema}")
     fun hentBehandlendeEnhetForPersonIdentV2(
         @PathVariable(name = "tema") tema: Tema,
-        @RequestBody personIdent: PersonIdent
+        @RequestBody personIdent: PersonIdent,
     ): ResponseEntity<Ressurs<List<Enhet>>> {
         return ResponseEntity.ok(success(service.finnBehandlendeEnhetForPerson(personIdent.ident, tema)))
     }
@@ -54,7 +54,7 @@ class ArbeidsfordelingController(private val service: ArbeidsfordelingService) {
     @PostMapping("/oppfolging/{tema}")
     fun hentOppfølgingsenhetForPerson(
         @PathVariable(name = "tema") tema: Tema,
-        @RequestBody personIdent: PersonIdent
+        @RequestBody personIdent: PersonIdent,
     ): ResponseEntity<Ressurs<List<Enhet>>> {
         return ResponseEntity.ok(success(service.finnBehandlendeEnhetForOppfølging(personIdent.ident, tema)))
     }
@@ -63,7 +63,7 @@ class ArbeidsfordelingController(private val service: ArbeidsfordelingService) {
     fun hentBehandlendeEnhetForPersonIdentMedRelasjoner(
         @PathVariable(name = "tema") tema: Tema,
         @RequestBody
-        personIdent: PersonIdent
+        personIdent: PersonIdent,
     ): ResponseEntity<Ressurs<List<Enhet>>> {
         return ResponseEntity.ok(success(service.finnBehandlendeEnhetForPersonMedRelasjoner(personIdent.ident, tema)))
     }
@@ -71,7 +71,7 @@ class ArbeidsfordelingController(private val service: ArbeidsfordelingService) {
     @PostMapping("/nav-kontor/{tema}")
     fun hentLokaltNavKontor(
         @PathVariable(name = "tema") tema: Tema,
-        @RequestBody personIdent: PersonIdent
+        @RequestBody personIdent: PersonIdent,
     ): ResponseEntity<Ressurs<NavKontorEnhet?>> {
         return ResponseEntity.ok(success(service.finnLokaltNavKontor(personIdent.ident, tema)))
     }

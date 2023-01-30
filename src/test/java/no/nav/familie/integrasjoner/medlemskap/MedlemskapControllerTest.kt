@@ -37,14 +37,14 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
                     WireMock.aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(gyldigOppgaveResponse("medlrespons.json"))
-                )
+                        .withBody(gyldigOppgaveResponse("medlrespons.json")),
+                ),
         )
 
         val response: ResponseEntity<Ressurs<Medlemskapsinfo>> = restTemplate.exchange(
             localhost(GET_MEDLEMSKAP_URL),
             HttpMethod.GET,
-            HttpEntity(null, headers)
+            HttpEntity(null, headers),
         )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
@@ -59,14 +59,14 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
                 .willReturn(
                     WireMock.aResponse()
                         .withStatus(404)
-                        .withHeader("Content-Type", "application/json")
-                )
+                        .withHeader("Content-Type", "application/json"),
+                ),
         )
 
         val response: ResponseEntity<Ressurs<Medlemskapsinfo>> = restTemplate.exchange(
             localhost(GET_MEDLEMSKAP_URL),
             HttpMethod.GET,
-            HttpEntity(null, headers)
+            HttpEntity(null, headers),
         )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -75,7 +75,7 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
     private fun gyldigOppgaveResponse(filnavn: String): String {
         return Files.readString(
             ClassPathResource("medlemskap/$filnavn").file.toPath(),
-            StandardCharsets.UTF_8
+            StandardCharsets.UTF_8,
         )
     }
 

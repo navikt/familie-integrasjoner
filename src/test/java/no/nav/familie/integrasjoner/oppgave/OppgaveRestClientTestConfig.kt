@@ -39,15 +39,15 @@ class OppgaveRestClientTestConfig {
             opprettetTidspunkt = LocalDate.of(
                 2020,
                 1,
-                1
+                1,
             ).toString(),
             fristFerdigstillelse = LocalDate.of(
                 2020,
                 2,
-                1
+                1,
             ).toString(),
             prioritet = OppgavePrioritet.NORM,
-            status = StatusEnum.OPPRETTET
+            status = StatusEnum.OPPRETTET,
         )
 
         every {

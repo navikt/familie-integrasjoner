@@ -30,7 +30,7 @@ data class OppgaveRequest(
     val aktivDatoFom: LocalDate?,
     val aktivDatoTom: LocalDate?,
     val mappeId: Long?,
-    val aktoerId: String?
+    val aktoerId: String?,
 )
 
 fun FinnOppgaveRequest.toDto() =
@@ -54,5 +54,5 @@ fun FinnOppgaveRequest.toDto() =
         aktivDatoTom = this.aktivTomDato,
         mappeId = this.mappeId,
         aktoerId = this.aktørId,
-        saksreferanse = this.saksreferanse
+        saksreferanse = this.saksreferanse,
     )

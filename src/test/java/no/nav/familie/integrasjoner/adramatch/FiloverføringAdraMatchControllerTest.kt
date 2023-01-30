@@ -34,7 +34,7 @@ class FiloverføringAdraMatchControllerTest : OppslagSpringRunnerTest() {
         val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(
             uri,
             HttpMethod.PUT,
-            HttpEntity(payload, headers)
+            HttpEntity(payload, headers),
         )
         assertThat(response.body!!.data).isEqualTo("Fil lastet opp!")
         val fileContent = sftpServer.getFileContent("/inbound/file.txt")

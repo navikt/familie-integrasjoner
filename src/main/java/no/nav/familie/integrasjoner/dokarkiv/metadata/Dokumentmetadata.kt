@@ -34,5 +34,5 @@ enum class Dokumentkategori(private val beskrivelse: String) {
     REFERAT("Referat"),
     FORVALTNINGSNOTAT("Forvaltningsnotat"), // DENNE BLIR SYNLIG TIL SLUTTBRUKER!
     SOK("Søknad"),
-    KA("Klage eller anke")
+    KA("Klage eller anke"),
 }

@@ -45,7 +45,7 @@ class ArbeidsfordelingClientTest {
                     Organisasjonsenhet().apply {
                         enhetId = ENHET_ID
                         enhetNavn = "Test"
-                    }
+                    },
                 )
             }
         }
@@ -69,7 +69,7 @@ class ArbeidsfordelingClientTest {
                     Organisasjonsenhet().apply {
                         enhetId = ENHET_ID
                         enhetNavn = "Test"
-                    }
+                    },
                 )
             }
         }

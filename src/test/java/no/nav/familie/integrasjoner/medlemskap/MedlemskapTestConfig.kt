@@ -34,8 +34,8 @@ class MedlemskapTestConfig {
             listOf(
                 *mapper.readValue(
                     medlemskapResponseBody,
-                    Array<MedlemskapsunntakResponse>::class.java
-                )
+                    Array<MedlemskapsunntakResponse>::class.java,
+                ),
             )
         } catch (e: IOException) {
             throw RuntimeException("Feil ved mapping av medl2-mock", e)

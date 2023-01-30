@@ -29,7 +29,7 @@ class ArbeidsfordelingTestConfig {
                     Organisasjonsenhet().apply {
                         enhetId = "4820"
                         enhetNavn = "NAV Familie- og pensjonsytelser Vadsø"
-                    }
+                    },
                 )
             }
         }

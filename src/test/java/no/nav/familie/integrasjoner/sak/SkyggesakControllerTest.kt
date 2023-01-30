@@ -45,14 +45,14 @@ class SkyggesakControllerTest : OppslagSpringRunnerTest() {
                 localhost("/api/skyggesak/v1"),
                 HttpEntity(
                     request,
-                    headers
-                )
+                    headers,
+                ),
             )
 
         verify(
             postRequestedFor(urlEqualTo("/api/v1/saker"))
                 .withRequestBody(equalToJson(objectMapper.writeValueAsString(request)))
-                .withHeader("X-Correlation-ID", equalTo("callIdTest"))
+                .withHeader("X-Correlation-ID", equalTo("callIdTest")),
         )
 
         assertThat(response?.status).isEqualTo(SUKSESS)
@@ -66,7 +66,7 @@ class SkyggesakControllerTest : OppslagSpringRunnerTest() {
         val response =
             restTemplate.postForObject<Ressurs<List<Nothing>>>(
                 localhost("/api/skyggesak/v1"),
-                HttpEntity(request, headers)
+                HttpEntity(request, headers),
             )
 
         assertThat(response?.status).isEqualTo(SUKSESS)
@@ -80,7 +80,7 @@ class SkyggesakControllerTest : OppslagSpringRunnerTest() {
         val response =
             restTemplate.postForObject<Ressurs<List<Nothing>>>(
                 localhost("/api/skyggesak/v1"),
-                HttpEntity(request, headers)
+                HttpEntity(request, headers),
             )
 
         assertThat(response?.status).isEqualTo(Ressurs.Status.FEILET)

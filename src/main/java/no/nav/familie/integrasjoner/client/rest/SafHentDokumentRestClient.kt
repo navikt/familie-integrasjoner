@@ -22,7 +22,7 @@ import java.net.URI
 @Service
 class SafHentDokumentRestClient(
     @Value("\${SAF_URL}") safBaseUrl: URI,
-    @Qualifier("jwtBearer") val restTemplate: RestOperations
+    @Qualifier("jwtBearer") val restTemplate: RestOperations,
 ) :
     AbstractRestClient(restTemplate, "saf.journalpost") {
 

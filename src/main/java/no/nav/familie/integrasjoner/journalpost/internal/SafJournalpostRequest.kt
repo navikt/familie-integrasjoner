@@ -4,5 +4,5 @@ data class SafRequestVariabler(val journalpostId: String)
 
 data class SafJournalpostRequest(
     val variables: Any,
-    val query: String
+    val query: String,
 )

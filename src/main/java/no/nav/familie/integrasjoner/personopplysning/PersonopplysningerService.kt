@@ -22,13 +22,13 @@ import org.springframework.web.context.annotation.ApplicationScope
 @ApplicationScope
 class PersonopplysningerService(
     private val pdlRestClient: PdlRestClient,
-    private val pdlClientCredentialRestClient: PdlClientCredentialRestClient
+    private val pdlClientCredentialRestClient: PdlClientCredentialRestClient,
 ) {
 
     fun hentPersoninfo(
         personIdent: String,
         tema: Tema,
-        personInfoQuery: PersonInfoQuery
+        personInfoQuery: PersonInfoQuery,
     ): Person {
         return pdlRestClient.hentPerson(personIdent, tema, personInfoQuery)
     }
@@ -59,7 +59,7 @@ class PersonopplysningerService(
             sivilstand = mapPersonMedRelasjoner(sivilstandIdenter, tilknyttedeIdenterData),
             fullmakt = mapPersonMedRelasjoner(fullmaktIdenter, tilknyttedeIdenterData),
             barn = mapPersonMedRelasjoner(barnIdenter, tilknyttedeIdenterData),
-            barnsForeldrer = barnsForeldrer
+            barnsForeldrer = barnsForeldrer,
         )
     }
 
@@ -71,7 +71,7 @@ class PersonopplysningerService(
     private fun hentBarnsForeldrer(
         barnOpplysninger: Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>,
         personIdent: String,
-        tema: Tema
+        tema: Tema,
     ): List<PersonMedAdresseBeskyttelse> {
         val barnsForeldrerIdenter = barnOpplysninger.flatMap { (_, personMedRelasjoner) ->
             personMedRelasjoner.forelderBarnRelasjon.filter { it.relatertPersonsRolle != FORELDERBARNRELASJONROLLE.BARN }
@@ -83,7 +83,7 @@ class PersonopplysningerService(
 
     private fun mapPersonMedRelasjoner(
         sivilstandIdenter: List<String>,
-        tilknyttedeIdenterData: Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>
+        tilknyttedeIdenterData: Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>,
     ) =
         sivilstandIdenter.map { PersonMedAdresseBeskyttelse(it, tilknyttedeIdenterData.getOrThrow(it).gradering()) }
 
@@ -93,12 +93,12 @@ class PersonopplysningerService(
         this[ident] ?: throw OppslagException(
             "Finner ikke $ident i response fra pdl",
             "pdl",
-            OppslagException.Level.MEDIUM
+            OppslagException.Level.MEDIUM,
         )
 
     private fun hentPersonMedRelasjonerOgAdressebeskyttelse(
         personIdenter: List<String>,
-        tema: Tema
+        tema: Tema,
     ): Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse> {
         if (personIdenter.isEmpty()) return emptyMap()
         return pdlClientCredentialRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(personIdenter, tema)

@@ -25,6 +25,6 @@ internal class QueryParamUtilTest {
     data class Testdata(
         val int: Int = 5,
         val string: String = "Fem",
-        val list: List<Int> = listOf(1, 2, 3, 4, 5)
+        val list: List<Int> = listOf(1, 2, 3, 4, 5),
     )
 }

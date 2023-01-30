@@ -38,15 +38,15 @@ class ApiExceptionHandler {
             "RestClientResponseException : {} {} {}",
             e.rawStatusCode,
             e.statusText,
-            ExceptionUtils.getStackTrace(e)
+            ExceptionUtils.getStackTrace(e),
         )
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(
                 failure(
                     errorMessage = "Feil mot ekstern tjeneste. ${e.rawStatusCode} ${e.responseBodyAsString} Message=${e.message}",
-                    error = e
-                )
+                    error = e,
+                ),
             )
     }
 

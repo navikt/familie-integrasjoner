@@ -39,14 +39,14 @@ class EgenAnsattControllerTest : OppslagSpringRunnerTest() {
                         .withStatus(200)
                         .withHeader(
                             "Content-Type",
-                            "application/json"
+                            "application/json",
                         )
                         .withBody(
                             objectMapper.writeValueAsString(
-                                erEgenAnsatt
-                            )
-                        )
-                )
+                                erEgenAnsatt,
+                            ),
+                        ),
+                ),
         )
     }
 

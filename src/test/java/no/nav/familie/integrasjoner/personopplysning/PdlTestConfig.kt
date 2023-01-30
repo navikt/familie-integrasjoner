@@ -30,11 +30,11 @@ class PdlTestConfig {
             familierelasjoner = setOf(
                 Familierelasjon(
                     personIdent = Personident(id = "12345678910"),
-                    relasjonsrolle = "BARN"
-                )
+                    relasjonsrolle = "BARN",
+                ),
             ),
             adressebeskyttelseGradering = null,
-            sivilstand = SIVILSTAND.UGIFT
+            sivilstand = SIVILSTAND.UGIFT,
         )
         return klient
     }

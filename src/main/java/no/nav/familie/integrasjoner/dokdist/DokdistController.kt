@@ -28,7 +28,7 @@ class DokdistController(private val dokdistService: DokdistService) {
             data = e.responseBodyAsString,
             status = Ressurs.Status.FEILET,
             melding = e.message ?: "Uventet feil status=${e.rawStatusCode}",
-            stacktrace = e.stackTraceToString()
+            stacktrace = e.stackTraceToString(),
         )
         return ResponseEntity.status(e.rawStatusCode).body(ressurs)
     }
