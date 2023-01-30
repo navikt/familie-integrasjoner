@@ -15,7 +15,7 @@ class ArbeidsfordelingRestClient(
     @Value("\${NORG2_URL}")
     private val norg2Uri: URI,
     @Qualifier("noAuthorize")
-    restOperations: RestOperations
+    restOperations: RestOperations,
 ) :
     AbstractPingableRestClient(restOperations, "norg2") {
 
@@ -24,7 +24,7 @@ class ArbeidsfordelingRestClient(
             UriComponentsBuilder.fromUri(norg2Uri)
                 .pathSegment("api/v1/enhet/navkontor/$geografiskOmråde")
                 .build()
-                .toUri()
+                .toUri(),
         )
     }
 
@@ -33,7 +33,7 @@ class ArbeidsfordelingRestClient(
             UriComponentsBuilder.fromUri(norg2Uri)
                 .pathSegment("api/v1/enhet/$enhetId")
                 .build()
-                .toUri()
+                .toUri(),
         )
     }
 

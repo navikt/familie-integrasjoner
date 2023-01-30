@@ -38,7 +38,7 @@ import java.net.URI
 @Service
 class PdlRestClient(
     @Value("\${PDL_URL}") pdlBaseUrl: URI,
-    @Qualifier("jwtBearer") private val restTemplate: RestOperations
+    @Qualifier("jwtBearer") private val restTemplate: RestOperations,
 ) :
     AbstractRestClient(restTemplate, "pdl.personinfo") {
 
@@ -47,13 +47,13 @@ class PdlRestClient(
     fun hentAdressebeskyttelse(personIdent: String, tema: Tema): PdlAdressebeskyttelse {
         val pdlAdressebeskyttelseRequest = PdlPersonRequest(
             variables = PdlPersonRequestVariables(personIdent),
-            query = HENT_ADRESSEBESKYTTELSE_QUERY
+            query = HENT_ADRESSEBESKYTTELSE_QUERY,
         )
 
         val response: PdlResponse<PdlPersonMedAdressebeskyttelse> = postForEntity(
             pdlUri,
             pdlAdressebeskyttelseRequest,
-            pdlHttpHeaders(tema)
+            pdlHttpHeaders(tema),
         )
 
         return feilsjekkOgReturnerData(response, personIdent) { it.person }
@@ -62,7 +62,7 @@ class PdlRestClient(
     fun hentPerson(personIdent: String, tema: Tema, personInfoQuery: PersonInfoQuery): Person {
         val pdlPersonRequest = PdlPersonRequest(
             variables = PdlPersonRequestVariables(personIdent),
-            query = personInfoQuery.graphQL
+            query = personInfoQuery.graphQL,
         )
         val response = try {
             postForEntity<PdlResponse<PdlPerson>>(pdlUri, pdlPersonRequest, pdlHttpHeaders(tema))
@@ -84,7 +84,7 @@ class PdlRestClient(
                     familierelasjoner = familierelasjoner,
                     adressebeskyttelseGradering = it.adressebeskyttelse.firstOrNull()?.gradering,
                     bostedsadresse = it.bostedsadresse.firstOrNull(),
-                    sivilstand = it.sivilstand.firstOrNull()?.type
+                    sivilstand = it.sivilstand.firstOrNull()?.type,
                 )
             }
         }.fold(
@@ -96,9 +96,9 @@ class PdlRestClient(
                     OppslagException.Level.MEDIUM,
                     HttpStatus.NOT_FOUND,
                     it,
-                    personIdent
+                    personIdent,
                 )
-            }
+            },
         )
     }
 
@@ -107,7 +107,7 @@ class PdlRestClient(
             relasjon.relatertPersonsIdent?.let { relatertPersonsIdent ->
                 Familierelasjon(
                     personIdent = Personident(id = relatertPersonsIdent),
-                    relasjonsrolle = relasjon.relatertPersonsRolle.toString()
+                    relasjonsrolle = relasjon.relatertPersonsRolle.toString(),
                 )
             }
         }.toSet()
@@ -115,7 +115,7 @@ class PdlRestClient(
     fun hentIdenter(ident: String, gruppe: String, tema: Tema, historikk: Boolean): List<PdlIdent> {
         val pdlPersonRequest = PdlIdentRequest(
             variables = PdlIdentRequestVariables(ident, gruppe, historikk),
-            query = HENT_IDENTER_QUERY
+            query = HENT_IDENTER_QUERY,
         )
 
         val response = try {
@@ -138,13 +138,13 @@ class PdlRestClient(
             }
             throw pdlOppslagException(
                 feilmelding = "Feil ved oppslag på person: ${pdlResponse.errorMessages()}. Se secureLogs for mer info.",
-                personIdent = personIdent
+                personIdent = personIdent,
             )
         }
         val data = dataMapper.invoke(pdlResponse.data)
             ?: throw pdlOppslagException(
                 feilmelding = "Feil ved oppslag på person. Objekt mangler på responsen fra PDL. Se secureLogs for mer info.",
-                personIdent = personIdent
+                personIdent = personIdent,
             )
         return data
     }
@@ -154,7 +154,7 @@ class PdlRestClient(
         return pdlIdenter.firstOrNull()?.ident
             ?: throw pdlOppslagException(
                 feilmelding = "Kunne ikke finne aktørId i PDL. Se secureLogs for mer info.",
-                personIdent = ident
+                personIdent = ident,
             )
     }
 
@@ -163,7 +163,7 @@ class PdlRestClient(
         return pdlIdenter.firstOrNull()?.ident
             ?: throw pdlOppslagException(
                 feilmelding = "Kunne ikke finne personIdent i PDL. Se secureLogs for mer info. ",
-                personIdent = ident
+                personIdent = ident,
             )
     }
 
@@ -171,13 +171,13 @@ class PdlRestClient(
         val pdlGeografiskTilknytningRequest =
             PdlGeografiskTilknytningRequest(
                 variables = PdlGeografiskTilknytningVariables(personIdent),
-                query = HENT_GEOGRAFISK_TILKNYTNING_QUERY
+                query = HENT_GEOGRAFISK_TILKNYTNING_QUERY,
             )
         try {
             val response: PdlResponse<PdlHentGeografiskTilknytning> = postForEntity(
                 pdlUri,
                 pdlGeografiskTilknytningRequest,
-                pdlHttpHeaders(tema)
+                pdlHttpHeaders(tema),
             )
 
             if (response.harFeil()) {
@@ -188,7 +188,7 @@ class PdlRestClient(
                 throw pdlOppslagException(
                     feilmelding = "Feil ved oppslag på geografisk tilknytning på person: " +
                         response.errorMessages(),
-                    personIdent = personIdent
+                    personIdent = personIdent,
                 )
             }
             if (response.data.hentGeografiskTilknytning == null) {
@@ -209,7 +209,7 @@ class PdlRestClient(
         personIdent: String,
         httpStatus: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
         error: Throwable? = null,
-        feilmelding: String = "Feil ved oppslag på person. Gav feil: ${error?.message}"
+        feilmelding: String = "Feil ved oppslag på person. Gav feil: ${error?.message}",
     ): OppslagException {
         responsFailure.increment()
         return OppslagException(
@@ -218,7 +218,7 @@ class PdlRestClient(
             OppslagException.Level.MEDIUM,
             httpStatus,
             error,
-            personIdent
+            personIdent,
         )
     }
 
@@ -234,7 +234,7 @@ class PdlRestClient(
 
 enum class PersonInfoQuery(val graphQL: String) {
     ENKEL(hentPdlGraphqlQuery("hentperson-enkel")),
-    MED_RELASJONER(hentPdlGraphqlQuery("hentperson-med-relasjoner"))
+    MED_RELASJONER(hentPdlGraphqlQuery("hentperson-med-relasjoner")),
 }
 
 fun hentPdlGraphqlQuery(pdlResource: String): String {

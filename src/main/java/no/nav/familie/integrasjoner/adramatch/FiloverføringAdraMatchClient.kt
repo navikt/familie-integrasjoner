@@ -16,7 +16,7 @@ class FiloverføringAdraMatchClient(private val config: FiloverføringAdraMatchC
             config.username,
             config.privateKeyDecoded,
             null,
-            config.passphrase.toByteArray()
+            config.passphrase.toByteArray(),
         )
     }
 

@@ -42,7 +42,7 @@ class InfotrygdControllerTest(val client: ClientAndServer) : OppslagSpringRunner
             restTemplate.exchange(
                 localhost(HAR_BARN_AKTIV_KONTANTSTØTTE),
                 HttpMethod.GET,
-                HttpEntity<Any>(headers)
+                HttpEntity<Any>(headers),
             )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
@@ -60,7 +60,7 @@ class InfotrygdControllerTest(val client: ClientAndServer) : OppslagSpringRunner
             restTemplate.exchange(
                 localhost(HAR_BARN_AKTIV_KONTANTSTØTTE),
                 HttpMethod.GET,
-                HttpEntity<Any>(headers)
+                HttpEntity<Any>(headers),
             )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
@@ -106,7 +106,7 @@ class InfotrygdControllerTest(val client: ClientAndServer) : OppslagSpringRunner
         client.`when`(
             HttpRequest.request()
                 .withMethod("GET")
-                .withPath("/v1/harBarnAktivKontantstotte")
+                .withPath("/v1/harBarnAktivKontantstotte"),
         )
             .respond(HttpResponse.response().withHeader("Content-Type", "application/json").withBody(respons))
     }

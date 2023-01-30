@@ -5,5 +5,5 @@ data class Adresse(
     val adresselinje2: String? = null,
     val adresselinje3: String? = null,
     val postnummer: String? = null,
-    val poststed: String? = null
+    val poststed: String? = null,
 )

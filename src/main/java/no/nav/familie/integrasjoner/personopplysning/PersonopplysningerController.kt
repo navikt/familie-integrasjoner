@@ -47,26 +47,26 @@ class PersonopplysningerController(private val personopplysningerService: Person
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/info/{tema}"])
     fun personInfo(
         @RequestHeader(name = "Nav-Personident") personIdent: String,
-        @PathVariable tema: Tema
+        @PathVariable tema: Tema,
     ): ResponseEntity<Ressurs<Person>> {
         return ResponseEntity.ok().body(
             success(
                 personopplysningerService.hentPersoninfo(personIdent, tema, PersonInfoQuery.MED_RELASJONER),
-                "Hent personinfo OK"
-            )
+                "Hent personinfo OK",
+            ),
         )
     }
 
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/infoEnkel/{tema}"])
     fun personInfoEnkel(
         @RequestHeader(name = "Nav-Personident") personIdent: String,
-        @PathVariable tema: Tema
+        @PathVariable tema: Tema,
     ): ResponseEntity<Ressurs<Person>> {
         return ResponseEntity.ok().body(
             success(
                 personopplysningerService.hentPersoninfo(personIdent, tema, PersonInfoQuery.ENKEL),
-                "Hent personinfo OK"
-            )
+                "Hent personinfo OK",
+            ),
         )
     }
 
@@ -77,8 +77,8 @@ class PersonopplysningerController(private val personopplysningerService: Person
         @RequestParam(
             value = "historikk",
             required = false,
-            defaultValue = "false"
-        ) medHistorikk: Boolean
+            defaultValue = "false",
+        ) medHistorikk: Boolean,
     ): Ressurs<FinnPersonidenterResponse> {
         return success(personopplysningerService.hentIdenter(ident.ident, tema, medHistorikk))
     }
@@ -87,7 +87,7 @@ class PersonopplysningerController(private val personopplysningerService: Person
     fun hentStrengesteAdressebeskyttelseForPersonMedRelasjoner(
         @RequestBody personIdent: PersonIdent,
         @RequestHeader(name = "Nav-Tema")
-        tema: Tema
+        tema: Tema,
     ): Ressurs<ADRESSEBESKYTTELSEGRADERING> {
         val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent.ident, tema)
         return success(TilgangskontrollUtil.høyesteGraderingen(personMedRelasjoner) ?: ADRESSEBESKYTTELSEGRADERING.UGRADERT)

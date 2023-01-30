@@ -26,7 +26,7 @@ class ArbeidsfordelingService(
     private val pdlRestClient: PdlRestClient,
     private val egenAnsattService: EgenAnsattService,
     private val personopplysningerService: PersonopplysningerService,
-    private val cacheManager: CacheManager
+    private val cacheManager: CacheManager,
 ) {
 
     private val secureLogger = LoggerFactory.getLogger("secureLogger")
@@ -34,7 +34,7 @@ class ArbeidsfordelingService(
     fun finnBehandlendeEnhet(
         tema: Tema,
         geografi: String?,
-        diskresjonskode: String?
+        diskresjonskode: String?,
     ): List<Enhet> =
         klient.finnBehandlendeEnhet(tema, geografi, diskresjonskode)
 
@@ -52,7 +52,7 @@ class ArbeidsfordelingService(
     private fun lagArbeidsfordelingKritierieForPerson(
         personIdent: String,
         pdlTema: Tema,
-        arbeidsfordelingstema: Tema
+        arbeidsfordelingstema: Tema,
     ): ArbeidsfordelingKriterie {
         val personinfo = personopplysningerService.hentPersoninfo(personIdent, pdlTema, PersonInfoQuery.ENKEL)
         val geografiskTilknytning = utledGeografiskTilknytningKode(pdlRestClient.hentGeografiskTilknytning(personIdent, pdlTema))
@@ -62,7 +62,7 @@ class ArbeidsfordelingService(
             tema = arbeidsfordelingstema.name,
             diskresjonskode = diskresjonskode,
             geografiskOmraade = geografiskTilknytning,
-            skjermet = egenAnsattService.erEgenAnsatt(personIdent)
+            skjermet = egenAnsattService.erEgenAnsatt(personIdent),
         )
     }
 
@@ -109,7 +109,7 @@ class ArbeidsfordelingService(
             val personMedStrengestBehov = utledPersonMedStrengestBehov(
                 personIdent = personIdent,
                 personerMedAdresseBeskyttelse = aktuellePersoner,
-                egneAnsatte = egneAnsatte
+                egneAnsatte = egneAnsatte,
             )
             val geografiskTilknytning = pdlRestClient.hentGeografiskTilknytning(personMedStrengestBehov.personIdent, tema)
 
@@ -117,7 +117,7 @@ class ArbeidsfordelingService(
                 tema = tema.name,
                 geografiskOmraade = utledGeografiskTilknytningKode(geografiskTilknytning),
                 diskresjonskode = personMedStrengestBehov.adressebeskyttelse?.diskresjonskode,
-                skjermet = egneAnsatte.contains(personMedStrengestBehov.personIdent)
+                skjermet = egneAnsatte.contains(personMedStrengestBehov.personIdent),
             )
             restClient.finnBehandlendeEnhetMedBesteMatch(kriterier)
         }
@@ -129,7 +129,7 @@ class ArbeidsfordelingService(
     private fun utledPersonMedStrengestBehov(
         personIdent: String,
         personerMedAdresseBeskyttelse: List<PersonMedAdresseBeskyttelse>,
-        egneAnsatte: Set<String>
+        egneAnsatte: Set<String>,
     ): PersonMedAdresseBeskyttelse {
         val personMedStrengestGrad = personerMedAdresseBeskyttelse.personIdentMedKode6()
             ?: egneAnsatte.firstOrNull()

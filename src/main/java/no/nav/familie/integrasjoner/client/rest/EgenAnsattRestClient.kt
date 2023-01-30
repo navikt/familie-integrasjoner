@@ -11,7 +11,7 @@ import java.net.URI
 @Component
 class EgenAnsattRestClient(
     @Value("\${EGEN_ANSATT_URL}") private val uri: URI,
-    @Qualifier("noAuthorize") private val restTemplate: RestOperations
+    @Qualifier("noAuthorize") private val restTemplate: RestOperations,
 ) :
     AbstractPingableRestClient(restTemplate, "egenansatt") {
 

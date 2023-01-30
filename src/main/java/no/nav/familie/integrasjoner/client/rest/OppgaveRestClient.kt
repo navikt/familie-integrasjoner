@@ -32,7 +32,7 @@ import kotlin.math.min
 @Component
 class OppgaveRestClient(
     @Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: URI,
-    @Qualifier("jwtBearer") private val restTemplate: RestOperations
+    @Qualifier("jwtBearer") private val restTemplate: RestOperations,
 ) :
     AbstractPingableRestClient(restTemplate, "oppgave") {
 
@@ -52,7 +52,7 @@ class OppgaveRestClient(
         val requestUrl = lagRequestUrlMed(
             request.aktoerId!!,
             request.journalpostId!!,
-            request.tema?.name ?: KONTANTSTØTTE_TEMA.name
+            request.tema?.name ?: KONTANTSTØTTE_TEMA.name,
         )
         return requestOppgaveJson(requestUrl)
     }
@@ -99,11 +99,11 @@ class OppgaveRestClient(
                                 offset = offset,
                                 limit = min(
                                     (grense - offset),
-                                    limitMotOppgave
-                                )
-                            )
+                                    limitMotOppgave,
+                                ),
+                            ),
                     ),
-                    httpHeaders()
+                    httpHeaders(),
                 )
             oppgaver.addAll(nyeOppgaver.oppgaver)
             offset += limitMotOppgave
@@ -121,7 +121,7 @@ class OppgaveRestClient(
             patchForEntity<Oppgave>(
                 requestUrl(patchDto.id ?: error("Kan ikke finne oppgaveId på oppgaven")),
                 patchDto,
-                httpHeaders()
+                httpHeaders(),
             )
         }.fold(
             onSuccess = { it },
@@ -136,9 +136,9 @@ class OppgaveRestClient(
                     "Oppgave.oppdaterOppgave",
                     OppslagException.Level.KRITISK,
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    it
+                    it,
                 )
-            }
+            },
         )
     }
 
@@ -147,7 +147,7 @@ class OppgaveRestClient(
             patchForEntity<Oppgave>(
                 requestUrl(byttEnhetPatch.id),
                 byttEnhetPatch,
-                httpHeaders()
+                httpHeaders(),
             )
         }.fold(
             onSuccess = { it },
@@ -162,9 +162,9 @@ class OppgaveRestClient(
                     "Oppgave.byttEnhet",
                     OppslagException.Level.MEDIUM,
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    it
+                    it,
                 )
-            }
+            },
         )
     }
 
@@ -183,7 +183,7 @@ class OppgaveRestClient(
                     "Oppgave.opprettOppgave",
                     OppslagException.Level.MEDIUM,
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    it
+                    it,
                 )
             }
             .getOrThrow()
@@ -214,7 +214,7 @@ class OppgaveRestClient(
                 "Ingen oppgaver funnet for $requestUrl",
                 "oppgave",
                 OppslagException.Level.MEDIUM,
-                HttpStatus.NOT_FOUND
+                HttpStatus.NOT_FOUND,
             )
         }
         if (finnOppgaveResponseDto.oppgaver.size > 1) {

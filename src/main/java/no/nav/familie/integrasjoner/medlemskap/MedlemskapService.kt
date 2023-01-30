@@ -19,7 +19,7 @@ class MedlemskapService(private val medlRestClient: MedlRestClient) {
                 "MEDL2",
                 OppslagException.Level.MEDIUM,
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                e
+                e,
             )
         }
     }

@@ -29,7 +29,7 @@ class PersonopplysningerServiceTest {
     fun setUp() {
         personopplysningerService = PersonopplysningerService(
             pdlRestClient,
-            pdlClientCredentialRestClient
+            pdlClientCredentialRestClient,
         )
     }
 
@@ -40,19 +40,19 @@ class PersonopplysningerServiceTest {
                 familierelasjoner = listOf(
                     PdlForelderBarnRelasjon(
                         "2",
-                        FORELDERBARNRELASJONROLLE.BARN
-                    )
+                        FORELDERBARNRELASJONROLLE.BARN,
+                    ),
                 ),
                 sivilstand = listOf(Sivilstand(SIVILSTAND.GIFT, "3")),
-                fullmakt = listOf(Fullmakt("4"))
+                fullmakt = listOf(Fullmakt("4")),
             )
         val barn = lagPdlPersonMedRelasjoner(
             familierelasjoner = listOf(
                 PdlForelderBarnRelasjon(
                     "22",
-                    FORELDERBARNRELASJONROLLE.FAR
-                )
-            )
+                    FORELDERBARNRELASJONROLLE.FAR,
+                ),
+            ),
         )
         every { pdlClientCredentialRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(any(), any()) } answers {
             firstArg<List<String>>().map { it to if (it == "2") barn else lagPdlPersonMedRelasjoner() }.toMap()
@@ -77,7 +77,7 @@ class PersonopplysningerServiceTest {
         familierelasjoner: List<PdlForelderBarnRelasjon> = emptyList(),
         sivilstand: List<Sivilstand> = emptyList(),
         fullmakt: List<Fullmakt> = emptyList(),
-        adressebeskyttelse: List<Adressebeskyttelse> = emptyList()
+        adressebeskyttelse: List<Adressebeskyttelse> = emptyList(),
     ) =
         PdlPersonMedRelasjonerOgAdressebeskyttelse(familierelasjoner, sivilstand, fullmakt, adressebeskyttelse)
 

@@ -24,7 +24,7 @@ class ArbeidsfordelingClient(private val arbeidsfordelingV1: ArbeidsfordelingV1)
     fun finnBehandlendeEnhet(
         gjeldendeTema: no.nav.familie.kontrakter.felles.Tema,
         gjeldendeGeografiskOmråde: String?,
-        gjeldendeDiskresjonskode: String?
+        gjeldendeDiskresjonskode: String?,
     ): List<Enhet> {
         val request = FinnBehandlendeEnhetListeRequest().apply {
             arbeidsfordelingKriterier = ArbeidsfordelingKriterier().apply {
@@ -51,7 +51,7 @@ class ArbeidsfordelingClient(private val arbeidsfordelingV1: ArbeidsfordelingV1)
                     "ArbeidsfordelingV1.finnBehandlendeEnhet",
                     OppslagException.Level.MEDIUM,
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    it
+                    it,
                 )
             }
             .getOrThrow()

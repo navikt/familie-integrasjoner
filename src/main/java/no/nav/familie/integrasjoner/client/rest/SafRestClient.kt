@@ -26,7 +26,7 @@ import java.net.URI
 @Service
 class SafRestClient(
     @Value("\${SAF_URL}") safBaseUrl: URI,
-    @Qualifier("jwtBearer") val restTemplate: RestOperations
+    @Qualifier("jwtBearer") val restTemplate: RestOperations,
 ) :
     AbstractPingableRestClient(restTemplate, "saf.journalpost") {
 
@@ -36,18 +36,18 @@ class SafRestClient(
     fun hentJournalpost(journalpostId: String): Journalpost {
         val safJournalpostRequest = SafJournalpostRequest(
             SafRequestVariabler(journalpostId),
-            graphqlQuery("/saf/journalpostForId.graphql")
+            graphqlQuery("/saf/journalpostForId.graphql"),
         )
         val response = postForEntity<SafJournalpostResponse<SafJournalpostData>>(
             safUri,
             safJournalpostRequest,
-            httpHeaders()
+            httpHeaders(),
         )
         if (!response.harFeil()) {
             return response.data?.journalpost ?: throw JournalpostRestClientException(
                 "Kan ikke hente journalpost",
                 null,
-                journalpostId
+                journalpostId,
             )
         } else {
             val tilgangFeil = response.errors?.firstOrNull { it.extensions.code == SafErrorCode.forbidden }
@@ -59,7 +59,7 @@ class SafRestClient(
                 throw JournalpostRestClientException(
                     "Kan ikke hente journalpost " + response.errors?.toString(),
                     null,
-                    journalpostId
+                    journalpostId,
                 )
             }
         }
@@ -68,13 +68,13 @@ class SafRestClient(
     fun finnJournalposter(journalposterForBrukerRequest: JournalposterForBrukerRequest): List<Journalpost> {
         val safJournalpostRequest = SafJournalpostRequest(
             journalposterForBrukerRequest,
-            graphqlQuery("/saf/journalposterForBruker.graphql")
+            graphqlQuery("/saf/journalposterForBruker.graphql"),
         )
         val response =
             postForEntity<SafJournalpostResponse<SafJournalpostBrukerData>>(
                 safUri,
                 safJournalpostRequest,
-                httpHeaders()
+                httpHeaders(),
             )
 
         if (!response.harFeil()) {
@@ -82,7 +82,7 @@ class SafRestClient(
                 ?: throw JournalpostForBrukerException(
                     "Kan ikke hente journalposter",
                     null,
-                    journalposterForBrukerRequest
+                    journalposterForBrukerRequest,
                 )
         } else {
             val tilgangFeil = response.errors?.firstOrNull { it.message?.contains("Tilgang til ressurs ble avvist") == true }
@@ -94,7 +94,7 @@ class SafRestClient(
                 throw JournalpostForBrukerException(
                     "Kan ikke hente journalposter " + response.errors?.toString(),
                     null,
-                    journalposterForBrukerRequest
+                    journalposterForBrukerRequest,
                 )
             }
         }

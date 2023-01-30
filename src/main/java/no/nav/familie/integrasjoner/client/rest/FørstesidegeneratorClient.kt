@@ -20,7 +20,7 @@ import java.net.URI
 @Component
 class FørstesidegeneratorClient(
     @Value("\${FORSTESIDEGENERATOR_URL}") private val førstesidegeneratorURI: URI,
-    @Qualifier("sts") private val restTemplate: RestOperations
+    @Qualifier("sts") private val restTemplate: RestOperations,
 ) :
     AbstractPingableRestClient(restTemplate, "førstesidegenterator") {
 
@@ -40,7 +40,7 @@ class FørstesidegeneratorClient(
                     "førstesidegenerator.genererFørsteside",
                     OppslagException.Level.MEDIUM,
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    it
+                    it,
                 )
             }
             .getOrThrow()

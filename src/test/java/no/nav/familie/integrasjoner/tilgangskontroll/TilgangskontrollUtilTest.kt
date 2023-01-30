@@ -11,7 +11,7 @@ internal class TilgangskontrollUtilTest {
     @Test fun `høyesteGraderingen skal returnere høyeste gradering fra barn`() {
         val person = lagPersonMedRelasjoner(
             adressebeskyttelse = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-            barn = ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG
+            barn = ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG,
         )
 
         assertThat(TilgangskontrollUtil.høyesteGraderingen(person)).isEqualTo(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG)
@@ -20,7 +20,7 @@ internal class TilgangskontrollUtilTest {
     @Test fun `høyesteGraderingen skal returnere høyeste gradering fra hovedperson`() {
         val person = lagPersonMedRelasjoner(
             adressebeskyttelse = ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG,
-            barn = ADRESSEBESKYTTELSEGRADERING.UGRADERT
+            barn = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
         )
 
         assertThat(TilgangskontrollUtil.høyesteGraderingen(person)).isEqualTo(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG)
@@ -29,7 +29,7 @@ internal class TilgangskontrollUtilTest {
     @Test fun `høyesteGraderingen skal returnere ugradert `() {
         val person = lagPersonMedRelasjoner(
             adressebeskyttelse = null,
-            barn = ADRESSEBESKYTTELSEGRADERING.UGRADERT
+            barn = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
         )
 
         assertThat(TilgangskontrollUtil.høyesteGraderingen(person)).isEqualTo(ADRESSEBESKYTTELSEGRADERING.UGRADERT)
@@ -38,7 +38,7 @@ internal class TilgangskontrollUtilTest {
     @Test fun `høyesteGraderingen skal returnere null `() {
         val person = lagPersonMedRelasjoner(
             adressebeskyttelse = null,
-            barn = null
+            barn = null,
         )
 
         assertThat(TilgangskontrollUtil.høyesteGraderingen(person)).isEqualTo(null)
@@ -50,7 +50,7 @@ internal class TilgangskontrollUtilTest {
             barn = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
             sivilstand = ADRESSEBESKYTTELSEGRADERING.FORTROLIG,
             fullmakt = ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG,
-            barnsForeldrer = ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG_UTLAND
+            barnsForeldrer = ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG_UTLAND,
         )
 
         assertThat(TilgangskontrollUtil.høyesteGraderingen(person)).isEqualTo(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG_UTLAND)
@@ -61,7 +61,7 @@ internal class TilgangskontrollUtilTest {
         sivilstand: ADRESSEBESKYTTELSEGRADERING? = null,
         fullmakt: ADRESSEBESKYTTELSEGRADERING? = null,
         barn: ADRESSEBESKYTTELSEGRADERING? = null,
-        barnsForeldrer: ADRESSEBESKYTTELSEGRADERING? = null
+        barnsForeldrer: ADRESSEBESKYTTELSEGRADERING? = null,
     ): PersonMedRelasjoner {
         return PersonMedRelasjoner(
             personIdent = "",
@@ -69,7 +69,7 @@ internal class TilgangskontrollUtilTest {
             sivilstand = lagPersonMedBeskyttelse(sivilstand, "sivilstand"),
             fullmakt = lagPersonMedBeskyttelse(fullmakt, "fullmakt"),
             barn = lagPersonMedBeskyttelse(barn, "barn"),
-            barnsForeldrer = lagPersonMedBeskyttelse(barnsForeldrer, "barnsForeldrer")
+            barnsForeldrer = lagPersonMedBeskyttelse(barnsForeldrer, "barnsForeldrer"),
         )
     }
 

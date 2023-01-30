@@ -22,7 +22,7 @@ import org.springframework.web.client.HttpStatusCodeException
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/infotrygd")
 class InfotrygdController(
-    private val infotrygdRestClient: InfotrygdRestClient
+    private val infotrygdRestClient: InfotrygdRestClient,
 ) {
 
     @ExceptionHandler(HttpStatusCodeException::class)
@@ -35,7 +35,7 @@ class InfotrygdController(
                 "Oppslag mot infotrygd-kontantstotte feilet. feilmelding={} responsebody={} exception={}",
                 ex.message,
                 ex.responseBodyAsString,
-                ex
+                ex,
             )
         }
         return ResponseEntity
@@ -46,7 +46,7 @@ class InfotrygdController(
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/harBarnAktivKontantstotte"])
     fun aktivKontantstøtte(
         @RequestHeader(name = "Nav-Personident")
-        fnr: String
+        fnr: String,
     ): ResponseEntity<Ressurs<AktivKontantstøtteInfo>> {
         if (!fnr.matches(Regex("[0-9]+"))) {
             throw HttpClientErrorException(HttpStatus.BAD_REQUEST, "fnr må være et tall")
@@ -54,8 +54,8 @@ class InfotrygdController(
         return ResponseEntity.ok(
             success(
                 infotrygdRestClient.hentAktivKontantstøtteFor(fnr),
-                "Oppslag mot Infotrygd OK"
-            )
+                "Oppslag mot Infotrygd OK",
+            ),
         )
     }
 

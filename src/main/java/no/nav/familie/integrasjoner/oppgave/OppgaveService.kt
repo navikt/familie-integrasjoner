@@ -29,7 +29,7 @@ import java.time.format.DateTimeFormatter
 class OppgaveService constructor(
     private val oppgaveRestClient: OppgaveRestClient,
     private val aktørService: AktørService,
-    private val saksbehandlerService: SaksbehandlerService
+    private val saksbehandlerService: SaksbehandlerService,
 ) {
 
     private val logger = LoggerFactory.getLogger(OppgaveService::class.java)
@@ -53,13 +53,13 @@ class OppgaveService constructor(
                 "Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId={} journalpostId={} oppgaveId={}",
                 oppgave.aktoerId,
                 oppgave.journalpostId,
-                oppgave.id
+                oppgave.id,
             )
         } else {
             val patchOppgaveDto = oppgave.copy(
                 id = oppgave.id,
                 versjon = oppgave.versjon,
-                beskrivelse = oppgave.beskrivelse + request.beskrivelse
+                beskrivelse = oppgave.beskrivelse + request.beskrivelse,
             )
             oppgaveRestClient.oppdaterOppgave(patchOppgaveDto)
         }
@@ -79,7 +79,7 @@ class OppgaveService constructor(
         val oppdatertOppgaveDto = oppgave.copy(
             id = oppgave.id,
             versjon = oppgave.versjon,
-            tilordnetRessurs = saksbehandlerService.hentNavIdent(saksbehandler)
+            tilordnetRessurs = saksbehandlerService.hentNavIdent(saksbehandler),
         )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
         return oppgave.id!!
@@ -95,7 +95,7 @@ class OppgaveService constructor(
         val oppdatertOppgaveDto = oppgave.copy(
             id = oppgave.id,
             versjon = oppgave.versjon,
-            tilordnetRessurs = ""
+            tilordnetRessurs = "",
         )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
         return oppgave.id!!
@@ -120,7 +120,7 @@ class OppgaveService constructor(
             aktivDato = request.aktivFra.format(DateTimeFormatter.ISO_DATE),
             oppgavetype = request.oppgavetype.value,
             beskrivelse = request.beskrivelse,
-            behandlingstype = request.behandlingstype
+            behandlingstype = request.behandlingstype,
         )
 
         return oppgaveRestClient.opprettOppgave(oppgave)
@@ -144,7 +144,7 @@ class OppgaveService constructor(
             behandlingstype = request.behandlingstype,
             tilordnetRessurs = request.tilordnetRessurs?.let { saksbehandlerService.hentNavIdent(it) },
             behandlesAvApplikasjon = request.behandlesAvApplikasjon,
-            mappeId = request.mappeId
+            mappeId = request.mappeId,
         )
 
         return oppgaveRestClient.opprettOppgave(oppgave)
@@ -158,7 +158,7 @@ class OppgaveService constructor(
                 val patchOppgaveDto = oppgave.copy(
                     id = oppgave.id,
                     versjon = oppgave.versjon,
-                    status = StatusEnum.FERDIGSTILT
+                    status = StatusEnum.FERDIGSTILT,
                 )
                 oppgaveRestClient.oppdaterOppgave(patchOppgaveDto)
             }
@@ -169,7 +169,7 @@ class OppgaveService constructor(
                     "oppgaveId=$oppgaveId",
                 "Oppgave.ferdigstill",
                 Level.MEDIUM,
-                HttpStatus.BAD_REQUEST
+                HttpStatus.BAD_REQUEST,
             )
 
             null -> throw OppslagException(
@@ -177,7 +177,7 @@ class OppgaveService constructor(
                     "oppgaveId=$oppgaveId",
                 "Oppgave.ferdigstill",
                 Level.MEDIUM,
-                HttpStatus.BAD_REQUEST
+                HttpStatus.BAD_REQUEST,
             )
         }
     }
@@ -198,7 +198,7 @@ class OppgaveService constructor(
         if (mappeRespons.antallTreffTotalt > mappeRespons.mapper.size) {
             logger.error(
                 "Det finnes flere mapper (${mappeRespons.antallTreffTotalt}) " +
-                    "enn vi har hentet ut (${mappeRespons.mapper.size}). Sjekk limit. "
+                    "enn vi har hentet ut (${mappeRespons.mapper.size}). Sjekk limit. ",
             )
         }
         return mappeRespons.mapperUtenTema()
@@ -220,7 +220,7 @@ data class OppgaveByttEnhet(
     val id: Long,
     val tildeltEnhetsnr: String,
     val versjon: Int,
-    @JsonInclude(JsonInclude.Include.ALWAYS) val mappeId: Long? = null
+    @JsonInclude(JsonInclude.Include.ALWAYS) val mappeId: Long? = null,
 )
 
 /**

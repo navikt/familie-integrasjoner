@@ -21,7 +21,7 @@ import java.net.URI
 @Service
 class PdlClientCredentialRestClient(
     @Value("\${PDL_URL}") pdlBaseUrl: URI,
-    @Qualifier("clientCredential") private val restTemplate: RestOperations
+    @Qualifier("clientCredential") private val restTemplate: RestOperations,
 ) :
     AbstractRestClient(restTemplate, "pdl.personinfo.cc") {
 
@@ -29,16 +29,16 @@ class PdlClientCredentialRestClient(
 
     fun hentPersonMedRelasjonerOgAdressebeskyttelse(
         identer: List<String>,
-        tema: Tema
+        tema: Tema,
     ): Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse> {
         val request = PdlPersonBolkRequest(
             variables = PdlPersonBolkRequestVariables(identer),
-            query = HENT_PERSON_RELASJONER_ADRESSEBESKYTTELSE
+            query = HENT_PERSON_RELASJONER_ADRESSEBESKYTTELSE,
         )
         val response = postForEntity<PdlBolkResponse<PdlPersonMedRelasjonerOgAdressebeskyttelse>>(
             pdlUri,
             request,
-            pdlHttpHeaders(tema)
+            pdlHttpHeaders(tema),
         )
         return feilsjekkOgReturnerData(response)
     }

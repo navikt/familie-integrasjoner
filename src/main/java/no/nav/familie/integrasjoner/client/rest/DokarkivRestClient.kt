@@ -26,7 +26,7 @@ import java.net.URI
 @Component
 class DokarkivRestClient(
     @Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
-    @Qualifier("jwtBearerOboOgSts") private val restOperations: RestOperations
+    @Qualifier("jwtBearerOboOgSts") private val restOperations: RestOperations,
 ) :
     AbstractPingableRestClient(restOperations, "dokarkiv.opprett") {
 
@@ -40,7 +40,7 @@ class DokarkivRestClient(
     fun lagJournalpost(
         jp: OpprettJournalpostRequest,
         ferdigstill: Boolean,
-        navIdent: String? = null
+        navIdent: String? = null,
     ): OpprettJournalpostResponse {
         val uri = lagJournalpostUri(ferdigstill)
         try {
@@ -53,7 +53,7 @@ class DokarkivRestClient(
     fun oppdaterJournalpost(
         jp: OppdaterJournalpostRequest,
         journalpostId: String,
-        navIdent: String? = null
+        navIdent: String? = null,
     ): OppdaterJournalpostResponse {
         val uri = UriComponentsBuilder.fromUri(dokarkivUrl).pathSegment(PATH_JOURNALPOST, journalpostId).build().toUri()
         try {
@@ -77,7 +77,7 @@ class DokarkivRestClient(
             OppslagException.Level.MEDIUM,
             httpStatus,
             e,
-            sensitiveInfo
+            sensitiveInfo,
         )
     }
 
@@ -101,7 +101,7 @@ class DokarkivRestClient(
                 if (e.rawStatusCode == HttpStatus.BAD_REQUEST.value()) {
                     throw KanIkkeFerdigstilleJournalpostException(
                         "Kan ikke ferdigstille journalpost " +
-                            "$journalpostId body ${e.responseBodyAsString}"
+                            "$journalpostId body ${e.responseBodyAsString}",
                     )
                 }
                 throw e

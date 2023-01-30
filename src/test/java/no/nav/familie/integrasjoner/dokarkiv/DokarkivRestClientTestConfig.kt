@@ -26,7 +26,7 @@ class DokarkivRestClientTestConfig {
         val pattern = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
         val response = OpprettJournalpostResponse(
             journalpostId = LocalDateTime.now().format(pattern),
-            journalpostferdigstilt = false
+            journalpostferdigstilt = false,
         )
         every {
             klient.lagJournalpost(any(), any())

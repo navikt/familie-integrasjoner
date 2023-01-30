@@ -10,12 +10,12 @@ data class PersonMedRelasjoner(
     val sivilstand: List<PersonMedAdresseBeskyttelse>,
     val fullmakt: List<PersonMedAdresseBeskyttelse>,
     val barn: List<PersonMedAdresseBeskyttelse>,
-    val barnsForeldrer: List<PersonMedAdresseBeskyttelse>
+    val barnsForeldrer: List<PersonMedAdresseBeskyttelse>,
 )
 
 data class PersonMedAdresseBeskyttelse(
     val personIdent: String,
-    val adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING?
+    val adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING?,
 )
 
 fun List<PersonMedAdresseBeskyttelse>.personIdentMedKode6(): String? =

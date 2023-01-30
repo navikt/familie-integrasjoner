@@ -9,7 +9,7 @@ import java.util.UUID
 @Service
 class SaksbehandlerService(
     private val azureGraphRestClient: AzureGraphRestClient,
-    private val environment: Environment
+    private val environment: Environment,
 ) {
 
     private val lengdeNavIdent = 7
@@ -21,7 +21,7 @@ class SaksbehandlerService(
                 azureId = UUID.randomUUID(),
                 navIdent = id,
                 fornavn = "Mocka",
-                etternavn = "Saksbehandler"
+                etternavn = "Saksbehandler",
             )
         }
 
@@ -30,7 +30,7 @@ class SaksbehandlerService(
                 UUID.randomUUID(),
                 ID_VEDTAKSLØSNINGEN,
                 "Vedtaksløsning",
-                "Nav"
+                "Nav",
             )
         }
 
@@ -49,7 +49,7 @@ class SaksbehandlerService(
             azureAdBruker.id,
             azureAdBruker.onPremisesSamAccountName,
             azureAdBruker.givenName,
-            azureAdBruker.surname
+            azureAdBruker.surname,
         )
     }
 

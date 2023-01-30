@@ -38,7 +38,7 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
         client.`when`(
             HttpRequest.request()
                 .withMethod("GET")
-                .withPath("/users/$id")
+                .withPath("/users/$id"),
         )
             .respond(
                 HttpResponse.response().withHeader("Content-Type", "application/json")
@@ -49,8 +49,8 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
                                            "id": "$id",
                                            "userPrincipalName": "Bob.Burger@nav.no",
                                            "onPremisesSamAccountName": "B857496"
-                                           }"""
-                    )
+                                           }""",
+                    ),
             )
         val uri = UriComponentsBuilder.fromHttpUrl(localhost(BASE_URL))
             .pathSegment(id.toString()).toUriString()
@@ -58,7 +58,7 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
         val response: ResponseEntity<Ressurs<Saksbehandler>> = restTemplate.exchange(
             uri,
             HttpMethod.GET,
-            HttpEntity<String>(headers)
+            HttpEntity<String>(headers),
         )
         print(id)
         val saksbehandler = response.body!!.data!!
@@ -82,9 +82,9 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
                     Parameter(
                         "\$select",
                         "givenName,surname,onPremisesSamAccountName,id," +
-                            "userPrincipalName"
-                    )
-                )
+                            "userPrincipalName",
+                    ),
+                ),
         )
             .respond(
                 HttpResponse.response().withHeader("Content-Type", "application/json")
@@ -99,8 +99,8 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
                                                  "onPremisesSamAccountName": "$navIdent"
                                                }
                                            ]
-                                           }"""
-                    )
+                                           }""",
+                    ),
             )
         val uri = UriComponentsBuilder.fromHttpUrl(localhost(BASE_URL))
             .pathSegment(navIdent).toUriString()
@@ -108,7 +108,7 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
         val response: ResponseEntity<Ressurs<Saksbehandler>> = restTemplate.exchange(
             uri,
             HttpMethod.GET,
-            HttpEntity<String>(headers)
+            HttpEntity<String>(headers),
         )
         val saksbehandler = response.body!!.data!!
         assertThat(saksbehandler.fornavn).isEqualTo("Bob")

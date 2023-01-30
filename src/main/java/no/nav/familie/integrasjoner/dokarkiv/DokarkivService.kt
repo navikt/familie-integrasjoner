@@ -37,7 +37,7 @@ class DokarkivService(
     private val personopplysningerService: PersonopplysningerService,
     private val dokarkivMetadata: DokarkivMetadata,
     private val dokarkivLogiskVedleggRestClient: DokarkivLogiskVedleggRestClient,
-    private val førstesideGeneratorService: FørstesideGeneratorService
+    private val førstesideGeneratorService: FørstesideGeneratorService,
 ) {
 
     fun ferdistillJournalpost(journalpost: String, journalførendeEnhet: String, navIdent: String? = null) {
@@ -52,7 +52,7 @@ class DokarkivService(
 
     fun lagJournalpostV2(
         deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest,
-        navIdent: String? = null
+        navIdent: String? = null,
     ): ArkiverDokumentResponse {
         val request = mapTilOpprettJournalpostRequest(deprecatedArkiverDokumentRequest)
         val response = dokarkivRestClient.lagJournalpost(request, deprecatedArkiverDokumentRequest.forsøkFerdigstill, navIdent)
@@ -92,9 +92,9 @@ class DokarkivService(
                         filtype = "PDFA",
                         variantformat = "ARKIV",
                         fysiskDokument = bytes,
-                        filnavn = "førsteside.pdf"
-                    )
-                )
+                        filnavn = "førsteside.pdf",
+                    ),
+                ),
             )
         }
 
@@ -111,7 +111,7 @@ class DokarkivService(
             dokumenter = dokumenter.toList(),
             eksternReferanseId = eksternReferanseId,
             journalfoerendeEnhet = arkiverDokumentRequest.journalførendeEnhet,
-            sak = sak
+            sak = sak,
         )
     }
 
@@ -125,7 +125,7 @@ class DokarkivService(
             Sak(
                 fagsakId = arkiverDokumentRequest.fagsakId,
                 sakstype = "FAGSAK",
-                fagsaksystem = metadata.fagsakSystem
+                fagsaksystem = metadata.fagsakSystem,
             )
         } else {
             null
@@ -150,9 +150,9 @@ class DokarkivService(
                         filtype = "PDFA",
                         variantformat = "ARKIV",
                         fysiskDokument = førsteside,
-                        filnavn = "førsteside.pdf"
-                    )
-                )
+                        filnavn = "førsteside.pdf",
+                    ),
+                ),
             )
         }
 
@@ -167,7 +167,7 @@ class DokarkivService(
             dokumenter = listOf(hoveddokument) + vedleggsdokumenter,
             eksternReferanseId = MDCOperations.getCallId(),
             journalfoerendeEnhet = arkiverDokumentRequest.journalførendeEnhet,
-            sak = jpsak
+            sak = jpsak,
         )
     }
 
@@ -182,7 +182,7 @@ class DokarkivService(
             Sak(
                 fagsakId = deprecatedArkiverDokumentRequest.fagsakId,
                 sakstype = "FAGSAK",
-                fagsaksystem = metadata.fagsakSystem
+                fagsaksystem = metadata.fagsakSystem,
             )
         } else {
             null
@@ -199,14 +199,14 @@ class DokarkivService(
             dokumenter = arkivdokumenter,
             eksternReferanseId = MDCOperations.getCallId(),
             journalfoerendeEnhet = deprecatedArkiverDokumentRequest.journalførendeEnhet,
-            sak = jpsak
+            sak = jpsak,
         )
     }
 
     fun oppdaterJournalpost(
         request: OppdaterJournalpostRequest,
         journalpostId: String,
-        navIdent: String? = null
+        navIdent: String? = null,
     ): OppdaterJournalpostResponse {
         return dokarkivRestClient.oppdaterJournalpost(supplerDefaultVerdier(request), journalpostId, navIdent)
     }
@@ -231,7 +231,7 @@ class DokarkivService(
             brevkode = metadata.brevkode,
             dokumentKategori = metadata.dokumentKategori,
             tittel = metadata.tittel ?: dokument.tittel,
-            dokumentvarianter = dokumentvarianter
+            dokumentvarianter = dokumentvarianter,
         )
     }
 
@@ -247,7 +247,7 @@ class DokarkivService(
             brevkode = metadata.brevkode,
             dokumentKategori = metadata.dokumentKategori,
             tittel = metadata.tittel ?: dokument.tittel,
-            dokumentvarianter = dokumentvarianter
+            dokumentvarianter = dokumentvarianter,
         )
     }
 
@@ -279,9 +279,9 @@ class DokarkivService(
                     dokument.filType.name,
                     variantFormat,
                     dokument.dokument,
-                    dokument.filnavn
-                )
-            )
+                    dokument.filnavn,
+                ),
+            ),
         )
     }
 
@@ -297,9 +297,9 @@ class DokarkivService(
                     dokument.filtype.name,
                     variantFormat,
                     dokument.dokument,
-                    dokument.filnavn
-                )
-            )
+                    dokument.filnavn,
+                ),
+            ),
         )
     }
 
@@ -307,13 +307,13 @@ class DokarkivService(
         return ArkiverDokumentResponse(
             response.journalpostId!!,
             response.journalpostferdigstilt ?: false,
-            response.dokumenter
+            response.dokumenter,
         )
     }
 
     fun lagNyttLogiskVedlegg(
         dokumentInfoId: String,
-        request: LogiskVedleggRequest
+        request: LogiskVedleggRequest,
     ): LogiskVedleggResponse {
         return dokarkivLogiskVedleggRestClient.opprettLogiskVedlegg(dokumentInfoId, request)
     }

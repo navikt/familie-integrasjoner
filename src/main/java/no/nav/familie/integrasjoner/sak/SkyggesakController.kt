@@ -21,8 +21,8 @@ class SkyggesakController(private val skyggesakRestClient: SkyggesakRestClient) 
         return ResponseEntity.ok(
             success(
                 skyggesakRestClient.opprettSak(request),
-                "Oppretter skyggesak for fagsak ${request.fagsakNr}"
-            )
+                "Oppretter skyggesak for fagsak ${request.fagsakNr}",
+            ),
         )
     }
 }

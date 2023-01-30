@@ -66,8 +66,8 @@ abstract class OppslagSpringRunnerTest {
                 subject = subject,
                 audience = listOf("aud-localhost"),
                 claims = emptyMap(),
-                expiry = 3600
-            )
+                expiry = 3600,
+            ),
         ).serialize()
     }
 

@@ -29,7 +29,7 @@ fun main(args: Array<String>) {
             "mock-arbeidsfordeling",
             "mock-pdl",
             "mock-aareg",
-            "mock-sak"
+            "mock-sak",
         ).build()
     app.run(*args)
 }

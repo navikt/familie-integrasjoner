@@ -15,7 +15,7 @@ import java.net.URI
 @Service
 class AzureGraphRestClient(
     @Qualifier("jwtBearer") restTemplate: RestOperations,
-    @Value("\${AAD_GRAPH_API_URI}") private val aadGraphURI: URI
+    @Value("\${AAD_GRAPH_API_URI}") private val aadGraphURI: URI,
 ) :
     AbstractRestClient(restTemplate, "AzureGraph") {
 
@@ -43,7 +43,7 @@ class AzureGraphRestClient(
             saksbehandlersøkUri(navIdent),
             HttpHeaders().apply {
                 add("ConsistencyLevel", "eventual")
-            }
+            },
         )
     }
 

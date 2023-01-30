@@ -22,7 +22,7 @@ object MedlemskapsinfoMapper {
             gyldigePerioder = gyldigePerioder,
             avvistePerioder = avvistePerioder,
             uavklartePerioder = uavklartePerioder,
-            personIdent = tilPersonIdent(responsListe)
+            personIdent = tilPersonIdent(responsListe),
         )
     }
 
@@ -35,7 +35,7 @@ object MedlemskapsinfoMapper {
             grunnlag = response.grunnlag,
             gjelderMedlemskapIFolketrygden = response.medlem,
             periodeStatusÅrsak =
-            if (response.statusaarsak == null) null else PeriodeStatusÅrsak.valueOf(response.statusaarsak)
+            if (response.statusaarsak == null) null else PeriodeStatusÅrsak.valueOf(response.statusaarsak),
         )
     }
 

@@ -67,17 +67,17 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
             HttpRequest.request()
                 .withMethod("POST")
                 .withPath("/rest/saf/graphql")
-                .withBody(gyldigJournalPostIdRequest())
+                .withBody(gyldigJournalPostIdRequest()),
         )
             .respond(
                 response().withBody(lesFil("gyldigsakresponse.json"))
-                    .withHeaders(Header("Content-Type", "application/json"))
+                    .withHeaders(Header("Content-Type", "application/json")),
             )
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(
             uriHentSaksnummer,
             HttpMethod.GET,
-            HttpEntity<String>(headers)
+            HttpEntity<String>(headers),
         )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
@@ -91,17 +91,17 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
             HttpRequest.request()
                 .withMethod("POST")
                 .withPath("/rest/saf/graphql")
-                .withBody(gyldigJournalPostIdRequest())
+                .withBody(gyldigJournalPostIdRequest()),
         )
             .respond(
                 response().withBody(json(lesFil("gyldigjournalpostresponse.json")))
-                    .withHeaders(Header("Content-Type", "application/json"))
+                    .withHeaders(Header("Content-Type", "application/json")),
             )
 
         val response: ResponseEntity<Ressurs<Journalpost>> = restTemplate.exchange(
             uriHentJournalpost,
             HttpMethod.GET,
-            HttpEntity<String>(headers)
+            HttpEntity<String>(headers),
         )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
@@ -117,7 +117,7 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
             HttpRequest.request()
                 .withMethod("POST")
                 .withPath("/rest/saf/graphql")
-                .withBody(gyldigBrukerRequest())
+                .withBody(gyldigBrukerRequest()),
         )
             .respond(response().withBody(json(lesFil("gyldigJournalposterResponse.json"))))
 
@@ -130,10 +130,10 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
                         Bruker("12345678901", BrukerIdType.FNR),
                         10,
                         listOf(Tema.BAR),
-                        listOf(Journalposttype.I)
+                        listOf(Journalposttype.I),
                     ),
-                    headers
-                )
+                    headers,
+                ),
             )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
@@ -148,14 +148,14 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
         client.`when`(
             HttpRequest.request()
                 .withMethod("GET")
-                .withPath("/rest/saf/rest/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID/ARKIV")
+                .withPath("/rest/saf/rest/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID/ARKIV"),
         )
             .respond(HttpResponse().withBody("pdf".toByteArray()).withHeaders(Header("Content-Type", "application/pdf")))
 
         val response: ResponseEntity<Ressurs<ByteArray>> = restTemplate.exchange(
             uriHentDokument,
             HttpMethod.GET,
-            HttpEntity<String>(headers)
+            HttpEntity<String>(headers),
         )
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -167,17 +167,17 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
             HttpRequest.request()
                 .withMethod("POST")
                 .withHeader(Header("Content-Type", "application/json"))
-                .withPath("/rest/saf/graphql")
+                .withPath("/rest/saf/graphql"),
         )
             .respond(
                 response().withBody(lesFil("mangler_sak.json"))
-                    .withHeaders(Header("Content-Type", "application/json"))
+                    .withHeaders(Header("Content-Type", "application/json")),
             )
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(
             uriHentSaksnummer,
             HttpMethod.GET,
-            HttpEntity<String>(headers)
+            HttpEntity<String>(headers),
         )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
@@ -191,17 +191,17 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
             HttpRequest.request()
                 .withMethod("POST")
                 .withHeader(Header("Content-Type", "application/json"))
-                .withPath("/rest/saf/graphql")
+                .withPath("/rest/saf/graphql"),
         )
             .respond(
                 response().withBody(lesFil("feil_arkivsaksystem.json"))
-                    .withHeaders(Header("Content-Type", "application/json"))
+                    .withHeaders(Header("Content-Type", "application/json")),
             )
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(
             uriHentSaksnummer,
             HttpMethod.GET,
-            HttpEntity<String>(headers)
+            HttpEntity<String>(headers),
         )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
@@ -215,17 +215,17 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
             HttpRequest.request()
                 .withMethod("POST")
                 .withHeader(Header("Content-Type", "application/json"))
-                .withPath("/rest/saf/graphql")
+                .withPath("/rest/saf/graphql"),
         )
             .respond(
                 response().withBody(lesFil("error_fra_saf.json"))
-                    .withHeaders(Header("Content-Type", "application/json"))
+                    .withHeaders(Header("Content-Type", "application/json")),
             )
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(
             uriHentSaksnummer,
             HttpMethod.GET,
-            HttpEntity<String>(headers)
+            HttpEntity<String>(headers),
         )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -234,7 +234,7 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
             .contains(
                 "Feil ved henting av journalpost=12345678 klientfeilmelding=Kan ikke hente journalpost " +
                     "[SafError(message=Feilet ved henting av data (/journalpost) : null, " +
-                    "extensions=SafExtension(code=server_error, classification=DataFetchingException))]"
+                    "extensions=SafExtension(code=server_error, classification=DataFetchingException))]",
             )
         assertThat(loggingEvents)
             .extracting<Level, RuntimeException> { obj: ILoggingEvent -> obj.level }
@@ -247,14 +247,14 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
             HttpRequest.request()
                 .withMethod("POST")
                 .withHeader(Header("Content-Type", "application/json"))
-                .withPath("/rest/saf/graphql")
+                .withPath("/rest/saf/graphql"),
         )
             .respond(response().withStatusCode(500).withBody("feilmelding"))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(
             uriHentSaksnummer,
             HttpMethod.GET,
-            HttpEntity<String>(headers)
+            HttpEntity<String>(headers),
         )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -270,7 +270,7 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
         return lesFil("gyldigJournalpostIdRequest.json")
             .replace(
                 "GRAPHQL-PLACEHOLDER",
-                lesFil("journalpostForId.graphql").graphqlCompatible()
+                lesFil("journalpostForId.graphql").graphqlCompatible(),
             )
     }
 
@@ -278,7 +278,7 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
         return lesFil("gyldigBrukerRequest.json")
             .replace(
                 "GRAPHQL-PLACEHOLDER",
-                lesFil("journalposterForBruker.graphql").graphqlCompatible()
+                lesFil("journalposterForBruker.graphql").graphqlCompatible(),
             )
     }
 

@@ -10,5 +10,5 @@ data class DistribuerJournalpostRequestTo(
     val adresse: AdresseTo? = null,
     val dokumentProdApp: String,
     val distribusjonstype: Distribusjonstype?,
-    val distribusjonstidspunkt: Distribusjonstidspunkt
+    val distribusjonstidspunkt: Distribusjonstidspunkt,
 )

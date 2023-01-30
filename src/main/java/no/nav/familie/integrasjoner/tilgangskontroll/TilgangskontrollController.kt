@@ -33,7 +33,7 @@ class TilgangskontrollController(private val tilgangskontrollService: Tilgangsko
     @ProtectedWithClaims(issuer = "azuread")
     fun tilgangTilPerson(
         @RequestHeader(name = "Nav-Personident") personIdent: String,
-        @RequestHeader(name = "Nav-Tema") tema: Tema
+        @RequestHeader(name = "Nav-Tema") tema: Tema,
     ): Tilgang {
         return tilgangskontrollService.sjekkTilgangTilBruker(personIdent, tema)
     }
@@ -42,7 +42,7 @@ class TilgangskontrollController(private val tilgangskontrollService: Tilgangsko
     @ProtectedWithClaims(issuer = "azuread")
     fun tilgangTilPersoner(
         @RequestBody personIdenter: List<String>,
-        @RequestHeader(name = "Nav-Tema") tema: Tema
+        @RequestHeader(name = "Nav-Tema") tema: Tema,
     ): List<Tilgang> {
         return tilgangskontrollService.sjekkTilgangTilBrukere(personIdenter, tema)
     }
@@ -51,7 +51,7 @@ class TilgangskontrollController(private val tilgangskontrollService: Tilgangsko
     @ProtectedWithClaims(issuer = "azuread")
     fun tilgangTilPersonMedRelasjoner(
         @RequestBody personIdent: PersonIdent,
-        @RequestHeader(name = "Nav-Tema") tema: Tema
+        @RequestHeader(name = "Nav-Tema") tema: Tema,
     ): Tilgang {
         return tilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner(personIdent.ident, tema)
     }

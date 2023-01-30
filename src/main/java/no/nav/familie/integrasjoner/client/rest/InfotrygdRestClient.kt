@@ -12,7 +12,7 @@ import java.net.URI
 @Service
 class InfotrygdRestClient(
     @Qualifier("jwtBearer") private val restTemplate: RestOperations,
-    @Value("\${INFOTRYGD_URL}") private val infotrygdURL: URI
+    @Value("\${INFOTRYGD_URL}") private val infotrygdURL: URI,
 ) :
     AbstractPingableRestClient(restTemplate, "infotrygd") {
 

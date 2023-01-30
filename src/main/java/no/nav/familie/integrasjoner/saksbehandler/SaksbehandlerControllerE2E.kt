@@ -23,9 +23,9 @@ class SaksbehandlerControllerE2E {
                 azureId = UUID.randomUUID(),
                 navIdent = id,
                 fornavn = "Mocka",
-                etternavn = "Saksbehandler"
+                etternavn = "Saksbehandler",
             ),
-            "Hent saksbehandler OK"
+            "Hent saksbehandler OK",
         )
     }
 }

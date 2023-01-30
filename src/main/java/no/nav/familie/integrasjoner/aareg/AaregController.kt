@@ -27,5 +27,5 @@ class AaregController(val aaregService: AaregService) {
 class ArbeidsforholdRequest(
     val personIdent: String,
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    val ansettelsesperiodeFom: LocalDate
+    val ansettelsesperiodeFom: LocalDate,
 )

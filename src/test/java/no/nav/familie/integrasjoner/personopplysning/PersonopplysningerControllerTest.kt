@@ -69,10 +69,10 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
         assertThat(response.body?.data?.navn).isEqualTo(NAVN)
         assertThat(response.body?.data?.kjønn).isEqualTo(KJØNN)
         assertThat(response.body?.data?.familierelasjoner?.stream()?.findFirst()?.get()?.personIdent?.id).isEqualTo(
-            FAMILIERELASJON_PERSONIDENT
+            FAMILIERELASJON_PERSONIDENT,
         )
         assertThat(response.body?.data?.familierelasjoner?.stream()?.findFirst()?.get()?.relasjonsrolle).isEqualTo(
-            FAMILIERELASJON_RELASJONSROLLE
+            FAMILIERELASJON_RELASJONSROLLE,
         )
     }
 
@@ -137,14 +137,14 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
             HttpRequest.request()
                 .withMethod("POST")
                 .withPath("/rest/pdl/graphql")
-                .withBody(gyldigRequest("hentperson-med-relasjoner.graphql"))
+                .withBody(gyldigRequest("hentperson-med-relasjoner.graphql")),
         )
             .respond(HttpResponse.response().withStatusCode(500))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(
             uriHentPersoninfo,
             HttpMethod.GET,
-            HttpEntity<String>(headers)
+            HttpEntity<String>(headers),
         )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -158,16 +158,16 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
             HttpRequest.request()
                 .withMethod("POST")
                 .withPath("/rest/pdl/graphql")
-                .withHeader("Tema", TEMA)
+                .withHeader("Tema", TEMA),
         )
             .respond(
                 HttpResponse.response().withBody(readfile("pdlIdenterResponse.json"))
-                    .withHeaders(Header("Content-Type", "application/json"))
+                    .withHeaders(Header("Content-Type", "application/json")),
             )
         val response = restTemplate.exchange<Ressurs<FinnPersonidenterResponse>>(
             uriHentIdenter,
             HttpMethod.POST,
-            HttpEntity(Ident(ident), headers)
+            HttpEntity(Ident(ident), headers),
         )
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -183,7 +183,7 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
         val response = restTemplate.exchange<Ressurs<ADRESSEBESKYTTELSEGRADERING>>(
             uriHentStrengesteGradering,
             HttpMethod.POST,
-            HttpEntity(PersonIdent(ident), headers.apply { add("Nav-Tema", "ENF") })
+            HttpEntity(PersonIdent(ident), headers.apply { add("Nav-Tema", "ENF") }),
         )
         assertThat(response.body?.data).isEqualTo(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG)
     }
@@ -194,14 +194,14 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
                 .withMethod("POST")
                 .withPath("/rest/pdl/graphql")
                 .withBody(gyldigRequestIdentListe("hentpersoner-relasjoner-adressebeskyttelse.graphql"))
-                .withHeader("Tema", "ENF")
+                .withHeader("Tema", "ENF"),
         )
             .respond(
                 HttpResponse.response().withBody(
                     readfile("pdlPersonMedRelasjonerOkResponse.json").replace("IDENT-PLACEHOLDER", ident)
-                        .replace("GRADERING-PLACEHOLDER", persongradering)
+                        .replace("GRADERING-PLACEHOLDER", persongradering),
                 )
-                    .withHeaders(Header("Content-Type", "application/json"))
+                    .withHeaders(Header("Content-Type", "application/json")),
             )
 
         client.`when`(
@@ -211,18 +211,18 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
                 .withBody(
                     gyldigRequestIdentListe(
                         "hentpersoner-relasjoner-adressebeskyttelse.graphql",
-                        ident = barnsIdent
-                    )
+                        ident = barnsIdent,
+                    ),
                 )
-                .withHeader("Tema", "ENF")
+                .withHeader("Tema", "ENF"),
         )
             .respond(
                 HttpResponse.response()
                     .withBody(
                         readfile("pdlPersonMedRelasjonerOkResponse.json").replace("IDENT-PLACEHOLDER", barnsIdent)
-                            .replace("GRADERING-PLACEHOLDER", barngradering)
+                            .replace("GRADERING-PLACEHOLDER", barngradering),
                     )
-                    .withHeaders(Header("Content-Type", "application/json"))
+                    .withHeaders(Header("Content-Type", "application/json")),
             )
     }
 
@@ -232,11 +232,11 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
                 .withMethod("POST")
                 .withPath("/rest/pdl/graphql")
                 .withHeader("Tema", TEMA)
-                .withBody(gyldigRequest("hentperson-med-relasjoner.graphql"))
+                .withBody(gyldigRequest("hentperson-med-relasjoner.graphql")),
         )
             .respond(
                 HttpResponse.response().withBody(readfile(responseFile))
-                    .withHeaders(Header("Content-Type", "application/json"))
+                    .withHeaders(Header("Content-Type", "application/json")),
             )
 
         return restTemplate.exchange(uriHentPersoninfo, HttpMethod.GET, HttpEntity<String>(headers))
@@ -246,7 +246,7 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
         return readfile("pdlGyldigRequest.json")
             .replace(
                 "GRAPHQL-PLACEHOLDER",
-                readfile(filnavn).graphqlCompatible()
+                readfile(filnavn).graphqlCompatible(),
             )
     }
 
@@ -254,10 +254,10 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
         return readfile("pdlGyldigRequestIdentListe.json")
             .replace(
                 "IDENT-PLACEHOLDER",
-                ident
+                ident,
             ).replace(
                 "GRAPHQL-PLACEHOLDER",
-                readfile(filnavn).graphqlCompatible()
+                readfile(filnavn).graphqlCompatible(),
             )
     }
 

@@ -23,7 +23,7 @@ class AaregRestClient(
     @Value("\${AAREG_URL}")
     private val aaregUrl: URI,
     @Qualifier("sts") restOperations: RestOperations,
-    private val stsRestClient: StsRestClient
+    private val stsRestClient: StsRestClient,
 ) :
     AbstractPingableRestClient(restOperations, "aareg") {
 
@@ -51,7 +51,7 @@ class AaregRestClient(
                 OppslagException.Level.MEDIUM,
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 e,
-                "Kan ikke hente arbeidsforhold for $personIdent"
+                "Kan ikke hente arbeidsforhold for $personIdent",
             )
         }
     }

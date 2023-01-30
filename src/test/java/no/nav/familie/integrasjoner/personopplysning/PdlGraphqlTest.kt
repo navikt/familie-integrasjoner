@@ -97,7 +97,7 @@ class PdlGraphqlTest {
             gtType = GeografiskTilknytningType.KOMMUNE,
             gtKommune = "0301",
             gtBydel = null,
-            gtLand = null
+            gtLand = null,
         )
 
         val resp: PdlResponse<PdlHentGeografiskTilknytning> =
