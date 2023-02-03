@@ -29,6 +29,7 @@ class ApiExceptionHandlerTest : OppslagSpringRunnerTest() {
         val response = gjørKallTilControllerSomKasterValueRetrievalException()
         assertThat(response.statusCode).isEqualTo(INTERNAL_SERVER_ERROR)
         assertThat(response.body?.stacktrace).contains("PdlNotFoundException")
+        assertThat(response.body.stacktrace).doesNotContain("HemmeligIdent")
     }
 
     private fun gjørKallTilControllerSomKasterValueRetrievalException() = restTemplate.exchange<Ressurs<String>>(
