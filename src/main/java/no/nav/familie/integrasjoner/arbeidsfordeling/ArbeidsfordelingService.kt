@@ -6,6 +6,7 @@ import no.nav.familie.integrasjoner.config.getValue
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningDto
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningType
+import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedAdresseBeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.personIdentMedKode6
@@ -55,7 +56,7 @@ class ArbeidsfordelingService(
         arbeidsfordelingstema: Tema,
     ): ArbeidsfordelingKriterie {
         val personinfo = personopplysningerService.hentPersoninfo(personIdent, pdlTema, PersonInfoQuery.ENKEL)
-        val geografiskTilknytning = utledGeografiskTilknytningKode(pdlRestClient.hentGeografiskTilknytning(personIdent, pdlTema))
+        val geografiskTilknytning = utledGeografiskTilknytningKode(geografiskTilknytningDto(personIdent, pdlTema))
         val diskresjonskode = personinfo.adressebeskyttelseGradering?.diskresjonskode
 
         return ArbeidsfordelingKriterie(
@@ -68,7 +69,7 @@ class ArbeidsfordelingService(
 
     @Improvement("Må ta høyde for om personIdent har diskresjonskode eller skjerming/er egen ansatt. Nå krasjer den for de med kode 6")
     fun finnLokaltNavKontor(personIdent: String, tema: Tema): NavKontorEnhet? {
-        val geografiskTilknytning = pdlRestClient.hentGeografiskTilknytning(personIdent, tema)
+        val geografiskTilknytning = geografiskTilknytningDto(personIdent, tema)
 
         val geografiskTilknytningKode: String? = utledGeografiskTilknytningKode(geografiskTilknytning)
         if (geografiskTilknytningKode == null) {
@@ -98,7 +99,6 @@ class ArbeidsfordelingService(
     fun finnBehandlendeEnhetForPersonMedRelasjoner(personIdent: String, tema: Tema): List<Enhet> {
         return cacheManager.getValue("navEnhet", personIdent) {
             val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent, tema)
-
             val aktuellePersoner: List<PersonMedAdresseBeskyttelse> =
                 listOf(PersonMedAdresseBeskyttelse(personMedRelasjoner.personIdent, personMedRelasjoner.adressebeskyttelse)) +
                     personMedRelasjoner.barn +
@@ -111,7 +111,8 @@ class ArbeidsfordelingService(
                 personerMedAdresseBeskyttelse = aktuellePersoner,
                 egneAnsatte = egneAnsatte,
             )
-            val geografiskTilknytning = pdlRestClient.hentGeografiskTilknytning(personMedStrengestBehov.personIdent, tema)
+
+            val geografiskTilknytning = geografiskTilknytningDto(personMedStrengestBehov.personIdent, tema)
 
             val kriterier = ArbeidsfordelingKriterie(
                 tema = tema.name,
@@ -120,6 +121,14 @@ class ArbeidsfordelingService(
                 skjermet = egneAnsatte.contains(personMedStrengestBehov.personIdent),
             )
             restClient.finnBehandlendeEnhetMedBesteMatch(kriterier)
+        }
+    }
+
+    private fun geografiskTilknytningDto(personIdent: String, tema: Tema): GeografiskTilknytningDto {
+        return try {
+            pdlRestClient.hentGeografiskTilknytning(personIdent, tema)
+        } catch (e: PdlNotFoundException) {
+            GeografiskTilknytningDto(GeografiskTilknytningType.UDEFINERT, null, null, null)
         }
     }
 

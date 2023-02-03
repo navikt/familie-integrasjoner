@@ -7,6 +7,7 @@ import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningDto
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningType
+import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.FORTROLIG
@@ -97,6 +98,19 @@ internal class ArbeidsfordelingServiceTest {
         arbeidsfordelingService.finnBehandlendeEnhetForPersonMedRelasjoner(ident, Tema.ENF)
 
         verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.diskresjonskode == null && it.skjermet == false }) }
+    }
+
+    @Test
+    fun `hent geografisk tilknytning kaster ikke-funnet-feil, bruk null`() {
+        mockPersonInfo(emptySet(), emptySet(), emptySet())
+
+        every {
+            pdlRestClient.hentGeografiskTilknytning(any(), any())
+        } throws PdlNotFoundException()
+
+        arbeidsfordelingService.finnBehandlendeEnhetForPersonMedRelasjoner(ident, Tema.ENF)
+
+        verify { restClient.finnBehandlendeEnhetMedBesteMatch(match { it.geografiskOmraade == null }) }
     }
 
     @Test
@@ -290,7 +304,7 @@ internal class ArbeidsfordelingServiceTest {
         )
     }
 
-    fun utledAdressebeskyttelse(personIdent: String, kode6: Set<String>, kode7: Set<String>): ADRESSEBESKYTTELSEGRADERING? {
+    fun utledAdressebeskyttelse(personIdent: String, kode6: Set<String>, kode7: Set<String>): ADRESSEBESKYTTELSEGRADERING {
         return when {
             kode6.contains(personIdent) -> STRENGT_FORTROLIG
             kode7.contains(personIdent) -> FORTROLIG
