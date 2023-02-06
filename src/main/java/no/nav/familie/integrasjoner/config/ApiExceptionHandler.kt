@@ -9,7 +9,6 @@ import no.nav.security.token.support.client.core.OAuth2ClientException
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.LoggerFactory
-import org.springframework.cache.Cache.ValueRetrievalException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -86,25 +85,10 @@ class ApiExceptionHandler {
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception): ResponseEntity<Ressurs<Any>> {
         secureLogger.error("Exception : ", e)
-        logger.error("Exception : {} {}", e.javaClass.name, e.message, e)
+        logger.error("Exception : {} - se securelog for detaljer", e.javaClass.name)
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(failure("""Det oppstod en feil. ${e.message}""", error = e))
-    }
-
-    // ValueRetrievalException har key (ofte ident) i feilmelding -> må logges til securelog
-    @ExceptionHandler(ValueRetrievalException::class)
-    fun handleException(e: ValueRetrievalException): ResponseEntity<Ressurs<Any>> {
-        secureLogger.error("Exception : ", e)
-        logger.error("Cache - ValueRetrievalException, se securelogger")
-        return ResponseEntity
-            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(
-                failure(
-                    """Det oppstod en feil av type ValueRetrievalException. Se securelogs i integrasjoner. """,
-                    error = e.cause,
-                ),
-            )
     }
 
     @ExceptionHandler(PdlNotFoundException::class)
