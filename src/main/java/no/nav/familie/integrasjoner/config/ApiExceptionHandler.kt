@@ -85,7 +85,7 @@ class ApiExceptionHandler {
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception): ResponseEntity<Ressurs<Any>> {
         secureLogger.error("Exception : ", e)
-        logger.error("Exception : {} {}", e.javaClass.name, e.message, e)
+        logger.error("Exception : {} - se securelog for detaljer", e.javaClass.name)
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(failure("""Det oppstod en feil. ${e.message}""", error = e))
