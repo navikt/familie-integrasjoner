@@ -10,5 +10,5 @@ class MedlemskapsunntakResponse(
     val ident: String,
     val medlem: Boolean,
     val status: String,
-    val statusaarsak: String? = null
+    val statusaarsak: String? = null,
 )

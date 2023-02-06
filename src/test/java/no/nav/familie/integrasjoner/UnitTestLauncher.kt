@@ -27,7 +27,7 @@ fun main(args: Array<String>) {
             "mock-personopplysninger",
             "mock-saf",
             "mock-sts",
-            "mock-pdl"
+            "mock-pdl",
         ).build()
     app.run(*args)
 }

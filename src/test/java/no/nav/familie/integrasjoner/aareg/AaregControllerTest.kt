@@ -45,10 +45,10 @@ class AaregControllerTest : OppslagSpringRunnerTest() {
                 HttpEntity(
                     ArbeidsforholdRequest(
                         IDENT,
-                        LocalDate.now()
+                        LocalDate.now(),
                     ),
-                    headers
-                )
+                    headers,
+                ),
             )
 
         assertThat(response?.status).isEqualTo(SUKSESS)
@@ -69,10 +69,10 @@ class AaregControllerTest : OppslagSpringRunnerTest() {
                 HttpEntity(
                     ArbeidsforholdRequest(
                         IDENT,
-                        LocalDate.now()
+                        LocalDate.now(),
                     ),
-                    headers
-                )
+                    headers,
+                ),
             )
 
         assertThat(response?.status).isEqualTo(FEILET)
@@ -82,7 +82,7 @@ class AaregControllerTest : OppslagSpringRunnerTest() {
     private fun gyldigResponse(filnavn: String): String {
         return Files.readString(
             ClassPathResource("aareg/$filnavn").file.toPath(),
-            StandardCharsets.UTF_8
+            StandardCharsets.UTF_8,
         )
     }
 

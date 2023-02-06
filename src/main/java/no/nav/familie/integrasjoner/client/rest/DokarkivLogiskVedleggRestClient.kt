@@ -18,7 +18,7 @@ import java.net.URI
 @Component
 class DokarkivLogiskVedleggRestClient(
     @Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
-    @Qualifier("jwtBearerOboOgSts") private val restOperations: RestOperations
+    @Qualifier("jwtBearerOboOgSts") private val restOperations: RestOperations,
 ) :
     AbstractRestClient(restOperations, "dokarkiv.logiskvedlegg.opprett") {
 
@@ -40,7 +40,7 @@ class DokarkivLogiskVedleggRestClient(
                 "Dokarkiv.logiskVedlegg.opprett",
                 OppslagException.Level.MEDIUM,
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                e
+                e,
             )
         }
     }
@@ -61,7 +61,7 @@ class DokarkivLogiskVedleggRestClient(
                 "Dokarkiv.logiskVedlegg.slett",
                 OppslagException.Level.MEDIUM,
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                e
+                e,
             )
         }
     }

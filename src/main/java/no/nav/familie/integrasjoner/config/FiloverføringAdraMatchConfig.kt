@@ -12,7 +12,7 @@ class FiloverføringAdraMatchConfig(
     val port: Int,
     privateKey: String,
     val passphrase: String,
-    val directory: String = "inbound"
+    val directory: String = "inbound",
 ) {
 
     val privateKeyDecoded = base64Decode(privateKey)

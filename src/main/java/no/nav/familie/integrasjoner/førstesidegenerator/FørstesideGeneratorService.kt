@@ -25,11 +25,11 @@ class FørstesideGeneratorService(private val førstesidegeneratorClient: Først
                     adresselinje1 = "Nav skanning",
                     adresselinje2 = "Postboks 1400",
                     postnummer = "0109",
-                    poststed = "OSLO"
+                    poststed = "OSLO",
                 ),
                 bruker = Bruker(
                     brukerId = brukerId,
-                    brukerType = Brukertype.PERSON
+                    brukerType = Brukertype.PERSON,
                 ),
                 navSkjemaId = førsteside.navSkjemaId, // NAV 33.00-07
                 førstesidetype = Førstesidetype.ETTERSENDELSE,
@@ -42,15 +42,15 @@ class FørstesideGeneratorService(private val førstesidegeneratorClient: Først
                         Companion.VEDLAGTEBREV_TEKST_NN
                     } else {
                         Companion.VEDLAGTEBREV_TEKST_NB
-                    }
+                    },
                 ),
                 vedleggsliste = arrayListOf(
                     if (førsteside.maalform == "NN") {
                         Companion.VEDLAGTEBREV_TEKST_NN
                     } else {
                         Companion.VEDLAGTEBREV_TEKST_NB
-                    }
-                )
+                    },
+                ),
             )
         return førstesidegeneratorClient.genererFørsteside(postFørstesideRequest).førsteside
     }
@@ -63,11 +63,11 @@ class FørstesideGeneratorService(private val førstesidegeneratorClient: Først
                     adresselinje1 = "Nav skanning",
                     adresselinje2 = "Postboks 1400",
                     postnummer = "0109",
-                    poststed = "OSLO"
+                    poststed = "OSLO",
                 ),
                 bruker = Bruker(
                     brukerId = brukerId,
-                    brukerType = Brukertype.PERSON
+                    brukerType = Brukertype.PERSON,
                 ),
                 navSkjemaId = førsteside.navSkjemaId, // NAV 33.00-07
                 førstesidetype = Førstesidetype.ETTERSENDELSE,
@@ -76,7 +76,7 @@ class FørstesideGeneratorService(private val førstesidegeneratorClient: Først
                 // Ettersendelse til søknad om barnetrygd ved fødsel - NAV 33.00-07",
                 overskriftstittel = førsteside.overskriftstittel,
                 dokumentlisteFørsteside = arrayListOf(vedleggstekst(førsteside.språkkode)),
-                vedleggsliste = arrayListOf(vedleggstekst(førsteside.språkkode))
+                vedleggsliste = arrayListOf(vedleggstekst(førsteside.språkkode)),
             )
         return førstesidegeneratorClient.genererFørsteside(postFørstesideRequest).førsteside
     }

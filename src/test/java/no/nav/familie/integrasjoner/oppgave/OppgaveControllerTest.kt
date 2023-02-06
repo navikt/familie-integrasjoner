@@ -82,31 +82,31 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                                     MappeDto(
                                         1,
                                         "112",
-                                        "4489"
+                                        "4489",
                                     ),
                                     MappeDto(
                                         2,
                                         "132",
-                                        "4489"
+                                        "4489",
                                     ),
                                     MappeDto(
                                         id = 3,
                                         navn = "123",
                                         enhetsnr = "4489",
-                                        tema = "PEN"
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
+                                        tema = "PEN",
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
         )
 
         val response: ResponseEntity<Ressurs<FinnMappeResponseDto>> =
             restTemplate.exchange(
                 localhost("/api/oppgave/mappe/sok?enhetsnr=1234567891011&opprettetFom=dcssdf&limit=50"),
                 HttpMethod.GET,
-                HttpEntity(null, headers)
+                HttpEntity(null, headers),
             )
 
         assertThat(response.body?.data?.antallTreffTotalt).isEqualTo(2)
@@ -121,13 +121,13 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
             aktoerId = "1234567891011",
             journalpostId = "1",
             beskrivelse = "test NPE",
-            tema = Tema.KON
+            tema = Tema.KON,
         )
 
         val response: ResponseEntity<Ressurs<Map<String, Long>>> = restTemplate.exchange(
             localhost(OPPDATER_OPPGAVE_URL),
             HttpMethod.POST,
-            HttpEntity(oppgave, headers)
+            HttpEntity(oppgave, headers),
         )
 
         assertThat(loggingEvents)
@@ -144,13 +144,13 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
             aktoerId = "1234567891011",
             journalpostId = "1",
             beskrivelse = "test RestClientException",
-            tema = Tema.KON
+            tema = Tema.KON,
         )
 
         val response: ResponseEntity<Ressurs<Map<String, Long>>> = restTemplate.exchange(
             localhost(OPPDATER_OPPGAVE_URL),
             HttpMethod.POST,
-            HttpEntity(oppgave, headers)
+            HttpEntity(oppgave, headers),
         )
 
         assertThat(loggingEvents)
@@ -167,13 +167,13 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
             aktoerId = "1234567891011",
             journalpostId = "1",
             beskrivelse = "test oppgave ikke funnet",
-            tema = Tema.KON
+            tema = Tema.KON,
         )
 
         val response: ResponseEntity<Ressurs<Map<String, Long>>> = restTemplate.exchange(
             localhost(OPPDATER_OPPGAVE_URL),
             HttpMethod.POST,
-            HttpEntity(oppgave, headers)
+            HttpEntity(oppgave, headers),
         )
 
         assertThat(loggingEvents)
@@ -181,7 +181,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
             .anyMatch {
                 it.contains(
                     "[oppgave][Ingen oppgaver funnet for http://localhost:28085/api/v1/oppgaver" +
-                        "?aktoerId=1234567891011&tema=KON&oppgavetype=BEH_SAK&journalpostId=1&statuskategori=AAPEN]"
+                        "?aktoerId=1234567891011&tema=KON&oppgavetype=BEH_SAK&journalpostId=1&statuskategori=AAPEN]",
                 )
             }
         assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
@@ -195,20 +195,20 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
             aktoerId = "1234567891011",
             journalpostId = "1",
             beskrivelse = "test oppgave ikke funnet",
-            tema = null
+            tema = null,
         )
 
         val response: ResponseEntity<Ressurs<Map<String, Long>>> = restTemplate.exchange(
             localhost(OPPDATER_OPPGAVE_URL),
             HttpMethod.POST,
-            HttpEntity(oppgave, headers)
+            HttpEntity(oppgave, headers),
         )
 
         assertThat(loggingEvents).extracting<String, RuntimeException> { obj: ILoggingEvent -> obj.formattedMessage }
             .anyMatch {
                 it.contains(
                     "Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId=1234567891011 " +
-                        "journalpostId=123456789 oppgaveId=$OPPGAVE_ID"
+                        "journalpostId=123456789 oppgaveId=$OPPGAVE_ID",
                 )
             }
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
@@ -225,22 +225,22 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                     aResponse()
                         .withStatus(201)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(gyldigOppgaveResponse("ferdigstilt_oppgave.json"))
-                )
+                        .withBody(gyldigOppgaveResponse("ferdigstilt_oppgave.json")),
+                ),
         )
 
         val oppgave = Oppgave(
             aktoerId = "1234567891011",
             journalpostId = "1",
             beskrivelse = EKSTRA_BESKRIVELSE,
-            tema = null
+            tema = null,
         )
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
                 localhost(OPPDATER_OPPGAVE_URL),
                 HttpMethod.POST,
-                HttpEntity(oppgave, headers)
+                HttpEntity(oppgave, headers),
             )
         assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
@@ -258,13 +258,13 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
             tema = Tema.BAR,
             oppgavetype = Oppgavetype.BehandleSak,
             saksId = "saksid",
-            beskrivelse = "Oppgavetekst"
+            beskrivelse = "Oppgavetekst",
         )
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
                 localhost(OPPGAVE_URL),
                 HttpMethod.POST,
-                HttpEntity(opprettOppgave, headers)
+                HttpEntity(opprettOppgave, headers),
             )
 
         assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
@@ -284,13 +284,13 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
             oppgavetype = Oppgavetype.BehandleSak,
             mappeId = 1234L,
             saksId = "saksid",
-            beskrivelse = "Oppgavetekst"
+            beskrivelse = "Oppgavetekst",
         )
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
                 localhost(OPPRETT_OPPGAVE_URL_V2),
                 HttpMethod.POST,
-                HttpEntity(opprettOppgave, headers)
+                HttpEntity(opprettOppgave, headers),
             )
 
         assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
@@ -309,13 +309,13 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
             tema = Tema.BAR,
             oppgavetype = Oppgavetype.BehandleSak,
             saksId = "saksid",
-            beskrivelse = "Oppgavetekst"
+            beskrivelse = "Oppgavetekst",
         )
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
                 localhost(OPPGAVE_URL),
                 HttpMethod.POST,
-                HttpEntity(opprettOppgave, headers)
+                HttpEntity(opprettOppgave, headers),
             )
 
         assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
@@ -330,8 +330,8 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                     aResponse()
                         .withStatus(400)
                         .withHeader("Content-Type", "application/json")
-                        .withBody("body")
-                )
+                        .withBody("body"),
+                ),
         )
         val opprettOppgave = OpprettOppgave(
             ident = OppgaveIdent(ident = "123456789012", type = IdentType.Aktør),
@@ -341,13 +341,13 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
             tema = Tema.BAR,
             oppgavetype = Oppgavetype.BehandleSak,
             saksId = "saksid",
-            beskrivelse = "Oppgavetekst"
+            beskrivelse = "Oppgavetekst",
         )
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
                 localhost(OPPGAVE_URL),
                 HttpMethod.POST,
-                HttpEntity(opprettOppgave, headers)
+                HttpEntity(opprettOppgave, headers),
             )
         assertThat(response.body?.melding)
             .contains("Feil ved oppretting av oppgave for 123456789012. Response fra oppgave = body")
@@ -362,11 +362,11 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                     objectMapper.writeValueAsString(
                         Oppgave(
                             id = 123,
-                            status = StatusEnum.FERDIGSTILT
-                        )
-                    )
-                )
-            )
+                            status = StatusEnum.FERDIGSTILT,
+                        ),
+                    ),
+                ),
+            ),
         )
 
         verify(exactly(0), patchRequestedFor(urlEqualTo("/api/v1/oppgaver/123")))
@@ -375,7 +375,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
             restTemplate.exchange(
                 localhost("/api/oppgave/123/ferdigstill"),
                 HttpMethod.PATCH,
-                HttpEntity(null, headers)
+                HttpEntity(null, headers),
             )
 
         assertThat(response.body?.data?.oppgaveId).isEqualTo(123)
@@ -387,16 +387,16 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             get("/api/v1/oppgaver/$OPPGAVE_ID").willReturn(
                 okJson(
-                    objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID, status = StatusEnum.FEILREGISTRERT))
-                )
-            )
+                    objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID, status = StatusEnum.FEILREGISTRERT)),
+                ),
+            ),
         )
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
                 localhost("/api/oppgave/$OPPGAVE_ID/ferdigstill"),
                 HttpMethod.PATCH,
-                HttpEntity(null, headers)
+                HttpEntity(null, headers),
             )
 
         assertThat(response.body?.melding).contains("Oppgave har status feilregistrert og kan ikke oppdateres")
@@ -408,9 +408,9 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             get("/api/v1/oppgaver/$OPPGAVE_ID").willReturn(
                 okJson(
-                    objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID, status = StatusEnum.OPPRETTET))
-                )
-            )
+                    objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID, status = StatusEnum.OPPRETTET)),
+                ),
+            ),
         )
 
         stubFor(
@@ -424,18 +424,18 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                             objectMapper.writeValueAsBytes(
                                 Oppgave(
                                     id = OPPGAVE_ID,
-                                    status = StatusEnum.FERDIGSTILT
-                                )
-                            )
-                        )
-                )
+                                    status = StatusEnum.FERDIGSTILT,
+                                ),
+                            ),
+                        ),
+                ),
         )
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
                 localhost("/api/oppgave/$OPPGAVE_ID/ferdigstill"),
                 HttpMethod.PATCH,
-                HttpEntity(null, headers)
+                HttpEntity(null, headers),
             )
 
         assertThat(response.body?.melding).contains("ferdigstill OK")
@@ -452,14 +452,14 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                     aResponse()
                         .withStatus(201)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(gyldigOppgaveResponse("oppgave.json"))
-                )
+                        .withBody(gyldigOppgaveResponse("oppgave.json")),
+                ),
         )
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> = restTemplate.exchange(
             localhost("/api/oppgave/$OPPGAVE_ID/fordel?saksbehandler=$saksbehandlerId"),
             HttpMethod.POST,
-            HttpEntity(null, headers)
+            HttpEntity(null, headers),
         )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
@@ -476,14 +476,14 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                     aResponse()
                         .withStatus(201)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(gyldigOppgaveResponse("oppgave.json"))
-                )
+                        .withBody(gyldigOppgaveResponse("oppgave.json")),
+                ),
         )
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> = restTemplate.exchange(
             localhost("/api/oppgave/$OPPGAVE_ID/fordel"),
             HttpMethod.POST,
-            HttpEntity(null, headers)
+            HttpEntity(null, headers),
         )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
@@ -496,9 +496,9 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             get(GET_OPPGAVE_URL).willReturn(
                 okJson(
-                    objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID, status = StatusEnum.FERDIGSTILT))
-                )
-            )
+                    objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID, status = StatusEnum.FERDIGSTILT)),
+                ),
+            ),
         )
         stubFor(
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
@@ -506,14 +506,14 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                     aResponse()
                         .withStatus(201)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(gyldigOppgaveResponse("oppgave.json"))
-                )
+                        .withBody(gyldigOppgaveResponse("oppgave.json")),
+                ),
         )
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> = restTemplate.exchange(
             localhost("/api/oppgave/$OPPGAVE_ID/fordel?saksbehandler=Z999999"),
             HttpMethod.POST,
-            HttpEntity(null, headers)
+            HttpEntity(null, headers),
         )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
@@ -540,28 +540,28 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
                 .withRequestBody(
-                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":null}""")
+                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":null}"""),
                 )
                 .willReturn(
                     aResponse()
                         .withStatus(201)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(gyldigOppgaveResponse("ferdigstilt_oppgave.json"))
-                )
+                        .withBody(gyldigOppgaveResponse("ferdigstilt_oppgave.json")),
+                ),
         )
 
         val oppgave = Oppgave(
             aktoerId = "1234567891011",
             journalpostId = "1",
             beskrivelse = EKSTRA_BESKRIVELSE,
-            tema = null
+            tema = null,
         )
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
                 localhost("$OPPGAVE_URL/$OPPGAVE_ID/enhet/4833?fjernMappeFraOppgave=true"),
                 HttpMethod.PATCH,
-                HttpEntity(oppgave, headers)
+                HttpEntity(oppgave, headers),
             )
         assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
@@ -574,28 +574,28 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
                 .withRequestBody(
-                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":1234}""")
+                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":1234}"""),
                 )
                 .willReturn(
                     aResponse()
                         .withStatus(201)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(gyldigOppgaveResponse("ferdigstilt_oppgave.json"))
-                )
+                        .withBody(gyldigOppgaveResponse("ferdigstilt_oppgave.json")),
+                ),
         )
 
         val oppgave = Oppgave(
             aktoerId = "1234567891011",
             journalpostId = "1",
             beskrivelse = EKSTRA_BESKRIVELSE,
-            tema = null
+            tema = null,
         )
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
                 localhost("$OPPGAVE_URL/$OPPGAVE_ID/enhet/4833?fjernMappeFraOppgave=false"),
                 HttpMethod.PATCH,
-                HttpEntity(oppgave, headers)
+                HttpEntity(oppgave, headers),
             )
         assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
@@ -608,28 +608,28 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
                 .withRequestBody(
-                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":1234}""")
+                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":1234}"""),
                 )
                 .willReturn(
                     aResponse()
                         .withStatus(400)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(""""{uuid":"123","feilmelding":"Mappe finnes ikke for enhet"} """)
-                )
+                        .withBody(""""{uuid":"123","feilmelding":"Mappe finnes ikke for enhet"} """),
+                ),
         )
 
         val oppgave = Oppgave(
             aktoerId = "1234567891011",
             journalpostId = "1",
             beskrivelse = EKSTRA_BESKRIVELSE,
-            tema = null
+            tema = null,
         )
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
                 localhost("$OPPGAVE_URL/$OPPGAVE_ID/enhet/4833?fjernMappeFraOppgave=false"),
                 HttpMethod.PATCH,
-                HttpEntity(oppgave, headers)
+                HttpEntity(oppgave, headers),
             )
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.melding).contains("[Oppgave.byttEnhet][Feil ved bytte av enhet for oppgave for $OPPGAVE_ID")
@@ -639,7 +639,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     private fun gyldigOppgaveResponse(filnavn: String): String {
         return Files.readString(
             ClassPathResource("oppgave/$filnavn").file.toPath(),
-            StandardCharsets.UTF_8
+            StandardCharsets.UTF_8,
         )
     }
 

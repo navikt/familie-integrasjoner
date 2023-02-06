@@ -4,5 +4,5 @@ class Dokumentvariant(
     val filtype: String,
     val variantformat: String,
     val fysiskDokument: ByteArray,
-    val filnavn: String?
+    val filnavn: String?,
 )

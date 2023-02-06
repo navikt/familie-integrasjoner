@@ -61,7 +61,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     @PostMapping(path = ["/{oppgaveId}/fordel"])
     fun fordelOppgave(
         @PathVariable(name = "oppgaveId") oppgaveId: Long,
-        @RequestParam("saksbehandler") saksbehandler: String?
+        @RequestParam("saksbehandler") saksbehandler: String?,
     ): ResponseEntity<Ressurs<OppgaveResponse>> {
         Result.runCatching {
             if (saksbehandler == null) {
@@ -78,13 +78,13 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
                             "Oppgaven ble tildelt saksbehandler $saksbehandler"
                         } else {
                             "Fordeling på oppgaven ble tilbakestilt"
-                        }
-                    )
+                        },
+                    ),
                 )
             },
             onFailure = {
                 return ResponseEntity.badRequest().body(Ressurs.failure(errorMessage = it.message))
-            }
+            },
         )
     }
 
@@ -132,7 +132,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         enhet: String,
         @Parameter(description = "Settes til true hvis man ønsker å flytte en oppgave uten å ta med seg mappa opp på oppgaven. Noen mapper hører spesifikt til en enhet, og man får da ikke flyttet oppgaven uten at mappen fjernes ")
         @RequestParam(name = "fjernMappeFraOppgave")
-        fjernMappeFraOppgave: Boolean
+        fjernMappeFraOppgave: Boolean,
     ): ResponseEntity<Ressurs<OppgaveResponse>> {
         oppgaveService.tilordneEnhet(oppgaveId, enhet, fjernMappeFraOppgave)
         return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))

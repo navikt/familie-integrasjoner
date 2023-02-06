@@ -4,5 +4,5 @@ enum class Førstesidetype {
     ETTERSENDELSE,
     LOESPOST,
     SKJEMA,
-    NAV_INTERN
+    NAV_INTERN,
 }

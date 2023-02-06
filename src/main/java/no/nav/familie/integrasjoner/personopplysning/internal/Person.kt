@@ -10,14 +10,14 @@ data class Person(
     val familierelasjoner: Set<Familierelasjon>,
     val adressebeskyttelseGradering: ADRESSEBESKYTTELSEGRADERING?,
     val bostedsadresse: Bostedsadresse? = null,
-    val sivilstand: SIVILSTAND?
+    val sivilstand: SIVILSTAND?,
 )
 
 data class Familierelasjon(
     val personIdent: Personident,
-    val relasjonsrolle: String
+    val relasjonsrolle: String,
 )
 
 data class Personident(
-    val id: String
+    val id: String,
 )

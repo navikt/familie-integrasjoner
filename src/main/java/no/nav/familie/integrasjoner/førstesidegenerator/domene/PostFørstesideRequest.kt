@@ -23,5 +23,5 @@ data class PostFørstesideRequest(
     @JsonProperty("foerstesidetype")
     val førstesidetype: Førstesidetype? = null,
     val enhetsnummer: String? = null,
-    val arkivsak: Arkivsak? = null
+    val arkivsak: Arkivsak? = null,
 )

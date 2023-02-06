@@ -30,13 +30,13 @@ internal class CachedTilgangskontrollServiceTest {
     private val tilgangConfig = TilgangConfig(
         mapOf(
             "kode7" to AdRolle(kode7Id, ""),
-            "kode6" to AdRolle(kode6Id, "")
-        )
+            "kode6" to AdRolle(kode6Id, ""),
+        ),
     )
     private val cachedTilgangskontrollService = CachedTilgangskontrollService(
         egenAnsattService,
         personopplysningerService,
-        tilgangConfig
+        tilgangConfig,
     )
 
     private val jwtToken = mockk<JwtToken>(relaxed = true)
@@ -149,7 +149,7 @@ internal class CachedTilgangskontrollServiceTest {
         sivilstand: ADRESSEBESKYTTELSEGRADERING? = null,
         fullmakt: ADRESSEBESKYTTELSEGRADERING? = null,
         barn: ADRESSEBESKYTTELSEGRADERING? = null,
-        barnsForeldrer: ADRESSEBESKYTTELSEGRADERING? = null
+        barnsForeldrer: ADRESSEBESKYTTELSEGRADERING? = null,
     ): PersonMedRelasjoner {
         return PersonMedRelasjoner(
             personIdent = "",
@@ -157,7 +157,7 @@ internal class CachedTilgangskontrollServiceTest {
             sivilstand = lagPersonMedBeskyttelse(sivilstand, "sivilstand"),
             fullmakt = lagPersonMedBeskyttelse(fullmakt, "fullmakt"),
             barn = lagPersonMedBeskyttelse(barn, "barn"),
-            barnsForeldrer = lagPersonMedBeskyttelse(barnsForeldrer, "barnsForeldrer")
+            barnsForeldrer = lagPersonMedBeskyttelse(barnsForeldrer, "barnsForeldrer"),
         )
     }
 
@@ -176,7 +176,7 @@ internal class CachedTilgangskontrollServiceTest {
                 kjønn = "KVINNE",
                 familierelasjoner = emptySet(),
                 adressebeskyttelseGradering = adressebeskyttelse,
-                sivilstand = SIVILSTAND.UGIFT
+                sivilstand = SIVILSTAND.UGIFT,
             )
     }
 }

@@ -36,7 +36,7 @@ internal class ArbeidsfordelingServiceTest {
             pdlRestClient = pdlRestClient,
             personopplysningerService = personopplysningerService,
             egenAnsattService = egenAnsattService,
-            cacheManager = cacheManager
+            cacheManager = cacheManager,
         )
 
     val ident = "12345678901"
@@ -63,7 +63,7 @@ internal class ArbeidsfordelingServiceTest {
         every {
             pdlRestClient.hentGeografiskTilknytning(
                 ident,
-                any()
+                any(),
             )
         } returns GeografiskTilknytningDto(GeografiskTilknytningType.UDEFINERT, null, null, "Land")
 
@@ -75,13 +75,13 @@ internal class ArbeidsfordelingServiceTest {
         every {
             pdlRestClient.hentGeografiskTilknytning(
                 ident,
-                any()
+                any(),
             )
         } returns GeografiskTilknytningDto(
             gtType = GeografiskTilknytningType.KOMMUNE,
             gtKommune = "2372",
             gtBydel = null,
-            gtLand = null
+            gtLand = null,
         )
 
         every { restClient.hentEnhet(any()) } returns mockk()
@@ -243,7 +243,7 @@ internal class ArbeidsfordelingServiceTest {
             familierelasjoner = setOf(),
             adressebeskyttelseGradering = null,
             bostedsadresse = null,
-            sivilstand = null
+            sivilstand = null,
         )
         every {
             pdlRestClient.hentGeografiskTilknytning(any(), any())
@@ -251,7 +251,7 @@ internal class ArbeidsfordelingServiceTest {
             gtType = GeografiskTilknytningType.KOMMUNE,
             gtBydel = null,
             gtKommune = "3032",
-            gtLand = null
+            gtLand = null,
         )
 
         every { egenAnsattService.erEgenAnsatt(eq(ident)) } returns false
@@ -272,7 +272,7 @@ internal class ArbeidsfordelingServiceTest {
             sivilstand = listOf(ektefelle),
             fullmakt = listOf(fullmakt),
             barn = listOf(barnX, barnZ),
-            barnsForeldrer = listOf(annenForelderX, annenForelderZ)
+            barnsForeldrer = listOf(annenForelderX, annenForelderZ),
         )
         every {
             personopplysningerService.hentPersonMedRelasjoner(ident, any())
@@ -286,7 +286,7 @@ internal class ArbeidsfordelingServiceTest {
             gtType = GeografiskTilknytningType.KOMMUNE,
             gtBydel = null,
             gtKommune = "3032",
-            gtLand = null
+            gtLand = null,
         )
     }
 

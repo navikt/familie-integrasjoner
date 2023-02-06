@@ -6,7 +6,7 @@ import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 
 data class PdlResponse<T>(
     val data: T,
-    val errors: List<PdlError>?
+    val errors: List<PdlError>?,
 ) {
 
     fun harFeil(): Boolean {
@@ -45,7 +45,7 @@ data class PdlPersonMedRelasjonerOgAdressebeskyttelse(
     val forelderBarnRelasjon: List<PdlForelderBarnRelasjon>,
     val sivilstand: List<Sivilstand>,
     val fullmakt: List<Fullmakt>,
-    val adressebeskyttelse: List<Adressebeskyttelse>
+    val adressebeskyttelse: List<Adressebeskyttelse>,
 )
 
 data class PdlPerson(val person: PdlPersonData?)
@@ -58,7 +58,7 @@ data class PdlPersonData(
     val forelderBarnRelasjon: List<PdlForelderBarnRelasjon> = emptyList(),
     val adressebeskyttelse: List<Adressebeskyttelse>,
     val bostedsadresse: List<Bostedsadresse?>,
-    val sivilstand: List<Sivilstand?>
+    val sivilstand: List<Sivilstand?>,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -67,7 +67,7 @@ data class PdlFødselsDato(val foedselsdato: String?)
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlError(
     val message: String,
-    val extensions: PdlExtensions?
+    val extensions: PdlExtensions?,
 )
 
 data class PdlExtensions(val code: String?) {
@@ -81,7 +81,7 @@ data class PdlExtensions(val code: String?) {
 data class PdlNavn(
     val fornavn: String,
     val mellomnavn: String? = null,
-    val etternavn: String
+    val etternavn: String,
 ) {
 
     fun fulltNavn(): String {
@@ -98,18 +98,18 @@ data class PdlKjoenn(val kjoenn: KJØNN)
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlForelderBarnRelasjon(
     val relatertPersonsIdent: String?,
-    val relatertPersonsRolle: FORELDERBARNRELASJONROLLE
+    val relatertPersonsRolle: FORELDERBARNRELASJONROLLE,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Adressebeskyttelse(
-    val gradering: ADRESSEBESKYTTELSEGRADERING
+    val gradering: ADRESSEBESKYTTELSEGRADERING,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Sivilstand(
     val type: SIVILSTAND,
-    val relatertVedSivilstand: String?
+    val relatertVedSivilstand: String?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -118,19 +118,19 @@ data class Fullmakt(val motpartsPersonident: String)
 enum class KJØNN {
     MANN,
     KVINNE,
-    UKJENT
+    UKJENT,
 }
 
 enum class FORELDERBARNRELASJONROLLE {
     BARN,
     FAR,
     MEDMOR,
-    MOR
+    MOR,
 }
 
 enum class ADRESSEBESKYTTELSEGRADERING(val diskresjonskode: String?) {
     STRENGT_FORTROLIG_UTLAND("SPSF"), // Kode 19
     FORTROLIG("SPFO"), // Kode 7
     STRENGT_FORTROLIG("SPSF"), // Kode 6
-    UGRADERT(null);
+    UGRADERT(null),
 }

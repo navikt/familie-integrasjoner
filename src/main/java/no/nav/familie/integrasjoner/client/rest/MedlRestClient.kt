@@ -13,7 +13,7 @@ import java.net.URI
 @Component
 class MedlRestClient(
     @Value("\${MEDL2_URL}") private val medl2BaseUrl: URI,
-    @Qualifier("jwtBearer") private val restTemplate: RestOperations
+    @Qualifier("jwtBearer") private val restTemplate: RestOperations,
 ) :
     AbstractPingableRestClient(restTemplate, "medlemskap") {
 

@@ -48,7 +48,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
                 val fieldName = (error as FieldError).field
                 val errorMessage = error.getDefaultMessage() ?: ""
                 errors[fieldName] = errorMessage
-            }
+            },
         )
         LOG.warn("Valideringsfeil av input ved arkivering: $errors")
         return ResponseEntity.badRequest().body(failure("Valideringsfeil av input ved arkivering $errors", error = ex))
@@ -64,14 +64,14 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     fun arkiverDokumentV2(
         @RequestBody @Valid
         deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest,
-        @RequestHeader(name = NAV_USER_ID) navIdent: String? = null
+        @RequestHeader(name = NAV_USER_ID) navIdent: String? = null,
     ): ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(
                 success(
                     journalføringService.lagJournalpostV2(deprecatedArkiverDokumentRequest, navIdent),
-                    Companion.ARKIVERT_OK_MELDING
-                )
+                    Companion.ARKIVERT_OK_MELDING,
+                ),
             )
     }
 
@@ -79,14 +79,14 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     fun arkiverDokumentV3(
         @RequestBody @Valid
         arkiverDokumentRequest: DeprecatedArkiverDokumentRequest2,
-        @RequestHeader(name = NAV_USER_ID) navIdent: String? = null
+        @RequestHeader(name = NAV_USER_ID) navIdent: String? = null,
     ): ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(
                 success(
                     journalføringService.lagJournalpostV3(arkiverDokumentRequest, navIdent),
-                    Companion.ARKIVERT_OK_MELDING
-                )
+                    Companion.ARKIVERT_OK_MELDING,
+                ),
             )
     }
 
@@ -94,14 +94,14 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     fun arkiverDokumentV4(
         @RequestBody @Valid
         arkiverDokumentRequest: ArkiverDokumentRequest,
-        @RequestHeader(name = NAV_USER_ID) navIdent: String? = null
+        @RequestHeader(name = NAV_USER_ID) navIdent: String? = null,
     ): ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(
                 success(
                     journalføringService.lagJournalpost(arkiverDokumentRequest, navIdent),
-                    Companion.ARKIVERT_OK_MELDING
-                )
+                    Companion.ARKIVERT_OK_MELDING,
+                ),
             )
     }
 
@@ -110,7 +110,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
         @PathVariable(name = "journalpostId") journalpostId: String,
         @RequestHeader(name = NAV_USER_ID) navIdent: String? = null,
         @RequestBody @Valid
-        oppdaterJournalpostRequest: OppdaterJournalpostRequest
+        oppdaterJournalpostRequest: OppdaterJournalpostRequest,
     ): ResponseEntity<Ressurs<OppdaterJournalpostResponse>> {
         val response = journalføringService.oppdaterJournalpost(oppdaterJournalpostRequest, journalpostId, navIdent)
         return ResponseEntity.ok(success(response, "Oppdatert journalpost $journalpostId sakstilknyttning"))
@@ -121,14 +121,14 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     fun ferdigstillJournalpost(
         @PathVariable(name = "journalpostId") journalpostId: String,
         @RequestParam(name = "journalfoerendeEnhet") journalførendeEnhet: String,
-        @RequestHeader(name = NAV_USER_ID) navIdent: String? = null
+        @RequestHeader(name = NAV_USER_ID) navIdent: String? = null,
     ): ResponseEntity<Ressurs<Map<String, String>>> {
         journalføringService.ferdistillJournalpost(journalpostId, journalførendeEnhet, navIdent)
         return ResponseEntity.ok(
             success(
                 mapOf("journalpostId" to journalpostId),
-                "Ferdigstilt journalpost $journalpostId"
-            )
+                "Ferdigstilt journalpost $journalpostId",
+            ),
         )
     }
 
@@ -136,21 +136,21 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     fun leggTilLogiskVedlegg(
         @PathVariable(name = "dokumentinfoId") dokumentinfoId: String,
         @RequestBody @Valid
-        request: LogiskVedleggRequest
+        request: LogiskVedleggRequest,
     ): ResponseEntity<Ressurs<LogiskVedleggResponse>> {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(
                 success(
                     journalføringService.lagNyttLogiskVedlegg(dokumentinfoId, request),
-                    "Opprettet logisk vedlegg"
-                )
+                    "Opprettet logisk vedlegg",
+                ),
             )
     }
 
     @DeleteMapping(path = ["/dokument/{dokumentinfoId}/logiskVedlegg/{logiskVedleggId}"])
     fun slettLogiskVedlegg(
         @PathVariable(name = "dokumentinfoId") dokumentinfoId: String,
-        @PathVariable(name = "logiskVedleggId") logiskVedleggId: String
+        @PathVariable(name = "logiskVedleggId") logiskVedleggId: String,
     ): ResponseEntity<Ressurs<LogiskVedleggResponse>> {
         journalføringService.slettLogiskVedlegg(dokumentinfoId, logiskVedleggId)
         return ResponseEntity.status(HttpStatus.OK)

@@ -20,18 +20,18 @@ class KodeverkUtilTest {
                     mapOf(
                         "nb" to BeskrivelseDto(
                             "NorgeTerm",
-                            "NorgeTekst"
-                        )
-                    )
-                )
+                            "NorgeTekst",
+                        ),
+                    ),
+                ),
             ),
             "SWE" to listOf(
                 BetydningDto(
                     now(),
                     now(),
-                    mapOf()
-                )
-            )
+                    mapOf(),
+                ),
+            ),
         )
         val kodeverkDto = KodeverkDto(betydninger)
 
@@ -39,8 +39,8 @@ class KodeverkUtilTest {
             .isEqualTo(
                 mapOf(
                     "NOR" to "NorgeTerm",
-                    "SWE" to ""
-                )
+                    "SWE" to "",
+                ),
             )
     }
 
@@ -54,9 +54,9 @@ class KodeverkUtilTest {
                     mapOf(
                         "nb" to BeskrivelseDto(
                             "IkkeGjeldende",
-                            "IkkeGjeldende"
-                        )
-                    )
+                            "IkkeGjeldende",
+                        ),
+                    ),
                 ),
                 BetydningDto(
                     LocalDate.of(2010, 1, 2),
@@ -64,11 +64,11 @@ class KodeverkUtilTest {
                     mapOf(
                         "nb" to BeskrivelseDto(
                             "Gjeldende",
-                            "Gjeldende"
-                        )
-                    )
-                )
-            )
+                            "Gjeldende",
+                        ),
+                    ),
+                ),
+            ),
         )
         val kodeverkDto = KodeverkDto(betydninger)
         assertThat(kodeverkDto.mapTerm().get("NOR"))

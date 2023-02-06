@@ -11,7 +11,7 @@ abstract class KlageBlankettSaksbehandling(
     override val fagsakSystem: Fagsystem,
     final override val tema: Tema,
     final override val behandlingstema: Behandlingstema,
-    override val dokumenttype: Dokumenttype
+    override val dokumenttype: Dokumenttype,
 ) : Dokumentmetadata {
 
     override val journalpostType: JournalpostType = JournalpostType.NOTAT
@@ -26,7 +26,7 @@ object KlageBlankettSaksbehandlingOvergangsstønad : KlageBlankettSaksbehandling
     fagsakSystem = Fagsystem.EF,
     tema = Tema.ENF,
     behandlingstema = Behandlingstema.Overgangsstønad,
-    dokumenttype = Dokumenttype.KLAGE_BLANKETT_SAKSBEHANDLING_OVERGANGSSTØNAD
+    dokumenttype = Dokumenttype.KLAGE_BLANKETT_SAKSBEHANDLING_OVERGANGSSTØNAD,
 )
 
 @Component
@@ -34,7 +34,7 @@ object KlageBlankettSaksbehandlingBarnetilsyn : KlageBlankettSaksbehandling(
     fagsakSystem = Fagsystem.EF,
     tema = Tema.ENF,
     behandlingstema = Behandlingstema.Barnetilsyn,
-    dokumenttype = Dokumenttype.KLAGE_BLANKETT_SAKSBEHANDLING_BARNETILSYN
+    dokumenttype = Dokumenttype.KLAGE_BLANKETT_SAKSBEHANDLING_BARNETILSYN,
 )
 
 @Component
@@ -42,7 +42,7 @@ object KlageBlankettSaksbehandlingSkolepenger : KlageBlankettSaksbehandling(
     fagsakSystem = Fagsystem.EF,
     tema = Tema.ENF,
     behandlingstema = Behandlingstema.Skolepenger,
-    dokumenttype = Dokumenttype.KLAGE_BLANKETT_SAKSBEHANDLING_SKOLEPENGER
+    dokumenttype = Dokumenttype.KLAGE_BLANKETT_SAKSBEHANDLING_SKOLEPENGER,
 )
 
 @Component
@@ -50,7 +50,7 @@ object KlageBlankettSaksbehandlingBarnetrygd : KlageBlankettSaksbehandling(
     fagsakSystem = Fagsystem.BA,
     tema = Tema.BAR,
     behandlingstema = Behandlingstema.Barnetrygd,
-    dokumenttype = Dokumenttype.KLAGE_BLANKETT_SAKSBEHANDLING_BARNETRYGD
+    dokumenttype = Dokumenttype.KLAGE_BLANKETT_SAKSBEHANDLING_BARNETRYGD,
 )
 
 @Component
@@ -58,5 +58,5 @@ object KlageBlankettSaksbehandlingKontantstøtte : KlageBlankettSaksbehandling(
     fagsakSystem = Fagsystem.KONT,
     tema = Tema.KON,
     behandlingstema = Behandlingstema.Kontantstøtte,
-    dokumenttype = Dokumenttype.KLAGE_BLANKETT_SAKSBEHANDLING_KONTANTSTØTTE
+    dokumenttype = Dokumenttype.KLAGE_BLANKETT_SAKSBEHANDLING_KONTANTSTØTTE,
 )

@@ -41,7 +41,7 @@ class HentJournalpostTestConfig {
                     "GSAK",
                     null,
                     null,
-                    null
+                    null,
                 ),
                 bruker = Bruker("1234567890123", BrukerIdType.AKTOERID),
                 journalforendeEnhet = "9999",
@@ -55,12 +55,12 @@ class HentJournalpostTestConfig {
                         logiskeVedlegg = listOf(
                             LogiskVedlegg(
                                 logiskVedleggId = "0987",
-                                tittel = "Oppholdstillatelse"
-                            )
-                        )
-                    )
+                                tittel = "Oppholdstillatelse",
+                            ),
+                        ),
+                    ),
                 ),
-                relevanteDatoer = emptyList()
+                relevanteDatoer = emptyList(),
             )
         }
 

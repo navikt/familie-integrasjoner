@@ -7,5 +7,5 @@ data class AzureAdBruker(
     val onPremisesSamAccountName: String,
     val userPrincipalName: String,
     val givenName: String,
-    val surname: String
+    val surname: String,
 )

@@ -29,15 +29,15 @@ class TilgangskontrollServiceTest {
             mapOf(
                 "utvidet-tilgang" to AdRolle(GRUPPE_UTVIDET_TILGANG, "NAV-Ansatt"),
                 "kode6" to AdRolle(GRUPPE_TILGANG_6, "Strengt fortrolig adresse"),
-                "kode7" to AdRolle(GRUPPE_TILGANG_7, "Fortrolig adresse")
-            )
+                "kode7" to AdRolle(GRUPPE_TILGANG_7, "Fortrolig adresse"),
+            ),
         )
     private val personopplysningerService: PersonopplysningerService = mockk(relaxed = true)
 
     private val cachedTilgangskontrollService = CachedTilgangskontrollService(
         egenAnsattService,
         personopplysningerService,
-        tilgangConfig
+        tilgangConfig,
     )
     private var tilgangskontrollService: TilgangskontrollService = TilgangskontrollService(cachedTilgangskontrollService)
 
@@ -55,8 +55,8 @@ class TilgangskontrollServiceTest {
         assertThat(
             tilgangskontrollService.sjekkTilgang(
                 "123",
-                saksbehandler
-            ).harTilgang
+                saksbehandler,
+            ).harTilgang,
         )
             .isFalse
     }
@@ -164,7 +164,7 @@ class TilgangskontrollServiceTest {
             kjønn = "KVINNE",
             familierelasjoner = emptySet(),
             adressebeskyttelseGradering = adressebeskyttelsegradering,
-            sivilstand = SIVILSTAND.UGIFT
+            sivilstand = SIVILSTAND.UGIFT,
         )
     }
 }

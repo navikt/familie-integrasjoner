@@ -21,15 +21,15 @@
         <changelist>-SNAPSHOT</changelist>
         <java.version>17</java.version>
         <springdoc.version>1.6.14</springdoc.version>
-        <common-java-modules.version>2.2022.11.16_15.18-421ec713e2a0</common-java-modules.version>
-        <felles.version>1.20221202080911_bcf8f33</felles.version>
-        <kontrakt.version>2.0_20230112095049_2b9ddd6</kontrakt.version>
+        <common-java-modules.version>2.2023.01.10_13.49-81ddc732df3a</common-java-modules.version>
+        <felles.version>1.20230117091843_19b020f</felles.version>
+        <kontrakt.version>2.0_20230126101531_7e94a8f</kontrakt.version>
         <cxf.version>3.5.4</cxf.version>
         <token-validation-spring.version>2.1.9</token-validation-spring.version>
         <tjenestespesifikasjoner.version>2610.9b6de22</tjenestespesifikasjoner.version>
-        <kotlin.version>1.7.22</kotlin.version>
+        <kotlin.version>1.8.10</kotlin.version>
 
-        <mock-server.version>5.14.0</mock-server.version>
+        <mock-server.version>5.15.0</mock-server.version>
 
         <!--suppress UnresolvedMavenProperty  Ligger som secret i github-->
         <sonar.projectKey>${SONAR_PROJECTKEY}</sonar.projectKey>
@@ -282,7 +282,7 @@
         <dependency>
             <groupId>io.mockk</groupId>
             <artifactId>mockk-jvm</artifactId>
-            <version>1.13.3</version>
+            <version>1.13.4</version>
             <scope>test</scope>
         </dependency>
 
@@ -459,7 +459,7 @@
                     <dependency>
                         <groupId>com.pinterest</groupId>
                         <artifactId>ktlint</artifactId>
-                        <version>0.47.1</version>
+                        <version>0.48.2</version>
                     </dependency>
                     <!-- additional 3rd party ruleset(s) can be specified here -->
                 </dependencies>

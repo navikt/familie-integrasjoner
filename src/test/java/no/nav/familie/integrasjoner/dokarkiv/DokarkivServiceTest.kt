@@ -71,10 +71,10 @@ class DokarkivServiceTest {
                 KontanstøtteSøknadMetadata,
                 KontanstøtteSøknadVedleggMetadata,
                 BarnetrygdVedtakMetadata,
-                BarnetrygdVedleggMetadata
+                BarnetrygdVedleggMetadata,
             ),
             dokarkivLogiskVedleggRestClient,
-            førstesideGeneratorService
+            førstesideGeneratorService,
         )
     }
 
@@ -115,7 +115,7 @@ class DokarkivServiceTest {
                     kjønn = "KVINNE",
                     familierelasjoner = emptySet(),
                     adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                    sivilstand = SIVILSTAND.UGIFT
+                    sivilstand = SIVILSTAND.UGIFT,
                 )
             }
         val dto = ArkiverDokumentRequest(
@@ -127,9 +127,9 @@ class DokarkivServiceTest {
                     Filtype.PDFA,
                     FILNAVN,
                     null,
-                    Dokumenttype.KONTANTSTØTTE_SØKNAD
-                )
-            )
+                    Dokumenttype.KONTANTSTØTTE_SØKNAD,
+                ),
+            ),
         )
 
         dokarkivService.lagJournalpost(dto)
@@ -159,7 +159,7 @@ class DokarkivServiceTest {
                     kjønn = "KVINNE",
                     familierelasjoner = emptySet(),
                     adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                    sivilstand = SIVILSTAND.UGIFT
+                    sivilstand = SIVILSTAND.UGIFT,
                 )
             }
         val dto = ArkiverDokumentRequest(
@@ -171,14 +171,14 @@ class DokarkivServiceTest {
                     Filtype.PDFA,
                     FILNAVN,
                     null,
-                    Dokumenttype.KONTANTSTØTTE_SØKNAD
-                )
+                    Dokumenttype.KONTANTSTØTTE_SØKNAD,
+                ),
             ),
             førsteside = Førsteside(
                 språkkode = Språkkode.NB,
                 navSkjemaId = "123",
-                overskriftstittel = "Testoverskrift"
-            )
+                overskriftstittel = "Testoverskrift",
+            ),
         )
 
         dokarkivService.lagJournalpost(dto)
@@ -209,7 +209,7 @@ class DokarkivServiceTest {
                     kjønn = "KVINNE",
                     familierelasjoner = emptySet(),
                     adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                    sivilstand = SIVILSTAND.UGIFT
+                    sivilstand = SIVILSTAND.UGIFT,
                 )
             }
         val dto = ArkiverDokumentRequest(
@@ -221,9 +221,9 @@ class DokarkivServiceTest {
                     Filtype.PDFA,
                     FILNAVN,
                     null,
-                    Dokumenttype.KONTANTSTØTTE_SØKNAD
-                )
-            )
+                    Dokumenttype.KONTANTSTØTTE_SØKNAD,
+                ),
+            ),
         )
 
         dokarkivService.lagJournalpost(dto)
@@ -251,7 +251,7 @@ class DokarkivServiceTest {
                     kjønn = "KVINNE",
                     familierelasjoner = emptySet(),
                     adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                    sivilstand = SIVILSTAND.UGIFT
+                    sivilstand = SIVILSTAND.UGIFT,
                 )
             }
 
@@ -264,8 +264,8 @@ class DokarkivServiceTest {
                     Filtype.PDFA,
                     FILNAVN,
                     null,
-                    Dokumenttype.BARNETRYGD_VEDTAK
-                )
+                    Dokumenttype.BARNETRYGD_VEDTAK,
+                ),
             ),
             listOf(
                 Dokument(
@@ -273,10 +273,10 @@ class DokarkivServiceTest {
                     Filtype.PDFA,
                     null,
                     TITTEL,
-                    Dokumenttype.BARNETRYGD_VEDLEGG
-                )
+                    Dokumenttype.BARNETRYGD_VEDLEGG,
+                ),
             ),
-            fagsakId = FAGSAK_ID
+            fagsakId = FAGSAK_ID,
         )
 
         dokarkivService.lagJournalpost(dto)
@@ -288,8 +288,8 @@ class DokarkivServiceTest {
             Sak(
                 fagsakId = FAGSAK_ID,
                 fagsaksystem = Fagsystem.BA,
-                sakstype = "FAGSAK"
-            )
+                sakstype = "FAGSAK",
+            ),
         )
     }
 
@@ -306,7 +306,7 @@ class DokarkivServiceTest {
                     kjønn = "KVINNE",
                     familierelasjoner = emptySet(),
                     adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                    sivilstand = SIVILSTAND.UGIFT
+                    sivilstand = SIVILSTAND.UGIFT,
                 )
             }
 
@@ -319,9 +319,9 @@ class DokarkivServiceTest {
                     Filtype.JSON,
                     FILNAVN,
                     null,
-                    Dokumenttype.KONTANTSTØTTE_SØKNAD
-                )
-            )
+                    Dokumenttype.KONTANTSTØTTE_SØKNAD,
+                ),
+            ),
         )
 
         dokarkivService.lagJournalpost(dto)
@@ -336,7 +336,7 @@ class DokarkivServiceTest {
             request,
             "JSON",
             JSON_DOK,
-            STRUKTURERT_VARIANTFORMAT
+            STRUKTURERT_VARIANTFORMAT,
         )
     }
 
@@ -352,7 +352,7 @@ class DokarkivServiceTest {
                     kjønn = "KVINNE",
                     familierelasjoner = emptySet(),
                     adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                    sivilstand = SIVILSTAND.UGIFT
+                    sivilstand = SIVILSTAND.UGIFT,
                 )
             }
 
@@ -365,9 +365,9 @@ class DokarkivServiceTest {
                     Filtype.JSON,
                     FILNAVN,
                     null,
-                    Dokumenttype.KONTANTSTØTTE_SØKNAD
-                )
-            )
+                    Dokumenttype.KONTANTSTØTTE_SØKNAD,
+                ),
+            ),
         )
 
         val arkiverDokumentResponse = dokarkivService.lagJournalpost(dto)
@@ -381,7 +381,7 @@ class DokarkivServiceTest {
         pdfa: String,
         pdfDok: ByteArray,
         arkivVariantformat: String,
-        sak: Sak? = null
+        sak: Sak? = null,
     ) {
         assertThat(request.avsenderMottaker!!.id).isEqualTo(FNR)
         assertThat(request.avsenderMottaker!!.idType).isEqualTo(BrukerIdType.FNR)
@@ -409,7 +409,7 @@ class DokarkivServiceTest {
     private fun assertOpprettBarnetrygdVedtakJournalpostRequest(
         request: OpprettJournalpostRequest,
         pdfDok: ByteArray,
-        sak: Sak
+        sak: Sak,
     ) {
         assertThat(request.avsenderMottaker!!.id).isEqualTo(FNR)
         assertThat(request.avsenderMottaker!!.idType).isEqualTo(BrukerIdType.FNR)
