@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.dokdist
 
 import no.nav.familie.integrasjoner.client.rest.DokdistRestClient
+import no.nav.familie.integrasjoner.dokdist.domene.AdresseTo
 import no.nav.familie.integrasjoner.dokdist.domene.DistribuerJournalpostRequestTo
 import no.nav.familie.integrasjoner.dokdist.domene.DistribuerJournalpostResponseTo
 import no.nav.familie.kontrakter.felles.dokdist.DistribuerJournalpostRequest
@@ -19,6 +20,17 @@ class DokdistService(val dokdistRestClient: DokdistRestClient) {
             dokumentProdApp = request.dokumentProdApp,
             distribusjonstidspunkt = request.distribusjonstidspunkt,
             distribusjonstype = request.distribusjonstype,
+            adresse = request.adresse?.let { adresse ->
+                AdresseTo(
+                    adressetype = adresse.adresseType.name,
+                    adresselinje1 = adresse.adresselinje1,
+                    adresselinje2 = adresse.adresselinje2,
+                    adresselinje3 = adresse.adresselinje3,
+                    poststed = adresse.poststed,
+                    postnummer = adresse.postnummer,
+                    land = adresse.land
+                )
+            }
         )
     }
 }
