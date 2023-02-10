@@ -7,7 +7,7 @@ import no.nav.familie.integrasjoner.dokarkiv.client.domene.ArkivDokument
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.Dokumentvariant
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
-import no.nav.familie.integrasjoner.dokarkiv.metadata.DokarkivMetadata
+import no.nav.familie.integrasjoner.dokarkiv.metadata.tilMetadata
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.førstesidegenerator.FørstesideGeneratorService
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
@@ -35,7 +35,6 @@ import no.nav.familie.kontrakter.felles.dokarkiv.Dokument as DeprecatedDokument
 class DokarkivService(
     private val dokarkivRestClient: DokarkivRestClient,
     private val personopplysningerService: PersonopplysningerService,
-    private val dokarkivMetadata: DokarkivMetadata,
     private val dokarkivLogiskVedleggRestClient: DokarkivLogiskVedleggRestClient,
     private val førstesideGeneratorService: FørstesideGeneratorService,
 ) {
@@ -68,7 +67,7 @@ class DokarkivService(
     private fun mapTilOpprettJournalpostRequest(arkiverDokumentRequest: ArkiverDokumentRequest): OpprettJournalpostRequest {
         val dokarkivBruker = DokarkivBruker(BrukerIdType.FNR, arkiverDokumentRequest.fnr)
         val hoveddokument = arkiverDokumentRequest.hoveddokumentvarianter[0]
-        val metadata = dokarkivMetadata.getMetadata(hoveddokument)
+        val metadata = hoveddokument.dokumenttype.tilMetadata()
         val avsenderMottaker = arkiverDokumentRequest.avsenderMottaker ?: arkiverDokumentRequest.fnr.let {
             val navn = hentNavnForFnr(fnr = arkiverDokumentRequest.fnr, behandlingstema = metadata.tema)
             AvsenderMottaker(it, BrukerIdType.FNR, navn)
@@ -118,7 +117,7 @@ class DokarkivService(
     private fun mapTilOpprettJournalpostRequest(arkiverDokumentRequest: DeprecatedArkiverDokumentRequest2): OpprettJournalpostRequest {
         val fnr = arkiverDokumentRequest.fnr
 
-        val metadata = dokarkivMetadata.getMetadata(arkiverDokumentRequest.hoveddokumentvarianter[0])
+        val metadata = arkiverDokumentRequest.hoveddokumentvarianter[0].dokumentType.tilMetadata()
         val hoveddokument = mapDeprecatedHoveddokument(arkiverDokumentRequest.hoveddokumentvarianter)
         val vedleggsdokumenter = arkiverDokumentRequest.vedleggsdokumenter.map(this::mapTilArkivdokument).toMutableList()
         val jpsak: Sak? = if (arkiverDokumentRequest.fagsakId != null) {
@@ -172,7 +171,7 @@ class DokarkivService(
     }
 
     private fun mapTilOpprettJournalpostRequest(deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest): OpprettJournalpostRequest {
-        val metadata = dokarkivMetadata.getMetadata(deprecatedArkiverDokumentRequest.dokumenter[0])
+        val metadata = deprecatedArkiverDokumentRequest.dokumenter[0].dokumentType.tilMetadata()
 
         val fnr = deprecatedArkiverDokumentRequest.fnr
         val navn = hentNavnForFnr(fnr = fnr, behandlingstema = metadata.tema)
@@ -221,7 +220,7 @@ class DokarkivService(
 
     private fun mapHoveddokument(dokumenter: List<Dokument>): ArkivDokument {
         val dokument = dokumenter[0]
-        val metadata = dokarkivMetadata.getMetadata(dokument)
+        val metadata = dokument.dokumenttype.tilMetadata()
         val dokumentvarianter = dokumenter.map {
             val variantFormat: String = hentVariantformat(it)
             Dokumentvariant(it.filtype.name, variantFormat, it.dokument, it.filnavn)
@@ -237,7 +236,7 @@ class DokarkivService(
 
     private fun mapDeprecatedHoveddokument(dokumenter: List<DeprecatedDokument>): ArkivDokument {
         val dokument = dokumenter[0]
-        val metadata = dokarkivMetadata.getMetadata(dokument)
+        val metadata = dokument.dokumentType.tilMetadata()
         val dokumentvarianter = dokumenter.map {
             val variantFormat: String = hentVariantformat(it)
             Dokumentvariant(it.filType.name, variantFormat, it.dokument, it.filnavn)
@@ -268,7 +267,7 @@ class DokarkivService(
     }
 
     private fun mapTilArkivdokument(dokument: DeprecatedDokument): ArkivDokument {
-        val metadata = dokarkivMetadata.getMetadata(dokument)
+        val metadata = dokument.dokumentType.tilMetadata()
         val variantFormat: String = hentVariantformat(dokument)
         return ArkivDokument(
             brevkode = metadata.brevkode,
@@ -286,7 +285,7 @@ class DokarkivService(
     }
 
     private fun mapTilArkivdokument(dokument: Dokument): ArkivDokument {
-        val metadata = dokarkivMetadata.getMetadata(dokument)
+        val metadata = dokument.dokumenttype.tilMetadata()
         val variantFormat: String = hentVariantformat(dokument)
         return ArkivDokument(
             brevkode = metadata.brevkode,

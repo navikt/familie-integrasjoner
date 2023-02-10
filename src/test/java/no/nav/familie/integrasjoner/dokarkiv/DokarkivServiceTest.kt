@@ -12,9 +12,7 @@ import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostReq
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
 import no.nav.familie.integrasjoner.dokarkiv.metadata.BarnetrygdVedleggMetadata
 import no.nav.familie.integrasjoner.dokarkiv.metadata.BarnetrygdVedtakMetadata
-import no.nav.familie.integrasjoner.dokarkiv.metadata.DokarkivMetadata
 import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadMetadata
-import no.nav.familie.integrasjoner.dokarkiv.metadata.KontanstøtteSøknadVedleggMetadata
 import no.nav.familie.integrasjoner.førstesidegenerator.FørstesideGeneratorService
 import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
@@ -67,12 +65,6 @@ class DokarkivServiceTest {
         dokarkivService = DokarkivService(
             dokarkivRestClient,
             personopplysningerService,
-            DokarkivMetadata(
-                KontanstøtteSøknadMetadata,
-                KontanstøtteSøknadVedleggMetadata,
-                BarnetrygdVedtakMetadata,
-                BarnetrygdVedleggMetadata,
-            ),
             dokarkivLogiskVedleggRestClient,
             førstesideGeneratorService,
         )
