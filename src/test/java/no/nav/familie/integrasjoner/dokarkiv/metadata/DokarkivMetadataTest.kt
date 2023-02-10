@@ -1,25 +1,43 @@
 package no.nav.familie.integrasjoner.dokarkiv.metadata
 
-import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.kontrakter.felles.dokarkiv.Dokumenttype
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockserver.junit.jupiter.MockServerExtension
-import org.mockserver.junit.jupiter.MockServerSettings
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.context.ActiveProfiles
+import kotlin.reflect.KClass
 
-@ActiveProfiles(profiles = ["integrasjonstest", "mock-sts", "mock-kodeverk"])
-@ExtendWith(MockServerExtension::class)
-@MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
-internal class DokarkivMetadataTest : OppslagSpringRunnerTest() {
-
-    @Autowired
-    lateinit var dokarkivMetadata: DokarkivMetadata
+internal class DokarkivMetadataTest {
 
     @Test
     internal fun `brevkode må være under 50 tegn`() {
-        val tittelOver50Tegn = dokarkivMetadata.metadata.values.filter { (it.brevkode?.length ?: 0) > 50 }
+        val tittelOver50Tegn = hentAlleDokumentMedadataKlasser().filter { (it.brevkode?.length ?: 0) > 50 }
         assertThat(tittelOver50Tegn).isEmpty()
     }
+
+    @Test
+    fun `Dokumenttypen i dokumentmetadata mapper tilbake til samme dokumentmetadata`() {
+        hentAlleDokumentMedadataKlasser().forEach {
+            assertTrue(it.dokumenttype.tilMetadata() == it)
+        }
+    }
+
+    @Test
+    fun `Alle dokumettyper mapper til medtadata med samme dokumenttype i parameterene`() {
+        Dokumenttype.values().forEach {
+            assertTrue(it.tilMetadata().dokumenttype == it)
+        }
+    }
+
+    private fun hentAlleDokumentMedadataKlasser() = Dokumentmetadata::class.sealedSubclasses
+        .hentNøstedeKlasser()
+        .mapNotNull { it.objectInstance }
+
+    private fun <T : Any> List<KClass<out T>>.hentNøstedeKlasser(): List<KClass<out T>> =
+        flatMap {
+            if (it.isSealed) {
+                it.sealedSubclasses.hentNøstedeKlasser()
+            } else {
+                listOf(it)
+            }
+        }
 }
