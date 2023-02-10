@@ -7,7 +7,7 @@ import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.dokarkiv.Dokumenttype
 import org.springframework.stereotype.Component
 
-abstract class KlageVedtak(
+sealed class KlageVedtak(
     override val fagsakSystem: Fagsystem,
     final override val tema: Tema,
     final override val behandlingstema: Behandlingstema,
