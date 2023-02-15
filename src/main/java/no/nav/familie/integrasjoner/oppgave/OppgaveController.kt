@@ -62,12 +62,13 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     fun fordelOppgave(
         @PathVariable(name = "oppgaveId") oppgaveId: Long,
         @RequestParam("saksbehandler") saksbehandler: String?,
+        @RequestParam("versjon") versjon: Int?,
     ): ResponseEntity<Ressurs<OppgaveResponse>> {
         Result.runCatching {
             if (saksbehandler == null) {
-                oppgaveService.tilbakestillFordelingPåOppgave(oppgaveId)
+                oppgaveService.tilbakestillFordelingPåOppgave(oppgaveId, versjon)
             } else {
-                oppgaveService.fordelOppgave(oppgaveId, saksbehandler)
+                oppgaveService.fordelOppgave(oppgaveId, saksbehandler, versjon)
             }
         }.fold(
             onSuccess = {
@@ -116,8 +117,11 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 
     @PatchMapping(path = ["/{oppgaveId}/ferdigstill"])
-    fun ferdigstillOppgave(@PathVariable(name = "oppgaveId") oppgaveId: Long): ResponseEntity<Ressurs<OppgaveResponse>> {
-        oppgaveService.ferdigstill(oppgaveId)
+    fun ferdigstillOppgave(
+        @PathVariable(name = "oppgaveId") oppgaveId: Long,
+        @RequestParam(name = "versjon") versjon: Int?
+    ): ResponseEntity<Ressurs<OppgaveResponse>> {
+        oppgaveService.ferdigstill(oppgaveId, versjon)
         return ResponseEntity.ok(success(OppgaveResponse(oppgaveId = oppgaveId), "ferdigstill OK"))
     }
 
@@ -133,8 +137,11 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         @Parameter(description = "Settes til true hvis man ønsker å flytte en oppgave uten å ta med seg mappa opp på oppgaven. Noen mapper hører spesifikt til en enhet, og man får da ikke flyttet oppgaven uten at mappen fjernes ")
         @RequestParam(name = "fjernMappeFraOppgave")
         fjernMappeFraOppgave: Boolean,
+        @Parameter(description = "Settes dersom man ønsker å sjekke at oppgaven man har tilgjengelig er riktig versjon.")
+        @RequestParam(name = "versjon")
+        versjon: Int?,
     ): ResponseEntity<Ressurs<OppgaveResponse>> {
-        oppgaveService.tilordneEnhet(oppgaveId, enhet, fjernMappeFraOppgave)
+        oppgaveService.tilordneEnhet(oppgaveId, enhet, fjernMappeFraOppgave, versjon)
         return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
     }
 }

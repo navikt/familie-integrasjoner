@@ -25,7 +25,8 @@ import org.springframework.stereotype.Service
 import org.springframework.web.context.annotation.ApplicationScope
 import java.time.format.DateTimeFormatter
 
-@Service @ApplicationScope
+@Service
+@ApplicationScope
 class OppgaveService constructor(
     private val oppgaveRestClient: OppgaveRestClient,
     private val aktørService: AktørService,
@@ -58,7 +59,7 @@ class OppgaveService constructor(
         } else {
             val patchOppgaveDto = oppgave.copy(
                 id = oppgave.id,
-                versjon = oppgave.versjon,
+                versjon = request.versjon ?: oppgave.versjon,
                 beskrivelse = oppgave.beskrivelse + request.beskrivelse,
             )
             oppgaveRestClient.oppdaterOppgave(patchOppgaveDto)
@@ -70,35 +71,50 @@ class OppgaveService constructor(
         return oppgaveRestClient.oppdaterOppgave(patchOppgave)?.id!!
     }
 
-    fun fordelOppgave(oppgaveId: Long, saksbehandler: String): Long {
-        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
+    fun fordelOppgave(oppgaveId: Long, saksbehandler: String, versjon: Int?): Long {
+        if (versjon != null) {
+            oppgaveRestClient.oppdaterOppgave(
+                Oppgave(
+                    id = oppgaveId,
+                    versjon = versjon,
+                    tilordnetRessurs = saksbehandlerService.hentNavIdent(saksbehandler),
+                ),
+            )
+        } else {
+            val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
-        if (oppgave.status === StatusEnum.FERDIGSTILT) {
-            error("Kan ikke fordele oppgave med id $oppgaveId som allerede er ferdigstilt")
+            if (oppgave.status === StatusEnum.FERDIGSTILT) {
+                error("Kan ikke fordele oppgave med id $oppgaveId som allerede er ferdigstilt")
+            }
+            val oppdatertOppgaveDto = oppgave.copy(
+                id = oppgave.id,
+                versjon = oppgave.versjon,
+                tilordnetRessurs = saksbehandlerService.hentNavIdent(saksbehandler),
+            )
+            oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
         }
-        val oppdatertOppgaveDto = oppgave.copy(
-            id = oppgave.id,
-            versjon = oppgave.versjon,
-            tilordnetRessurs = saksbehandlerService.hentNavIdent(saksbehandler),
-        )
-        oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
-        return oppgave.id!!
+        return oppgaveId
     }
 
-    fun tilbakestillFordelingPåOppgave(oppgaveId: Long): Long {
-        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
+    fun tilbakestillFordelingPåOppgave(oppgaveId: Long, versjon: Int?): Long {
+        if (versjon != null) {
+            oppgaveRestClient.oppdaterOppgave(Oppgave(id = oppgaveId, versjon = versjon, tilordnetRessurs = ""))
+        } else {
+            val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
-        if (oppgave.status === StatusEnum.FERDIGSTILT) {
-            error("Kan ikke tilbakestille fordeling på oppgave med id $oppgaveId som allerede er ferdigstilt")
+            if (oppgave.status === StatusEnum.FERDIGSTILT) {
+                error("Kan ikke tilbakestille fordeling på oppgave med id $oppgaveId som allerede er ferdigstilt")
+            }
+
+            val oppdatertOppgaveDto = oppgave.copy(
+                id = oppgave.id,
+                versjon = oppgave.versjon,
+                tilordnetRessurs = "",
+            )
+            oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
         }
 
-        val oppdatertOppgaveDto = oppgave.copy(
-            id = oppgave.id,
-            versjon = oppgave.versjon,
-            tilordnetRessurs = "",
-        )
-        oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
-        return oppgave.id!!
+        return oppgaveId
     }
 
     @Deprecated("Bruk opprettOppgave")
@@ -150,14 +166,14 @@ class OppgaveService constructor(
         return oppgaveRestClient.opprettOppgave(oppgave)
     }
 
-    fun ferdigstill(oppgaveId: Long) {
+    fun ferdigstill(oppgaveId: Long, versjon: Int?) {
         val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
         when (oppgave.status) {
             StatusEnum.OPPRETTET, StatusEnum.AAPNET, StatusEnum.UNDER_BEHANDLING -> {
                 val patchOppgaveDto = oppgave.copy(
                     id = oppgave.id,
-                    versjon = oppgave.versjon,
+                    versjon = versjon ?: oppgave.versjon,
                     status = StatusEnum.FERDIGSTILT,
                 )
                 oppgaveRestClient.oppdaterOppgave(patchOppgaveDto)
@@ -209,10 +225,10 @@ class OppgaveService constructor(
         return finnMapper(finnMappeRequest).mapper
     }
 
-    fun tilordneEnhet(oppgaveId: Long, enhet: String, fjernMappeFraOppgave: Boolean) {
+    fun tilordneEnhet(oppgaveId: Long, enhet: String, fjernMappeFraOppgave: Boolean, versjon: Int?) {
         val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
         val mappeId = if (fjernMappeFraOppgave) null else oppgave.mappeId
-        oppgaveRestClient.oppdaterEnhet(OppgaveByttEnhet(oppgaveId, enhet, oppgave.versjon!!, mappeId))
+        oppgaveRestClient.oppdaterEnhet(OppgaveByttEnhet(oppgaveId, enhet, versjon ?: oppgave.versjon!!, mappeId))
     }
 }
 
