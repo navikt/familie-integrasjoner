@@ -169,6 +169,8 @@ class OppgaveService constructor(
     fun ferdigstill(oppgaveId: Long, versjon: Int?) {
         val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
+        validerVersjon(versjon, oppgave)
+
         when (oppgave.status) {
             StatusEnum.OPPRETTET, StatusEnum.AAPNET, StatusEnum.UNDER_BEHANDLING -> {
                 val patchOppgaveDto = oppgave.copy(
@@ -194,6 +196,21 @@ class OppgaveService constructor(
                 "Oppgave.ferdigstill",
                 Level.MEDIUM,
                 HttpStatus.BAD_REQUEST,
+            )
+        }
+    }
+
+    private fun validerVersjon(
+        versjon: Int?,
+        oppgave: Oppgave,
+    ) {
+        if (versjon != null && versjon != oppgave.versjon) {
+            throw OppslagException(
+                "Oppgave har har feil versjon og kan ikke ferdigstilles. " +
+                        "oppgaveId=${oppgave.id}",
+                "Oppgave.ferdigstill",
+                Level.LAV,
+                HttpStatus.CONFLICT,
             )
         }
     }
