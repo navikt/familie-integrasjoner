@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.cache.CacheManager
+import org.springframework.cache.annotation.EnableCaching
 import org.springframework.http.HttpHeaders
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.util.UUID
@@ -25,6 +27,9 @@ abstract class OppslagSpringRunnerTest {
     protected val restTemplate = TestRestTemplate()
     protected val headers = HttpHeaders()
 
+    @Autowired
+    private lateinit var cacheManager: CacheManager
+
     @Suppress("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private lateinit var mockOAuth2Server: MockOAuth2Server
@@ -36,6 +41,14 @@ abstract class OppslagSpringRunnerTest {
     fun reset() {
         loggingEvents.clear()
         headers.clear()
+        clearCaches()
+    }
+
+    private fun clearCaches() {
+        listOf(cacheManager).forEach {
+            it.cacheNames.mapNotNull { cacheName -> it.getCache(cacheName) }
+                .forEach { cache -> cache.clear() }
+        }
     }
 
     protected fun getPort(): String {

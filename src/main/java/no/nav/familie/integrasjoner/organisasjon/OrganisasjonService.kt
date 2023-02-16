@@ -1,32 +1,27 @@
 package no.nav.familie.integrasjoner.organisasjon
 
-import no.nav.familie.integrasjoner.client.soap.OrganisasjonSoapClient
+import no.nav.familie.integrasjoner.client.rest.OrganisasjonRestClient
 import no.nav.familie.kontrakter.felles.organisasjon.Organisasjon
-import no.nav.tjeneste.virksomhet.organisasjon.v5.informasjon.UstrukturertNavn
-import no.nav.tjeneste.virksomhet.organisasjon.v5.meldinger.HentOrganisasjonRequest
-import no.nav.tjeneste.virksomhet.organisasjon.v5.meldinger.ValiderOrganisasjonRequest
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
+import org.springframework.web.client.HttpClientErrorException
 
 @Service
-class OrganisasjonService(private val organisasjonSoapClient: OrganisasjonSoapClient) {
+class OrganisasjonService(private val organisasjonRestClient: OrganisasjonRestClient) {
 
+    @Cacheable("hentOrganisasjon")
     fun hentOrganisasjon(orgnr: String): Organisasjon {
-        val hentOrganisasjonRequest = HentOrganisasjonRequest().apply {
-            orgnummer = orgnr
-            isInkluderHistorikk = false
-            isInkluderHierarki = false
-            isInkluderAnsatte = false
-        }
-        val organisasjonResponse = organisasjonSoapClient.hentOrganisasjon(hentOrganisasjonRequest)
-        val navnelinjer = (organisasjonResponse.organisasjon.navn as UstrukturertNavn).navnelinje
-        val navn = navnelinjer.joinToString(" ").trim()
-
-        return Organisasjon(orgnr, navn)
+        val organisasjonResponse = organisasjonRestClient.hentOrganisasjon(orgnr)
+        return Organisasjon(orgnr, organisasjonResponse.navn.sammensattnavn)
     }
 
+    @Cacheable("validerOrganisasjon")
     fun validerOrganisasjon(orgnr: String): Boolean {
-        val request = ValiderOrganisasjonRequest().apply { orgnummer = orgnr }
-        val respons = organisasjonSoapClient.validerOrganisasjon(request)
-        return respons.isGyldigOrgnummer
+        return try {
+            organisasjonRestClient.hentOrganisasjon(orgnr)
+            true
+        } catch (e: HttpClientErrorException.NotFound) {
+            false
+        }
     }
 }

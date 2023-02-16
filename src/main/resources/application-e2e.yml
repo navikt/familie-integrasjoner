@@ -125,7 +125,7 @@ SAF_URL: http://familie-mock-server:1337/rest/api/saf
 KODEVERK_URL: http://familie-mock-server:1337/rest/api/kodeverk
 AAREG_URL: http://familie-mock-server:1337/rest/api/aareg
 SKYGGE_SAK_URL: http://familie-mock-server:1337/rest/api/skyggesak
-ORGANISASJON_V5_URL:
+ORGANISASJON_URL:
 
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw

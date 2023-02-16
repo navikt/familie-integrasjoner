@@ -114,7 +114,7 @@ PDL_SCOPE: api://dev-fss.pdl.pdl-api/.default
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 SECURITYTOKENSERVICE_URL: https://sts-q2.preprod.local/SecurityTokenServiceProvider/
-ORGANISASJON_V5_URL: https://modapp-q1.adeo.no/ereg/ws/OrganisasjonService/v5
+ORGANISASJON_URL: https://ereg-services.dev.intern.nav.no
 DOKARKIV_V1_URL: https://dokarkiv-q2.dev.intern.nav.no
 MEDL2_URL: https://medlemskap-medl-api.dev.intern.nav.no
 SAF_URL: https://saf-q2.dev.intern.nav.no
