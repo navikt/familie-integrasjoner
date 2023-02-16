@@ -113,7 +113,6 @@ DOKARKIV_SCOPE: api://prod-fss.teamdokumenthandtering.dokarkiv/.default
 PDL_SCOPE: api://prod-fss.pdl.pdl-api/.default
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
-SECURITYTOKENSERVICE_URL: https://sts.adeo.no/SecurityTokenServiceProvider/
 ORGANISASJON_URL: https://ereg-services.intern.nav.no
 MEDL2_URL: https://medlemskap-medl-api.intern.nav.no
 DOKARKIV_V1_URL: https://dokarkiv.intern.nav.no
@@ -121,7 +120,6 @@ SAF_URL: https://saf.intern.nav.no
 FORSTESIDEGENERATOR_URL: https://foerstesidegenerator.intern.nav.no
 EGEN_ANSATT_URL: https://skjermede-personer-pip.nais.adeo.no
 DOKDIST_URL: https://dokdistfordeling.intern.nav.no
-ARBEIDSFORDELING_V1_URL: https://app.adeo.no/norg2/ws/Arbeidsfordeling/v1
 AAREG_URL: https://aareg-services.intern.nav.no/api
 SKYGGE_SAK_URL: https://sak.intern.nav.no
 OPPGAVE_URL: https://oppgave.nais.adeo.no

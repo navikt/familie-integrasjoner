@@ -21,12 +21,9 @@
         <changelist>-SNAPSHOT</changelist>
         <java.version>17</java.version>
         <springdoc.version>1.6.14</springdoc.version>
-        <common-java-modules.version>2.2023.01.10_13.49-81ddc732df3a</common-java-modules.version>
         <felles.version>1.20230117091843_19b020f</felles.version>
         <kontrakt.version>2.0_20230201153833_7f218f3</kontrakt.version>
-        <cxf.version>3.5.4</cxf.version>
         <token-validation-spring.version>2.1.9</token-validation-spring.version>
-        <tjenestespesifikasjoner.version>2610.9b6de22</tjenestespesifikasjoner.version>
         <kotlin.version>1.8.10</kotlin.version>
 
         <mock-server.version>5.15.0</mock-server.version>
@@ -106,56 +103,12 @@
             <version>${springdoc.version}</version>
         </dependency>
 
-        <!-- SOAP/CXF -->
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-core</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-frontend-jaxws</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-transports-http</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-ws-security</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.ws</groupId>
-            <artifactId>jaxws-ri</artifactId>
-            <version>3.0.2</version>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <!-- trenger denne . inneholder gamle com.sun.activation.registries klasser som er nødvendig -->
-            <groupId>javax.activation</groupId>
-            <artifactId>activation</artifactId>
-            <version>1.1.1</version>
-        </dependency>
         <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
             <version>0.1.55</version>
         </dependency>
-        <!-- NAV-interne avhengigheter -->
-        <dependency>
-            <groupId>no.nav.common</groupId>
-            <artifactId>cxf</artifactId>
-            <version>${common-java-modules.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>no.nav.common</groupId>
-                    <artifactId>log</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+
         <dependency>
             <groupId>no.nav.security</groupId>
             <artifactId>token-client-spring</artifactId>
@@ -192,15 +145,6 @@
             <artifactId>felles</artifactId>
             <version>${kontrakt.version}</version>
         </dependency>
-
-        <!-- WSDL -->
-        <!-- Webservices -->
-        <dependency>
-            <groupId>no.nav.tjenestespesifikasjoner</groupId>
-            <artifactId>arbeidsfordeling-v1-tjenestespesifikasjon</artifactId>
-            <version>${tjenestespesifikasjoner.version}</version>
-        </dependency>
-
 
         <!-- Logging -->
         <dependency>

@@ -26,7 +26,6 @@ fun main(args: Array<String>) {
             "mock-saf",
             "mock-sts",
             "mock-kodeverk",
-            "mock-arbeidsfordeling",
             "mock-pdl",
             "mock-aareg",
             "mock-sak",
