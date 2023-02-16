@@ -137,7 +137,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         @Parameter(description = "Settes til true hvis man ønsker å flytte en oppgave uten å ta med seg mappa opp på oppgaven. Noen mapper hører spesifikt til en enhet, og man får da ikke flyttet oppgaven uten at mappen fjernes ")
         @RequestParam(name = "fjernMappeFraOppgave")
         fjernMappeFraOppgave: Boolean,
-        @Parameter(description = "Settes dersom man ønsker å sjekke at oppgaven man har tilgjengelig er riktig versjon.")
+        @Parameter(description = "Vil feile med 409 Conflict dersom versjonen ikke stemmer overens med oppgavesystemets versjon")
         @RequestParam(name = "versjon")
         versjon: Int?,
     ): ResponseEntity<Ressurs<OppgaveResponse>> {
