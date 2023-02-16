@@ -18,19 +18,17 @@ class OrganisasjonRestClient(
         UriComponentsBuilder.fromUri(organisasjonUri).pathSegment("ping").build().toUri()
 
     private fun nøkkelinfoUri(orgnr: String) =
-        UriComponentsBuilder.fromUri(organisasjonUri).pathSegment("/v1/organisasjon/", orgnr, "/noekkelinfo").build().toUri()
+        UriComponentsBuilder.fromUri(organisasjonUri).pathSegment("v2/organisasjon", orgnr, "noekkelinfo").build().toUri()
 
     fun hentOrganisasjon(orgnr: String): HentOrganisasjonResponse {
         return getForEntity(nøkkelinfoUri(orgnr))
     }
-
-
 }
 
 data class HentOrganisasjonResponse(
-    val navn: Navn
+    val navn: Navn,
 )
 
 data class Navn(
-    val sammensattnavn: String
+    val sammensattnavn: String,
 )

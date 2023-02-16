@@ -25,21 +25,21 @@ internal class OrganisasjonServiceTest : OppslagSpringRunnerTest() {
     @Test
     internal fun `skal mappe orgnr og navn`() {
         stubFor(
-            get(urlEqualTo("/v1/organisasjon/1/noekkelinfo"))
+            get(urlEqualTo("/v2/organisasjon/1/noekkelinfo"))
                 .willReturn(okJson(bodyOrg)),
         )
         assertThat(organisasjonService.hentOrganisasjon("1")).isEqualTo(
             Organisasjon(
                 organisasjonsnummer = "1",
-                navn = "NAV AS"
-            )
+                navn = "NAV AS",
+            ),
         )
     }
 
     @Test
     internal fun `skal returnere true hvis tjenesten returnerer info`() {
         stubFor(
-            get(urlEqualTo("/v1/organisasjon/1/noekkelinfo"))
+            get(urlEqualTo("/v2/organisasjon/1/noekkelinfo"))
                 .willReturn(okJson(bodyOrg)),
         )
         assertThat(organisasjonService.validerOrganisasjon("1")).isTrue
@@ -48,7 +48,7 @@ internal class OrganisasjonServiceTest : OppslagSpringRunnerTest() {
     @Test
     internal fun `skal returnere false hvis tjenesten returnerer 404`() {
         stubFor(
-            get(urlEqualTo("/v1/organisasjon/1/noekkelinfo"))
+            get(urlEqualTo("/v2/organisasjon/1/noekkelinfo"))
                 .willReturn(notFound().withBody(bodyOrgIkkeFunnet)),
         )
         assertThat(organisasjonService.validerOrganisasjon("1")).isFalse

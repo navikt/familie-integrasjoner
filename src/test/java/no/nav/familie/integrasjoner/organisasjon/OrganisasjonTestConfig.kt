@@ -19,7 +19,7 @@ class OrganisasjonTestConfig {
     fun organisasjonSoapClientMock(): OrganisasjonRestClient {
         val organisasjonRestClient = mockk<OrganisasjonRestClient>()
         val organisasjon = HentOrganisasjonResponse(
-            navn = Navn("Navn på bedrift")
+            navn = Navn("Navn på bedrift"),
         )
         every { organisasjonRestClient.hentOrganisasjon(any()) } returns organisasjon
 
