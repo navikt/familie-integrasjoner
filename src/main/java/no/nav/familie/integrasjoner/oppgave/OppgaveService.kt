@@ -84,7 +84,12 @@ class OppgaveService constructor(
             val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
             if (oppgave.status === StatusEnum.FERDIGSTILT) {
-                error("Kan ikke fordele oppgave med id $oppgaveId som allerede er ferdigstilt")
+                throw OppslagException(
+                    "Kan ikke fordele oppgave med id $oppgaveId som allerede er ferdigstilt",
+                    "Oppgave.fordel",
+                    Level.LAV,
+                    HttpStatus.BAD_REQUEST,
+                )
             }
             val oppdatertOppgaveDto = oppgave.copy(
                 id = oppgave.id,
@@ -103,7 +108,12 @@ class OppgaveService constructor(
             val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
             if (oppgave.status === StatusEnum.FERDIGSTILT) {
-                error("Kan ikke tilbakestille fordeling på oppgave med id $oppgaveId som allerede er ferdigstilt")
+                throw OppslagException(
+                    "Kan ikke tilbakestille fordeling på oppgave med id $oppgaveId som allerede er ferdigstilt",
+                    "Oppgave.tilbakestill",
+                    Level.LAV,
+                    HttpStatus.BAD_REQUEST,
+                )
             }
 
             val oppdatertOppgaveDto = oppgave.copy(
@@ -207,7 +217,7 @@ class OppgaveService constructor(
         if (versjon != null && versjon != oppgave.versjon) {
             throw OppslagException(
                 "Oppgave har har feil versjon og kan ikke ferdigstilles. " +
-                        "oppgaveId=${oppgave.id}",
+                    "oppgaveId=${oppgave.id}",
                 "Oppgave.ferdigstill",
                 Level.LAV,
                 HttpStatus.CONFLICT,

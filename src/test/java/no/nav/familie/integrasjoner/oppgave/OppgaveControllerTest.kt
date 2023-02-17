@@ -517,7 +517,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        assertThat(response.body?.melding).isEqualTo("Kan ikke fordele oppgave med id $OPPGAVE_ID som allerede er ferdigstilt")
+        assertThat(response.body?.melding).isEqualTo("[Oppgave.fordel][Kan ikke fordele oppgave med id $OPPGAVE_ID som allerede er ferdigstilt]")
     }
 
     @Test
@@ -633,6 +633,38 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
             )
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.melding).contains("[Oppgave.byttEnhet][Feil ved bytte av enhet for oppgave for $OPPGAVE_ID")
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+    }
+
+    @Test
+    fun `Skal returnere 409 dersom man oppdaterer oppgave med feil versjon`() {
+        stubFor(
+            patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
+                .withRequestBody(
+                    WireMock.equalToJson("""{"id":315488374, "tilordnetRessurs": "test123" ,"versjon":1}"""),
+                )
+                .willReturn(
+                    aResponse()
+                        .withStatus(409)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(""""{uuid":"123","feilmelding":"Versjonskonflikt ved forespørsel om endring av oppgave med id"} """),
+                ),
+        )
+
+        val oppgave = Oppgave(
+            aktoerId = "1234567891011",
+            journalpostId = "1",
+            beskrivelse = EKSTRA_BESKRIVELSE,
+            tema = null,
+        )
+
+        val response: ResponseEntity<Ressurs<OppgaveResponse>> =
+            restTemplate.exchange(
+                localhost("$OPPGAVE_URL/$OPPGAVE_ID/fordel/?saksbehandler=test123&versjon=1"),
+                HttpMethod.POST,
+                HttpEntity(oppgave, headers),
+            )
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CONFLICT)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
