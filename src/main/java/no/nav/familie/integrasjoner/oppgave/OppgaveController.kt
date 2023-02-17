@@ -64,28 +64,21 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         @RequestParam("saksbehandler") saksbehandler: String?,
         @RequestParam("versjon") versjon: Int?,
     ): ResponseEntity<Ressurs<OppgaveResponse>> {
-        Result.runCatching {
-            if (saksbehandler == null) {
-                oppgaveService.tilbakestillFordelingPåOppgave(oppgaveId, versjon)
-            } else {
-                oppgaveService.fordelOppgave(oppgaveId, saksbehandler, versjon)
-            }
-        }.fold(
-            onSuccess = {
-                return ResponseEntity.ok(
-                    success(
-                        OppgaveResponse(oppgaveId = oppgaveId),
-                        if (saksbehandler !== null) {
-                            "Oppgaven ble tildelt saksbehandler $saksbehandler"
-                        } else {
-                            "Fordeling på oppgaven ble tilbakestilt"
-                        },
-                    ),
-                )
-            },
-            onFailure = {
-                return ResponseEntity.badRequest().body(Ressurs.failure(errorMessage = it.message))
-            },
+        if (saksbehandler == null) {
+            oppgaveService.tilbakestillFordelingPåOppgave(oppgaveId, versjon)
+        } else {
+            oppgaveService.fordelOppgave(oppgaveId, saksbehandler, versjon)
+        }
+
+        return ResponseEntity.ok(
+            success(
+                OppgaveResponse(oppgaveId = oppgaveId),
+                if (saksbehandler !== null) {
+                    "Oppgaven ble tildelt saksbehandler $saksbehandler"
+                } else {
+                    "Fordeling på oppgaven ble tilbakestilt"
+                },
+            ),
         )
     }
 
@@ -119,7 +112,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     @PatchMapping(path = ["/{oppgaveId}/ferdigstill"])
     fun ferdigstillOppgave(
         @PathVariable(name = "oppgaveId") oppgaveId: Long,
-        @RequestParam(name = "versjon") versjon: Int?
+        @RequestParam(name = "versjon") versjon: Int?,
     ): ResponseEntity<Ressurs<OppgaveResponse>> {
         oppgaveService.ferdigstill(oppgaveId, versjon)
         return ResponseEntity.ok(success(OppgaveResponse(oppgaveId = oppgaveId), "ferdigstill OK"))
