@@ -129,6 +129,16 @@ class OppgaveRestClient(
                 var feilmelding = "Feil ved oppdatering av oppgave for ${patchDto.id}."
                 if (it is HttpStatusCodeException) {
                     feilmelding += " Response fra oppgave = ${it.responseBodyAsString}"
+
+                    if(it.statusCode == HttpStatus.CONFLICT) {
+                        throw OppslagException(
+                            feilmelding,
+                            "Oppgave.oppdaterOppgave",
+                            OppslagException.Level.LAV,
+                            HttpStatus.CONFLICT,
+                            it,
+                        )
+                    }
                 }
 
                 throw OppslagException(
