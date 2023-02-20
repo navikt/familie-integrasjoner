@@ -31,7 +31,6 @@ internal class ArbeidsfordelingServiceTest {
     private val cacheManager = ConcurrentMapCacheManager()
     private val arbeidsfordelingService =
         ArbeidsfordelingService(
-            klient = mockk(),
             restClient = restClient,
             pdlRestClient = pdlRestClient,
             personopplysningerService = personopplysningerService,

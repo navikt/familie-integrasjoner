@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestClientException
@@ -16,7 +17,6 @@ import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 import java.time.LocalDate
-import javax.ws.rs.core.MediaType
 
 @Component
 class AaregRestClient(
@@ -59,7 +59,7 @@ class AaregRestClient(
     private fun httpHeaders(personIdent: String): HttpHeaders {
         return HttpHeaders().apply {
             add(NavHttpHeaders.NAV_PERSONIDENT.asString(), personIdent)
-            add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             add("Nav-Consumer-Token", "Bearer ${stsRestClient.systemOIDCToken}")
         }
     }

@@ -107,14 +107,12 @@ no.nav.security.jwt:
 
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
-SECURITYTOKENSERVICE_URL: https://localhost:8063/soap/SecurityTokenServiceProvider/
 ORGANISASJON_URL: #Denne er ikke i bruk da OrganisasjonV5 mockes ut lokalt
 DOKARKIV_V1_URL: http://localhost:18321
 DOKDIST_URL: http://localhost:18321
 EGEN_ANSATT_URL: #Mockes ut lokalt
 KODEVERK_URL: #Mockes lokalt
 FORSTESIDEGENERATOR_URL: #Mockes lokal
-ARBEIDSFORDELING_V1_URL: #Mockes lokalt
 AAREG_URL: #Mockes lokalt
 SKYGGE_SAK_URL: #Mocker lokalt
 NORG2_URL: #Mockes lokalt

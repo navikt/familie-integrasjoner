@@ -28,9 +28,9 @@ class DokdistService(val dokdistRestClient: DokdistRestClient) {
                     adresselinje3 = adresse.adresselinje3,
                     poststed = adresse.poststed,
                     postnummer = adresse.postnummer,
-                    land = adresse.land
+                    land = adresse.land,
                 )
-            }
+            },
         )
     }
 }

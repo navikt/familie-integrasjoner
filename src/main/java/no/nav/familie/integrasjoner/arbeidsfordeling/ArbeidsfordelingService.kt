@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class ArbeidsfordelingService(
-    private val klient: ArbeidsfordelingClient,
     private val restClient: ArbeidsfordelingRestClient,
     private val pdlRestClient: PdlRestClient,
     private val egenAnsattService: EgenAnsattService,
@@ -30,13 +29,6 @@ class ArbeidsfordelingService(
 ) {
 
     private val secureLogger = LoggerFactory.getLogger("secureLogger")
-
-    fun finnBehandlendeEnhet(
-        tema: Tema,
-        geografi: String?,
-        diskresjonskode: String?,
-    ): List<Enhet> =
-        klient.finnBehandlendeEnhet(tema, geografi, diskresjonskode)
 
     fun finnBehandlendeEnhetForPerson(personIdent: String, tema: Tema): List<Enhet> {
         val kriterie = lagArbeidsfordelingKritierieForPerson(personIdent, tema, tema)
