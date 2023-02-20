@@ -13,13 +13,12 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedRelasj
 import no.nav.familie.integrasjoner.personopplysning.internal.Sivilstand
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
-import no.nav.familie.kontrakter.ks.søknad.testdata.SøknadTestdata
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 
 class PersonopplysningerServiceTest {
+
     private lateinit var personopplysningerService: PersonopplysningerService
 
     private val pdlRestClient = mockk<PdlRestClient>()
@@ -80,11 +79,4 @@ class PersonopplysningerServiceTest {
         adressebeskyttelse: List<Adressebeskyttelse> = emptyList(),
     ) =
         PdlPersonMedRelasjonerOgAdressebeskyttelse(familierelasjoner, sivilstand, fullmakt, adressebeskyttelse)
-
-    companion object {
-
-        private const val PERSONIDENT = SøknadTestdata.farPersonident
-        private val TOM = LocalDate.now()
-        private val FOM = TOM.minusYears(5)
-    }
 }
