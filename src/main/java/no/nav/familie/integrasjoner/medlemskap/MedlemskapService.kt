@@ -10,21 +10,18 @@ import org.springframework.stereotype.Service
 @Service
 class MedlemskapService(private val medlRestClient: MedlRestClient) {
 
-    fun hentMedlemskapsunntak(aktørId: String): Medlemskapsinfo {
+    fun hentMedlemskapsunntak(ident: String): Medlemskapsinfo {
         return try {
-            MedlemskapsinfoMapper.tilMedlemskapsInfo(medlRestClient.hentMedlemskapsUnntakResponse(aktørId))
+            MedlemskapsinfoMapper.tilMedlemskapsInfo(medlRestClient.hentMedlemskapsUnntakResponse(ident))
         } catch (e: Exception) {
             throw OppslagException(
-                "Feil ved oppslag for Aktør " + aktørId + " og uri " + medlRestClient.medlemskapsunntakUri,
+                "Feil ved oppslag av medlemskap",
                 "MEDL2",
                 OppslagException.Level.MEDIUM,
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 e,
+                "Feil ved oppslag av medlemskap ident=$ident"
             )
         }
-    }
-
-    fun hentMedlemskapsunntakForIdent(ident: String): Medlemskapsinfo {
-        return MedlemskapsinfoMapper.tilMedlemskapsInfo(medlRestClient.hentMedlemskapsUnntakResponse(ident))
     }
 }

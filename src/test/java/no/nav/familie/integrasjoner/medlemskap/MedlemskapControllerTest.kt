@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.medlemskap
 
 import com.github.tomakehurst.wiremock.client.WireMock
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.kontrakter.felles.PersonIdent
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.medlemskap.Medlemskapsinfo
 import org.assertj.core.api.Assertions.assertThat
@@ -42,9 +43,9 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
         )
 
         val response: ResponseEntity<Ressurs<Medlemskapsinfo>> = restTemplate.exchange(
-            localhost(GET_MEDLEMSKAP_URL),
-            HttpMethod.GET,
-            HttpEntity(null, headers),
+            localhost(MEDLEMSKAP_URL),
+            HttpMethod.POST,
+            HttpEntity(PersonIdent("12345678911"), headers),
         )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
@@ -64,9 +65,9 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
         )
 
         val response: ResponseEntity<Ressurs<Medlemskapsinfo>> = restTemplate.exchange(
-            localhost(GET_MEDLEMSKAP_URL),
-            HttpMethod.GET,
-            HttpEntity(null, headers),
+            localhost(MEDLEMSKAP_URL),
+            HttpMethod.POST,
+            HttpEntity(PersonIdent("12345678911"), headers),
         )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -81,6 +82,6 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
 
     companion object {
 
-        private const val GET_MEDLEMSKAP_URL = "/api/medlemskap/v1?id=6549687"
+        private const val MEDLEMSKAP_URL = "/api/medlemskap/v3"
     }
 }
