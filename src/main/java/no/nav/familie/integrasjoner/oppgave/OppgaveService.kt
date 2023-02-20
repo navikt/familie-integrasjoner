@@ -12,11 +12,9 @@ import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.IdentGruppe
-import no.nav.familie.kontrakter.felles.oppgave.IdentType
 import no.nav.familie.kontrakter.felles.oppgave.MappeDto
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.kontrakter.felles.oppgave.OppgaveIdentV2
-import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgave
 import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgaveRequest
 import no.nav.familie.kontrakter.felles.oppgave.StatusEnum
 import org.slf4j.LoggerFactory
@@ -125,31 +123,6 @@ class OppgaveService constructor(
         }
 
         return oppgaveId
-    }
-
-    @Deprecated("Bruk opprettOppgave")
-    fun opprettOppgaveV1(request: OpprettOppgave): Long {
-        val oppgave = Oppgave(
-            aktoerId = if (request.ident?.type == IdentType.Aktør) request.ident!!.ident else null,
-            orgnr = if (request.ident?.type == IdentType.Organisasjon) request.ident!!.ident else null,
-            saksreferanse = request.saksId,
-            // TODO oppgave-gjengen mente vi kunne sette denne til vår applikasjon, og så kan de gjøre en filtrering på sin
-            // men da må vi få applikasjonen vår inn i Felles kodeverk ellers så får vi feil: Fant ingen kode 'BA' i felles
-            // kodeverk under kodeverk 'Applikasjoner'
-            // behandlesAvApplikasjon = request.tema.fagsaksystem,
-            journalpostId = request.journalpostId,
-            prioritet = request.prioritet,
-            tema = request.tema,
-            tildeltEnhetsnr = request.enhetsnummer,
-            behandlingstema = request.behandlingstema,
-            fristFerdigstillelse = request.fristFerdigstillelse.format(DateTimeFormatter.ISO_DATE),
-            aktivDato = request.aktivFra.format(DateTimeFormatter.ISO_DATE),
-            oppgavetype = request.oppgavetype.value,
-            beskrivelse = request.beskrivelse,
-            behandlingstype = request.behandlingstype,
-        )
-
-        return oppgaveRestClient.opprettOppgave(oppgave)
     }
 
     fun opprettOppgave(request: OpprettOppgaveRequest): Long {

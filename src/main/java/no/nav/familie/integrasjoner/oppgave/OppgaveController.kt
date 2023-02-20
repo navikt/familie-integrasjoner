@@ -11,7 +11,6 @@ import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.MappeDto
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.kontrakter.felles.oppgave.OppgaveResponse
-import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgave
 import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgaveRequest
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.http.HttpStatus
@@ -92,14 +91,6 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     fun patchOppgave(@RequestBody oppgave: Oppgave): ResponseEntity<Ressurs<OppgaveResponse>> {
         val oppgaveId = oppgaveService.patchOppgave(oppgave)
         return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
-    }
-
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
-    @Deprecated("Bruk v2-endepunkt")
-    fun opprettOppgaveV1(@RequestBody oppgave: OpprettOppgave): ResponseEntity<Ressurs<OppgaveResponse>> {
-        val oppgaveId = oppgaveService.opprettOppgaveV1(oppgave)
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(success(OppgaveResponse(oppgaveId = oppgaveId), "Opprett oppgave OK"))
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/opprett"])
