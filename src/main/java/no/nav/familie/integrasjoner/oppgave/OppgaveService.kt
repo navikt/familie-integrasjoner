@@ -72,57 +72,68 @@ class OppgaveService constructor(
     }
 
     fun fordelOppgave(oppgaveId: Long, saksbehandler: String, versjon: Int?): Long {
-        if (versjon != null) {
-            oppgaveRestClient.oppdaterOppgave(
-                Oppgave(
-                    id = oppgaveId,
-                    versjon = versjon,
-                    tilordnetRessurs = saksbehandlerService.hentNavIdent(saksbehandler),
-                ),
-            )
-        } else {
-            val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
+        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
-            if (oppgave.status === StatusEnum.FERDIGSTILT) {
-                throw OppslagException(
-                    "Kan ikke fordele oppgave med id $oppgaveId som allerede er ferdigstilt",
-                    "Oppgave.fordel",
-                    Level.LAV,
-                    HttpStatus.BAD_REQUEST,
-                )
-            }
-            val oppdatertOppgaveDto = oppgave.copy(
-                id = oppgave.id,
-                versjon = oppgave.versjon,
-                tilordnetRessurs = saksbehandlerService.hentNavIdent(saksbehandler),
+        if (oppgave.status === StatusEnum.FERDIGSTILT) {
+            throw OppslagException(
+                "Kan ikke fordele oppgave med id $oppgaveId som allerede er ferdigstilt",
+                "Oppgave.fordel",
+                Level.LAV,
+                HttpStatus.BAD_REQUEST,
             )
-            oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
         }
+
+        if (versjon != null && versjon != oppgave.versjon) {
+            throw OppslagException(
+                "Kan ikke fordele oppgave med id $oppgaveId fordi det finnes en nyere versjon av oppgaven.",
+                "Oppgave.fordel",
+                Level.LAV,
+                HttpStatus.CONFLICT,
+            )
+        }
+
+        val nySaksbehandlerIdent = saksbehandlerService.hentNavIdent(saksbehandler)
+
+        val oppdatertOppgaveDto = oppgave.copy(
+            id = oppgave.id,
+            versjon = versjon ?: oppgave.versjon,
+            tilordnetRessurs = nySaksbehandlerIdent,
+            beskrivelse = oppgave.beskrivelse + "Oppgaven er flyttet fra saksbehandler ${oppgave.tilordnetRessurs} til $nySaksbehandlerIdent"
+        )
+        oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
+
         return oppgaveId
     }
 
     fun tilbakestillFordelingPåOppgave(oppgaveId: Long, versjon: Int?): Long {
-        if (versjon != null) {
-            oppgaveRestClient.oppdaterOppgave(Oppgave(id = oppgaveId, versjon = versjon, tilordnetRessurs = ""))
-        } else {
-            val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
+        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
-            if (oppgave.status === StatusEnum.FERDIGSTILT) {
-                throw OppslagException(
-                    "Kan ikke tilbakestille fordeling på oppgave med id $oppgaveId som allerede er ferdigstilt",
-                    "Oppgave.tilbakestill",
-                    Level.LAV,
-                    HttpStatus.BAD_REQUEST,
-                )
-            }
-
-            val oppdatertOppgaveDto = oppgave.copy(
-                id = oppgave.id,
-                versjon = oppgave.versjon,
-                tilordnetRessurs = "",
+        if (oppgave.status === StatusEnum.FERDIGSTILT) {
+            throw OppslagException(
+                "Kan ikke tilbakestille fordeling på oppgave med id $oppgaveId som allerede er ferdigstilt",
+                "Oppgave.tilbakestill",
+                Level.LAV,
+                HttpStatus.BAD_REQUEST,
             )
-            oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
         }
+
+        if (versjon != null && versjon != oppgave.versjon) {
+            throw OppslagException(
+                "Kan ikke fordele oppgave med id $oppgaveId fordi det finnes en nyere versjon av oppgaven.",
+                "Oppgave.fordel",
+                Level.LAV,
+                HttpStatus.CONFLICT,
+            )
+        }
+
+        val oppdatertOppgaveDto = oppgave.copy(
+            id = oppgave.id,
+            versjon = versjon ?: oppgave.versjon,
+            tilordnetRessurs = "",
+            beskrivelse = oppgave.beskrivelse + "Oppgaven er flyttet fra saksbehandler ${oppgave.tilordnetRessurs} til <ingen>"
+        )
+        oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
+
 
         return oppgaveId
     }
@@ -194,7 +205,7 @@ class OppgaveService constructor(
             StatusEnum.FERDIGSTILT -> logger.info("Oppgave er allerede ferdigstilt. oppgaveId=$oppgaveId")
             StatusEnum.FEILREGISTRERT -> throw OppslagException(
                 "Oppgave har status feilregistrert og kan ikke oppdateres. " +
-                    "oppgaveId=$oppgaveId",
+                        "oppgaveId=$oppgaveId",
                 "Oppgave.ferdigstill",
                 Level.MEDIUM,
                 HttpStatus.BAD_REQUEST,
@@ -202,7 +213,7 @@ class OppgaveService constructor(
 
             null -> throw OppslagException(
                 "Oppgave har ingen status og kan ikke oppdateres. " +
-                    "oppgaveId=$oppgaveId",
+                        "oppgaveId=$oppgaveId",
                 "Oppgave.ferdigstill",
                 Level.MEDIUM,
                 HttpStatus.BAD_REQUEST,
@@ -217,7 +228,7 @@ class OppgaveService constructor(
         if (versjon != null && versjon != oppgave.versjon) {
             throw OppslagException(
                 "Oppgave har har feil versjon og kan ikke ferdigstilles. " +
-                    "oppgaveId=${oppgave.id}",
+                        "oppgaveId=${oppgave.id}",
                 "Oppgave.ferdigstill",
                 Level.LAV,
                 HttpStatus.CONFLICT,
@@ -241,7 +252,7 @@ class OppgaveService constructor(
         if (mappeRespons.antallTreffTotalt > mappeRespons.mapper.size) {
             logger.error(
                 "Det finnes flere mapper (${mappeRespons.antallTreffTotalt}) " +
-                    "enn vi har hentet ut (${mappeRespons.mapper.size}). Sjekk limit. ",
+                        "enn vi har hentet ut (${mappeRespons.mapper.size}). Sjekk limit. ",
             )
         }
         return mappeRespons.mapperUtenTema()
