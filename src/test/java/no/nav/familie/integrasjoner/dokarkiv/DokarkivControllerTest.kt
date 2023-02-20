@@ -10,7 +10,6 @@ import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.dokarkiv.ArkiverDokumentResponse
 import no.nav.familie.kontrakter.felles.dokarkiv.DokarkivBruker
 import no.nav.familie.kontrakter.felles.dokarkiv.Dokumenttype
-import no.nav.familie.kontrakter.felles.dokarkiv.FilType
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggResponse
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
@@ -44,9 +43,6 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.LinkedList
 import kotlin.test.assertFalse
-import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequest
-import no.nav.familie.kontrakter.felles.dokarkiv.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequestV3
-import no.nav.familie.kontrakter.felles.dokarkiv.Dokument as DeprecatedDokument
 
 @ActiveProfiles(profiles = ["integrasjonstest", "mock-sts", "mock-aktor", "mock-personopplysninger", "mock-pdl"])
 @ExtendWith(MockServerExtension::class)
@@ -64,8 +60,8 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
     }
 
     @Test
-    fun `skal returnere bad request hvis ingen dokumenter`() {
-        val body = DeprecatedArkiverDokumentRequest(
+    fun `skal returnere bad request hvis ingen hoveddokumenter`() {
+        val body = ArkiverDokumentRequest(
             "fnr",
             false,
             LinkedList(),
@@ -73,27 +69,7 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
         val responseDeprecated: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
             restTemplate.exchange(
-                localhost(DOKARKIV_URL_V2),
-                HttpMethod.POST,
-                HttpEntity(body, headers),
-            )
-
-        assertThat(responseDeprecated.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
-        assertThat(responseDeprecated.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        assertThat(responseDeprecated.body?.melding).contains("dokumenter=must not be empty")
-    }
-
-    @Test
-    fun `v3 skal returnere bad request hvis ingen hoveddokumenter`() {
-        val body = DeprecatedArkiverDokumentRequestV3(
-            "fnr",
-            false,
-            LinkedList(),
-        )
-
-        val responseDeprecated: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
-            restTemplate.exchange(
-                localhost(DOKARKIV_URL_V3),
+                localhost(DOKARKIV_URL_V4),
                 HttpMethod.POST,
                 HttpEntity(body, headers),
             )
@@ -112,15 +88,15 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
                 .withQueryStringParameter("forsoekFerdigstill", "false"),
         )
             .respond(response().withBody(json(gyldigDokarkivResponse())))
-        val body = DeprecatedArkiverDokumentRequest(
+        val body = ArkiverDokumentRequest(
             "FNR",
             false,
-            listOf(DEPRECATED_HOVEDDOKUMENT),
+            listOf(HOVEDDOKUMENT),
         )
 
         val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
             restTemplate.exchange(
-                localhost(DOKARKIV_URL_V2),
+                localhost(DOKARKIV_URL_V4),
                 HttpMethod.POST,
                 HttpEntity(body, headers),
             )
@@ -132,35 +108,7 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
     }
 
     @Test
-    fun `v3 skal midlertidig journalføre dokument`() {
-        client.`when`(
-            request()
-                .withMethod("POST")
-                .withPath("/rest/journalpostapi/v1/journalpost")
-                .withQueryStringParameter("forsoekFerdigstill", "false"),
-        )
-            .respond(response().withBody(json(gyldigDokarkivResponse())))
-        val body = DeprecatedArkiverDokumentRequestV3(
-            "FNR",
-            false,
-            listOf(DEPRECATED_HOVEDDOKUMENT),
-        )
-
-        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
-            restTemplate.exchange(
-                localhost(DOKARKIV_URL_V3),
-                HttpMethod.POST,
-                HttpEntity(body, headers),
-            )
-
-        assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
-        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
-        assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
-        assertFalse(response.body?.data?.ferdigstilt!!)
-    }
-
-    @Test
-    fun `v4 skal sende med navIdent fra header til journalpost`() {
+    fun `skal sende med navIdent fra header til journalpost`() {
         client.`when`(
             request()
                 .withMethod("POST")
@@ -189,7 +137,7 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
     }
 
     @Test
-    fun `v4 skal returnere 409 ved 409 response fra dokarkiv`() {
+    fun `skal returnere 409 ved 409 response fra dokarkiv`() {
         client.`when`(
             request()
                 .withMethod("POST")
@@ -229,16 +177,16 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
                 .withQueryStringParameter("forsoekFerdigstill", "false"),
         )
             .respond(response().withBody(json(gyldigDokarkivResponse())))
-        val body = DeprecatedArkiverDokumentRequestV3(
+        val body = ArkiverDokumentRequest(
             "FNR",
             false,
-            listOf(DEPRECATED_HOVEDDOKUMENT),
+            listOf(HOVEDDOKUMENT),
             listOf(VEDLEGG),
         )
 
         val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
             restTemplate.exchange(
-                localhost(DOKARKIV_URL_V3),
+                localhost(DOKARKIV_URL_V4),
                 HttpMethod.POST,
                 HttpEntity(body, headers),
             )
@@ -263,23 +211,15 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
                     .withHeader("Content-Type", "application/json;charset=UTF-8")
                     .withBody("Tekst fra body"),
             )
-        val body = DeprecatedArkiverDokumentRequest(
+        val body = ArkiverDokumentRequest(
             "FNR",
             false,
-            listOf(
-                DeprecatedDokument(
-                    "foo".toByteArray(),
-                    FilType.PDFA,
-                    null,
-                    null,
-                    Dokumenttype.KONTANTSTØTTE_SØKNAD,
-                ),
-            ),
+            listOf(HOVEDDOKUMENT),
         )
 
         val responseDeprecated: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
             restTemplate.exchange(
-                localhost(DOKARKIV_URL_V2),
+                localhost(DOKARKIV_URL_V4),
                 HttpMethod.POST,
                 HttpEntity(body, headers),
             )
@@ -516,15 +456,6 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
         private const val NAV_USER_ID_VALUE = "k123123"
 
-        private val DEPRECATED_HOVEDDOKUMENT =
-            DeprecatedDokument(
-                "foo".toByteArray(),
-                FilType.PDFA,
-                "filnavn",
-                null,
-                Dokumenttype.KONTANTSTØTTE_SØKNAD,
-            )
-
         private val HOVEDDOKUMENT =
             Dokument(
                 "foo".toByteArray(),
@@ -535,9 +466,9 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
             )
 
         private val VEDLEGG =
-            DeprecatedDokument(
+            Dokument(
                 "foo".toByteArray(),
-                FilType.PDFA,
+                Filtype.PDFA,
                 "filnavn",
                 "Vedlegg",
                 Dokumenttype.KONTANTSTØTTE_SØKNAD_VEDLEGG,
