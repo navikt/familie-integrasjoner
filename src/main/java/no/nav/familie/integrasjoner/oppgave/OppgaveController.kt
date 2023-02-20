@@ -62,29 +62,23 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     fun fordelOppgave(
         @PathVariable(name = "oppgaveId") oppgaveId: Long,
         @RequestParam("saksbehandler") saksbehandler: String?,
+        @RequestParam("versjon") versjon: Int?,
     ): ResponseEntity<Ressurs<OppgaveResponse>> {
-        Result.runCatching {
-            if (saksbehandler == null) {
-                oppgaveService.tilbakestillFordelingPåOppgave(oppgaveId)
-            } else {
-                oppgaveService.fordelOppgave(oppgaveId, saksbehandler)
-            }
-        }.fold(
-            onSuccess = {
-                return ResponseEntity.ok(
-                    success(
-                        OppgaveResponse(oppgaveId = oppgaveId),
-                        if (saksbehandler !== null) {
-                            "Oppgaven ble tildelt saksbehandler $saksbehandler"
-                        } else {
-                            "Fordeling på oppgaven ble tilbakestilt"
-                        },
-                    ),
-                )
-            },
-            onFailure = {
-                return ResponseEntity.badRequest().body(Ressurs.failure(errorMessage = it.message))
-            },
+        if (saksbehandler == null) {
+            oppgaveService.tilbakestillFordelingPåOppgave(oppgaveId, versjon)
+        } else {
+            oppgaveService.fordelOppgave(oppgaveId, saksbehandler, versjon)
+        }
+
+        return ResponseEntity.ok(
+            success(
+                OppgaveResponse(oppgaveId = oppgaveId),
+                if (saksbehandler !== null) {
+                    "Oppgaven ble tildelt saksbehandler $saksbehandler"
+                } else {
+                    "Fordeling på oppgaven ble tilbakestilt"
+                },
+            ),
         )
     }
 
@@ -116,8 +110,11 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 
     @PatchMapping(path = ["/{oppgaveId}/ferdigstill"])
-    fun ferdigstillOppgave(@PathVariable(name = "oppgaveId") oppgaveId: Long): ResponseEntity<Ressurs<OppgaveResponse>> {
-        oppgaveService.ferdigstill(oppgaveId)
+    fun ferdigstillOppgave(
+        @PathVariable(name = "oppgaveId") oppgaveId: Long,
+        @RequestParam(name = "versjon") versjon: Int?,
+    ): ResponseEntity<Ressurs<OppgaveResponse>> {
+        oppgaveService.ferdigstill(oppgaveId, versjon)
         return ResponseEntity.ok(success(OppgaveResponse(oppgaveId = oppgaveId), "ferdigstill OK"))
     }
 
@@ -133,8 +130,11 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         @Parameter(description = "Settes til true hvis man ønsker å flytte en oppgave uten å ta med seg mappa opp på oppgaven. Noen mapper hører spesifikt til en enhet, og man får da ikke flyttet oppgaven uten at mappen fjernes ")
         @RequestParam(name = "fjernMappeFraOppgave")
         fjernMappeFraOppgave: Boolean,
+        @Parameter(description = "Vil feile med 409 Conflict dersom versjonen ikke stemmer overens med oppgavesystemets versjon")
+        @RequestParam(name = "versjon")
+        versjon: Int?,
     ): ResponseEntity<Ressurs<OppgaveResponse>> {
-        oppgaveService.tilordneEnhet(oppgaveId, enhet, fjernMappeFraOppgave)
+        oppgaveService.tilordneEnhet(oppgaveId, enhet, fjernMappeFraOppgave, versjon)
         return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
     }
 }
