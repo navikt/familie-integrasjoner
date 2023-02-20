@@ -113,7 +113,7 @@ SFTP_PASSPHRASE: Palpatine
 
 AAD_GRAPH_API_URI: http://localhost:18321
 SECURITYTOKENSERVICE_URL: https://localhost:8063/soap/SecurityTokenServiceProvider/
-ORGANISASJON_V5_URL: #Denne er ikke i bruk da OrganisasjonV5 mockes ut lokalt
+ORGANISASJON_URL: #Denne er ikke i bruk da OrganisasjonV5 mockes ut lokalt
 DOKARKIV_V1_URL: http://localhost:18321
 DOKDIST_URL: http://localhost:18321
 INFOTRYGD_URL: http://localhost:18321
