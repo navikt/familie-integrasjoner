@@ -155,7 +155,6 @@ class OppgaveService constructor(
         }
 
         return prefix + endring + nåværendeBeskrivelse
-
     }
 
     @Deprecated("Bruk opprettOppgave")
@@ -225,7 +224,7 @@ class OppgaveService constructor(
             StatusEnum.FERDIGSTILT -> logger.info("Oppgave er allerede ferdigstilt. oppgaveId=$oppgaveId")
             StatusEnum.FEILREGISTRERT -> throw OppslagException(
                 "Oppgave har status feilregistrert og kan ikke oppdateres. " +
-                        "oppgaveId=$oppgaveId",
+                    "oppgaveId=$oppgaveId",
                 "Oppgave.ferdigstill",
                 Level.MEDIUM,
                 HttpStatus.BAD_REQUEST,
@@ -233,7 +232,7 @@ class OppgaveService constructor(
 
             null -> throw OppslagException(
                 "Oppgave har ingen status og kan ikke oppdateres. " +
-                        "oppgaveId=$oppgaveId",
+                    "oppgaveId=$oppgaveId",
                 "Oppgave.ferdigstill",
                 Level.MEDIUM,
                 HttpStatus.BAD_REQUEST,
@@ -248,7 +247,7 @@ class OppgaveService constructor(
         if (versjon != null && versjon != oppgave.versjon) {
             throw OppslagException(
                 "Oppgave har har feil versjon og kan ikke ferdigstilles. " +
-                        "oppgaveId=${oppgave.id}",
+                    "oppgaveId=${oppgave.id}",
                 "Oppgave.ferdigstill",
                 Level.LAV,
                 HttpStatus.CONFLICT,
@@ -272,7 +271,7 @@ class OppgaveService constructor(
         if (mappeRespons.antallTreffTotalt > mappeRespons.mapper.size) {
             logger.error(
                 "Det finnes flere mapper (${mappeRespons.antallTreffTotalt}) " +
-                        "enn vi har hentet ut (${mappeRespons.mapper.size}). Sjekk limit. ",
+                    "enn vi har hentet ut (${mappeRespons.mapper.size}). Sjekk limit. ",
             )
         }
         return mappeRespons.mapperUtenTema()

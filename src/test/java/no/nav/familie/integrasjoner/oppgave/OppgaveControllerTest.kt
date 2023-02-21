@@ -181,7 +181,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
             .anyMatch {
                 it.contains(
                     "[oppgave][Ingen oppgaver funnet for http://localhost:28085/api/v1/oppgaver" +
-                            "?aktoerId=1234567891011&tema=KON&oppgavetype=BEH_SAK&journalpostId=1&statuskategori=AAPEN]",
+                        "?aktoerId=1234567891011&tema=KON&oppgavetype=BEH_SAK&journalpostId=1&statuskategori=AAPEN]",
                 )
             }
         assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
@@ -208,7 +208,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
             .anyMatch {
                 it.contains(
                     "Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId=1234567891011 " +
-                            "journalpostId=123456789 oppgaveId=$OPPGAVE_ID",
+                        "journalpostId=123456789 oppgaveId=$OPPGAVE_ID",
                 )
             }
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
