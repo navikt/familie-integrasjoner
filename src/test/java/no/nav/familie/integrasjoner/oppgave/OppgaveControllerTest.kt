@@ -630,7 +630,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
-                localhost("$OPPGAVE_URL/$OPPGAVE_ID/fordel/?saksbehandler=test123&versjon=1"),
+                localhost("$OPPGAVE_URL/$OPPGAVE_ID/fordel?saksbehandler=test123&versjon=1"),
                 HttpMethod.POST,
                 HttpEntity(oppgave, headers),
             )
@@ -647,7 +647,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     companion object {
 
-        private const val OPPGAVE_URL = "/api/oppgave/"
+        private const val OPPGAVE_URL = "/api/oppgave"
         private const val OPPRETT_OPPGAVE_URL_V2 = "/api/oppgave/opprett"
         private const val OPPDATER_OPPGAVE_URL = "$OPPGAVE_URL/oppdater"
         private const val OPPGAVE_ID = 315488374L

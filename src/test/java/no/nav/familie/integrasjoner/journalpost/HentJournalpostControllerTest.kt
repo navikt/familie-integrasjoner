@@ -57,7 +57,7 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
             .queryParam("journalpostId", JOURNALPOST_ID).toUriString()
         uriHentJournalpost = UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
             .queryParam("journalpostId", JOURNALPOST_ID).toUriString()
-        uriHentDokument = localhost(JOURNALPOST_BASE_URL) + "hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID"
+        uriHentDokument = localhost(JOURNALPOST_BASE_URL) + "/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID"
     }
 
     @Test
@@ -291,6 +291,6 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
         const val JOURNALPOST_ID = "12345678"
         const val DOKUMENTINFO_ID = "123456789"
         const val SAKSNUMMER = "87654321"
-        const val JOURNALPOST_BASE_URL = "/api/journalpost/"
+        const val JOURNALPOST_BASE_URL = "/api/journalpost"
     }
 }

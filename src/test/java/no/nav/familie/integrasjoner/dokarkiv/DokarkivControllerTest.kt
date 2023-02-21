@@ -450,9 +450,8 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
     companion object {
 
         private const val DOKARKIV_URL = "/api/arkiv"
-        private const val DOKARKIV_URL_V2 = "$DOKARKIV_URL/v2/"
-        private const val DOKARKIV_URL_V3 = "$DOKARKIV_URL/v3/"
-        private const val DOKARKIV_URL_V4 = "$DOKARKIV_URL/v4/"
+        private const val DOKARKIV_URL_V2 = "$DOKARKIV_URL/v2"
+        private const val DOKARKIV_URL_V4 = "$DOKARKIV_URL/v4"
 
         private const val NAV_USER_ID_VALUE = "k123123"
 
