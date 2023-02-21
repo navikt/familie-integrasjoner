@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.5</version>
+        <version>3.0.2</version>
     </parent>
 
     <groupId>no.nav.familie.integrasjoner</groupId>
@@ -21,9 +21,9 @@
         <changelist>-SNAPSHOT</changelist>
         <java.version>17</java.version>
         <springdoc.version>1.6.14</springdoc.version>
-        <felles.version>1.20230117091843_19b020f</felles.version>
-        <kontrakt.version>2.0_20230201153833_7f218f3</kontrakt.version>
-        <token-validation-spring.version>2.1.9</token-validation-spring.version>
+        <felles.version>2.20230210162649_a258d57-SPRING_BOOT_3</felles.version>
+        <kontrakt.version>3.0_20230220145739_44aff8c-JAKARTA</kontrakt.version>
+        <token-validation-spring.version>3.0.3</token-validation-spring.version>
         <kotlin.version>1.8.10</kotlin.version>
 
         <mock-server.version>5.15.0</mock-server.version>
@@ -34,7 +34,7 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <!--suppress UnresolvedMavenProperty Ligger som secret i github-->
         <sonar.login>${SONAR_LOGIN}</sonar.login>
-        <spring.cloud>3.1.4</spring.cloud>
+        <spring.cloud>4.0.1</spring.cloud>
 
     </properties>
 
@@ -43,6 +43,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jetty</artifactId>
+        </dependency>
+        <!-- https://github.com/spring-projects/spring-boot/issues/33044#issuecomment-1379812611 -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -186,7 +191,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock-jre8</artifactId>
+            <artifactId>wiremock-jre8-standalone</artifactId>
             <version>2.35.0</version>
             <scope>test</scope>
         </dependency>
