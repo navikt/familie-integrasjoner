@@ -6,6 +6,7 @@ import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.OppslagException.Level
 import no.nav.familie.integrasjoner.saksbehandler.SaksbehandlerService
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.context.annotation.ApplicationScope
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Service
@@ -98,7 +100,7 @@ class OppgaveService constructor(
             id = oppgave.id,
             versjon = versjon ?: oppgave.versjon,
             tilordnetRessurs = nySaksbehandlerIdent,
-            beskrivelse = oppgave.beskrivelse + "Oppgaven er flyttet fra saksbehandler ${oppgave.tilordnetRessurs} til $nySaksbehandlerIdent"
+            beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave, nySaksbehandlerIdent = nySaksbehandlerIdent)
         )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
 
@@ -130,12 +132,29 @@ class OppgaveService constructor(
             id = oppgave.id,
             versjon = versjon ?: oppgave.versjon,
             tilordnetRessurs = "",
-            beskrivelse = oppgave.beskrivelse + "Oppgaven er flyttet fra saksbehandler ${oppgave.tilordnetRessurs} til <ingen>"
+            beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave)
         )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
 
 
         return oppgaveId
+    }
+
+    private fun lagOppgaveBeskrivelseFordeling(oppgave: Oppgave, nySaksbehandlerIdent: String? = null): String {
+        val innloggetSaksbehandler = SikkerhetsContext.hentSaksbehandler()
+        val prefix = "--- ${
+            LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
+        } ${SikkerhetsContext.hentSaksbehandlerNavn(strict = true)} ($innloggetSaksbehandler) ---"
+
+        val endring = if (oppgave.tilordnetRessurs == null) {
+            "Oppgave plukket av ${oppgave.tilordnetRessurs}"
+        } else {
+            "Oppgave er flyttet fra ${oppgave.tilordnetRessurs} til ${nySaksbehandlerIdent ?: "<ingen>"}"
+        }
+
+        val nåværendeBeskrivelse = oppgave.beskrivelse ?: ""
+
+        return "$prefix \n $endring \n $nåværendeBeskrivelse"
     }
 
     @Deprecated("Bruk opprettOppgave")
