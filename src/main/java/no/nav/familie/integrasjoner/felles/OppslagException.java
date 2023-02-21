@@ -1,12 +1,13 @@
 package no.nav.familie.integrasjoner.felles;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 public class OppslagException extends RuntimeException {
 
-    private HttpStatus httpStatus;
+    private HttpStatusCode httpStatus;
     private String kilde;
     private String sensitiveInfo;
     private Level level;
@@ -18,7 +19,7 @@ public class OppslagException extends RuntimeException {
         KRITISK
     }
 
-    public OppslagException(String message, String kilde, Level level, HttpStatus httpStatus, Throwable error, String sensitiveInfo) {
+    public OppslagException(String message, String kilde, Level level, HttpStatusCode httpStatus, Throwable error, String sensitiveInfo) {
         super(message, error);
         this.httpStatus = httpStatus == null ? INTERNAL_SERVER_ERROR : httpStatus;
         this.kilde = kilde;
@@ -39,7 +40,7 @@ public class OppslagException extends RuntimeException {
         this(message, kilde, level, null, null, null);
     }
 
-    public HttpStatus getHttpStatus() {
+    public HttpStatusCode getHttpStatus() {
         return httpStatus;
     }
 
