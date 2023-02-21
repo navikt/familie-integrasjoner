@@ -100,7 +100,7 @@ class OppgaveService constructor(
             id = oppgave.id,
             versjon = versjon ?: oppgave.versjon,
             tilordnetRessurs = nySaksbehandlerIdent,
-            beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave, nySaksbehandlerIdent = nySaksbehandlerIdent)
+            beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave, nySaksbehandlerIdent = nySaksbehandlerIdent),
         )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
 
@@ -132,7 +132,7 @@ class OppgaveService constructor(
             id = oppgave.id,
             versjon = versjon ?: oppgave.versjon,
             tilordnetRessurs = "",
-            beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave)
+            beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave),
         )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
 
@@ -140,13 +140,13 @@ class OppgaveService constructor(
     }
 
     private fun lagOppgaveBeskrivelseFordeling(oppgave: Oppgave, nySaksbehandlerIdent: String? = null): String {
-        val innloggetSaksbehandler = SikkerhetsContext.hentSaksbehandler()
-        val prefix = "--- ${
-            LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
-        } ${SikkerhetsContext.hentSaksbehandlerNavn(strict = true)} ($innloggetSaksbehandler) ---"
+        val innloggetSaksbehandlerIdent = SikkerhetsContext.hentSaksbehandler()
+        val saksbehandlerNavn = SikkerhetsContext.hentSaksbehandlerNavn(strict = true)
 
-        val endring =
-            "Oppgave er flyttet fra ${oppgave.tilordnetRessurs ?: "<ingen>"} til ${nySaksbehandlerIdent ?: "<ingen>"}"
+        val formatertDato = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd' 'HH:mm"))
+
+        val prefix = "--- $formatertDato $saksbehandlerNavn ($innloggetSaksbehandlerIdent) ---\n"
+        val endring = """Oppgave er flyttet fra ${oppgave.tilordnetRessurs ?: "<ingen>"} til ${nySaksbehandlerIdent ?: "<ingen>"}"""
 
         val nåværendeBeskrivelse = if (oppgave.beskrivelse != null) {
             "\n\n${oppgave.beskrivelse}"
@@ -154,7 +154,8 @@ class OppgaveService constructor(
             ""
         }
 
-        return "$prefix \n $endring $nåværendeBeskrivelse"
+        return prefix + endring + nåværendeBeskrivelse
+
     }
 
     @Deprecated("Bruk opprettOppgave")
