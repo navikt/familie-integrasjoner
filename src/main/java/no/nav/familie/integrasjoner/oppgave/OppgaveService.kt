@@ -136,7 +136,6 @@ class OppgaveService constructor(
         )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
 
-
         return oppgaveId
     }
 
@@ -146,11 +145,8 @@ class OppgaveService constructor(
             LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
         } ${SikkerhetsContext.hentSaksbehandlerNavn(strict = true)} ($innloggetSaksbehandler) ---"
 
-        val endring = if (oppgave.tilordnetRessurs == null) {
-            "Oppgave plukket av ${oppgave.tilordnetRessurs}"
-        } else {
-            "Oppgave er flyttet fra ${oppgave.tilordnetRessurs} til ${nySaksbehandlerIdent ?: "<ingen>"}"
-        }
+        val endring =
+            "Oppgave er flyttet fra ${oppgave.tilordnetRessurs ?: "<ingen>"} til ${nySaksbehandlerIdent ?: "<ingen>"}"
 
         val nåværendeBeskrivelse = oppgave.beskrivelse ?: ""
 
