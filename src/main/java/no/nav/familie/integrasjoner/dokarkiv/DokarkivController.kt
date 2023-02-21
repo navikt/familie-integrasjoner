@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.dokarkiv
 
+import jakarta.validation.Valid
 import no.nav.familie.integrasjoner.dokarkiv.client.KanIkkeFerdigstilleJournalpostException
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
@@ -30,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import java.util.function.Consumer
-import javax.validation.Valid
 
 @RestController
 @ProtectedWithClaims(issuer = "azuread")

@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.personopplysning.domene;
 
-import javax.validation.constraints.Pattern.Flag;
+import jakarta.validation.constraints.Pattern.Flag;
+
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -18,7 +19,7 @@ public class AktørId {
     private static final Pattern VALID = Pattern.compile(VALID_REGEXP, Pattern.CASE_INSENSITIVE);
     private static final Pattern INVALID = Pattern.compile(INVALID_REGEXP, Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 
-    @javax.validation.constraints.Pattern(regexp = VALID_REGEXP, flags = {Flag.CASE_INSENSITIVE})
+    @jakarta.validation.constraints.Pattern(regexp = VALID_REGEXP, flags = {Flag.CASE_INSENSITIVE})
     private String aktørId;
 
     public AktørId(String aktørId) {
