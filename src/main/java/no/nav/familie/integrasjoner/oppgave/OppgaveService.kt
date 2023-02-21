@@ -148,9 +148,13 @@ class OppgaveService constructor(
         val endring =
             "Oppgave er flyttet fra ${oppgave.tilordnetRessurs ?: "<ingen>"} til ${nySaksbehandlerIdent ?: "<ingen>"}"
 
-        val nåværendeBeskrivelse = oppgave.beskrivelse ?: ""
+        val nåværendeBeskrivelse = if (oppgave.beskrivelse != null) {
+            "\n\n${oppgave.beskrivelse}"
+        } else {
+            ""
+        }
 
-        return "$prefix \n $endring \n $nåværendeBeskrivelse"
+        return "$prefix \n $endring $nåværendeBeskrivelse"
     }
 
     @Deprecated("Bruk opprettOppgave")
