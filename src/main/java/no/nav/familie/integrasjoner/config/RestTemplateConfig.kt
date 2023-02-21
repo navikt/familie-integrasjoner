@@ -67,7 +67,7 @@ class RestTemplateConfig(
     }
 
     @Bean("clientCredential")
-    fun restTemplateJwtBearer(
+    fun restTemplateClientCredential(
         naisProxyCustomizer: NaisProxyCustomizer,
         consumerIdClientInterceptor: ConsumerIdClientInterceptor,
         bearerTokenClientInterceptor: BearerTokenClientCredentialsClientInterceptor,
