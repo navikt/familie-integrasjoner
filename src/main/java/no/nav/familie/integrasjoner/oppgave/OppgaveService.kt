@@ -94,13 +94,11 @@ class OppgaveService constructor(
             )
         }
 
-        val nySaksbehandlerIdent = saksbehandlerService.hentNavIdent(saksbehandler)
-
         val oppdatertOppgaveDto = oppgave.copy(
             id = oppgave.id,
             versjon = versjon ?: oppgave.versjon,
-            tilordnetRessurs = nySaksbehandlerIdent,
-            beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave, nySaksbehandlerIdent = nySaksbehandlerIdent),
+            tilordnetRessurs = saksbehandler,
+            beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave, nySaksbehandlerIdent = saksbehandler),
         )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
 
