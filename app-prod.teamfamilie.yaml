@@ -45,6 +45,9 @@ spec:
           - id: "5fcc0e1d-a4c2-49f0-93dc-27c9fea41e54"  # 0000-GA-Enslig-Forsorger-Beslutter
           - id: "e40090eb-c2fb-400e-b412-e9084019a73b"  # 0000-GA-Kontantstotte
           - id: "54cd86b8-2e23-48b2-8852-b05b5827bb0f"  # 0000-GA-Kontantstotte-Veileder
+        extra:
+          - "NAVident"
+
   accessPolicy:
     inbound:
       rules:

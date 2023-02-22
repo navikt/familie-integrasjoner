@@ -638,11 +638,9 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `Skal returnere 409 dersom man oppdaterer oppgave med feil versjon`() {
+        stubFor(get("/api/v1/oppgaver/$OPPGAVE_ID").willReturn(okJson(gyldigOppgaveResponse("hentOppgave.json"))))
         stubFor(
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
-                .withRequestBody(
-                    WireMock.equalToJson("""{"id":315488374, "tilordnetRessurs": "test123" ,"versjon":1}"""),
-                )
                 .willReturn(
                     aResponse()
                         .withStatus(409)

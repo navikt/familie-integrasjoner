@@ -67,17 +67,24 @@ abstract class OppslagSpringRunnerTest {
             return lagToken()
         }
 
-    fun lagToken(subject: String = "subject"): String {
+    fun lagToken(saksbehandler: String = "testbruker", ): String {
         val clientId = UUID.randomUUID().toString()
+        val brukerId  = UUID.randomUUID().toString()
         val issuerId = "azuread"
         return mockOAuth2Server.issueToken(
             issuerId = issuerId,
             clientId = clientId,
             DefaultOAuth2TokenCallback(
                 issuerId = issuerId,
-                subject = subject,
+                subject = brukerId,
                 audience = listOf("aud-localhost"),
-                claims = emptyMap(),
+                claims = mapOf(
+                    "oid" to brukerId,
+                    "azp" to clientId,
+                    "name" to saksbehandler,
+                    "NAVident" to saksbehandler,
+                    "groups" to emptyList<String>()
+                ),
                 expiry = 3600,
             ),
         ).serialize()
