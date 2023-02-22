@@ -146,7 +146,7 @@ class OppgaveService constructor(
         val formatertDato = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd' 'HH:mm"))
 
         val prefix = "--- $formatertDato $saksbehandlerNavn ($innloggetSaksbehandlerIdent) ---\n"
-        val endring = """Oppgave er flyttet fra ${oppgave.tilordnetRessurs ?: "<ingen>"} til ${nySaksbehandlerIdent ?: "<ingen>"}"""
+        val endring = "Oppgave er flyttet fra ${oppgave.tilordnetRessurs ?: "<ingen>"} til ${nySaksbehandlerIdent ?: "<ingen>"}"
 
         val nåværendeBeskrivelse = if (oppgave.beskrivelse != null) {
             "\n\n${oppgave.beskrivelse}"
