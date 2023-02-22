@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.oppgave
 
+import DatoFormat
 import com.fasterxml.jackson.annotation.JsonInclude
 import no.nav.familie.integrasjoner.aktør.AktørService
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
@@ -141,7 +142,7 @@ class OppgaveService constructor(
         val innloggetSaksbehandlerIdent = SikkerhetsContext.hentSaksbehandler()
         val saksbehandlerNavn = SikkerhetsContext.hentSaksbehandlerNavn(strict = true)
 
-        val formatertDato = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd' 'HH:mm"))
+        val formatertDato = LocalDateTime.now().format(DatoFormat.GOSYS_DATE_TIME)
 
         val prefix = "--- $formatertDato $saksbehandlerNavn ($innloggetSaksbehandlerIdent) ---\n"
         val endring = "Oppgave er flyttet fra ${oppgave.tilordnetRessurs ?: "<ingen>"} til ${nySaksbehandlerIdent ?: "<ingen>"}"
