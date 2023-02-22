@@ -139,8 +139,8 @@ class OppgaveService constructor(
     }
 
     private fun lagOppgaveBeskrivelseFordeling(oppgave: Oppgave, nySaksbehandlerIdent: String? = null): String {
-        val innloggetSaksbehandlerIdent = SikkerhetsContext.hentSaksbehandler()
-        val saksbehandlerNavn = SikkerhetsContext.hentSaksbehandlerNavn(strict = true)
+        val innloggetSaksbehandlerIdent = SikkerhetsContext.hentSaksbehandlerEllerSystembruker()
+        val saksbehandlerNavn = SikkerhetsContext.hentSaksbehandlerNavn(strict = false)
 
         val formatertDato = LocalDateTime.now().format(DatoFormat.GOSYS_DATE_TIME)
 
