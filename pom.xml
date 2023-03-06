@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.2</version>
+        <version>3.0.4</version>
     </parent>
 
     <groupId>no.nav.familie.integrasjoner</groupId>
@@ -23,7 +23,7 @@
         <springdoc.version>1.6.14</springdoc.version>
         <felles.version>2.20230210162649_a258d57-SPRING_BOOT_3</felles.version>
         <kontrakt.version>3.0_20230220145739_44aff8c-JAKARTA</kontrakt.version>
-        <token-validation-spring.version>3.0.3</token-validation-spring.version>
+        <token-validation-spring.version>3.0.4</token-validation-spring.version>
         <kotlin.version>1.8.10</kotlin.version>
 
         <mock-server.version>5.15.0</mock-server.version>
