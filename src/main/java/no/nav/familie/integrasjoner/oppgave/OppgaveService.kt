@@ -1,11 +1,13 @@
 package no.nav.familie.integrasjoner.oppgave
 
+import DatoFormat
 import com.fasterxml.jackson.annotation.JsonInclude
 import no.nav.familie.integrasjoner.aktør.AktørService
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.OppslagException.Level
 import no.nav.familie.integrasjoner.saksbehandler.SaksbehandlerService
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
@@ -21,6 +23,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.context.annotation.ApplicationScope
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Service
@@ -70,59 +73,85 @@ class OppgaveService constructor(
     }
 
     fun fordelOppgave(oppgaveId: Long, saksbehandler: String, versjon: Int?): Long {
-        if (versjon != null) {
-            oppgaveRestClient.oppdaterOppgave(
-                Oppgave(
-                    id = oppgaveId,
-                    versjon = versjon,
-                    tilordnetRessurs = saksbehandlerService.hentNavIdent(saksbehandler),
-                ),
-            )
-        } else {
-            val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
+        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
-            if (oppgave.status === StatusEnum.FERDIGSTILT) {
-                throw OppslagException(
-                    "Kan ikke fordele oppgave med id $oppgaveId som allerede er ferdigstilt",
-                    "Oppgave.fordel",
-                    Level.LAV,
-                    HttpStatus.BAD_REQUEST,
-                )
-            }
-            val oppdatertOppgaveDto = oppgave.copy(
-                id = oppgave.id,
-                versjon = oppgave.versjon,
-                tilordnetRessurs = saksbehandlerService.hentNavIdent(saksbehandler),
+        if (oppgave.status === StatusEnum.FERDIGSTILT) {
+            throw OppslagException(
+                "Kan ikke fordele oppgave med id $oppgaveId som allerede er ferdigstilt",
+                "Oppgave.fordel",
+                Level.LAV,
+                HttpStatus.BAD_REQUEST,
             )
-            oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
         }
+
+        if (versjon != null && versjon != oppgave.versjon) {
+            throw OppslagException(
+                "Kan ikke fordele oppgave med id $oppgaveId fordi det finnes en nyere versjon av oppgaven.",
+                "Oppgave.fordel",
+                Level.LAV,
+                HttpStatus.CONFLICT,
+            )
+        }
+
+        val oppdatertOppgaveDto = oppgave.copy(
+            id = oppgave.id,
+            versjon = versjon ?: oppgave.versjon,
+            tilordnetRessurs = saksbehandler,
+            beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave, nySaksbehandlerIdent = saksbehandler),
+        )
+        oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
+
         return oppgaveId
     }
 
     fun tilbakestillFordelingPåOppgave(oppgaveId: Long, versjon: Int?): Long {
-        if (versjon != null) {
-            oppgaveRestClient.oppdaterOppgave(Oppgave(id = oppgaveId, versjon = versjon, tilordnetRessurs = ""))
-        } else {
-            val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
+        val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
-            if (oppgave.status === StatusEnum.FERDIGSTILT) {
-                throw OppslagException(
-                    "Kan ikke tilbakestille fordeling på oppgave med id $oppgaveId som allerede er ferdigstilt",
-                    "Oppgave.tilbakestill",
-                    Level.LAV,
-                    HttpStatus.BAD_REQUEST,
-                )
-            }
-
-            val oppdatertOppgaveDto = oppgave.copy(
-                id = oppgave.id,
-                versjon = oppgave.versjon,
-                tilordnetRessurs = "",
+        if (oppgave.status === StatusEnum.FERDIGSTILT) {
+            throw OppslagException(
+                "Kan ikke tilbakestille fordeling på oppgave med id $oppgaveId som allerede er ferdigstilt",
+                "Oppgave.tilbakestill",
+                Level.LAV,
+                HttpStatus.BAD_REQUEST,
             )
-            oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
         }
 
+        if (versjon != null && versjon != oppgave.versjon) {
+            throw OppslagException(
+                "Kan ikke fordele oppgave med id $oppgaveId fordi det finnes en nyere versjon av oppgaven.",
+                "Oppgave.fordel",
+                Level.LAV,
+                HttpStatus.CONFLICT,
+            )
+        }
+
+        val oppdatertOppgaveDto = oppgave.copy(
+            id = oppgave.id,
+            versjon = versjon ?: oppgave.versjon,
+            tilordnetRessurs = "",
+            beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave),
+        )
+        oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
+
         return oppgaveId
+    }
+
+    private fun lagOppgaveBeskrivelseFordeling(oppgave: Oppgave, nySaksbehandlerIdent: String? = null): String {
+        val innloggetSaksbehandlerIdent = SikkerhetsContext.hentSaksbehandlerEllerSystembruker()
+        val saksbehandlerNavn = SikkerhetsContext.hentSaksbehandlerNavn(strict = false)
+
+        val formatertDato = LocalDateTime.now().format(DatoFormat.GOSYS_DATE_TIME)
+
+        val prefix = "--- $formatertDato $saksbehandlerNavn ($innloggetSaksbehandlerIdent) ---\n"
+        val endring = "Oppgave er flyttet fra ${oppgave.tilordnetRessurs ?: "<ingen>"} til ${nySaksbehandlerIdent ?: "<ingen>"}"
+
+        val nåværendeBeskrivelse = if (oppgave.beskrivelse != null) {
+            "\n\n${oppgave.beskrivelse}"
+        } else {
+            ""
+        }
+
+        return prefix + endring + nåværendeBeskrivelse
     }
 
     fun opprettOppgave(request: OpprettOppgaveRequest): Long {
