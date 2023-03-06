@@ -20,9 +20,9 @@
         <sha1></sha1>
         <changelist>-SNAPSHOT</changelist>
         <java.version>17</java.version>
-        <springdoc.version>1.6.14</springdoc.version>
+        <springdoc.version>2.0.2</springdoc.version>
         <felles.version>2.20230210162649_a258d57-SPRING_BOOT_3</felles.version>
-        <kontrakt.version>3.0_20230220145739_44aff8c-JAKARTA</kontrakt.version>
+        <kontrakt.version>3.0_20230306094848_3425b04-JAKARTA</kontrakt.version>
         <token-validation-spring.version>3.0.4</token-validation-spring.version>
         <kotlin.version>1.8.10</kotlin.version>
 
@@ -99,12 +99,12 @@
 
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-kotlin</artifactId>
+            <artifactId>springdoc-openapi-starter-common</artifactId>
             <version>${springdoc.version}</version>
         </dependency>
 
