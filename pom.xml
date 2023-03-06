@@ -137,11 +137,6 @@
         </dependency>
         <dependency>
             <groupId>no.nav.familie.kontrakter</groupId>
-            <artifactId>kontantstotte</artifactId>
-            <version>${kontrakt.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>no.nav.familie.kontrakter</groupId>
             <artifactId>felles</artifactId>
             <version>${kontrakt.version}</version>
         </dependency>

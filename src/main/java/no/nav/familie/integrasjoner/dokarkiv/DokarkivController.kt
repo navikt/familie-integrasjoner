@@ -29,11 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
-import java.util.HashMap
 import java.util.function.Consumer
 import javax.validation.Valid
-import no.nav.familie.kontrakter.felles.arkivering.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequest
-import no.nav.familie.kontrakter.felles.dokarkiv.ArkiverDokumentRequest as DeprecatedArkiverDokumentRequest2
 
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
@@ -58,36 +55,6 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     fun handleKanIkkeFerdigstilleException(ex: KanIkkeFerdigstilleJournalpostException): ResponseEntity<Ressurs<Any>> {
         LOG.warn("Feil ved ferdigstilling {}", ex.message)
         return ResponseEntity.badRequest().body(failure(ex.message, error = ex))
-    }
-
-    @PostMapping(path = ["/v2"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun arkiverDokumentV2(
-        @RequestBody @Valid
-        deprecatedArkiverDokumentRequest: DeprecatedArkiverDokumentRequest,
-        @RequestHeader(name = NAV_USER_ID) navIdent: String? = null,
-    ): ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(
-                success(
-                    journalføringService.lagJournalpostV2(deprecatedArkiverDokumentRequest, navIdent),
-                    Companion.ARKIVERT_OK_MELDING,
-                ),
-            )
-    }
-
-    @PostMapping(path = ["/v3"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun arkiverDokumentV3(
-        @RequestBody @Valid
-        arkiverDokumentRequest: DeprecatedArkiverDokumentRequest2,
-        @RequestHeader(name = NAV_USER_ID) navIdent: String? = null,
-    ): ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(
-                success(
-                    journalføringService.lagJournalpostV3(arkiverDokumentRequest, navIdent),
-                    Companion.ARKIVERT_OK_MELDING,
-                ),
-            )
     }
 
     @PostMapping(path = ["/v4"], produces = [MediaType.APPLICATION_JSON_VALUE])
