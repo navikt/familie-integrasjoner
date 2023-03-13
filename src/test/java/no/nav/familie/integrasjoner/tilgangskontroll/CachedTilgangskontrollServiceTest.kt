@@ -139,6 +139,16 @@ internal class CachedTilgangskontrollServiceTest {
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
+    @Test
+    internal fun `har ikke tilgang når sivilstand er egenansatt`() {
+        every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
+            lagPersonMedRelasjoner(sivilstand = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
+        every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } answers {
+            firstArg<Set<String>>().associateWith { it == "sivilstand" }
+        }
+        assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
+    }
+
     private fun sjekkTilgangTilPersonMedRelasjoner() =
         cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner("", jwtToken, Tema.ENF).harTilgang
 
