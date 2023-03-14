@@ -28,10 +28,9 @@ internal class CachedTilgangskontrollServiceTest {
     private val kode6Id = "7"
 
     private val tilgangConfig = TilgangConfig(
-        mapOf(
-            "kode7" to AdRolle(kode7Id, ""),
-            "kode6" to AdRolle(kode6Id, ""),
-        ),
+        kode7 = AdRolle(kode7Id, ""),
+        kode6 = AdRolle(kode6Id, ""),
+        egenAnsatt = AdRolle("", ""),
     )
     private val cachedTilgangskontrollService = CachedTilgangskontrollService(
         egenAnsattService,

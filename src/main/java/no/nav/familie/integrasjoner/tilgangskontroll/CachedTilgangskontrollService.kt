@@ -58,9 +58,9 @@ class CachedTilgangskontrollService(
         egenAnsattSjekk: () -> Boolean,
     ): Tilgang {
         val tilgang = when (adressebeskyttelsegradering) {
-            FORTROLIG -> hentTilgangForRolle(tilgangConfig.grupper["kode7"], jwtToken, personIdent)
+            FORTROLIG -> hentTilgangForRolle(tilgangConfig.kode7, jwtToken, personIdent)
             STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND ->
-                hentTilgangForRolle(tilgangConfig.grupper["kode6"], jwtToken, personIdent)
+                hentTilgangForRolle(tilgangConfig.kode6, jwtToken, personIdent)
 
             else -> Tilgang(harTilgang = true)
         }
@@ -68,7 +68,7 @@ class CachedTilgangskontrollService(
             return tilgang
         }
         if (egenAnsattSjekk()) {
-            return hentTilgangForRolle(tilgangConfig.grupper["utvidet-tilgang"], jwtToken, personIdent)
+            return hentTilgangForRolle(tilgangConfig.egenAnsatt, jwtToken, personIdent)
         }
         return Tilgang(harTilgang = true)
     }

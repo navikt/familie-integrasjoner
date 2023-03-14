@@ -106,6 +106,14 @@ no.nav.security.jwt:
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
 
+tilgang:
+  kode6:
+    rolle-id: "5ef775f2-61f8-4283-bf3d-8d03f428aa14"
+  kode7:
+    rolle-id: "ea930b6b-9397-44d9-b9e6-f4cf527a632a"
+  egenAnsatt:
+    rolle-id: "dbe4ad45-320b-4e9a-aaa1-73cca4ee124d"
+
 INTEGRASJONER_CLIENT_ID: ${AZURE_APP_CLIENT_ID}
 CLIENT_SECRET: ${AZURE_APP_CLIENT_SECRET}
 INFOTRYGD_KS_SCOPE: ${INFOTRYGD_KS_SCOPE}
