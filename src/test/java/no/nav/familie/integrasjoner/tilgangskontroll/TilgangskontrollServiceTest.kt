@@ -20,17 +20,15 @@ class TilgangskontrollServiceTest {
     private val saksbehandler: JwtToken = mockk(relaxed = true)
     private val jwtTokenClaims: JwtTokenClaims = mockk()
     private val egenAnsattService: EgenAnsattService = mockk(relaxed = true)
-    private val GRUPPE_UTVIDET_TILGANG = "utvidetTilgang1"
+    private val GRUPPE_EGEN_ANSATT = "utvidetTilgang1"
     private val GRUPPE_TILGANG_6 = "kode62"
     private val GRUPPE_TILGANG_7 = "kode73"
 
     private val tilgangConfig: TilgangConfig =
         TilgangConfig(
-            mapOf(
-                "utvidet-tilgang" to AdRolle(GRUPPE_UTVIDET_TILGANG, "NAV-Ansatt"),
-                "kode6" to AdRolle(GRUPPE_TILGANG_6, "Strengt fortrolig adresse"),
-                "kode7" to AdRolle(GRUPPE_TILGANG_7, "Fortrolig adresse"),
-            ),
+            egenAnsatt = AdRolle(GRUPPE_EGEN_ANSATT, "NAV-Ansatt"),
+            kode6 = AdRolle(GRUPPE_TILGANG_6, "Strengt fortrolig adresse"),
+            kode7 = AdRolle(GRUPPE_TILGANG_7, "Fortrolig adresse"),
         )
     private val personopplysningerService: PersonopplysningerService = mockk(relaxed = true)
 
@@ -70,7 +68,7 @@ class TilgangskontrollServiceTest {
         every { saksbehandler.jwtTokenClaims }
             .returns(jwtTokenClaims)
         every { jwtTokenClaims.getAsList(any()) }
-            .returns(listOf(GRUPPE_UTVIDET_TILGANG))
+            .returns(listOf(GRUPPE_EGEN_ANSATT))
         every { jwtTokenClaims.get("preferred_username") }
             .returns(listOf("bob"))
 
