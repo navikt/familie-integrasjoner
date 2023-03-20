@@ -638,6 +638,73 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
+    @Test
+    fun `Fjern behandlesAvApplikasjon på oppgave`() {
+        stubFor(get("/api/v1/oppgaver/$OPPGAVE_ID").willReturn(okJson(gyldigOppgaveResponse("hentOppgave.json"))))
+
+        stubFor(
+            patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
+                .withRequestBody(
+                    WireMock.equalToJson("""{"id":315488374, "versjon":1,"behandlesAvApplikasjon":null}"""),
+                )
+                .willReturn(
+                    aResponse()
+                        .withStatus(201)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(gyldigOppgaveResponse("ferdigstilt_oppgave.json")),
+                ),
+        )
+
+        val oppgave = Oppgave(
+            aktoerId = "1234567891011",
+            journalpostId = "1",
+            beskrivelse = EKSTRA_BESKRIVELSE,
+            tema = null,
+        )
+
+        val response: ResponseEntity<Ressurs<OppgaveResponse>> =
+            restTemplate.exchange(
+                localhost("$OPPGAVE_URL/$OPPGAVE_ID/fjernBehandlesAvApplikasjon?versjon=1"),
+                HttpMethod.PATCH,
+                HttpEntity(oppgave, headers),
+            )
+        assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    @Test
+    fun `Fjern behandlesAvApplikasjon skal returnere httpstatus 409 ved feil versjonsnummer`() {
+        stubFor(get("/api/v1/oppgaver/$OPPGAVE_ID").willReturn(okJson(gyldigOppgaveResponse("hentOppgave.json"))))
+
+        stubFor(
+            patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
+                .withRequestBody(
+                    WireMock.equalToJson("""{"id":315488374, "versjon":1,"behandlesAvApplikasjon":null}"""),
+                )
+                .willReturn(
+                    aResponse()
+                        .withStatus(409)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("Feil versjonsnummer"),
+                ),
+        )
+
+        val oppgave = Oppgave(
+            aktoerId = "1234567891011",
+            journalpostId = "1",
+            beskrivelse = EKSTRA_BESKRIVELSE,
+            tema = null,
+        )
+
+        val response: ResponseEntity<Ressurs<OppgaveResponse>> =
+            restTemplate.exchange(
+                localhost("$OPPGAVE_URL/$OPPGAVE_ID/fjernBehandlesAvApplikasjon?versjon=1"),
+                HttpMethod.PATCH,
+                HttpEntity(oppgave, headers),
+            )
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CONFLICT)
+    }
+
     private fun gyldigOppgaveResponse(filnavn: String): String {
         return Files.readString(
             ClassPathResource("oppgave/$filnavn").file.toPath(),
