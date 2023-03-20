@@ -105,6 +105,13 @@ no.nav.security.jwt:
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
 
+tilgang:
+  kode6:
+    rolle-id: "5ef775f2-61f8-4283-bf3d-8d03f428aa14"
+  kode7:
+    rolle-id: "ea930b6b-9397-44d9-b9e6-f4cf527a632a"
+  egenAnsatt:
+    rolle-id: "dbe4ad45-320b-4e9a-aaa1-73cca4ee124d"
 
 SFTP_HOST: localhost
 SFTP_PORT: 18321
@@ -129,10 +136,6 @@ OPPGAVE_URL: http://localhost:18321
 PDL_URL: http://localhost:18321/rest/pdl
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw
-
-strengt_fortrolig_adresse: Ingen tilgang
-fortrolig_adresse: Ingen tilgang
-egen_ansatt: Ingen tilgang
 
 wiremock:
   reset-mappings-after-each-test: true

@@ -58,16 +58,17 @@ class CachedTilgangskontrollService(
         egenAnsattSjekk: () -> Boolean,
     ): Tilgang {
         val tilgang = when (adressebeskyttelsegradering) {
-            FORTROLIG -> hentTilgangForRolle(tilgangConfig.grupper["kode7"], jwtToken, personIdent)
+            FORTROLIG -> hentTilgangForRolle(tilgangConfig.kode7, jwtToken, personIdent)
             STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND ->
-                hentTilgangForRolle(tilgangConfig.grupper["kode6"], jwtToken, personIdent)
+                hentTilgangForRolle(tilgangConfig.kode6, jwtToken, personIdent)
+
             else -> Tilgang(harTilgang = true)
         }
         if (!tilgang.harTilgang) {
             return tilgang
         }
         if (egenAnsattSjekk()) {
-            return hentTilgangForRolle(tilgangConfig.grupper["utvidet-tilgang"], jwtToken, personIdent)
+            return hentTilgangForRolle(tilgangConfig.egenAnsatt, jwtToken, personIdent)
         }
         return Tilgang(harTilgang = true)
     }
@@ -76,7 +77,10 @@ class CachedTilgangskontrollService(
      * Trenger kun å sjekke personen og barnets andre foreldrer for om de er ansatt
      */
     private fun erEgenAnsatt(personMedRelasjoner: PersonMedRelasjoner): Boolean {
-        val relevanteIdenter = setOf(personMedRelasjoner.personIdent) + personMedRelasjoner.barnsForeldrer.map { it.personIdent }
+        val relevanteIdenter = setOf(personMedRelasjoner.personIdent) +
+            personMedRelasjoner.sivilstand.map { it.personIdent } +
+            personMedRelasjoner.barnsForeldrer.map { it.personIdent }
+
         return egenAnsattService.erEgenAnsatt(relevanteIdenter).any { it.value }
     }
 

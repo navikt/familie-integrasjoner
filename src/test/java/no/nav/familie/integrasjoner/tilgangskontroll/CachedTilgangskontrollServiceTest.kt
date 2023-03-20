@@ -28,10 +28,9 @@ internal class CachedTilgangskontrollServiceTest {
     private val kode6Id = "7"
 
     private val tilgangConfig = TilgangConfig(
-        mapOf(
-            "kode7" to AdRolle(kode7Id, ""),
-            "kode6" to AdRolle(kode6Id, ""),
-        ),
+        kode7 = AdRolle(kode7Id, ""),
+        kode6 = AdRolle(kode6Id, ""),
+        egenAnsatt = AdRolle("", ""),
     )
     private val cachedTilgangskontrollService = CachedTilgangskontrollService(
         egenAnsattService,
@@ -136,6 +135,16 @@ internal class CachedTilgangskontrollServiceTest {
     internal fun `har ikke tilgang når barnsForeldrer inneholder FORTROLIG`() {
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
             lagPersonMedRelasjoner(barnsForeldrer = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
+        assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
+    }
+
+    @Test
+    internal fun `har ikke tilgang når sivilstand er egenansatt`() {
+        every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
+            lagPersonMedRelasjoner(sivilstand = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
+        every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } answers {
+            firstArg<Set<String>>().associateWith { it == "sivilstand" }
+        }
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
