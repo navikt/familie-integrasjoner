@@ -259,6 +259,10 @@ class OppgaveService constructor(
         val mappeId = if (fjernMappeFraOppgave) null else oppgave.mappeId
         oppgaveRestClient.oppdaterEnhet(OppgaveByttEnhet(oppgaveId, enhet, versjon ?: oppgave.versjon!!, mappeId))
     }
+
+    fun fjernBehandlesAvApplikasjon(oppgaveId: Long, versjon: Int) {
+        oppgaveRestClient.fjernBehandlesAvApplikasjon(OppgaveFjernBehandlesAvApplikasjon(oppgaveId, versjon))
+    }
 }
 
 data class OppgaveByttEnhet(
@@ -266,6 +270,12 @@ data class OppgaveByttEnhet(
     val tildeltEnhetsnr: String,
     val versjon: Int,
     @JsonInclude(JsonInclude.Include.ALWAYS) val mappeId: Long? = null,
+)
+
+data class OppgaveFjernBehandlesAvApplikasjon(
+    val id: Long,
+    val versjon: Int,
+    @JsonInclude(JsonInclude.Include.ALWAYS) val behandlesAvApplikasjon: Long? = null,
 )
 
 /**

@@ -16,7 +16,7 @@ class MedlemskapController(private val medlemskapService: MedlemskapService) {
 
     @PostMapping("v3")
     fun hentMedlemskapsunntakForIdentEllerAktørIdV3(
-        @RequestBody(required = true) personIdent: PersonIdent
+        @RequestBody(required = true) personIdent: PersonIdent,
     ): Ressurs<Medlemskapsinfo> {
         return Ressurs.success(medlemskapService.hentMedlemskapsunntak(personIdent.ident))
     }

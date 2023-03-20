@@ -20,7 +20,7 @@ class MedlemskapService(private val medlRestClient: MedlRestClient) {
                 OppslagException.Level.MEDIUM,
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 e,
-                "Feil ved oppslag av medlemskap ident=$ident"
+                "Feil ved oppslag av medlemskap ident=$ident",
             )
         }
     }
