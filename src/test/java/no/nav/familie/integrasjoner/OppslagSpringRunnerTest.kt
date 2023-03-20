@@ -67,9 +67,9 @@ abstract class OppslagSpringRunnerTest {
             return lagToken()
         }
 
-    fun lagToken(saksbehandler: String = "testbruker", ): String {
+    fun lagToken(saksbehandler: String = "testbruker"): String {
         val clientId = UUID.randomUUID().toString()
-        val brukerId  = UUID.randomUUID().toString()
+        val brukerId = UUID.randomUUID().toString()
         val issuerId = "azuread"
         return mockOAuth2Server.issueToken(
             issuerId = issuerId,
@@ -83,7 +83,7 @@ abstract class OppslagSpringRunnerTest {
                     "azp" to clientId,
                     "name" to saksbehandler,
                     "NAVident" to saksbehandler,
-                    "groups" to emptyList<String>()
+                    "groups" to emptyList<String>(),
                 ),
                 expiry = 3600,
             ),

@@ -22,7 +22,7 @@ object SikkerhetsContext {
                 onSuccess = {
                     it.getClaims("azuread")?.get("NAVident")?.toString() ?: SYSTEM_FORKORTELSE
                 },
-                onFailure = { SYSTEM_FORKORTELSE }
+                onFailure = { SYSTEM_FORKORTELSE },
             )
 
     fun hentSaksbehandlerNavn(strict: Boolean = false): String {
@@ -32,7 +32,7 @@ object SikkerhetsContext {
                     it.getClaims("azuread")?.get("name")?.toString()
                         ?: if (strict) error("Finner ikke navn i azuread token") else SYSTEM_NAVN
                 },
-                onFailure = { if (strict) error("Finner ikke navn på innlogget bruker") else SYSTEM_NAVN }
+                onFailure = { if (strict) error("Finner ikke navn på innlogget bruker") else SYSTEM_NAVN },
             )
     }
 }
