@@ -129,7 +129,7 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
     }
 
-    @PatchMapping(path = ["/{oppgaveId}/fjernBehandlesAvApplikasjon"])
+    @PatchMapping(path = ["/{oppgaveId}/fjern-behandles-av-applikasjon"])
     fun fjernBehandlesAvApplikasjon(
         @PathVariable(name = "oppgaveId") oppgaveId: Long,
         @RequestParam(name = "versjon") versjon: Int,

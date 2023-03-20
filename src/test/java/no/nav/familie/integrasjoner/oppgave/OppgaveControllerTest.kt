@@ -664,7 +664,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
-                localhost("$OPPGAVE_URL/$OPPGAVE_ID/fjernBehandlesAvApplikasjon?versjon=1"),
+                localhost("$OPPGAVE_URL/$OPPGAVE_ID/fjern-behandles-av-applikasjon?versjon=1"),
                 HttpMethod.PATCH,
                 HttpEntity(oppgave, headers),
             )
@@ -698,7 +698,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
-                localhost("$OPPGAVE_URL/$OPPGAVE_ID/fjernBehandlesAvApplikasjon?versjon=1"),
+                localhost("$OPPGAVE_URL/$OPPGAVE_ID/fjern-behandles-av-applikasjon?versjon=1"),
                 HttpMethod.PATCH,
                 HttpEntity(oppgave, headers),
             )
