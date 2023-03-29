@@ -76,6 +76,10 @@ spec:
         - application: familie-ef-personhendelse
           cluster: dev-gcp
         - application: familie-ef-proxy
+    outbound:
+      rules:
+        - application: pdl-api
+          cluster: dev-fss
   prometheus:
     enabled: true
     path: /internal/prometheus

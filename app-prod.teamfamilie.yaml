@@ -74,6 +74,10 @@ spec:
         - application: familie-ef-personhendelse
           cluster: prod-gcp
         - application: familie-ef-proxy
+    outbound:
+      rules:
+        - application: pdl-api
+          cluster: prod-fss
   replicas:
     min: 2
     max: 2
