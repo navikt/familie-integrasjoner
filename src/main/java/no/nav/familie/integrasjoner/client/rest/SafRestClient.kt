@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.client.rest
 
-import no.nav.familie.http.client.AbstractPingableRestClient
+import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.graphqlQuery
@@ -28,9 +28,8 @@ class SafRestClient(
     @Value("\${SAF_URL}") safBaseUrl: URI,
     @Qualifier("jwtBearer") val restTemplate: RestOperations,
 ) :
-    AbstractPingableRestClient(restTemplate, "saf.journalpost") {
+    AbstractRestClient(restTemplate, "saf.journalpost") {
 
-    override val pingUri: URI = UriUtil.uri(safBaseUrl, PATH_PING)
     private val safUri = UriUtil.uri(safBaseUrl, PATH_GRAPHQL)
 
     fun hentJournalpost(journalpostId: String): Journalpost {
@@ -110,7 +109,6 @@ class SafRestClient(
 
     companion object {
 
-        private const val PATH_PING = "isAlive"
         private const val PATH_GRAPHQL = "graphql"
         private const val NAV_CALL_ID = "Nav-Callid"
     }
