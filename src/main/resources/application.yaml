@@ -47,7 +47,7 @@ management:
     base-path: "/internal"
     path-mapping:
       info: "status/isAlive"
-  metrics.export.prometheus.enabled: true
+  prometheus.metrics.export.enabled: true
 
 AZURE_APP_CLIENT_ID: "dummy-klient-id"
 AZURE_APP_CLIENT_SECRET: "dummy-klient-secret"

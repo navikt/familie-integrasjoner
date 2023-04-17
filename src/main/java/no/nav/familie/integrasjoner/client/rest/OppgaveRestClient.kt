@@ -247,7 +247,7 @@ class OppgaveRestClient(
     }
 
     private fun requestUrl(oppgaveId: Long): URI {
-        return UriComponentsBuilder.fromUri(oppgaveBaseUrl).pathSegment(PATH_OPPGAVE, oppgaveId.toString()).build().toUri()
+        return UriComponentsBuilder.fromUri(oppgaveBaseUrl).path(PATH_OPPGAVE).pathSegment(oppgaveId.toString()).build().toUri()
     }
 
     private fun requestOppgaveJson(requestUrl: URI): Oppgave {
