@@ -16,7 +16,7 @@ object BarnetrygdVarselOmRevurderingDeltBostedParagraf14Metadata : Dokumentmetad
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_VARSEL_OM_REVURDERING_DELT_BOSTED_PARAGRAF_14
-    override val tittel: String = "Varsel om revurdering delt bodsted § 14 - barnetrygd"
+    override val tittel: String = "Varsel om revurdering delt bosted § 14 - barnetrygd"
     override val brevkode: String = "varsel-om-revurdering-delt-bosted-paragraf-14"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
