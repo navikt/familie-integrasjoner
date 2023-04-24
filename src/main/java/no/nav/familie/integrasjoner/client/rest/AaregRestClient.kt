@@ -27,7 +27,7 @@ class AaregRestClient(
 ) :
     AbstractPingableRestClient(restOperations, "aareg") {
 
-    /* NAV_CALLID og NAV_CONSUMER_ID trengs for kall til ping */
+    // NAV_CALLID og NAV_CONSUMER_ID trengs for kall til ping
     override val pingUri: URI = URI.create("$aaregUrl/$PATH_PING")
 
     fun hentArbeidsforhold(personIdent: String, ansettelsesperiodeFom: LocalDate): List<Arbeidsforhold> {
