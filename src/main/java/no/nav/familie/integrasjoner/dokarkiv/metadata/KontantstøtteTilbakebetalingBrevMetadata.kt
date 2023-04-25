@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component
 object KontantstøtteTilbakebetalingBrevMetadata : Dokumentmetadata {
 
     override val journalpostType: JournalpostType = JournalpostType.UTGAAENDE
-    override val fagsakSystem: Fagsystem = Fagsystem.KS
+    override val fagsakSystem: Fagsystem = Fagsystem.KONT
     override val tema: Tema = Tema.KON
     override val behandlingstema: Behandlingstema = Behandlingstema.Tilbakebetaling
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.KONTANTSTØTTE_TILBAKEKREVING_BREV
     override val tittel: String? = null
-    override val brevkode: String = Fagsystem.KS.name + "-TILB"
+    override val brevkode: String = Fagsystem.KONT.name + "-TILB"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
