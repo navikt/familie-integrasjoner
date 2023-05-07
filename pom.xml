@@ -22,7 +22,7 @@
         <java.version>17</java.version>
         <springdoc.version>2.1.0</springdoc.version>
         <felles.version>2.20230210162649_a258d57-SPRING_BOOT_3</felles.version>
-        <kontrakt.version>3.0_20230404163639_edb8619-JAKARTA</kontrakt.version>
+        <kontrakt.version>3.0_20230505152139_b374866-JAKARTA</kontrakt.version>
         <token-validation-spring.version>3.0.10</token-validation-spring.version>
         <kotlin.version>1.8.20</kotlin.version>
 
