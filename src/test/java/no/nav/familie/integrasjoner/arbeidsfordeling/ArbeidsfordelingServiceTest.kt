@@ -234,15 +234,10 @@ internal class ArbeidsfordelingServiceTest {
 
     private fun mockPersonInfoForBehandlendeEnhetForPerson() {
         every {
-            personopplysningerService.hentPersoninfo(ident, any(), any())
+            personopplysningerService.hentPersoninfo(ident, any())
         } returns Person(
-            "2000-01-01",
             navn = "",
-            kjønn = "",
-            familierelasjoner = setOf(),
             adressebeskyttelseGradering = null,
-            bostedsadresse = null,
-            sivilstand = null,
         )
         every {
             pdlRestClient.hentGeografiskTilknytning(any(), any())

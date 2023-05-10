@@ -2,7 +2,6 @@ package no.nav.familie.integrasjoner.personopplysning
 
 import no.nav.familie.integrasjoner.client.rest.PdlClientCredentialRestClient
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
-import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
 import no.nav.familie.integrasjoner.personopplysning.internal.Adressebeskyttelse
@@ -28,9 +27,8 @@ class PersonopplysningerService(
     fun hentPersoninfo(
         personIdent: String,
         tema: Tema,
-        personInfoQuery: PersonInfoQuery,
     ): Person {
-        return pdlRestClient.hentPerson(personIdent, tema, personInfoQuery)
+        return pdlRestClient.hentPerson(personIdent, tema)
     }
 
     fun hentIdenter(personIdent: String, tema: Tema, medHistorikk: Boolean): FinnPersonidenterResponse {

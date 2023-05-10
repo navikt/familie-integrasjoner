@@ -1,8 +1,6 @@
 package no.nav.familie.integrasjoner.personopplysning
 
-import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
-import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.tilgangskontroll.TilgangskontrollUtil
 import no.nav.familie.kontrakter.felles.PersonIdent
 import no.nav.familie.kontrakter.felles.Ressurs
@@ -16,7 +14,6 @@ import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -42,32 +39,6 @@ class PersonopplysningerController(private val personopplysningerService: Person
     fun handleRestClientResponseException(e: Forbidden): ResponseEntity<Ressurs<Any>> {
         return ResponseEntity.status(e.rawStatusCode)
             .body(ikkeTilgang("Ikke tilgang mot personopplysning ${e.message}"))
-    }
-
-    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/info/{tema}"])
-    fun personInfo(
-        @RequestHeader(name = "Nav-Personident") personIdent: String,
-        @PathVariable tema: Tema,
-    ): ResponseEntity<Ressurs<Person>> {
-        return ResponseEntity.ok().body(
-            success(
-                personopplysningerService.hentPersoninfo(personIdent, tema, PersonInfoQuery.MED_RELASJONER),
-                "Hent personinfo OK",
-            ),
-        )
-    }
-
-    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/infoEnkel/{tema}"])
-    fun personInfoEnkel(
-        @RequestHeader(name = "Nav-Personident") personIdent: String,
-        @PathVariable tema: Tema,
-    ): ResponseEntity<Ressurs<Person>> {
-        return ResponseEntity.ok().body(
-            success(
-                personopplysningerService.hentPersoninfo(personIdent, tema, PersonInfoQuery.ENKEL),
-                "Hent personinfo OK",
-            ),
-        )
     }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/identer/{tema}"])

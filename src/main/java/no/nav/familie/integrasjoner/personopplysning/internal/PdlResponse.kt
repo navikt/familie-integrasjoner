@@ -1,7 +1,6 @@
 package no.nav.familie.integrasjoner.personopplysning.internal
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import no.nav.familie.kontrakter.felles.personopplysning.Bostedsadresse
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 
 data class PdlResponse<T>(
@@ -52,17 +51,9 @@ data class PdlPerson(val person: PdlPersonData?)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlPersonData(
-    val foedsel: List<PdlFødselsDato>,
     val navn: List<PdlNavn>,
-    val kjoenn: List<PdlKjoenn>,
-    val forelderBarnRelasjon: List<PdlForelderBarnRelasjon> = emptyList(),
     val adressebeskyttelse: List<Adressebeskyttelse>,
-    val bostedsadresse: List<Bostedsadresse?>,
-    val sivilstand: List<Sivilstand?>,
 )
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class PdlFødselsDato(val foedselsdato: String?)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlError(
@@ -91,9 +82,6 @@ data class PdlNavn(
         }
     }
 }
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class PdlKjoenn(val kjoenn: KJØNN)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlForelderBarnRelasjon(
