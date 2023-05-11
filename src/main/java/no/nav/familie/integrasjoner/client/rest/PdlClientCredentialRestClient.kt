@@ -55,6 +55,10 @@ class PdlClientCredentialRestClient(
             secureLogger.error("Feil ved henting av ${T::class} fra PDL: $feil")
             throw PdlRequestException("Feil ved henting av ${T::class} fra PDL. Se secure logg for detaljer.")
         }
+        if (pdlResponse.harAdvarsel()) {
+            log.warn("Advarsel ved henting av ${T::class} fra PDL. Se securelogs for detaljer.")
+            secureLogger.warn("Advarsel ved henting av ${T::class} fra PDL: ${pdlResponse.extensions?.warnings}")
+        }
         return pdlResponse.data.personBolk.associateBy({ it.ident }, { it.person!! })
     }
 

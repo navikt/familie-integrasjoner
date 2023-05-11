@@ -102,6 +102,10 @@ class PdlRestClient(
                 personIdent = personIdent,
             )
         }
+        if (pdlResponse.harAdvarsel()) {
+            log.warn("Advarsel ved henting av ${DATA::class} fra PDL. Se securelogs for detaljer.")
+            secureLogger.warn("Advarsel ved henting av ${DATA::class} fra PDL: ${pdlResponse.extensions?.warnings}")
+        }
         val data = dataMapper.invoke(pdlResponse.data)
             ?: throw pdlOppslagException(
                 feilmelding = "Feil ved oppslag på person. Objekt mangler på responsen fra PDL. Se secureLogs for mer info.",
@@ -198,5 +202,6 @@ fun pdlHttpHeaders(tema: Tema): HttpHeaders {
         contentType = MediaType.APPLICATION_JSON
         accept = listOf(MediaType.APPLICATION_JSON)
         add("Tema", tema.name)
+        add("behandlingsnummer", tema.behandlingsnummer)
     }
 }
