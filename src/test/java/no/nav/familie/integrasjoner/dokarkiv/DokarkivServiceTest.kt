@@ -30,7 +30,6 @@ import no.nav.familie.kontrakter.felles.dokarkiv.v2.ArkiverDokumentRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Dokument
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Filtype
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Førsteside
-import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import no.nav.familie.log.mdc.MDCConstants
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -99,15 +98,11 @@ class DokarkivServiceTest {
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
             .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
 
-        every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
+        every { personopplysningerService.hentPersoninfo(FNR, any()) }
             .answers {
                 Person(
-                    fødselsdato = "1980-05-12",
                     navn = navn,
-                    kjønn = "KVINNE",
-                    familierelasjoner = emptySet(),
                     adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                    sivilstand = SIVILSTAND.UGIFT,
                 )
             }
         val dto = ArkiverDokumentRequest(
@@ -143,15 +138,11 @@ class DokarkivServiceTest {
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
             .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
 
-        every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
+        every { personopplysningerService.hentPersoninfo(FNR, any()) }
             .answers {
                 Person(
-                    fødselsdato = "1980-05-12",
                     navn = navn,
-                    kjønn = "KVINNE",
-                    familierelasjoner = emptySet(),
                     adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                    sivilstand = SIVILSTAND.UGIFT,
                 )
             }
         val dto = ArkiverDokumentRequest(
@@ -193,15 +184,11 @@ class DokarkivServiceTest {
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
             .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
 
-        every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
+        every { personopplysningerService.hentPersoninfo(FNR, any()) }
             .answers {
                 Person(
-                    fødselsdato = "1980-05-12",
                     navn = navn,
-                    kjønn = "KVINNE",
-                    familierelasjoner = emptySet(),
                     adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                    sivilstand = SIVILSTAND.UGIFT,
                 )
             }
         val dto = ArkiverDokumentRequest(
@@ -235,15 +222,11 @@ class DokarkivServiceTest {
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
             .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
 
-        every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
+        every { personopplysningerService.hentPersoninfo(FNR, any()) }
             .answers {
                 Person(
-                    fødselsdato = "1980-05-12",
                     navn = navn,
-                    kjønn = "KVINNE",
-                    familierelasjoner = emptySet(),
                     adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                    sivilstand = SIVILSTAND.UGIFT,
                 )
             }
 
@@ -290,15 +273,11 @@ class DokarkivServiceTest {
         val slot = slot<OpprettJournalpostRequest>()
         every { dokarkivRestClient.lagJournalpost(capture(slot), any()) }
             .answers { OpprettJournalpostResponse(journalpostId = "", journalpostferdigstilt = false) }
-        every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
+        every { personopplysningerService.hentPersoninfo(FNR, any()) }
             .answers {
                 Person(
-                    fødselsdato = "1980-05-12",
                     navn = navn,
-                    kjønn = "KVINNE",
-                    familierelasjoner = emptySet(),
                     adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                    sivilstand = SIVILSTAND.UGIFT,
                 )
             }
 
@@ -336,15 +315,11 @@ class DokarkivServiceTest {
     fun `response fra klient skal returnere arkiverDokumentResponse`() {
         every { dokarkivRestClient.lagJournalpost(any(), any()) }
             .answers { OpprettJournalpostResponse(journalpostId = JOURNALPOST_ID, journalpostferdigstilt = true) }
-        every { personopplysningerService.hentPersoninfo(FNR, any(), any()) }
+        every { personopplysningerService.hentPersoninfo(FNR, any()) }
             .answers {
                 Person(
-                    fødselsdato = "1980-05-12",
                     navn = navn,
-                    kjønn = "KVINNE",
-                    familierelasjoner = emptySet(),
                     adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
-                    sivilstand = SIVILSTAND.UGIFT,
                 )
             }
 

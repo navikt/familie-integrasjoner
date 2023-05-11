@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.http.util.UriUtil
+import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.personopplysning.PdlRequestException
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlBolkResponse
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonBolkRequest
@@ -64,6 +65,6 @@ class PdlClientCredentialRestClient(
     companion object {
 
         private const val PATH_GRAPHQL = "graphql"
-        private val HENT_PERSON_RELASJONER_ADRESSEBESKYTTELSE = hentPdlGraphqlQuery("hentpersoner-relasjoner-adressebeskyttelse")
+        private val HENT_PERSON_RELASJONER_ADRESSEBESKYTTELSE = graphqlQuery("/pdl/hentpersoner-relasjoner-adressebeskyttelse.graphql")
     }
 }

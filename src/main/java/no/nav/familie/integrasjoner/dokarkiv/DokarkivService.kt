@@ -2,7 +2,6 @@ package no.nav.familie.integrasjoner.dokarkiv
 
 import no.nav.familie.integrasjoner.client.rest.DokarkivLogiskVedleggRestClient
 import no.nav.familie.integrasjoner.client.rest.DokarkivRestClient
-import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.ArkivDokument
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.Dokumentvariant
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
@@ -103,8 +102,8 @@ class DokarkivService(
         return dokarkivRestClient.oppdaterJournalpost(supplerDefaultVerdier(request), journalpostId, navIdent)
     }
 
-    private fun hentNavnForFnr(fnr: String, behandlingstema: Tema?): String {
-        return personopplysningerService.hentPersoninfo(fnr, behandlingstema ?: Tema.BAR, PersonInfoQuery.ENKEL).navn
+    private fun hentNavnForFnr(fnr: String, behandlingstema: Tema): String {
+        return personopplysningerService.hentPersoninfo(fnr, behandlingstema).navn
     }
 
     private fun supplerDefaultVerdier(request: OppdaterJournalpostRequest): OppdaterJournalpostRequest {

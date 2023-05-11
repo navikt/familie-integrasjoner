@@ -9,7 +9,6 @@ import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSE
 import no.nav.familie.integrasjoner.personopplysning.internal.Adressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
-import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
 import no.nav.security.token.support.core.jwt.JwtToken
 import no.nav.security.token.support.core.jwt.JwtTokenClaims
 import org.assertj.core.api.Assertions.assertThat
@@ -97,7 +96,7 @@ class TilgangskontrollServiceTest {
             .returns(listOf("id1"))
         every { jwtTokenClaims.get("preferred_username") }
             .returns(listOf("bob"))
-        every { personopplysningerService.hentPersoninfo("123", any(), any()) }
+        every { personopplysningerService.hentPersoninfo("123", any()) }
             .returns(personMedAdressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG))
 
         assertThat(tilgangskontrollService.sjekkTilgang("123", saksbehandler).harTilgang)
@@ -114,7 +113,7 @@ class TilgangskontrollServiceTest {
             .returns(listOf("id1"))
         every { jwtTokenClaims.get("preferred_username") }
             .returns(listOf("bob"))
-        every { personopplysningerService.hentPersoninfo("123", any(), any()) }
+        every { personopplysningerService.hentPersoninfo("123", any()) }
             .returns(personMedAdressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.FORTROLIG))
 
         assertThat(tilgangskontrollService.sjekkTilgang("123", saksbehandler).harTilgang)
@@ -131,7 +130,7 @@ class TilgangskontrollServiceTest {
             .returns(listOf("bob"))
         every { jwtTokenClaims.getAsList(any()) }
             .returns(listOf(GRUPPE_TILGANG_6))
-        every { personopplysningerService.hentPersoninfo("123", any(), any()) }
+        every { personopplysningerService.hentPersoninfo("123", any()) }
             .returns(personMedAdressebeskyttelse(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG))
 
         assertThat(tilgangskontrollService.sjekkTilgang("123", saksbehandler).harTilgang)
@@ -158,11 +157,7 @@ class TilgangskontrollServiceTest {
     private fun personMedAdressebeskyttelse(adressebeskyttelsegradering: ADRESSEBESKYTTELSEGRADERING?): Person {
         return Person(
             navn = "Navn Navnesen",
-            fødselsdato = "1980-01-01",
-            kjønn = "KVINNE",
-            familierelasjoner = emptySet(),
             adressebeskyttelseGradering = adressebeskyttelsegradering,
-            sivilstand = SIVILSTAND.UGIFT,
         )
     }
 }

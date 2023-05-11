@@ -1,7 +1,6 @@
 package no.nav.familie.integrasjoner.arbeidsfordeling
 
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
-import no.nav.familie.integrasjoner.client.rest.PersonInfoQuery
 import no.nav.familie.integrasjoner.config.getValue
 import no.nav.familie.integrasjoner.egenansatt.EgenAnsattService
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningDto
@@ -46,7 +45,7 @@ class ArbeidsfordelingService(
         pdlTema: Tema,
         arbeidsfordelingstema: Tema,
     ): ArbeidsfordelingKriterie {
-        val personinfo = personopplysningerService.hentPersoninfo(personIdent, pdlTema, PersonInfoQuery.ENKEL)
+        val personinfo = personopplysningerService.hentPersoninfo(personIdent, pdlTema)
         val geografiskTilknytning = utledGeografiskTilknytningKode(pdlRestClient.hentGeografiskTilknytning(personIdent, pdlTema))
         val diskresjonskode = personinfo.adressebeskyttelseGradering?.diskresjonskode
 
