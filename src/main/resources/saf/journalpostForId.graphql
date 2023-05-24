@@ -11,6 +11,7 @@ query Journalpost($journalpostId: String!) {
         avsenderMottaker { id type navn land erLikBruker }
         journalforendeEnhet
         kanal
+        utsendingsinfo { varselSendt { type, varslingstidspunkt }, fysiskpostSendt { adressetekstKonvolutt }, digitalpostSendt { adresse } }
         dokumenter { dokumentInfoId tittel brevkode dokumentstatus dokumentvarianter { variantformat filnavn } logiskeVedlegg { logiskVedleggId tittel } }
         relevanteDatoer { dato datotype }
         eksternReferanseId
