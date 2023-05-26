@@ -19,7 +19,6 @@ query journalposterForBruker($brukerId: BrukerIdInput!,
             avsenderMottaker { id type navn land erLikBruker }
             journalforendeEnhet
             kanal
-            utsendingsinfo { varselSendt { type, varslingstidspunkt }, fysiskpostSendt { adressetekstKonvolutt }, digitalpostSendt { adresse } }
             dokumenter { dokumentInfoId tittel brevkode dokumentstatus dokumentvarianter { variantformat } logiskeVedlegg { logiskVedleggId tittel } }
             relevanteDatoer { dato datotype }
             eksternReferanseId

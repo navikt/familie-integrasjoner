@@ -13,7 +13,6 @@ import no.nav.familie.kontrakter.felles.journalpost.Journalpost
 import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
 import no.nav.familie.kontrakter.felles.journalpost.Journalposttype
 import no.nav.familie.kontrakter.felles.journalpost.Journalstatus
-import no.nav.familie.kontrakter.felles.journalpost.Utsendingsmåte
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
@@ -142,12 +141,6 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
         assertThat(response.body?.data?.first()?.journalposttype).isEqualTo(Journalposttype.I)
         assertThat(response.body?.data?.first()?.journalstatus).isEqualTo(Journalstatus.JOURNALFOERT)
         assertThat(response.body?.data?.first()?.datoMottatt).isEqualTo(LocalDateTime.parse("2020-01-31T08:00:17"))
-        val utsendingsinfo = response.body?.data?.find { it.utsendingsinfo != null }?.utsendingsinfo ?: error("Finner ikke utsendingsinfo på noen journalposter")
-        assertThat(utsendingsinfo.utsendingsmåter).hasSize(1)
-        assertThat(utsendingsinfo.utsendingsmåter).contains(Utsendingsmåte.DIGITAL_POST)
-        assertThat(utsendingsinfo.digitalpostSendt?.adresse).isEqualTo("0000487236")
-        assertThat(utsendingsinfo.fysiskpostSendt).isNull()
-        assertThat(utsendingsinfo.varselSendt).isEmpty()
     }
 
     @Test
