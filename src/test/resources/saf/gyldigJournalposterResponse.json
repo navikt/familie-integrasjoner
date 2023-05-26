@@ -22,6 +22,13 @@
           },
           "journalforendeEnhet": "1871",
           "kanal": "NAV_NO",
+          "utsendingsinfo": {
+            "varselSendt": [],
+            "fysiskpostSendt": null,
+            "digitalpostSendt": {
+              "adresse": "0000487236"
+            }
+          },
           "dokumenter": [
             {
               "dokumentInfoId": "453871494",
