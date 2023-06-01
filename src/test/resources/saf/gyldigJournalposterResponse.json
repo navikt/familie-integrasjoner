@@ -23,7 +23,9 @@
           "journalforendeEnhet": "1871",
           "kanal": "NAV_NO",
           "utsendingsinfo": {
-            "varselSendt": [],
+            "varselSendt": [{
+              "type": "SMS"
+            }],
             "fysiskpostSendt": null,
             "digitalpostSendt": {
               "adresse": "0000487236"

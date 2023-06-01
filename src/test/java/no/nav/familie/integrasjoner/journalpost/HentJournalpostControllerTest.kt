@@ -14,6 +14,7 @@ import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerReques
 import no.nav.familie.kontrakter.felles.journalpost.Journalposttype
 import no.nav.familie.kontrakter.felles.journalpost.Journalstatus
 import no.nav.familie.kontrakter.felles.journalpost.Utsendingsmåte
+import no.nav.familie.kontrakter.felles.journalpost.VarselType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
@@ -147,7 +148,8 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
         assertThat(utsendingsinfo.utsendingsmåter).contains(Utsendingsmåte.DIGITAL_POST)
         assertThat(utsendingsinfo.digitalpostSendt?.adresse).isEqualTo("0000487236")
         assertThat(utsendingsinfo.fysiskpostSendt).isNull()
-        assertThat(utsendingsinfo.varselSendt).isEmpty()
+        assertThat(utsendingsinfo.varselSendt).hasSize(1)
+        assertThat(utsendingsinfo.varselSendt.first().type).isEqualTo(VarselType.SMS)
     }
 
     @Test
