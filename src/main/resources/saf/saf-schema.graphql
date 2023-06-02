@@ -287,6 +287,12 @@ type Journalpost {
     # Eksempler på eksternReferanseId kan være sykmeldingsId for sykmeldinger, Altinn ArchiveReference for Altinn-skjema eller SEDid for SED.
     eksternReferanseId: String
 
+    # Metadata om distribusjon av utgående journalpost.
+    # * Forteller hvilken adresse en utgående forsendelse er distribuert til (digital postkasse eller fysisk post)
+    # * Eller hvilken epost/telefonnummer og varseltekst, varsel fra nav.no er sendt til
+    # * Returneres kun for utgående journalposter
+    utsendingsinfo: Utsendingsinfo
+
     # Liste over fagspesifikke metadata som er tilknyttet journalpost.
     tilleggsopplysninger: [Tilleggsopplysning]
 
@@ -366,6 +372,94 @@ type AvsenderMottaker {
     # Angir hvorvidt bruker er lik avsender/mottaker av journalposten.
     # * Informasjonen er ikke garantert korrekt, da tjenesten sammenlikner avsenderMottaker med bruker tilknyttet journalposten, ikke bruker tilknyttet saken.
     erLikBruker: Boolean!
+}
+
+# Metadata om distribusjon av utgående journalpost.
+# * Forteller hvilken adresse en utgående forsendelse er distribuert til (digital postkasse eller fysisk post)
+# * Eller hvilken epost/telefonnummer og varseltekst, varsel fra nav.no er sendt til
+# * Returneres kun for utgående journalposter
+type Utsendingsinfo {
+
+    # Informasjon om varsel som er sendt til mottaker ved digital distribusjon.
+    # Sortert slik at nyeste varsel kommer først
+    varselSendt: [VarselSendt!]!
+
+    # Epostvarsel sendt til bruker ved distribusjon til nav.no
+    # Vil kun være satt hvis brevet er distribuert til nav.no
+    # Dette feltet vil fjernes og erstattes med varselSendt
+    epostVarselSendt: EpostVarselSendt @deprecated(reason: "alle epost-varsler kommer nå i feltet varselSendt")
+
+    # SMS varsel sendt til bruker ved distribusjon til nav.no
+    # Vil kun være satt hvis brevet er distribuert til nav.no
+    # Dette feltet vil fjernes og erstattes med varselSendt
+    smsVarselSendt: SmsVarselSendt @deprecated(reason: "alle sms-varsler kommer nå i feltet varselSendt")
+
+    # Informasjon om distribusjon til fysisk post gjennom Posten Norge
+    # Vil kun være satt hvis brevet er distribuert som fysisk post gjennom sentral utskrift
+    fysiskpostSendt: FysiskpostSendt
+
+    # Informasjon om distribusjon til Digital postkasse til Innbyggere(DPI)
+    # Vil kun være satt hvis brevet er distribuert til DPI
+    digitalpostSendt: DigitalpostSendt
+}
+
+# Informasjon om sms- og epost-varsel som er sendt til mottaker ved digital distribusjon
+type VarselSendt {
+    # Type varsel som er sendt til mottaker.
+    # "EPOST" dersom epost-varsel eller "SMS" dersom sms-varsel
+    type: String!
+
+    # Tittel på epost hvis epost-varsel. Vil være null hvis sms-varsel.
+    tittel: String
+
+    # Adressen varsel ble sendt til.
+    # Kan være en epostadresse (hvis epostvarsel) eller et telefonnummer (hvis smsvarsel).
+    adresse: String!
+
+    # Innhold i varsel som er sendt til mottaker. Kan inneholde HTML.
+    varslingstekst: String!
+
+    # Tidspunkt når varselet ble sendt. Lokal norsk tid.
+    varslingstidspunkt: DateTime
+}
+
+# Epostvarsel sendt til bruker ved distribusjon til nav.no
+# Vil kun være satt hvis brevet er distribuert til nav.no
+# Deprecated: bruk VarselSendt
+type EpostVarselSendt {
+    # Tittel på eposten som ble sendt til bruker.
+    tittel: String!
+
+    # Epostadressen som varselet ble sendt til.
+    adresse: String!
+
+    # Teksten i varslet. Kan inneholde HTML.
+    varslingstekst: String!
+}
+
+# SMS varsel sendt til bruker ved distribusjon til nav.no
+# Vil kun være satt hvis brevet er distribuert til nav.no
+# Deprecated: bruk VarselSendt
+type SmsVarselSendt {
+    # Mobilnummeret som varselet ble sendt til.
+    adresse: String!
+
+    #Teksten i varselet.
+    varslingstekst: String!
+}
+
+# Informasjon om distribusjon til fysisk post gjennom Posten Norge
+# Vil kun være satt hvis brevet er distribuert som fysisk post gjennom sentral utskrift
+type FysiskpostSendt {
+    # Adressen som stod på eller i konvolutten som ble sendt til bruker.
+    adressetekstKonvolutt: String!
+}
+
+# Informasjon om distribusjon til Digital postkasse til Innbyggere
+# Vil kun være satt hvis brevet er distribuert til DPI
+type DigitalpostSendt {
+    # DPI leverandør sin adresse som brevet ble sendt til.
+    adresse: String!
 }
 
 # Metadata tilknyttet et bestemt dokument i Joark (evt til flere varianter av samme dokument).
@@ -478,6 +572,10 @@ enum Datotype {
     # * Dato på hoveddokumentet i forsendelsen. Registreres i noen tilfeller manuelt av saksbehandler.
     # * Returneres for alle journalposter
     DATO_DOKUMENT
+
+    # * Tidspunkt som hoveddokumentet på journalposten ble lest på nav.no
+    # * returneres for utgående journalposter
+    DATO_LEST
 
 }
 
@@ -646,6 +744,12 @@ enum Tema {
     # Ajourhold - Grunnopplysninger
     AGR
 
+    # Arbeidsrådgivning psykologtester
+    ARP
+
+    # Arbeidsrådgivning skjermet
+    ARS
+
     # Barnetrygd
     BAR
 
@@ -675,6 +779,9 @@ enum Tema {
 
     # Feilutbetaling
     FEI
+
+    # Fiskerpensjon
+    FIP
 
     # Foreldre- og svangerskapspenger
     FOR
@@ -711,6 +818,12 @@ enum Tema {
 
     # Kontantstøtte
     KON
+
+    # Klage lønnsgaranti
+    KLL
+
+    # Kontroll anmeldelse
+    KTA
 
     # Kontroll
     KTR
