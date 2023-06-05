@@ -18,12 +18,12 @@ class TilgangskontrollControllerE2E {
     @GetMapping(path = ["/person"])
     @ProtectedWithClaims(issuer = "azuread")
     fun tilgangTilPerson(@RequestHeader(name = "Nav-Personident") personIdent: String): Tilgang {
-        return Tilgang(harTilgang = true)
+        return Tilgang(personIdent, true)
     }
 
     @PostMapping(path = ["/personer"])
     @ProtectedWithClaims(issuer = "azuread")
     fun tilgangTilPersoner(@RequestBody personIdenter: List<String>): List<Tilgang> {
-        return listOf(Tilgang(harTilgang = true))
+        return personIdenter.map { Tilgang(it, true) }
     }
 }
