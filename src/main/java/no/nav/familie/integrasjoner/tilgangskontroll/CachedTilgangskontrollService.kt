@@ -34,7 +34,7 @@ class CachedTilgangskontrollService(
             val adressebeskyttelse = personopplysningerService.hentAdressebeskyttelse(personIdent, tema).gradering
             hentTilgang(adressebeskyttelse, jwtToken, personIdent) { egenAnsattService.erEgenAnsatt(personIdent) }
         } catch (pdlUnauthorizedException: PdlUnauthorizedException) {
-            Tilgang(harTilgang = false)
+            Tilgang(personIdent = personIdent, harTilgang = false)
         }
     }
 
@@ -62,7 +62,7 @@ class CachedTilgangskontrollService(
             STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND ->
                 hentTilgangForRolle(tilgangConfig.kode6, jwtToken, personIdent)
 
-            else -> Tilgang(harTilgang = true)
+            else -> Tilgang(personIdent = personIdent, harTilgang = true)
         }
         if (!tilgang.harTilgang) {
             return tilgang
@@ -70,7 +70,7 @@ class CachedTilgangskontrollService(
         if (egenAnsattSjekk()) {
             return hentTilgangForRolle(tilgangConfig.egenAnsatt, jwtToken, personIdent)
         }
-        return Tilgang(harTilgang = true)
+        return Tilgang(personIdent = personIdent, harTilgang = true)
     }
 
     /**
@@ -87,13 +87,13 @@ class CachedTilgangskontrollService(
     private fun hentTilgangForRolle(adRolle: AdRolle?, jwtToken: JwtToken, personIdent: String): Tilgang {
         val grupper = jwtToken.jwtTokenClaims.getAsList("groups")
         if (grupper.any { it == adRolle?.rolleId }) {
-            return Tilgang(true)
+            return Tilgang(personIdent, true)
         }
         secureLogger.info(
             "${jwtToken.jwtTokenClaims["preferred_username"]} " +
                 "har ikke tilgang ${adRolle?.beskrivelse} for $personIdent",
         )
-        return Tilgang(false, adRolle?.beskrivelse)
+        return Tilgang(personIdent = personIdent, harTilgang = false, begrunnelse = adRolle?.beskrivelse)
     }
 
     companion object {

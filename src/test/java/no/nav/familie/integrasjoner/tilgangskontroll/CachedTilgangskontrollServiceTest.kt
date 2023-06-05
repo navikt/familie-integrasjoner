@@ -146,6 +146,27 @@ internal class CachedTilgangskontrollServiceTest {
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
+    @Test
+    fun `skal returnere ident til etterspurt person når relasjon er fortrolig`() {
+        every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
+            lagPersonMedRelasjoner(barnsForeldrer = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
+        val tilgang = cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner("søker", jwtToken, Tema.ENF)
+        assertThat(tilgang.harTilgang).isFalse
+        assertThat(tilgang.personIdent).isEqualTo("søker")
+    }
+
+    @Test
+    internal fun `skal returnere ident til etterspurt person når relasjon er er egen ansatt`() {
+        every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
+            lagPersonMedRelasjoner(sivilstand = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
+        every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } answers {
+            firstArg<Set<String>>().associateWith { it == "sivilstand" }
+        }
+        val tilgang = cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner("søker", jwtToken, Tema.ENF)
+        assertThat(tilgang.harTilgang).isFalse
+        assertThat(tilgang.personIdent).isEqualTo("søker")
+    }
+
     private fun sjekkTilgangTilPersonMedRelasjoner() =
         cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner("", jwtToken, Tema.ENF).harTilgang
 
