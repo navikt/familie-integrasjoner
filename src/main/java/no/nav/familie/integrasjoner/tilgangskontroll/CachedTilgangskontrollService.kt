@@ -87,7 +87,7 @@ class CachedTilgangskontrollService(
     private fun hentTilgangForRolle(adRolle: AdRolle?, jwtToken: JwtToken, personIdent: String): Tilgang {
         val grupper = jwtToken.jwtTokenClaims.getAsList("groups")
         if (grupper.any { it == adRolle?.rolleId }) {
-            return Tilgang(true)
+            return Tilgang(personIdent = personIdent,true)
         }
         secureLogger.info(
             "${jwtToken.jwtTokenClaims["preferred_username"]} " +
