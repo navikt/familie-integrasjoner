@@ -118,4 +118,5 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
 data class JournalposterForBrukerOgTemaRequest(
     val brukerId: Bruker,
     val tema: List<Arkivtema>?,
+    val antall: Int = 200
 )
