@@ -7,6 +7,7 @@ import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.journalpost.JournalpostForBrukerException
 import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
 import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
+import no.nav.familie.integrasjoner.journalpost.JournalposterForBrukerOgTemaRequest
 import no.nav.familie.integrasjoner.journalpost.internal.SafErrorCode
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostBrukerData
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostData
@@ -64,11 +65,23 @@ class SafRestClient(
         }
     }
 
+    fun finnJournalposter(journalposterForBrukerOgTemaRequest: JournalposterForBrukerOgTemaRequest): List<Journalpost> {
+        val safJournalpostRequest = SafJournalpostRequest(
+            journalposterForBrukerOgTemaRequest,
+            graphqlQuery("/saf/journalposterForBruker.graphql"),
+        )
+        return finnJournalposter(safJournalpostRequest)
+    }
+
     fun finnJournalposter(journalposterForBrukerRequest: JournalposterForBrukerRequest): List<Journalpost> {
         val safJournalpostRequest = SafJournalpostRequest(
             journalposterForBrukerRequest,
             graphqlQuery("/saf/journalposterForBruker.graphql"),
         )
+        return finnJournalposter(safJournalpostRequest)
+    }
+
+    fun finnJournalposter(safJournalpostRequest: SafJournalpostRequest): List<Journalpost> {
         val response =
             postForEntity<SafJournalpostResponse<SafJournalpostBrukerData>>(
                 safUri,
@@ -81,7 +94,7 @@ class SafRestClient(
                 ?: throw JournalpostForBrukerException(
                     "Kan ikke hente journalposter",
                     null,
-                    journalposterForBrukerRequest,
+                    safJournalpostRequest,
                 )
         } else {
             val tilgangFeil = response.errors?.firstOrNull { it.message?.contains("Tilgang til ressurs ble avvist") == true }
@@ -93,7 +106,7 @@ class SafRestClient(
                 throw JournalpostForBrukerException(
                     "Kan ikke hente journalposter " + response.errors?.toString(),
                     null,
-                    journalposterForBrukerRequest,
+                    safJournalpostRequest,
                 )
             }
         }

@@ -30,6 +30,10 @@ class JournalpostService @Autowired constructor(
         return safRestClient.finnJournalposter(journalposterForBrukerRequest)
     }
 
+    fun finnJournalposter(journalposterForBrukerOgTemaRequest: JournalposterForBrukerOgTemaRequest): List<Journalpost> {
+        return safRestClient.finnJournalposter(journalposterForBrukerOgTemaRequest)
+    }
+
     fun hentDokument(journalpostId: String, dokumentInfoId: String, variantFormat: String): ByteArray {
         return safHentDokumentRestClient.hentDokument(journalpostId, dokumentInfoId, variantFormat)
     }

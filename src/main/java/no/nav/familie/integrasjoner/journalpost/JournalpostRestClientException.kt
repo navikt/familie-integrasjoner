@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.journalpost
 
-import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
+import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostRequest
 
 class JournalpostRestClientException(message: String?, cause: Throwable?, val journalpostId: String) :
     RuntimeException(message, cause)
@@ -8,7 +8,7 @@ class JournalpostRestClientException(message: String?, cause: Throwable?, val jo
 class JournalpostForBrukerException(
     message: String?,
     cause: Throwable?,
-    val journalposterForBrukerRequest: JournalposterForBrukerRequest,
+    val safJournalpostRequest: SafJournalpostRequest,
 ) :
     RuntimeException(message, cause)
 

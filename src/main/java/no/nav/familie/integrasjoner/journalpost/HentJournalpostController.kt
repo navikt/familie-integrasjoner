@@ -1,8 +1,10 @@
 package no.nav.familie.integrasjoner.journalpost
 
+import no.nav.familie.kontrakter.felles.Arkivtema
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
+import no.nav.familie.kontrakter.felles.journalpost.Bruker
 import no.nav.familie.kontrakter.felles.journalpost.Journalpost
 import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
 import no.nav.security.token.support.core.api.ProtectedWithClaims
@@ -35,7 +37,7 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
 
     @ExceptionHandler(JournalpostForBrukerException::class)
     fun handleJournalpostForBrukerException(ex: JournalpostForBrukerException): ResponseEntity<Ressurs<Any>> {
-        val errorBaseMessage = "Feil ved henting av journalpost for ${ex.journalposterForBrukerRequest}"
+        val errorBaseMessage = "Feil ved henting av journalpost for ${ex.safJournalpostRequest}"
         val errorExtMessage = byggFeilmelding(ex)
         secureLogger.warn(errorBaseMessage, ex)
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -87,6 +89,11 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
         return ResponseEntity.ok(success(journalpostService.finnJournalposter(journalposterForBrukerRequest), "OK"))
     }
 
+    @PostMapping("temaer")
+    fun hentJournalpostForBrukerOgTema(@RequestBody journalpostForBrukerOgTemaRequest: JournalposterForBrukerOgTemaRequest): ResponseEntity<Ressurs<List<Journalpost>>> {
+        return ResponseEntity.ok(success(journalpostService.finnJournalposter(journalpostForBrukerOgTemaRequest), "OK"))
+    }
+
     @GetMapping("hentdokument/{journalpostId}/{dokumentInfoId}")
     fun hentDokument(
         @PathVariable journalpostId: String,
@@ -107,3 +114,8 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
     }
 }
+
+data class JournalposterForBrukerOgTemaRequest(
+    val brukerId: Bruker,
+    val tema: List<Arkivtema>?,
+)
