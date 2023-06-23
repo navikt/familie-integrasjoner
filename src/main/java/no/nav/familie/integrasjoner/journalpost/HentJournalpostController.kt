@@ -91,6 +91,7 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
 
     @PostMapping("temaer")
     fun hentJournalpostForBrukerOgTema(@RequestBody journalpostForBrukerOgTemaRequest: JournalposterForBrukerOgTemaRequest): ResponseEntity<Ressurs<List<Journalpost>>> {
+        LOG.info("Kall mot dokarkiv/saf med temaer antall temaer: ${journalpostForBrukerOgTemaRequest.tema?.size}")
         return ResponseEntity.ok(success(journalpostService.finnJournalposter(journalpostForBrukerOgTemaRequest), "OK"))
     }
 

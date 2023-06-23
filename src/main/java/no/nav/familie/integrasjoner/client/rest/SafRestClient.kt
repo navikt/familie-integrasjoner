@@ -70,6 +70,8 @@ class SafRestClient(
             journalposterForBrukerOgTemaRequest,
             graphqlQuery("/saf/journalposterForBruker.graphql"),
         )
+        secureLogger.info("safJournalpostRequest: $safJournalpostRequest")
+        secureLogger.info("variables i graphql spørring: ${safJournalpostRequest.variables}")
         return finnJournalposter(safJournalpostRequest)
     }
 
