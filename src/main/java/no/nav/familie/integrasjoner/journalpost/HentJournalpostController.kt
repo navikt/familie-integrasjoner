@@ -118,7 +118,7 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
 data class JournalposterForVedleggRequest(
     val brukerId: Bruker,
     val tema: List<Arkivtema>?,
-    val dokumenttype: String,
-    val journalpostStatus: String,
+    val dokumenttype: String?,
+    val journalpostStatus: String?,
     val antall: Int = 200,
 )
