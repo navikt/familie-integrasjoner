@@ -10,6 +10,7 @@ data class SafRequest(
     val tema: List<Arkivtema>?,
     val journalposttype: String?,
     val journalstatus: String?,
+    val antall: Int = 200,
 )
 
 data class SafJournalpostRequest(
@@ -30,6 +31,7 @@ data class JournalposterForVedleggRequest(
             tema = tema,
             journalposttype = dokumenttype,
             journalstatus = journalpostStatus,
+            antall = antall
         )
     }
 }
