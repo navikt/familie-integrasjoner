@@ -90,9 +90,8 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
     }
 
     @PostMapping("temaer")
-    fun hentJournalpostForBrukerOgTema(@RequestBody journalpostForBrukerOgTemaRequest: JournalposterForBrukerOgTemaRequest): ResponseEntity<Ressurs<List<Journalpost>>> {
-        LOG.info("Kall mot dokarkiv/saf med temaer antall temaer: ${journalpostForBrukerOgTemaRequest.tema?.size}")
-        return ResponseEntity.ok(success(journalpostService.finnJournalposter(journalpostForBrukerOgTemaRequest), "OK"))
+    fun hentJournalpostForBrukerOgTema(@RequestBody journalposterForVedleggRequest: JournalposterForVedleggRequest): ResponseEntity<Ressurs<List<Journalpost>>> {
+        return ResponseEntity.ok(success(journalpostService.finnJournalposter(journalposterForVedleggRequest), "OK"))
     }
 
     @GetMapping("hentdokument/{journalpostId}/{dokumentInfoId}")
@@ -116,8 +115,10 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
     }
 }
 
-data class JournalposterForBrukerOgTemaRequest(
+data class JournalposterForVedleggRequest(
     val brukerId: Bruker,
     val tema: List<Arkivtema>?,
+    val dokumenttype: String,
+    val journalpostStatus: String,
     val antall: Int = 200,
 )
