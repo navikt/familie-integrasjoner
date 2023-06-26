@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.journalpost
 
 import no.nav.familie.integrasjoner.client.rest.SafHentDokumentRestClient
 import no.nav.familie.integrasjoner.client.rest.SafRestClient
+import no.nav.familie.integrasjoner.journalpost.internal.JournalposterForVedleggRequest
 import no.nav.familie.kontrakter.felles.journalpost.Journalpost
 import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
 import org.springframework.beans.factory.annotation.Autowired

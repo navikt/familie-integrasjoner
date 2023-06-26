@@ -5,7 +5,7 @@ import no.nav.familie.kontrakter.felles.journalpost.Bruker
 
 data class SafRequestVariabler(val journalpostId: String)
 
-data class SafRequestVariablerForVedleggRequest(
+data class SafRequest(
     val brukerId: Bruker,
     val tema: List<Arkivtema>?,
     val journalposttype: String?,
@@ -16,3 +16,20 @@ data class SafJournalpostRequest(
     val variables: Any,
     val query: String,
 )
+
+data class JournalposterForVedleggRequest(
+    val brukerId: Bruker,
+    val tema: List<Arkivtema>?,
+    val dokumenttype: String?,
+    val journalpostStatus: String?,
+    val antall: Int = 200,
+) {
+    fun tilSafRequest(): SafRequest {
+        return SafRequest(
+            brukerId = brukerId,
+            tema = tema,
+            journalposttype = dokumenttype,
+            journalstatus = journalpostStatus,
+        )
+    }
+}

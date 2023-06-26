@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.journalpost
 
+import no.nav.familie.integrasjoner.journalpost.internal.JournalposterForVedleggRequest
 import no.nav.familie.kontrakter.felles.Arkivtema
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
@@ -114,11 +115,3 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
     }
 }
-
-data class JournalposterForVedleggRequest(
-    val brukerId: Bruker,
-    val tema: List<Arkivtema>?,
-    val dokumenttype: String?,
-    val journalpostStatus: String?,
-    val antall: Int = 200,
-)

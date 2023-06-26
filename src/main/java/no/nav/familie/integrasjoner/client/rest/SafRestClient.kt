@@ -7,14 +7,13 @@ import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.journalpost.JournalpostForBrukerException
 import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
 import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
-import no.nav.familie.integrasjoner.journalpost.JournalposterForVedleggRequest
+import no.nav.familie.integrasjoner.journalpost.internal.JournalposterForVedleggRequest
 import no.nav.familie.integrasjoner.journalpost.internal.SafErrorCode
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostBrukerData
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostData
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostRequest
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostResponse
 import no.nav.familie.integrasjoner.journalpost.internal.SafRequestVariabler
-import no.nav.familie.integrasjoner.journalpost.internal.SafRequestVariablerForVedleggRequest
 import no.nav.familie.kontrakter.felles.journalpost.Journalpost
 import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
 import org.springframework.beans.factory.annotation.Qualifier
@@ -69,12 +68,7 @@ class SafRestClient(
     fun finnJournalposter(journalposterForVedleggRequest: JournalposterForVedleggRequest): List<Journalpost> {
         secureLogger.info("journalposterForVedleggRequest: $journalposterForVedleggRequest")
         val safJournalpostRequest = SafJournalpostRequest(
-            SafRequestVariablerForVedleggRequest(
-                brukerId = journalposterForVedleggRequest.brukerId,
-                tema = journalposterForVedleggRequest.tema,
-                journalposttype = journalposterForVedleggRequest.dokumenttype,
-                journalstatus = journalposterForVedleggRequest.journalpostStatus,
-            ),
+            journalposterForVedleggRequest.tilSafRequest(),
             graphqlQuery("/saf/journalposterForBruker.graphql"),
         )
         secureLogger.info("safJournalpostRequest: $safJournalpostRequest")
