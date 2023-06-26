@@ -70,6 +70,7 @@ class SafRestClient(
         secureLogger.info("journalposterForVedleggRequest: $journalposterForVedleggRequest")
         val safJournalpostRequest = SafJournalpostRequest(
             SafRequestVariablerForVedleggRequest(
+                brukerId = journalposterForVedleggRequest.brukerId,
                 tema = journalposterForVedleggRequest.tema,
                 journalposttype = journalposterForVedleggRequest.dokumenttype,
                 journalstatus = journalposterForVedleggRequest.journalpostStatus,
