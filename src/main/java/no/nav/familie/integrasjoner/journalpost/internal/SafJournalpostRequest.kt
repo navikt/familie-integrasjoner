@@ -9,7 +9,7 @@ data class SafRequest(
     val brukerId: Bruker,
     val tema: List<Arkivtema>?,
     val journalposttype: String?,
-    val journalstatus: String?,
+    val journalstatuser: List<String>?,
     val antall: Int = 200,
 )
 
@@ -30,7 +30,7 @@ data class JournalposterForVedleggRequest(
             brukerId = brukerId,
             tema = tema,
             journalposttype = dokumenttype,
-            journalstatus = journalpostStatus,
+            journalstatuser = journalpostStatus?.let { listOf(it) },
             antall = antall
         )
     }
