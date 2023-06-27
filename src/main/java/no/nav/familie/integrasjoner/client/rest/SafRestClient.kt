@@ -4,7 +4,7 @@ import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.graphqlQuery
-import no.nav.familie.integrasjoner.journalpost.JournalpostForBrukerException
+import no.nav.familie.integrasjoner.journalpost.JournalpostRequestException
 import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
 import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
 import no.nav.familie.integrasjoner.journalpost.internal.JournalposterForVedleggRequest
@@ -91,7 +91,7 @@ class SafRestClient(
 
         if (!response.harFeil()) {
             return response.data?.dokumentoversiktBruker?.journalposter
-                ?: throw JournalpostForBrukerException(
+                ?: throw JournalpostRequestException(
                     "Kan ikke hente journalposter",
                     null,
                     safJournalpostRequest,
@@ -103,7 +103,7 @@ class SafRestClient(
                 throw JournalpostForbiddenException(tilgangFeil.message)
             } else {
                 responsFailure.increment()
-                throw JournalpostForBrukerException(
+                throw JournalpostRequestException(
                     "Kan ikke hente journalposter " + response.errors?.toString(),
                     null,
                     safJournalpostRequest,

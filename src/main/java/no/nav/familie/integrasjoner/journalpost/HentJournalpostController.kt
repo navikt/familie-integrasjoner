@@ -34,8 +34,8 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
             .body(failure(errorBaseMessage + errorExtMessage, error = ex))
     }
 
-    @ExceptionHandler(JournalpostForBrukerException::class)
-    fun handleJournalpostForBrukerException(ex: JournalpostForBrukerException): ResponseEntity<Ressurs<Any>> {
+    @ExceptionHandler(JournalpostRequestException::class)
+    fun handleJournalpostForBrukerException(ex: JournalpostRequestException): ResponseEntity<Ressurs<Any>> {
         val errorBaseMessage = "Feil ved henting av journalpost for ${ex.safJournalpostRequest}"
         val errorExtMessage = byggFeilmelding(ex)
         secureLogger.warn(errorBaseMessage, ex)

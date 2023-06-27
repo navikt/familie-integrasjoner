@@ -5,7 +5,7 @@ import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostRequest
 class JournalpostRestClientException(message: String?, cause: Throwable?, val journalpostId: String) :
     RuntimeException(message, cause)
 
-class JournalpostForBrukerException(
+class JournalpostRequestException(
     message: String?,
     cause: Throwable?,
     val safJournalpostRequest: SafJournalpostRequest,
