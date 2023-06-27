@@ -66,13 +66,10 @@ class SafRestClient(
     }
 
     fun finnJournalposter(journalposterForVedleggRequest: JournalposterForVedleggRequest): List<Journalpost> {
-        secureLogger.info("journalposterForVedleggRequest: $journalposterForVedleggRequest")
         val safJournalpostRequest = SafJournalpostRequest(
             journalposterForVedleggRequest.tilSafRequest(),
             graphqlQuery("/saf/journalposterForBruker.graphql"),
         )
-        secureLogger.info("safJournalpostRequest: $safJournalpostRequest")
-        secureLogger.info("variables i graphql spørring: ${safJournalpostRequest.variables}")
         return finnJournalposter(safJournalpostRequest)
     }
 
