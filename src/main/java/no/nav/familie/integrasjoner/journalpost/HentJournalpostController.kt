@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.journalpost
 
+import no.nav.familie.integrasjoner.journalpost.internal.JournalposterForVedleggRequest
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
@@ -33,9 +34,9 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
             .body(failure(errorBaseMessage + errorExtMessage, error = ex))
     }
 
-    @ExceptionHandler(JournalpostForBrukerException::class)
-    fun handleJournalpostForBrukerException(ex: JournalpostForBrukerException): ResponseEntity<Ressurs<Any>> {
-        val errorBaseMessage = "Feil ved henting av journalpost for ${ex.journalposterForBrukerRequest}"
+    @ExceptionHandler(JournalpostRequestException::class)
+    fun handleJournalpostForBrukerException(ex: JournalpostRequestException): ResponseEntity<Ressurs<Any>> {
+        val errorBaseMessage = "Feil ved henting av journalpost for ${ex.safJournalpostRequest}"
         val errorExtMessage = byggFeilmelding(ex)
         secureLogger.warn(errorBaseMessage, ex)
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -85,6 +86,11 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
     @PostMapping
     fun hentJournalpostForBruker(@RequestBody journalposterForBrukerRequest: JournalposterForBrukerRequest): ResponseEntity<Ressurs<List<Journalpost>>> {
         return ResponseEntity.ok(success(journalpostService.finnJournalposter(journalposterForBrukerRequest), "OK"))
+    }
+
+    @PostMapping("temaer")
+    fun hentJournalpostForBrukerOgTema(@RequestBody journalposterForVedleggRequest: JournalposterForVedleggRequest): ResponseEntity<Ressurs<List<Journalpost>>> {
+        return ResponseEntity.ok(success(journalpostService.finnJournalposter(journalposterForVedleggRequest), "OK"))
     }
 
     @GetMapping("hentdokument/{journalpostId}/{dokumentInfoId}")
