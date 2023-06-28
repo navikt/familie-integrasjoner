@@ -4,8 +4,8 @@ import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.graphqlQuery
-import no.nav.familie.integrasjoner.journalpost.JournalpostRequestException
 import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
+import no.nav.familie.integrasjoner.journalpost.JournalpostRequestException
 import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
 import no.nav.familie.integrasjoner.journalpost.internal.JournalposterForVedleggRequest
 import no.nav.familie.integrasjoner.journalpost.internal.SafErrorCode
