@@ -31,7 +31,7 @@ data class JournalposterForVedleggRequest(
             tema = tema,
             journalposttype = dokumenttype,
             journalstatus = journalpostStatus?.let { listOf(it) },
-            antall = antall
+            antall = antall,
         )
     }
 }

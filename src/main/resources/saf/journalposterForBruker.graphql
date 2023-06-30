@@ -21,7 +21,7 @@ query journalposterForBruker($brukerId: BrukerIdInput!,
             journalforendeEnhet
             kanal
             utsendingsinfo { varselSendt { type, varslingstidspunkt }, fysiskpostSendt { adressetekstKonvolutt }, digitalpostSendt { adresse } }
-            dokumenter { dokumentInfoId tittel brevkode dokumentstatus dokumentvarianter { variantformat } logiskeVedlegg { logiskVedleggId tittel } }
+            dokumenter { dokumentInfoId tittel brevkode dokumentstatus dokumentvarianter { variantformat, saksbehandlerHarTilgang } logiskeVedlegg { logiskVedleggId tittel } }
             relevanteDatoer { dato datotype }
             eksternReferanseId
         }
