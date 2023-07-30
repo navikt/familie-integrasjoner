@@ -34,7 +34,7 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <!--suppress UnresolvedMavenProperty Ligger som secret i github-->
         <sonar.login>${SONAR_LOGIN}</sonar.login>
-        <spring.cloud>4.0.2</spring.cloud>
+        <spring.cloud>4.0.4</spring.cloud>
 
     </properties>
 
