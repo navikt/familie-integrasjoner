@@ -17,14 +17,14 @@
 
     <properties>
         <revision>1</revision>
-        <sha1></sha1>
+        <sha1/>
         <changelist>-SNAPSHOT</changelist>
         <java.version>17</java.version>
         <springdoc.version>2.1.0</springdoc.version>
         <felles.version>2.20230508082643_6b28bd8</felles.version>
         <kontrakt.version>3.0_20230627152200_afdca38</kontrakt.version>
         <token-validation-spring.version>3.1.0</token-validation-spring.version>
-        <kotlin.version>1.8.20</kotlin.version>
+        <kotlin.version>1.9.0</kotlin.version>
 
         <mock-server.version>5.15.0</mock-server.version>
 
@@ -359,8 +359,7 @@
                         <phase>verify</phase>
                         <configuration>
                             <target name="ktlint">
-                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
-                                      classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
+                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true" classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
                                     <arg value="src/**/*.kt"/>
                                 </java>
                             </target>
@@ -374,8 +373,7 @@
                         <phase>validate</phase>
                         <configuration>
                             <target name="ktlint">
-                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true"
-                                      classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
+                                <java taskname="ktlint" dir="${basedir}" fork="true" failonerror="true" classpathref="maven.plugin.classpath" classname="com.pinterest.ktlint.Main">
                                     <jvmarg value="--add-opens"/>
                                     <jvmarg value="java.base/java.lang=ALL-UNNAMED"/>
                                     <arg value="-F"/>
