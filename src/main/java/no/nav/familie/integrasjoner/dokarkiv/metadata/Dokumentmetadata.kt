@@ -58,6 +58,7 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata = when (this) {
     Dokumenttype.BARNETRYGD_INNHENTE_OPPLYSNINGER_ETTER_SØKNAD_I_SED -> BarnetrygdInnhenteOpplysningerEtterSøknadISedMetadata
     Dokumenttype.BARNETRYGD_INNHENTE_OPPLYSNINGER_INSTITUSJON -> BarnetrygdInnhenteOpplysningerInstitusjonMetadata
     Dokumenttype.BARNETRYGD_INNHENTE_OPPLYSNINGER -> BarnetrygdInnhenteOpplysningerMetadata
+    Dokumenttype.BARNETRYGD_INNHENTE_OPPLYSNINGER_OG_INFORMASJON_OM_AT_ANNEN_FORELDER_MED_SELVSTENDIG_RETT_HAR_SØKT -> BarnetrygdInnhenteOpplysningerOgInformasjonOmAtAnnenForelderMedSelvstendigRettHarSøktMetadata
     Dokumenttype.BARNETRYGD_OPPHØR -> BarnetrygdOpphørMetadata
     Dokumenttype.BARNETRYGD_SVARTIDSBREV_INSTITUSJON -> BarnetrygdSvartidsbrevInstitusjonMetadata
     Dokumenttype.BARNETRYGD_SVARTIDSBREV -> BarnetrygdSvartidsbrevMetadata
