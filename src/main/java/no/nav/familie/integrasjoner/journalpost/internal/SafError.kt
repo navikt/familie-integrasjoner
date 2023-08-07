@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:enum-entry-name-case")
+
 package no.nav.familie.integrasjoner.journalpost.internal
 
 data class SafError(
@@ -10,7 +12,6 @@ data class SafExtension(
     val classification: String,
 )
 
-/* ktlint-disable enum-entry-name-case */
 @Suppress("EnumEntryName")
 enum class SafErrorCode {
     forbidden,
@@ -18,4 +19,3 @@ enum class SafErrorCode {
     bad_request,
     server_error,
 }
-/* ktlint-enable enum-entry-name-case */
