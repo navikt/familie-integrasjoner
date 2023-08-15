@@ -16,7 +16,7 @@ object BarnetrygdInformasjonsbrevTilForelderOmfattetNorskLovgivningHarGjortVedta
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_INFORMASJONSBREV_TIL_FORELDER_OMFATTET_NORSK_LOVGIVNING_HAR_GJORT_VEDTAK_TIL_ANNEN_FORELDER
-    override val tittel: String = "Informasjonsbrev til forelder omfattet norsk lovgivning har gjort vedtak til annen forelder"
+    override val tittel: String = "Informasjonsbrev til forelder omfattet norsk lovgivning - har gjort vedtak til annen forelder"
     override val brevkode: String = "informasjonsbrev-gjort-vedtak-til-annen-forelder"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
