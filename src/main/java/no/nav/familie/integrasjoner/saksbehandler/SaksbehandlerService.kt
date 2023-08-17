@@ -22,6 +22,7 @@ class SaksbehandlerService(
                 navIdent = id,
                 fornavn = "Mocka",
                 etternavn = "Saksbehandler",
+                enhet = "4408",
             )
         }
 
@@ -31,6 +32,7 @@ class SaksbehandlerService(
                 ID_VEDTAKSLØSNINGEN,
                 "Vedtaksløsning",
                 "Nav",
+                "9999",
             )
         }
 
@@ -50,6 +52,7 @@ class SaksbehandlerService(
             azureAdBruker.onPremisesSamAccountName,
             azureAdBruker.givenName,
             azureAdBruker.surname,
+            azureAdBruker.streetAddress,
         )
     }
 

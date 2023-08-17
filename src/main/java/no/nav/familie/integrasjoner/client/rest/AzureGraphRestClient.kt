@@ -64,6 +64,6 @@ class AzureGraphRestClient(
         private const val ME = "me"
         private const val USERS = "users"
         private const val GRUPPER = "memberOf"
-        private const val FELTER = "givenName,surname,onPremisesSamAccountName,id,userPrincipalName"
+        private const val FELTER = "givenName,surname,onPremisesSamAccountName,id,userPrincipalName,streetAddress"
     }
 }
