@@ -98,7 +98,7 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
                                                  "surname": "Burger",
                                                  "id": "$id",
                                                  "userPrincipalName": "Bob.Burger@nav.no",
-                                                 "onPremisesSamAccountName": "$navIdent"
+                                                 "onPremisesSamAccountName": "$navIdent",
                                                  "streetAddress": "4415"
                                                }
                                            ]
@@ -118,7 +118,7 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
         assertThat(saksbehandler.etternavn).isEqualTo("Burger")
         assertThat(saksbehandler.azureId).isEqualTo(id)
         assertThat(saksbehandler.navIdent).isEqualTo(navIdent)
-        assertThat(saksbehandler.navIdent).isEqualTo("4415")
+        assertThat(saksbehandler.enhet).isEqualTo("4415")
     }
 
     companion object {
