@@ -84,7 +84,7 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
                     Parameter(
                         "\$select",
                         "givenName,surname,onPremisesSamAccountName,id," +
-                            "userPrincipalName",
+                            "userPrincipalName,streetAddress",
                     ),
                 ),
         )
