@@ -48,7 +48,8 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
                                            "surname": "Burger",
                                            "id": "$id",
                                            "userPrincipalName": "Bob.Burger@nav.no",
-                                           "onPremisesSamAccountName": "B857496"
+                                           "onPremisesSamAccountName": "B857496",
+                                           "streetAddress": "4415"
                                            }""",
                     ),
             )
@@ -66,6 +67,7 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
         assertThat(saksbehandler.etternavn).isEqualTo("Burger")
         assertThat(saksbehandler.azureId).isEqualTo(id)
         assertThat(saksbehandler.navIdent).isEqualTo("B857496")
+        assertThat(saksbehandler.enhet).isEqualTo("4415")
     }
 
     @Test
@@ -82,7 +84,7 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
                     Parameter(
                         "\$select",
                         "givenName,surname,onPremisesSamAccountName,id," +
-                            "userPrincipalName",
+                            "userPrincipalName,streetAddress",
                     ),
                 ),
         )
@@ -96,7 +98,8 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
                                                  "surname": "Burger",
                                                  "id": "$id",
                                                  "userPrincipalName": "Bob.Burger@nav.no",
-                                                 "onPremisesSamAccountName": "$navIdent"
+                                                 "onPremisesSamAccountName": "$navIdent",
+                                                 "streetAddress": "4415"
                                                }
                                            ]
                                            }""",
@@ -115,6 +118,7 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
         assertThat(saksbehandler.etternavn).isEqualTo("Burger")
         assertThat(saksbehandler.azureId).isEqualTo(id)
         assertThat(saksbehandler.navIdent).isEqualTo(navIdent)
+        assertThat(saksbehandler.enhet).isEqualTo("4415")
     }
 
     companion object {

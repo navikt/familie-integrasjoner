@@ -24,6 +24,7 @@ class SaksbehandlerControllerE2E {
                 navIdent = id,
                 fornavn = "Mocka",
                 etternavn = "Saksbehandler",
+                enhet = "4408",
             ),
             "Hent saksbehandler OK",
         )
