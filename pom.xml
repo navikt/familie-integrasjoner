@@ -24,7 +24,7 @@
         <felles.version>2.20230508082643_6b28bd8</felles.version>
         <kontrakt.version>3.0_20230817140529_df3e9ab</kontrakt.version>
         <token-validation-spring.version>3.1.0</token-validation-spring.version>
-        <kotlin.version>1.9.0</kotlin.version>
+        <kotlin.version>1.9.10</kotlin.version>
 
         <mock-server.version>5.15.0</mock-server.version>
 
