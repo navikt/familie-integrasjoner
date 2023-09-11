@@ -2,7 +2,7 @@ name: Deploy-Prod
 on:
   push:
     branches:
-      - 'master'
+      - 'main'
 env:
   IMAGE: ghcr.io/navikt/familie-integrasjoner:${{ github.sha }}
   IMAGE_LATEST: ghcr.io/navikt/familie-integrasjoner:latest
@@ -14,10 +14,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           persist-credentials: false
-      - name: Sjekk at tag ligger på master
+      - name: Sjekk at tag ligger på main
         run: |
           commit=$(git rev-parse --short HEAD)
-          if ! [[ $(git branch -r --contains "$commit" | grep -E '(^|\s)origin/master$') ]]; then exit 1; fi
+          if ! [[ $(git branch -r --contains "$commit" | grep -E '(^|\s)origin/main') ]]; then exit 1; fi
       - uses: actions/setup-java@v3
         with:
           java-version: 17
