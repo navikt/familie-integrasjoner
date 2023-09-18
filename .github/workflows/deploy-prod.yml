@@ -10,6 +10,8 @@ jobs:
   build:
     name: Deploy tag til prod-fss
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     steps:
       - uses: actions/checkout@v3
         with:
