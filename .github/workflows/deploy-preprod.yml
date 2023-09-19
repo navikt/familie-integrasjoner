@@ -12,6 +12,8 @@ jobs:
     if: github.event.pull_request.draft == false
     name: Build and push
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     steps:
       - uses: actions/checkout@v3
         with:
