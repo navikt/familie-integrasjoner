@@ -79,6 +79,7 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata = when (this) {
     Dokumenttype.BARNETRYGD_VARSEL_OM_VEDTAK_ETTER_SØKNAD_I_SED -> BarnetrygdVarselOmVedtakEtterSøknadMetadata
     Dokumenttype.BARNETRYGD_VARSEL_OM_ÅRLIG_REVURDERING_EØS_MED_INNHENTING_AV_OPPLYSNINGER -> BarnetrygdVarselOmÅrligRevurderingEøsMedInnhentingAvOpplysningerMetadata
     Dokumenttype.BARNETRYGD_VARSEL_OM_ÅRLIG_REVURDERING_EØS -> BarnetrygdVarselOmÅrligRevurderingEøsMetadata
+    Dokumenttype.BARNETRYGD_VARSEL_ANNEN_FORELDER_MED_SELVSTENDIG_RETT_SØKT -> BarnetrygdVarselAnnenForelderMedSelvstendigRettSøkt
     Dokumenttype.BARNETRYGD_VEDLEGG -> BarnetrygdVedleggMetadata
     Dokumenttype.BARNETRYGD_VEDTAK_AVSLAG -> BarnetrygdVedtakAvslagMetadata
     Dokumenttype.BARNETRYGD_VEDTAK_INNVILGELSE -> BarnetrygdVedtakInnvilgetMetadata
