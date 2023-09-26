@@ -104,6 +104,15 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      dokdistkanal:
+        resource-url: ${DOKDISTKANAL_URL}
+        token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: ${DOKDISTKANAL_SCOPE}
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
 
 tilgang:
   kode6:
@@ -122,6 +131,7 @@ AAD_GRAPH_API_URI: http://localhost:18321
 ORGANISASJON_URL: #Denne er ikke i bruk da OrganisasjonV5 mockes ut lokalt
 DOKARKIV_V1_URL: http://localhost:18321
 DOKDIST_URL: http://localhost:18321
+DOKDISTKANAL_URL: http://localhost:18321
 INFOTRYGD_URL: http://localhost:18321
 EGEN_ANSATT_URL: #Mockes ut lokalt
 KODEVERK_URL: #Mockes lokalt

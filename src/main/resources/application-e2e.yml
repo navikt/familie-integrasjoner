@@ -104,6 +104,15 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      dokdistkanal:
+        resource-url: ${DOKDISTKANAL_URL}
+        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
+        grant-type: client_credentials
+        scope: ${DOKDISTKANAL_SCOPE}
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
 
 AZURE_APP_CLIENT_ID: ${INTEGRASJONER_CLIENT_ID}
 AZURE_APP_CLIENT_SECRET: ${INTEGRASJONER_CLIENT_SECRET}
@@ -114,7 +123,6 @@ EGEN_ANSATT_URL: #Mockes ut lokalt
 FORSTESIDEGENERATOR_URL:
 MEDL2_URL: http://vtp:8060/rest/medl2
 NORG2_URL: #Mockes lokalt
-
 DOKDIST_URL: http://familie-mock-server:1337/rest/api/dokdist/
 DOKARKIV_V1_URL: http://familie-mock-server:1337/rest/api/dokarkiv/
 OPPGAVE_URL: http://familie-mock-server:1337/rest/api/oppgave/
@@ -124,6 +132,7 @@ KODEVERK_URL: http://familie-mock-server:1337/rest/api/kodeverk
 AAREG_URL: http://familie-mock-server:1337/rest/api/aareg
 SKYGGE_SAK_URL: http://familie-mock-server:1337/rest/api/skyggesak
 ORGANISASJON_URL:
+DOKDISTKANAL_URL:
 
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw
