@@ -132,6 +132,7 @@ EGEN_ANSATT_URL: #Mockes ut lokalt
 FORSTESIDEGENERATOR_URL:
 MEDL2_URL: http://vtp:8060/rest/medl2
 NORG2_URL: #Mockes lokalt
+
 DOKDIST_URL: http://familie-mock-server:1337/rest/api/dokdist/
 DOKARKIV_V1_URL: http://familie-mock-server:1337/rest/api/dokarkiv/
 OPPGAVE_URL: http://familie-mock-server:1337/rest/api/oppgave/

@@ -9,7 +9,6 @@ import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestOperations
 import java.net.URI
@@ -23,17 +22,16 @@ class DokdistkanalRestClient(
 
     override val pingUri: URI = UriUtil.uri(dokdistkanalUri, PATH_PING)
 
-    val distribuerUri = UriUtil.uri(dokdistkanalUri, PATH_BESTEM_DISTRIBUSJONSKANAL)
+    val uri = UriUtil.uri(dokdistkanalUri, PATH_BESTEM_DISTRIBUSJONSKANAL)
 
     fun bestemDistribusjonskanal(req: BestemDistribusjonskanalRequest): BestemDistribusjonskanalResponse {
-        return postForEntity(distribuerUri, req, httpHeaders())
+        return postForEntity(uri, req, httpHeaders())
     }
 
     private fun httpHeaders(): HttpHeaders = HttpHeaders().apply {
-        accept = listOf(MediaType.ALL)
-
         add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
     }
+
     companion object {
         private const val PATH_PING = "actuator/health/liveness"
         private const val PATH_BESTEM_DISTRIBUSJONSKANAL = "rest/bestemDistribusjonskanal"

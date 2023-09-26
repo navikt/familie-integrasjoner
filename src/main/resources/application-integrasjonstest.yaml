@@ -115,7 +115,7 @@ no.nav.security.jwt:
           client-auth-method: client_secret_basic
       dokdistkanal-onbehalf-of:
         resource-url: ${DOKDISTKANAL_URL}
-        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
+        token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${DOKDISTKANAL_SCOPE}
         authentication:

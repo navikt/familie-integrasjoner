@@ -40,12 +40,12 @@ class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
     fun `dokdistkanal returnerer OK med distribusjonskanal`() {
         val request = DokdistkanalRequest(
             bruker = PersonIdent(BRUKER_ID),
-            mottaker = PersonIdent(BRUKER_ID)
+            mottaker = PersonIdent(BRUKER_ID),
         )
         val gyldigDokdistkanalRespons = BestemDistribusjonskanalResponse(
             distribusjonskanal = "PRINT",
             regel = "PERSON_ER_IKKE_I_PDL",
-            regelBegrunnelse = "Finner ikke personen i PDL"
+            regelBegrunnelse = "Finner ikke personen i PDL",
         )
 
         stubFor(post(anyUrl()).willReturn(okJson(objectMapper.writeValueAsString(gyldigDokdistkanalRespons))))
@@ -58,7 +58,6 @@ class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
 
         verify(
             postRequestedFor(urlEqualTo("/rest/bestemDistribusjonskanal"))
-
                 .withHeader("X-Correlation-ID", equalTo("callIdTest")),
         )
 
@@ -71,7 +70,7 @@ class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
     fun `skal kaste feil til klient når noe går galt mot tjenesten`() {
         val request = DokdistkanalRequest(
             bruker = PersonIdent(BRUKER_ID),
-            mottaker = PersonIdent(BRUKER_ID)
+            mottaker = PersonIdent(BRUKER_ID),
         )
         stubFor(post(anyUrl()).willReturn(status(500).withBody("{\"feilmelding\" : \"Noe gikk galt\"}")))
 
