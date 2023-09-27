@@ -55,6 +55,7 @@ INFOTRYGD_KS_SCOPE: "dummy-scope"
 SAF_SCOPE: "dummy-scope"
 OPPGAVE_SCOPE: "dummy-scope"
 DOKARKIV_SCOPE: "dummy-scope"
+DOKDISTKANAL_SCOPE: "dummy-scope"
 
 STS_URL: http://security-token-service.default.svc.nais.local/rest/v1/sts/token
 INFOTRYGD_URL: http://infotrygd-kontantstotte.default
