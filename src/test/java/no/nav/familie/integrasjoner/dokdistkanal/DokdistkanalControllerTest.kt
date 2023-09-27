@@ -1,5 +1,7 @@
 package no.nav.familie.integrasjoner.dokdistkanal
 
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.Logger
 import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.okJson
@@ -14,11 +16,14 @@ import no.nav.familie.integrasjoner.dokdistkanal.domene.BestemDistribusjonskanal
 import no.nav.familie.kontrakter.felles.PersonIdent
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Status.SUKSESS
+import no.nav.familie.kontrakter.felles.dokdistkanal.Distribusjonskanal
+import no.nav.familie.kontrakter.felles.dokdistkanal.DokdistkanalRequest
 import no.nav.familie.kontrakter.felles.objectMapper
 import no.nav.familie.log.NavHttpHeaders
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.slf4j.LoggerFactory
 import org.springframework.boot.test.web.client.postForObject
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.http.HttpEntity
@@ -82,6 +87,43 @@ class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(response?.status).isEqualTo(Ressurs.Status.FEILET)
         assertThat(response?.melding).contains("Noe gikk galt")
+    }
+
+    @Test
+    fun `skal returnere UKJENT og logge feil dersom familie-kontrakter mangler verdien returnert av dokdistkanal`() {
+        (LoggerFactory.getLogger(DokdistkanalController::class.java) as Logger).addAppender(listAppender)
+
+        stubFor(
+            post(anyUrl()).willReturn(
+                okJson(
+                    objectMapper.writeValueAsString(
+                        BestemDistribusjonskanalResponse(
+                            distribusjonskanal = "NY_KANAL",
+                            regel = "REGEL",
+                            regelBegrunnelse = "regelbegrunnelse",
+                        )
+                    )
+                )
+            )
+        )
+
+        val response = restTemplate.postForObject<Ressurs<String>>(
+            localhost(DOKDISTKANAL_URL),
+            HttpEntity(
+                /* body = */ DokdistkanalRequest(
+                    bruker = PersonIdent(BRUKER_ID),
+                    mottaker = PersonIdent(BRUKER_ID),
+                ),
+                /* headers = */ headers
+            ),
+        )
+
+        assertThat(response?.status).isEqualTo(SUKSESS)
+        assertThat(response?.data).isEqualTo(Distribusjonskanal.UKJENT.name)
+        assertThat(loggingEvents).extracting<Level> { it.level }
+            .containsExactly(Level.ERROR)
+        assertThat(loggingEvents).extracting<String> { it.formattedMessage }
+            .containsExactly("Distribusjonskanal-kontrakten er utdatert og må oppdateres med ny verdi for NY_KANAL")
     }
 
     companion object {
