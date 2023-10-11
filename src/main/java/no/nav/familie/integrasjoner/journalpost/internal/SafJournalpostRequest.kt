@@ -1,7 +1,10 @@
 package no.nav.familie.integrasjoner.journalpost.internal
 
 import no.nav.familie.kontrakter.felles.Arkivtema
+import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.journalpost.Bruker
+import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
+import no.nav.familie.kontrakter.felles.journalpost.Journalposttype
 
 data class SafRequestVariabler(val journalpostId: String)
 
@@ -11,6 +14,14 @@ data class SafRequest(
     val journalposttype: String?,
     val journalstatus: List<String>?,
     val antall: Int = 200,
+)
+
+data class SafRequestForBruker(
+    val brukerId: Bruker,
+    val antall: Int,
+    val tema: List<Tema>?,
+    val journalposttype: List<Journalposttype>?,
+    val journalstatus: List<String>? = emptyList(), // Dersom denne ikke blir sendt med så filtrerer SAF på journalposter som er ferdigstilte
 )
 
 data class SafJournalpostRequest(
@@ -34,4 +45,13 @@ data class JournalposterForVedleggRequest(
             antall = antall,
         )
     }
+}
+
+fun JournalposterForBrukerRequest.tilSafRequestForBruker(): SafRequestForBruker {
+    return SafRequestForBruker(
+        brukerId = brukerId,
+        tema = tema,
+        journalposttype = journalposttype,
+        antall = antall,
+    )
 }

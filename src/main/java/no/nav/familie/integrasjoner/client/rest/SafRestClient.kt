@@ -14,6 +14,7 @@ import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostData
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostRequest
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostResponse
 import no.nav.familie.integrasjoner.journalpost.internal.SafRequestVariabler
+import no.nav.familie.integrasjoner.journalpost.internal.tilSafRequestForBruker
 import no.nav.familie.kontrakter.felles.journalpost.Journalpost
 import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
 import org.springframework.beans.factory.annotation.Qualifier
@@ -75,7 +76,7 @@ class SafRestClient(
 
     fun finnJournalposter(journalposterForBrukerRequest: JournalposterForBrukerRequest): List<Journalpost> {
         val safJournalpostRequest = SafJournalpostRequest(
-            journalposterForBrukerRequest,
+            journalposterForBrukerRequest.tilSafRequestForBruker(),
             graphqlQuery("/saf/journalposterForBruker.graphql"),
         )
         return finnJournalposter(safJournalpostRequest)

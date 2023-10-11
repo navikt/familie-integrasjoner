@@ -101,20 +101,22 @@ class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
                             distribusjonskanal = "NY_KANAL",
                             regel = "REGEL",
                             regelBegrunnelse = "regelbegrunnelse",
-                        )
-                    )
-                )
-            )
+                        ),
+                    ),
+                ),
+            ),
         )
 
         val response = restTemplate.postForObject<Ressurs<String>>(
             localhost(DOKDISTKANAL_URL),
             HttpEntity(
-                /* body = */ DokdistkanalRequest(
+                /* body = */
+                DokdistkanalRequest(
                     bruker = PersonIdent(BRUKER_ID),
                     mottaker = PersonIdent(BRUKER_ID),
                 ),
-                /* headers = */ headers
+                /* headers = */
+                headers,
             ),
         )
 

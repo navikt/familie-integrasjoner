@@ -5,6 +5,9 @@ import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
+import no.nav.familie.integrasjoner.felles.graphqlQuery
+import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostRequest
+import no.nav.familie.integrasjoner.journalpost.internal.SafRequestForBruker
 import no.nav.familie.kontrakter.felles.BrukerIdType
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Tema
@@ -15,6 +18,7 @@ import no.nav.familie.kontrakter.felles.journalpost.Journalposttype
 import no.nav.familie.kontrakter.felles.journalpost.Journalstatus
 import no.nav.familie.kontrakter.felles.journalpost.Utsendingsmåte
 import no.nav.familie.kontrakter.felles.journalpost.VarselType
+import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
@@ -119,7 +123,7 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
             HttpRequest.request()
                 .withMethod("POST")
                 .withPath("/rest/saf/graphql")
-                .withBody(gyldigBrukerRequest()),
+                .withBody(objectMapper.writeValueAsString(gyldigBrukerRequest())),
         )
             .respond(response().withBody(json(lesFil("gyldigJournalposterResponse.json"))))
 
@@ -143,7 +147,8 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
         assertThat(response.body?.data?.first()?.journalposttype).isEqualTo(Journalposttype.I)
         assertThat(response.body?.data?.first()?.journalstatus).isEqualTo(Journalstatus.JOURNALFOERT)
         assertThat(response.body?.data?.first()?.datoMottatt).isEqualTo(LocalDateTime.parse("2020-01-31T08:00:17"))
-        val utsendingsinfo = response.body?.data?.find { it.utsendingsinfo != null }?.utsendingsinfo ?: error("Finner ikke utsendingsinfo på noen journalposter")
+        val utsendingsinfo = response.body?.data?.find { it.utsendingsinfo != null }?.utsendingsinfo
+            ?: error("Finner ikke utsendingsinfo på noen journalposter")
         assertThat(utsendingsinfo.utsendingsmåter).hasSize(1)
         assertThat(utsendingsinfo.utsendingsmåter).contains(Utsendingsmåte.DIGITAL_POST)
         assertThat(utsendingsinfo.digitalpostSendt?.adresse).isEqualTo("0000487236")
@@ -283,12 +288,17 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
             )
     }
 
-    private fun gyldigBrukerRequest(): String {
-        return lesFil("gyldigBrukerRequest.json")
-            .replace(
-                "GRAPHQL-PLACEHOLDER",
-                lesFil("journalposterForBruker.graphql").graphqlCompatible(),
-            )
+    private fun gyldigBrukerRequest(): SafJournalpostRequest {
+        return SafJournalpostRequest(
+            SafRequestForBruker(
+                brukerId = Bruker("12345678901", BrukerIdType.FNR),
+                antall = 10,
+                tema = listOf(Tema.BAR),
+                journalposttype = listOf(Journalposttype.I),
+                journalstatus = emptyList(),
+            ),
+            graphqlQuery("/saf/journalposterForBruker.graphql"),
+        )
     }
 
     private fun lesFil(filnavn: String): String {
