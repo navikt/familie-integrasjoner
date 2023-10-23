@@ -17,6 +17,10 @@ updates:
     open-pull-requests-limit: 10
     registries:
       - familie-felles
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
