@@ -16,7 +16,7 @@ object BarnetrygdInnhenteOpplysningerOgInformasjonOmAtAnnenForelderMedSelvstendi
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_INNHENTE_OPPLYSNINGER_OG_INFORMASJON_OM_AT_ANNEN_FORELDER_MED_SELVSTENDIG_RETT_HAR_SØKT
-    override val tittel: String = "Innhente opplysninger og informasjon om at annen forelder med selvstendig rett har søkt"
+    override val tittel: String = "Innhenting av opplysninger - barnetrygd"
     override val brevkode: String = "innhente-opplysninger-informasjon-annen-forelder"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }

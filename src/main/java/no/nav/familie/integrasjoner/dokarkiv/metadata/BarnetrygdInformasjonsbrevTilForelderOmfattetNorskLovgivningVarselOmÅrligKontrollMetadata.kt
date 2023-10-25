@@ -16,7 +16,7 @@ object BarnetrygdInformasjonsbrevTilForelderOmfattetNorskLovgivningVarselOmÅrli
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_INFORMASJONSBREV_TIL_FORELDER_OMFATTET_NORSK_LOVGIVNING_VARSEL_OM_ÅRLIG_KONTROLL
-    override val tittel: String = "Informasjonsbrev til forelder omfattet norsk lovgivning - varsel om årlig kontroll"
+    override val tittel: String = "Informasjonsbrev om barnetrygd"
     override val brevkode: String = "informasjonsbrev-varsel-om-årlig-kontroll"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
