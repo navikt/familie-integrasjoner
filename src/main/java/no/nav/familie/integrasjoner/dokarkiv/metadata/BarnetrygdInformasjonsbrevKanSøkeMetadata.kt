@@ -16,7 +16,7 @@ object BarnetrygdInformasjonsbrevKanSøkeMetadata : Dokumentmetadata {
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_INFORMASJONSBREV_KAN_SØKE
-    override val tittel: String = "Informasjonsbrev kan søke"
+    override val tittel: String = "Informasjonsbrev om barnetrygd"
     override val brevkode: String = "informasjonsbrev-kan-soke"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }

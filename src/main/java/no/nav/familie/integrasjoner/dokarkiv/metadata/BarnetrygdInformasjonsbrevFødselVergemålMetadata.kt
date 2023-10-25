@@ -16,7 +16,7 @@ object BarnetrygdInformasjonsbrevFødselVergemålMetadata : Dokumentmetadata {
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_INFORMASJONSBREV_FØDSEL_VERGEMÅL
-    override val tittel: String = "Informasjonsbrev fødsel vergemål"
+    override val tittel: String = "Informasjonsbrev om barnetrygd"
     override val brevkode: String = "informasjonsbrev-fodsel-vergemaal"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }

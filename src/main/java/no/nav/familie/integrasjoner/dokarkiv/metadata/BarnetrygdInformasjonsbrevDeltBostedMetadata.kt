@@ -16,7 +16,7 @@ object BarnetrygdInformasjonsbrevDeltBostedMetadata : Dokumentmetadata {
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_INFORMASJONSBREV_DELT_BOSTED
-    override val tittel: String = "Informasjonsbrev delt bosted - barnetrygd"
+    override val tittel: String = "Informasjonsbrev om barnetrygd"
     override val brevkode: String = "informasjonsbrev-delt-bosted"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }

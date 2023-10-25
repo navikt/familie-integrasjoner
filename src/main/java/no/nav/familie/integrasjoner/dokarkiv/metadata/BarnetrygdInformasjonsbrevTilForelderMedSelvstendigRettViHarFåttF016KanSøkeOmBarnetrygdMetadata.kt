@@ -16,7 +16,7 @@ object BarnetrygdInformasjonsbrevTilForelderMedSelvstendigRettViHarFåttF016KanS
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_INFORMASJONSBREV_TIL_FORELDER_MED_SELVSTENDIG_RETT_VI_HAR_FÅTT_F016_KAN_SØKE_OM_BARNETRYGD
-    override val tittel: String = "Informasjonsbrev til forelder med selvstendig rett vi har fått F016 - kan søke om barnetrygd"
+    override val tittel: String = "Informasjonsbrev om barnetrygd"
     override val brevkode: String = "informasjonsbrev-til-forelder-f016-søke-barnetrygd"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
