@@ -171,6 +171,10 @@ class DokarkivService(
         dokarkivLogiskVedleggRestClient.slettLogiskVedlegg(dokumentInfoId, logiskVedleggId)
     }
 
+    fun oppdaterLogiskeVedleggForDokument(dokumentinfoId: String, request: BulkOppdaterLogiskVedleggRequest) {
+        dokarkivLogiskVedleggRestClient.oppdaterLogiskeVedlegg(dokumentinfoId, request)
+    }
+
     companion object {
 
         private val LOG = LoggerFactory.getLogger(DokarkivService::class.java)

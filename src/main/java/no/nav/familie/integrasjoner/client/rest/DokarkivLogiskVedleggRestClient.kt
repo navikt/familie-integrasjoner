@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractRestClient
+import no.nav.familie.integrasjoner.dokarkiv.BulkOppdaterLogiskVedleggRequest
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggRequest
@@ -45,6 +46,27 @@ class DokarkivLogiskVedleggRestClient(
         }
     }
 
+    fun oppdaterLogiskeVedlegg(dokumentinfoId: String, request: BulkOppdaterLogiskVedleggRequest) {
+        val uri = UriComponentsBuilder
+            .fromUri(dokarkivUrl)
+            .path(PATH_OPPDATER_LOGISKVEDLEGG)
+            .buildAndExpand(dokumentinfoId)
+            .toUri()
+        try {
+            return putForEntity(uri, request, headers())
+        } catch (e: RuntimeException) {
+            val responsebody = if (e is HttpStatusCodeException) e.responseBodyAsString else ""
+            val message = "Kan ikke bulk oppdatere logiske vedlegg for dokumentinfo $dokumentinfoId $responsebody"
+            throw OppslagException(
+                message,
+                "Dokarkiv.logiskVedlegg.oppdater",
+                OppslagException.Level.MEDIUM,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                e,
+            )
+        }
+    }
+
     fun slettLogiskVedlegg(dokumentInfoId: String, logiskVedleggId: String) {
         val uri = UriComponentsBuilder
             .fromUri(dokarkivUrl)
@@ -78,6 +100,7 @@ class DokarkivLogiskVedleggRestClient(
     companion object {
 
         private const val PATH_LOGISKVEDLEGG = "rest/journalpostapi/v1/dokumentInfo/{dokumentInfo}/logiskVedlegg/"
+        private const val PATH_OPPDATER_LOGISKVEDLEGG = "rest/journalpostapi/v1/dokumentInfo/{dokumentInfo}/logiskVedlegg"
         private const val PATH_SLETT_LOGISK_VEDLEGG = "$PATH_LOGISKVEDLEGG/{logiskVedleggId}"
 
         private const val NAV_CALL_ID = "Nav-Callid"

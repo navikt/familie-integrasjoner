@@ -124,6 +124,17 @@ class DokarkivController(private val journalføringService: DokarkivService) {
             .body(success(LogiskVedleggResponse(logiskVedleggId.toLong()), "logisk vedlegg slettet"))
     }
 
+    @PutMapping(path = ["/dokument/{dokumentinfoId}/logiskVedlegg"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun oppdaterAlleLogiskeVedleggForDokument(
+        @PathVariable(name = "dokumentinfoId") dokumentinfoId: String,
+        @RequestBody @Valid
+        request: BulkOppdaterLogiskVedleggRequest,
+    ): ResponseEntity<Ressurs<String>> {
+        journalføringService.oppdaterLogiskeVedleggForDokument(dokumentinfoId, request)
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(success(dokumentinfoId, "logiske vedlegg oppdatert for $dokumentinfoId"))
+    }
+
     companion object {
 
         private val LOG = LoggerFactory.getLogger(DokarkivController::class.java)
@@ -131,3 +142,7 @@ class DokarkivController(private val journalføringService: DokarkivService) {
         const val NAV_USER_ID = "Nav-User-Id"
     }
 }
+// TODO: Flytt til kontrakter
+data class BulkOppdaterLogiskVedleggRequest(
+    val titler: List<String>
+)
