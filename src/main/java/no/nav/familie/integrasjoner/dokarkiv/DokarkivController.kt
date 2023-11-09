@@ -6,6 +6,7 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.dokarkiv.ArkiverDokumentResponse
+import no.nav.familie.kontrakter.felles.dokarkiv.BulkOppdaterLogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggResponse
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
@@ -142,7 +143,3 @@ class DokarkivController(private val journalføringService: DokarkivService) {
         const val NAV_USER_ID = "Nav-User-Id"
     }
 }
-// TODO: Flytt til kontrakter
-data class BulkOppdaterLogiskVedleggRequest(
-    val titler: List<String>
-)
