@@ -6,6 +6,7 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.dokarkiv.ArkiverDokumentResponse
+import no.nav.familie.kontrakter.felles.dokarkiv.BulkOppdaterLogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggResponse
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
@@ -122,6 +123,17 @@ class DokarkivController(private val journalføringService: DokarkivService) {
         journalføringService.slettLogiskVedlegg(dokumentinfoId, logiskVedleggId)
         return ResponseEntity.status(HttpStatus.OK)
             .body(success(LogiskVedleggResponse(logiskVedleggId.toLong()), "logisk vedlegg slettet"))
+    }
+
+    @PutMapping(path = ["/dokument/{dokumentinfoId}/logiskVedlegg"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun oppdaterAlleLogiskeVedleggForDokument(
+        @PathVariable(name = "dokumentinfoId") dokumentinfoId: String,
+        @RequestBody @Valid
+        request: BulkOppdaterLogiskVedleggRequest,
+    ): ResponseEntity<Ressurs<String>> {
+        journalføringService.oppdaterLogiskeVedleggForDokument(dokumentinfoId, request)
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(success(dokumentinfoId, "logiske vedlegg oppdatert for $dokumentinfoId"))
     }
 
     companion object {

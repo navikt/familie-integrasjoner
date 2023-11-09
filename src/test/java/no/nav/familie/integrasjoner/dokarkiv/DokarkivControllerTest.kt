@@ -8,6 +8,7 @@ import no.nav.familie.kontrakter.felles.BrukerIdType
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.dokarkiv.ArkiverDokumentResponse
+import no.nav.familie.kontrakter.felles.dokarkiv.BulkOppdaterLogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.DokarkivBruker
 import no.nav.familie.kontrakter.felles.dokarkiv.Dokumenttype
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggRequest
@@ -405,6 +406,31 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.data?.logiskVedleggId).isEqualTo(432L)
         assertThat(response.body?.melding).contains("logisk vedlegg slettet")
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+    }
+
+    @Test
+    fun `skal bulk oppdatere logiske vedlegg for et dokument`() {
+        client.`when`(
+            request()
+                .withMethod("PUT")
+                .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg"),
+        )
+            .respond(
+                response()
+                    .withStatusCode(204),
+            )
+
+        val response: ResponseEntity<Ressurs<String>> =
+            restTemplate.exchange(
+                localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg"),
+                HttpMethod.PUT,
+                HttpEntity(BulkOppdaterLogiskVedleggRequest(titler = listOf("Logisk vedlegg 1", "Logisk vedlegg 2")), headers),
+            )
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.data).isEqualTo("321")
+        assertThat(response.body?.melding).contains("logiske vedlegg oppdatert")
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
     }
 

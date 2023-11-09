@@ -14,6 +14,7 @@ import no.nav.familie.kontrakter.felles.BrukerIdType
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.dokarkiv.ArkiverDokumentResponse
 import no.nav.familie.kontrakter.felles.dokarkiv.AvsenderMottaker
+import no.nav.familie.kontrakter.felles.dokarkiv.BulkOppdaterLogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.DokarkivBruker
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggResponse
@@ -169,6 +170,10 @@ class DokarkivService(
 
     fun slettLogiskVedlegg(dokumentInfoId: String, logiskVedleggId: String) {
         dokarkivLogiskVedleggRestClient.slettLogiskVedlegg(dokumentInfoId, logiskVedleggId)
+    }
+
+    fun oppdaterLogiskeVedleggForDokument(dokumentinfoId: String, request: BulkOppdaterLogiskVedleggRequest) {
+        dokarkivLogiskVedleggRestClient.oppdaterLogiskeVedlegg(dokumentinfoId, request)
     }
 
     companion object {
