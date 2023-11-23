@@ -22,7 +22,7 @@ jobs:
           if ! [[ $(git branch -r --contains "$commit" | grep -E '(^|\s)origin/main') ]]; then exit 1; fi
       - uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'temurin'
           cache: 'maven'
       - name: Bygg med maven
