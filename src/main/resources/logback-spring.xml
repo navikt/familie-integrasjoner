@@ -30,7 +30,7 @@
     </root>
 
     <logger name="no.nav" level="INFO"/>
-    <logger name="no.nav.sbl.dialogarena.common.cxf" level="WARN"/>
+    <logger name="org.springframework.web" level="DEBUG"/>
     <logger name="no.nav.common.cxf" level="WARN"/>
     <logger name="org.apache" level="INFO"/>
     <logger name="org.apache.cxf" level="ERROR"/>
