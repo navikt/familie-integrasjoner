@@ -12,7 +12,7 @@ import java.net.URI
 @Component
 class KodeverkClient(
     @Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
-    @Qualifier("sts") private val restTemplate: RestOperations,
+    @Qualifier("jwtBearer") private val restTemplate: RestOperations,
 ) :
     AbstractPingableRestClient(restTemplate, "kodeverk") {
 

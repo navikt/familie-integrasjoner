@@ -21,7 +21,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import java.time.LocalDate
 
-@ActiveProfiles("integrasjonstest", "mock-sts")
+@ActiveProfiles("integrasjonstest", "mock-oauth")
 @TestPropertySource(properties = ["KODEVERK_URL=http://localhost:28085"])
 @AutoConfigureWireMock(port = 28085)
 class KodeverkControllerTest : OppslagSpringRunnerTest() {
