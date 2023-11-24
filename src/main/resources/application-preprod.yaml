@@ -144,7 +144,7 @@ tilgang:
 INTEGRASJONER_CLIENT_ID: ${AZURE_APP_CLIENT_ID}
 CLIENT_SECRET: ${AZURE_APP_CLIENT_SECRET}
 INFOTRYGD_KS_SCOPE: ${INFOTRYGD_KS_SCOPE}
-KODEVERK_SCOPE: api://dev-fss.team-rocket.kodeverk-dev/.default
+KODEVERK_SCOPE: api://dev-fss.team-rocket.kodeverk/.default
 DOKARKIV_SCOPE: api://dev-fss.teamdokumenthandtering.dokarkiv/.default
 PDL_SCOPE: api://dev-fss.pdl.pdl-api/.default
 DOKDISTKANAL_SCOPE: api://dev-fss.teamdokumenthandtering.dokdistkanal/.default
