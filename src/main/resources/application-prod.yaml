@@ -148,6 +148,7 @@ DOKARKIV_V1_URL: https://dokarkiv.intern.nav.no
 SAF_URL: https://saf.intern.nav.no
 FORSTESIDEGENERATOR_URL: https://foerstesidegenerator.intern.nav.no
 EGEN_ANSATT_URL: https://skjermede-personer-pip.nais.adeo.no
+KODEVERK_URL: http://kodeverk.team-rocket
 DOKDIST_URL: https://dokdistfordeling.intern.nav.no
 DOKDISTKANAL_URL: https://dokdistkanal.intern.nav.no
 AAREG_URL: https://aareg-services.intern.nav.no/api
