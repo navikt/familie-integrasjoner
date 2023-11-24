@@ -136,7 +136,7 @@ no.nav.security.jwt:
 INTEGRASJONER_CLIENT_ID: ${AZURE_APP_CLIENT_ID}
 CLIENT_SECRET: ${AZURE_APP_CLIENT_SECRET}
 INFOTRYGD_KS_SCOPE: ${INFOTRYGD_KS_SCOPE}
-KODEVVERK_SCOPE: api://prod-fss.team-rocket.kodeverk/.default
+KODEVERK_SCOPE: api://prod-fss.team-rocket.kodeverk/.default
 DOKARKIV_SCOPE: api://prod-fss.teamdokumenthandtering.dokarkiv/.default
 PDL_SCOPE: api://prod-fss.pdl.pdl-api/.default
 DOKDISTKANAL_SCOPE: api://prod-fss.teamdokumenthandtering.dokdistkanal/.default
