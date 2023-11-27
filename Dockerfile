@@ -1,4 +1,4 @@
-FROM ghcr.io/navikt/baseimages/temurin:21
+FROM ghcr.io/navikt/baseimages/temurin:21-appdynamics
 
 ENV APP_NAME=familie-integrasjoner
 
