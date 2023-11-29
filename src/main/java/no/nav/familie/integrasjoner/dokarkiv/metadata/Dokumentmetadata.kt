@@ -103,6 +103,7 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata = when (this) {
     Dokumenttype.KONTANTSTØTTE_INFORMASJONSBREV_KAN_SØKE -> KontantstøtteInformasjonsbrevKanSøkeMetadata
     Dokumenttype.KONTANTSTØTTE_INNHENTE_OPPLYSNINGER_ETTER_SØKNAD_I_SED -> KontantstøtteInnhenteOpplysningerEtterSøknadISedMetadata
     Dokumenttype.KONTANTSTØTTE_INNHENTE_OPPLYSNINGER -> KontantstøtteInnhenteOpplysningerMetadata
+    Dokumenttype.KONTANTSTØTTE_INNHENTE_OPPLYSNINGER_OG_INFORMASJON_OM_AT_ANNEN_FORELDER_MED_SELVSTENDIG_RETT_HAR_SØKT -> KontantstøtteInnhenteOpplysningerOgInformasjonOmAtAnnenForelderMedSelvstendigRettHarSøktMetadata
     Dokumenttype.KONTANTSTØTTE_OPPHØR -> KontantstøtteOpphørMetadata
     Dokumenttype.KONTANTSTØTTE_SVARTIDSBREV -> KontantstøtteSvartidsbrevMetadata
     Dokumenttype.KONTANTSTØTTE_EØS -> KontantstøtteSøknadEØSMetadata
@@ -110,6 +111,7 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata = when (this) {
     Dokumenttype.KONTANTSTØTTE_TILBAKEKREVING_VEDTAK -> KontantstøtteTilbakebetalingVedtakMetadata
     Dokumenttype.KONTANTSTØTTE_VARSEL_OM_REVURDERING_FRA_NASJONAL_TIL_EØS -> KontantstøtteVarselOmRevurderingFraNasjonalTilEøsMetadata
     Dokumenttype.KONTANTSTØTTE_VARSEL_OM_REVURDERING -> KontantstøtteVarselOmRevurderingMetadata
+    Dokumenttype.KONTANTSTØTTE_VARSEL_ANNEN_FORELDER_MED_SELVSTENDIG_RETT_SØKT -> KontantstøtteVarselAnnenForelderMedSelvstendigRettSøkt
     Dokumenttype.KONTANTSTØTTE_VARSEL_OM_VEDTAK_ETTER_SØKNAD_I_SED -> KontantstøtteVarselOmVedtakEtterSøknadISedMetadata
     Dokumenttype.KONTANTSTØTTE_VEDLEGG -> KontantstøtteVedleggMetadata
     Dokumenttype.KONTANTSTØTTE_VEDTAK_AVSLAG -> KontantstøtteVedtakAvslagMetadata
