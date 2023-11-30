@@ -28,6 +28,7 @@ spec:
     enabled: true
   azure:
     application:
+      tenant: "trygdeetaten.no"
       enabled: true
       claims:
         groups:

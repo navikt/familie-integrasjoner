@@ -1,4 +1,4 @@
-FROM ghcr.io/navikt/baseimages/temurin:17-appdynamics
+FROM ghcr.io/navikt/baseimages/temurin:21-appdynamics
 
 ENV APPD_ENABLED=true
 ENV APP_NAME=familie-integrasjoner

@@ -77,6 +77,15 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      kodeverk:
+        resource-url: ${KODEVERK_URL}
+        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
+        grant-type: client_credentials
+        scope: ${KODEVERK_SCOPE}
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
       medl2:
         resource-url: ${MEDL2_URL}
         token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
@@ -136,7 +145,7 @@ ORGANISASJON_URL: #Denne er ikke i bruk da OrganisasjonV5 mockes ut lokalt
 DOKARKIV_V1_URL: http://localhost:18321
 DOKDIST_URL: http://localhost:18321
 EGEN_ANSATT_URL: #Mockes ut lokalt
-KODEVERK_URL: #Mockes lokalt
+KODEVERK_URL: #Mockes ut lokalt
 FORSTESIDEGENERATOR_URL: #Mockes lokal
 AAREG_URL: #Mockes lokalt
 SKYGGE_SAK_URL: #Mocker lokalt
