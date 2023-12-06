@@ -105,6 +105,8 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata = when (this) {
     Dokumenttype.KONTANTSTØTTE_INFORMASJONSBREV_TIL_FORELDER_OMFATTET_NORSK_LOVGIVNING_VARSEL_OM_REVURDERING -> KontantstøtteInformasjonsbrevTilForelderOmfattetNorskLovgivningVarselOmRevurdering
     Dokumenttype.KONTANTSTØTTE_INNHENTE_OPPLYSNINGER_ETTER_SØKNAD_I_SED -> KontantstøtteInnhenteOpplysningerEtterSøknadISedMetadata
     Dokumenttype.KONTANTSTØTTE_INNHENTE_OPPLYSNINGER -> KontantstøtteInnhenteOpplysningerMetadata
+    Dokumenttype.KONTANTSTØTTE_INNHENTE_OPPLYSNINGER_OG_INFORMASJON_OM_AT_ANNEN_FORELDER_MED_SELVSTENDIG_RETT_HAR_SØKT -> KontantstøtteInnhenteOpplysningerOgInformasjonOmAtAnnenForelderMedSelvstendigRettHarSøktMetadata
+    Dokumenttype.KONTANTSTØTTE_VARSEL_ANNEN_FORELDER_MED_SELVSTENDIG_RETT_SØKT -> KontantstøtteVarselAnnenForelderMedSelvstendigRettSøkt
     Dokumenttype.KONTANTSTØTTE_OPPHØR -> KontantstøtteOpphørMetadata
     Dokumenttype.KONTANTSTØTTE_SVARTIDSBREV -> KontantstøtteSvartidsbrevMetadata
     Dokumenttype.KONTANTSTØTTE_EØS -> KontantstøtteSøknadEØSMetadata
