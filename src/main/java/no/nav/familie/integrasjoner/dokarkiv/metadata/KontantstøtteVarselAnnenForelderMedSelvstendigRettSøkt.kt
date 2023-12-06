@@ -16,7 +16,7 @@ object KontantstøtteVarselAnnenForelderMedSelvstendigRettSøkt : Dokumentmetada
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.KONTANTSTØTTE_VARSEL_ANNEN_FORELDER_MED_SELVSTENDIG_RETT_SØKT
-    override val tittel: String = "Varsel om revurdering - barnetrygd"
+    override val tittel: String = "Varsel om revurdering - kontantstøtte"
     override val brevkode: String = "varsel-annen-forelder-med-selvstendig-rett-søkt"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }

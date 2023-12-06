@@ -16,7 +16,7 @@ object KontantstøtteInnhenteOpplysningerOgInformasjonOmAtAnnenForelderMedSelvst
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.KONTANTSTØTTE_INNHENTE_OPPLYSNINGER_OG_INFORMASJON_OM_AT_ANNEN_FORELDER_MED_SELVSTENDIG_RETT_HAR_SØKT
-    override val tittel: String = "Innhenting av opplysninger - barnetrygd"
+    override val tittel: String = "Innhenting av opplysninger - kontantstøtte"
     override val brevkode: String = "innhente-opplysninger-informasjon-annen-forelder"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
