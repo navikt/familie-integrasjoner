@@ -69,7 +69,7 @@ class DokdistkanalController(
     }
 
     private fun PersonIdent.harPostadresse(tema: Tema): Boolean {
-        val postadresse = personopplysningerService.hentPostadresse(ident, tema)
-        return postadresse != null
+        val adresse = personopplysningerService.hentPostadresse(ident, tema)?.adresse ?: return false
+        return adresse.adresselinje1 != null && adresse.postnummer != null
     }
 }
