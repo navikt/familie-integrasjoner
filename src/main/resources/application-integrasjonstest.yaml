@@ -131,6 +131,24 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      regoppslag:
+        resource-url: ${REGOPPSLAG_URL}
+        token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: ${REGOPPSLAG_SCOPE}
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
+      regoppslag-onbehalf-of:
+        resource-url: ${REGOPPSLAG_URL}
+        token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: ${REGOPPSLAG_SCOPE}
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
 
 tilgang:
   kode6:
@@ -162,6 +180,7 @@ MEDL2_URL: http://localhost:18321
 SAF_URL: http://localhost:18321/rest/saf
 OPPGAVE_URL: http://localhost:18321
 PDL_URL: http://localhost:18321/rest/pdl
+REGOPPSLAG_URL: http://localhost:18321
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw
 

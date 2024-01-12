@@ -5,6 +5,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import no.nav.familie.integrasjoner.client.rest.PdlClientCredentialRestClient
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
+import no.nav.familie.integrasjoner.client.rest.RegoppslagRestClient
 import no.nav.familie.integrasjoner.personopplysning.internal.Adressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.FORELDERBARNRELASJONROLLE
 import no.nav.familie.integrasjoner.personopplysning.internal.Fullmakt
@@ -23,12 +24,14 @@ class PersonopplysningerServiceTest {
 
     private val pdlRestClient = mockk<PdlRestClient>()
     private val pdlClientCredentialRestClient = mockk<PdlClientCredentialRestClient>()
+    private val regoppslagRestClient = mockk<RegoppslagRestClient>()
 
     @BeforeEach
     fun setUp() {
         personopplysningerService = PersonopplysningerService(
             pdlRestClient,
             pdlClientCredentialRestClient,
+            regoppslagRestClient
         )
     }
 
