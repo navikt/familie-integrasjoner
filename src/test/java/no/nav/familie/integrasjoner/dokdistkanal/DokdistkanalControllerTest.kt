@@ -4,12 +4,14 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
+import com.github.tomakehurst.wiremock.client.WireMock.notFound
 import com.github.tomakehurst.wiremock.client.WireMock.okJson
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.status
 import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
+import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
 import com.github.tomakehurst.wiremock.client.WireMock.verify
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.dokdistkanal.domene.BestemDistribusjonskanalResponse
@@ -30,8 +32,8 @@ import org.springframework.http.HttpEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 
-@ActiveProfiles("integrasjonstest", "mock-oauth", "mock-regoppslag")
-@TestPropertySource(properties = ["DOKDISTKANAL_URL=http://localhost:28085"])
+@ActiveProfiles("integrasjonstest", "mock-oauth")
+@TestPropertySource(properties = ["DOKDISTKANAL_URL=http://localhost:28085", "REGOPPSLAG_URL=http://localhost:28085"])
 @AutoConfigureWireMock(port = 28085)
 class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
 
@@ -48,9 +50,9 @@ class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
             mottaker = PersonIdent(BRUKER_ID),
         )
         val gyldigDokdistkanalRespons = BestemDistribusjonskanalResponse(
-            distribusjonskanal = "PRINT",
-            regel = "PERSON_ER_IKKE_I_PDL",
-            regelBegrunnelse = "Finner ikke personen i PDL",
+            distribusjonskanal = "DITT_NAV",
+            regel = "BRUKER_HAR_GYLDIG_EPOST_ELLER_MOBILNUMMER",
+            regelBegrunnelse = "Bruker har gyldig e-post og/eller mobilnummer",
         )
 
         stubFor(post(anyUrl()).willReturn(okJson(objectMapper.writeValueAsString(gyldigDokdistkanalRespons))))
@@ -126,6 +128,35 @@ class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
             .containsExactly(Level.ERROR)
         assertThat(loggingEvents).extracting<String> { it.formattedMessage }
             .containsExactly("Distribusjonskanal-kontrakten er utdatert og må oppdateres med ny verdi for NY_KANAL")
+    }
+
+    @Test
+    fun `endrer respons fra PRINT til INGEN_DISTRIBUSJON dersom mottaker har ukjent adresse`() {
+        val request = DokdistkanalRequest(
+            bruker = PersonIdent(BRUKER_ID),
+            mottaker = PersonIdent(BRUKER_ID),
+        )
+
+        val dokdistkanalRespons = BestemDistribusjonskanalResponse(
+            distribusjonskanal = "PRINT",
+            regel = "PERSON_ER_IKKE_I_PDL",
+            regelBegrunnelse = "Finner ikke personen i PDL",
+        )
+
+        stubFor(post(urlPathMatching("/rest/bestemDistribusjonskanal"))
+                    .willReturn(okJson(objectMapper.writeValueAsString(dokdistkanalRespons))))
+        stubFor(post(urlPathMatching("/rest/postadresse"))
+                    .willReturn(notFound()))
+
+        val response =
+            restTemplate.postForObject<Ressurs<String>>(
+                localhost(DOKDISTKANAL_URL),
+                HttpEntity(request, headers),
+            )
+
+        assertThat(response?.status).isEqualTo(SUKSESS)
+        assertThat(response?.data).isEqualTo(Distribusjonskanal.INGEN_DISTRIBUSJON.name)
+        assertThat(response?.melding).isEqualTo("Mottaker har ukjent adresse")
     }
 
     companion object {
