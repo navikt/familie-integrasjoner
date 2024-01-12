@@ -35,7 +35,7 @@ class RegoppslagRestClient(
                     ident = ident,
                     tema = tema.name,
                 ),
-                httpHeaders()
+                httpHeaders(),
             )
         } catch (e: RestClientResponseException) {
             when (e.statusCode) {

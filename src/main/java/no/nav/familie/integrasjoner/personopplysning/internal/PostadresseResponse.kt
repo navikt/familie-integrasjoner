@@ -5,7 +5,7 @@ data class PostadresseResponse(
     val adresse: Adresse,
 )
 
-data class Adresse (
+data class Adresse(
     val adresseKilde: AdresseKildeCode,
     val type: PostadresseType,
     val adresselinje1: String,
@@ -23,7 +23,7 @@ enum class AdresseKildeCode {
     DELTBOSTED,
     KONTAKTINFORMASJONFORDØDSBO,
     ENHETPOSTADRESSE,
-    ENHETFORRETNINGSADRESSE
+    ENHETFORRETNINGSADRESSE,
 }
 
 enum class PostadresseType {

@@ -31,7 +31,7 @@ class PersonopplysningerServiceTest {
         personopplysningerService = PersonopplysningerService(
             pdlRestClient,
             pdlClientCredentialRestClient,
-            regoppslagRestClient
+            regoppslagRestClient,
         )
     }
 

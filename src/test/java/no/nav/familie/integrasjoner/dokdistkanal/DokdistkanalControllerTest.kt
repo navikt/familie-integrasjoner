@@ -30,7 +30,7 @@ import org.springframework.http.HttpEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 
-@ActiveProfiles("integrasjonstest", "mock-oauth")
+@ActiveProfiles("integrasjonstest", "mock-oauth", "mock-regoppslag")
 @TestPropertySource(properties = ["DOKDISTKANAL_URL=http://localhost:28085"])
 @AutoConfigureWireMock(port = 28085)
 class DokdistkanalControllerTest : OppslagSpringRunnerTest() {

@@ -44,14 +44,14 @@ class DokdistkanalController(
                 forsendelseStørrelse = request.forsendelseStørrelseIMegabytes,
             ),
         ).valider(request.mottaker, tema) { distribusjonskanal, melding ->
-                success(data = distribusjonskanal, melding = melding)
+            success(data = distribusjonskanal, melding = melding)
         }
     }
 
     private fun BestemDistribusjonskanalResponse.valider(
         mottaker: PersonIdent,
         tema: Tema,
-        valid: (Distribusjonskanal, String) -> Ressurs<Distribusjonskanal>
+        valid: (Distribusjonskanal, String) -> Ressurs<Distribusjonskanal>,
     ): Ressurs<Distribusjonskanal> {
         var distribusjonskanal = try {
             Distribusjonskanal.valueOf(distribusjonskanal)
