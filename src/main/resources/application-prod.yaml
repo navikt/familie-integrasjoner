@@ -132,6 +132,24 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      regoppslag:
+        resource-url: ${REGOPPSLAG_URL}
+        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
+        grant-type: client_credentials
+        scope: ${REGOPPSLAG_SCOPE}
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
+      regoppslag-onbehalf-of:
+        resource-url: ${REGOPPSLAG_URL}
+        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: ${REGOPPSLAG_SCOPE}
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
 
 INTEGRASJONER_CLIENT_ID: ${AZURE_APP_CLIENT_ID}
 CLIENT_SECRET: ${AZURE_APP_CLIENT_SECRET}
@@ -140,6 +158,7 @@ KODEVERK_SCOPE: api://prod-fss.team-rocket.kodeverk/.default
 DOKARKIV_SCOPE: api://prod-fss.teamdokumenthandtering.dokarkiv/.default
 PDL_SCOPE: api://prod-fss.pdl.pdl-api/.default
 DOKDISTKANAL_SCOPE: api://prod-fss.teamdokumenthandtering.dokdistkanal/.default
+REGOPPSLAG_SCOPE: api://prod-fss.teamdokumenthandtering.regoppslag/.default
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 ORGANISASJON_URL: https://ereg-services.intern.nav.no
@@ -155,6 +174,7 @@ AAREG_URL: https://aareg-services.intern.nav.no/api
 SKYGGE_SAK_URL: https://sak.intern.nav.no
 OPPGAVE_URL: https://oppgave.nais.adeo.no
 NORG2_URL: https://norg2.nais.adeo.no/norg2/
+REGOPPSLAG_URL: https://regoppslag.intern.nav.no
 SFTP_HOST: a01drvl099.adeo.no
 
 # Appdynamics

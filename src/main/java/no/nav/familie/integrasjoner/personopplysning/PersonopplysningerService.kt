@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.personopplysning
 
 import no.nav.familie.integrasjoner.client.rest.PdlClientCredentialRestClient
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
+import no.nav.familie.integrasjoner.client.rest.RegoppslagRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
 import no.nav.familie.integrasjoner.personopplysning.internal.Adressebeskyttelse
@@ -10,6 +11,7 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedRelasj
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedAdresseBeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
+import no.nav.familie.integrasjoner.personopplysning.internal.PostadresseResponse
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.personopplysning.FinnPersonidenterResponse
 import no.nav.familie.kontrakter.felles.personopplysning.PersonIdentMedHistorikk
@@ -22,6 +24,7 @@ import org.springframework.web.context.annotation.ApplicationScope
 class PersonopplysningerService(
     private val pdlRestClient: PdlRestClient,
     private val pdlClientCredentialRestClient: PdlClientCredentialRestClient,
+    private val regoppslagRestClient: RegoppslagRestClient,
 ) {
 
     fun hentPersoninfo(
@@ -64,6 +67,10 @@ class PersonopplysningerService(
     fun hentAdressebeskyttelse(personIdent: String, tema: Tema): Adressebeskyttelse {
         return pdlRestClient.hentAdressebeskyttelse(personIdent, tema).adressebeskyttelse.firstOrNull()
             ?: Adressebeskyttelse(gradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
+    }
+
+    fun hentPostadresse(personIdent: String, tema: Tema): PostadresseResponse? {
+        return regoppslagRestClient.hentPostadresse(personIdent, tema)
     }
 
     private fun hentBarnsForeldrer(
