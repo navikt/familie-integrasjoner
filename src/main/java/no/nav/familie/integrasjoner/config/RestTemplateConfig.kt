@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.core.env.Environment
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.RestOperations
 import org.springframework.web.client.RestTemplate
 import java.time.Duration
@@ -63,7 +62,7 @@ class RestTemplateConfig(
                 bearerTokenClientInterceptor,
                 MdcValuesPropagatingClientInterceptor(),
             )
-            .requestFactory(this::requestFactory)
+            .setConnectTimeout(Duration.ofSeconds(20))
             .setReadTimeout(Duration.ofSeconds(20))
             .build()
     }
@@ -81,7 +80,7 @@ class RestTemplateConfig(
                 bearerTokenClientInterceptor,
                 MdcValuesPropagatingClientInterceptor(),
             )
-            .requestFactory(this::requestFactory)
+            .setConnectTimeout(Duration.ofSeconds(20))
             .setReadTimeout(Duration.ofSeconds(20))
             .build()
     }
@@ -99,7 +98,7 @@ class RestTemplateConfig(
                 bearerTokenWithSTSFallbackClientInterceptor,
                 MdcValuesPropagatingClientInterceptor(),
             )
-            .requestFactory(this::requestFactory)
+            .setConnectTimeout(Duration.ofSeconds(20))
             .setReadTimeout(Duration.ofSeconds(20))
             .build()
     }
@@ -115,7 +114,7 @@ class RestTemplateConfig(
                 stsBearerTokenClientInterceptor,
                 MdcValuesPropagatingClientInterceptor(),
             )
-            .requestFactory(this::requestFactory)
+            .setConnectTimeout(Duration.ofSeconds(20))
             .setReadTimeout(Duration.ofSeconds(20))
             .build()
     }
@@ -127,7 +126,7 @@ class RestTemplateConfig(
                 consumerIdClientInterceptor,
                 MdcValuesPropagatingClientInterceptor(),
             )
-            .requestFactory(this::requestFactory)
+            .setConnectTimeout(Duration.ofSeconds(20))
             .setReadTimeout(Duration.ofSeconds(20))
             .build()
     }
@@ -139,12 +138,6 @@ class RestTemplateConfig(
             this
         }
     }
-
-    private fun requestFactory() = HttpComponentsClientHttpRequestFactory()
-        .apply {
-            setConnectionRequestTimeout(20 * 1000)
-            setConnectTimeout(20 * 1000)
-        }
 
     private fun trengerProxy(): Boolean {
         return !environment.activeProfiles.any {
