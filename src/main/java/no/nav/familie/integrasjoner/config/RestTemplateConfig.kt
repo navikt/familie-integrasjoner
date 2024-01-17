@@ -15,6 +15,7 @@ import org.springframework.core.env.Environment
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.RestOperations
 import org.springframework.web.client.RestTemplate
+import java.time.Duration
 
 @Configuration
 @Import(
@@ -63,6 +64,7 @@ class RestTemplateConfig(
                 MdcValuesPropagatingClientInterceptor(),
             )
             .requestFactory(this::requestFactory)
+            .setReadTimeout(Duration.ofSeconds(20))
             .build()
     }
 
@@ -80,6 +82,7 @@ class RestTemplateConfig(
                 MdcValuesPropagatingClientInterceptor(),
             )
             .requestFactory(this::requestFactory)
+            .setReadTimeout(Duration.ofSeconds(20))
             .build()
     }
 
@@ -97,6 +100,7 @@ class RestTemplateConfig(
                 MdcValuesPropagatingClientInterceptor(),
             )
             .requestFactory(this::requestFactory)
+            .setReadTimeout(Duration.ofSeconds(20))
             .build()
     }
 
@@ -112,6 +116,7 @@ class RestTemplateConfig(
                 MdcValuesPropagatingClientInterceptor(),
             )
             .requestFactory(this::requestFactory)
+            .setReadTimeout(Duration.ofSeconds(20))
             .build()
     }
 
@@ -123,6 +128,7 @@ class RestTemplateConfig(
                 MdcValuesPropagatingClientInterceptor(),
             )
             .requestFactory(this::requestFactory)
+            .setReadTimeout(Duration.ofSeconds(20))
             .build()
     }
 
@@ -137,7 +143,6 @@ class RestTemplateConfig(
     private fun requestFactory() = HttpComponentsClientHttpRequestFactory()
         .apply {
             setConnectionRequestTimeout(20 * 1000)
-            setReadTimeout(20 * 1000)
             setConnectTimeout(20 * 1000)
         }
 
