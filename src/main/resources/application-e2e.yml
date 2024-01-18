@@ -122,6 +122,24 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      regoppslag:
+        resource-url: ${REGOPPSLAG_URL}
+        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
+        grant-type: client_credentials
+        scope: ${REGOPPSLAG_SCOPE}
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
+      regoppslag-onbehalf-of:
+        resource-url: ${REGOPPSLAG_URL}
+        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: ${REGOPPSLAG_SCOPE}
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
 
 AZURE_APP_CLIENT_ID: ${INTEGRASJONER_CLIENT_ID}
 AZURE_APP_CLIENT_SECRET: ${INTEGRASJONER_CLIENT_SECRET}
@@ -143,6 +161,7 @@ AAREG_URL: http://familie-mock-server:1337/rest/api/aareg
 SKYGGE_SAK_URL: http://familie-mock-server:1337/rest/api/skyggesak
 ORGANISASJON_URL:
 DOKDISTKANAL_URL:
+REGOPPSLAG_URL:
 
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw

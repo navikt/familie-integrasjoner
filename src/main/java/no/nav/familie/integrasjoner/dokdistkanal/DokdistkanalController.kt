@@ -2,6 +2,9 @@ package no.nav.familie.integrasjoner.dokdistkanal
 
 import no.nav.familie.integrasjoner.client.rest.DokdistkanalRestClient
 import no.nav.familie.integrasjoner.dokdistkanal.domene.BestemDistribusjonskanalRequest
+import no.nav.familie.integrasjoner.dokdistkanal.domene.BestemDistribusjonskanalResponse
+import no.nav.familie.integrasjoner.personopplysning.PersonopplysningerService
+import no.nav.familie.kontrakter.felles.PersonIdent
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.Tema
@@ -19,7 +22,10 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/dokdistkanal")
-class DokdistkanalController(private val dokdistkanalRestClient: DokdistkanalRestClient) {
+class DokdistkanalController(
+    private val dokdistkanalRestClient: DokdistkanalRestClient,
+    private val personopplysningerService: PersonopplysningerService,
+) {
 
     private val logger: Logger = LoggerFactory.getLogger(DokdistkanalController::class.java)
 
@@ -37,14 +43,33 @@ class DokdistkanalController(private val dokdistkanalRestClient: DokdistkanalRes
                 erArkivert = request.erArkivert,
                 forsendelseStørrelse = request.forsendelseStørrelseIMegabytes,
             ),
-        ).run {
-            val distribusjonskanal = try {
-                Distribusjonskanal.valueOf(distribusjonskanal)
-            } catch (e: IllegalArgumentException) {
-                logger.error("Distribusjonskanal-kontrakten er utdatert og må oppdateres med ny verdi for $distribusjonskanal")
-                Distribusjonskanal.UKJENT
-            }
-            success(data = distribusjonskanal, melding = regelBegrunnelse)
+        ).valider(request.mottaker, tema) { distribusjonskanal, melding ->
+            success(data = distribusjonskanal, melding = melding)
         }
+    }
+
+    private fun BestemDistribusjonskanalResponse.valider(
+        mottaker: PersonIdent,
+        tema: Tema,
+        valid: (Distribusjonskanal, String) -> Ressurs<Distribusjonskanal>,
+    ): Ressurs<Distribusjonskanal> {
+        var distribusjonskanal = try {
+            Distribusjonskanal.valueOf(distribusjonskanal)
+        } catch (e: IllegalArgumentException) {
+            logger.error("Distribusjonskanal-kontrakten er utdatert og må oppdateres med ny verdi for $distribusjonskanal")
+            Distribusjonskanal.UKJENT
+        }
+        var melding = regelBegrunnelse
+
+        if (distribusjonskanal == Distribusjonskanal.PRINT && !mottaker.harPostadresse(tema)) {
+            distribusjonskanal = Distribusjonskanal.INGEN_DISTRIBUSJON
+            melding = "Mottaker har ukjent adresse"
+        }
+        return valid(distribusjonskanal, melding)
+    }
+
+    private fun PersonIdent.harPostadresse(tema: Tema): Boolean {
+        val adresse = personopplysningerService.hentPostadresse(ident, tema)?.adresse ?: return false
+        return adresse.adresselinje1 != null && adresse.postnummer != null
     }
 }
