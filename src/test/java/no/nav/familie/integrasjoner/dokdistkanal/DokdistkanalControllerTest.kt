@@ -143,10 +143,14 @@ class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
             regelBegrunnelse = "Finner ikke personen i PDL",
         )
 
-        stubFor(post(urlPathMatching("/rest/bestemDistribusjonskanal"))
-                    .willReturn(okJson(objectMapper.writeValueAsString(dokdistkanalRespons))))
-        stubFor(post(urlPathMatching("/rest/postadresse"))
-                    .willReturn(notFound()))
+        stubFor(
+            post(urlPathMatching("/rest/bestemDistribusjonskanal"))
+                .willReturn(okJson(objectMapper.writeValueAsString(dokdistkanalRespons))),
+        )
+        stubFor(
+            post(urlPathMatching("/rest/postadresse"))
+                .willReturn(notFound()),
+        )
 
         val response =
             restTemplate.postForObject<Ressurs<String>>(
