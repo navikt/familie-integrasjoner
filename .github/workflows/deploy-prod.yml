@@ -56,13 +56,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Deploy til dev-fss team namespace
-        uses: nais/deploy/actions/deploy@v1
+        uses: nais/deploy/actions/deploy@v2
         env:
           APIKEY: ${{ secrets.DEPLOY_APIKEY }}
           CLUSTER: dev-fss
           RESOURCE: app-preprod.teamfamilie.yaml
       - name: Deploy til prod-fss team namespace
-        uses: nais/deploy/actions/deploy@v1
+        uses: nais/deploy/actions/deploy@v2
         env:
           APIKEY: ${{ secrets.DEPLOY_APIKEY }}
           CLUSTER: prod-fss

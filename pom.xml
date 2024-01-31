@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.5</version>
+        <version>3.2.1</version>
     </parent>
 
     <groupId>no.nav.familie.integrasjoner</groupId>
@@ -20,11 +20,11 @@
         <sha1></sha1>
         <changelist>-SNAPSHOT</changelist>
         <java.version>21</java.version>
-        <kotlin.version>1.9.20</kotlin.version>
-        <springdoc.version>2.2.0</springdoc.version>
-        <felles.version>2.20231123085409_33fb768</felles.version>
-        <kontrakt.version>3.0_20231114145122_eb1ce78</kontrakt.version>
-        <token-validation-spring.version>3.1.5</token-validation-spring.version>
+        <kotlin.version>1.9.22</kotlin.version>
+        <springdoc.version>2.3.0</springdoc.version>
+        <felles.version>2.20240112101059_13c2d3f</felles.version>
+        <kontrakt.version>3.0_20240109111848_d97569f</kontrakt.version>
+        <token-validation-spring.version>3.2.0</token-validation-spring.version>
 
         <mock-server.version>5.15.0</mock-server.version>
 
@@ -34,7 +34,7 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <!--suppress UnresolvedMavenProperty Ligger som secret i github-->
         <sonar.login>${SONAR_LOGIN}</sonar.login>
-        <spring.cloud>4.0.4</spring.cloud>
+        <spring.cloud>4.1.0</spring.cloud>
 
     </properties>
 
@@ -215,7 +215,7 @@
         <dependency>
             <groupId>io.mockk</groupId>
             <artifactId>mockk-jvm</artifactId>
-            <version>1.13.8</version>
+            <version>1.13.9</version>
             <scope>test</scope>
         </dependency>
 
