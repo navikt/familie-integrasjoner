@@ -30,6 +30,7 @@ fun main(args: Array<String>) {
             "mock-pdl",
             "mock-aareg",
             "mock-sak",
+            "mock-regoppslag",
         ).build()
     app.run(*args)
 }
