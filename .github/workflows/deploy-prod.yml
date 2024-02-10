@@ -6,12 +6,14 @@ on:
 env:
   IMAGE: ghcr.io/navikt/familie-integrasjoner:${{ github.sha }}
   IMAGE_LATEST: ghcr.io/navikt/familie-integrasjoner:latest
+permissions:
+  contents: "read"
+  id-token: "write"
+  packages: "write"
 jobs:
   build:
     name: Deploy tag til prod-fss
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
     steps:
       - uses: actions/checkout@v4
         with:
