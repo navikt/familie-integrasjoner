@@ -22,7 +22,7 @@ jobs:
         run: |
           commit=$(git rev-parse --short HEAD)
           if ! [[ $(git branch -r --contains "$commit" | grep -E '(^|\s)origin/main') ]]; then exit 1; fi
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           java-version: 21
           distribution: 'temurin'
