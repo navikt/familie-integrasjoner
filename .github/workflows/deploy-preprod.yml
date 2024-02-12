@@ -7,13 +7,15 @@ on:
 concurrency: preprod
 env:
   IMAGE: ghcr.io/navikt/familie-integrasjoner:${{ github.sha }}
+permissions:
+  contents: "read"
+  id-token: "write"
+  packages: "write"
 jobs:
   build-dev:
     if: github.event.pull_request.draft == false
     name: Build and push
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
     steps:
       - uses: actions/checkout@v4
         with:
