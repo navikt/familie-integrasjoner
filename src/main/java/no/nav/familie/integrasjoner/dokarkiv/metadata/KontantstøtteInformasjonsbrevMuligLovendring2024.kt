@@ -8,7 +8,7 @@ import no.nav.familie.kontrakter.felles.dokarkiv.Dokumenttype
 import org.springframework.stereotype.Component
 
 @Component
-object KontantstøtteInformasjonsbrevMuligLovendring : Dokumentmetadata {
+object KontantstøtteInformasjonsbrevMuligLovendring2024 : Dokumentmetadata {
     override val journalpostType: JournalpostType = JournalpostType.UTGAAENDE
     override val fagsakSystem: Fagsystem = Fagsystem.KONT
     override val tema: Tema = Tema.KON
@@ -16,6 +16,6 @@ object KontantstøtteInformasjonsbrevMuligLovendring : Dokumentmetadata {
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.KONTANTSTØTTE_INFORMASJONSBREV_MULIG_LOVENDRING_2024
     override val tittel: String = "Kontantstøtte – viktig informasjon"
-    override val brevkode: String = "kontantstoette-informasjonsbrev-mulig-lovendring"
+    override val brevkode: String = "kontantstoette-informasjonsbrev-mulig-lovendring-2024"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
