@@ -14,8 +14,8 @@ object KontantstøtteInformasjonsbrevMuligLovendring : Dokumentmetadata {
     override val tema: Tema = Tema.KON
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
-    override val dokumenttype: Dokumenttype = Dokumenttype.KONTANTSTØTTE_INFORMASJONSBREV_MULIG_LOVENDRING
-    override val tittel: String = "Kontantstøtte – Viktig informasjon"
+    override val dokumenttype: Dokumenttype = Dokumenttype.KONTANTSTØTTE_INFORMASJONSBREV_MULIG_LOVENDRING_2024
+    override val tittel: String = "Kontantstøtte – viktig informasjon"
     override val brevkode: String = "kontantstoette-informasjonsbrev-mulig-lovendring"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
