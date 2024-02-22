@@ -1,4 +1,4 @@
-FROM ghcr.io/navikt/baseimages/temurin:21-appdynamics
+FROM gcr.io/distroless/java21-debian12:nonroot
 
 ENV APPD_ENABLED=true
 ENV APP_NAME=familie-integrasjoner
