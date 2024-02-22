@@ -90,7 +90,7 @@ class CachedTilgangskontrollService(
             return Tilgang(personIdent, true)
         }
         secureLogger.info(
-            "${jwtToken.jwtTokenClaims["preferred_username"]} " +
+            "${jwtToken.jwtTokenClaims.get("preferred_username")} " +
                 "har ikke tilgang ${adRolle?.beskrivelse} for $personIdent",
         )
         return Tilgang(personIdent = personIdent, harTilgang = false, begrunnelse = adRolle?.beskrivelse)

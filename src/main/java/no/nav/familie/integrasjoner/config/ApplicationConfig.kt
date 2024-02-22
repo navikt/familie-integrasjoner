@@ -18,6 +18,7 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Primary
 import org.springframework.scheduling.annotation.EnableScheduling
+import org.springframework.web.client.RestClient
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 
@@ -57,10 +58,12 @@ class ApplicationConfig {
     @Bean
     fun oAuth2HttpClient(): OAuth2HttpClient {
         return RetryOAuth2HttpClient(
-            RestTemplateBuilder()
-                .additionalCustomizers(NaisProxyCustomizer(2_000, 2_000, 4_000))
-                .setConnectTimeout(Duration.of(2, ChronoUnit.SECONDS))
-                .setReadTimeout(Duration.of(4, ChronoUnit.SECONDS)),
+            RestClient.create(
+                RestTemplateBuilder()
+                    .additionalCustomizers(NaisProxyCustomizer(2_000, 2_000, 4_000))
+                    .setConnectTimeout(Duration.of(2, ChronoUnit.SECONDS))
+                    .setReadTimeout(Duration.of(4, ChronoUnit.SECONDS)).build(),
+            ),
         )
     }
 }
