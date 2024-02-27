@@ -2,6 +2,7 @@ no.nav.security.jwt:
   issuer.azuread:
     discoveryurl: http://localhost:${mock-oauth2-server.port}/azuread/.well-known/openid-configuration
     accepted_audience: aud-localhost
+    cookie_name: localhost-idtoken
   client:
     registration:
       aad-graph-onbehalfof:
