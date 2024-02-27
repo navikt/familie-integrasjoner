@@ -3,7 +3,6 @@ no.nav.security.jwt:
     discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
     accepted_audience: ${AZURE_APP_CLIENT_ID}
     proxyurl: http://webproxy-nais.nav.no:8088
-    cookie_name: azure_token
   client:
     registration:
       aad-graph-onbehalfof:
