@@ -17,7 +17,7 @@ object SikkerhetsContext {
     }
 
     fun hentSaksbehandlerEllerSystembruker() =
-        Result.runCatching { SpringTokenValidationContextHolder().getTokenValidationContext() }
+        Result.runCatching { SpringTokenValidationContextHolder().tokenValidationContext }
             .fold(
                 onSuccess = {
                     it.getClaims("azuread")?.get("NAVident")?.toString() ?: SYSTEM_FORKORTELSE
@@ -26,7 +26,7 @@ object SikkerhetsContext {
             )
 
     fun hentSaksbehandlerNavn(strict: Boolean = false): String {
-        return Result.runCatching { SpringTokenValidationContextHolder().getTokenValidationContext() }
+        return Result.runCatching { SpringTokenValidationContextHolder().tokenValidationContext }
             .fold(
                 onSuccess = {
                     it.getClaims("azuread")?.get("name")?.toString()

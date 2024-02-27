@@ -2,7 +2,6 @@ package no.nav.familie.integrasjoner.tilgangskontroll
 
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.tilgangskontroll.Tilgang
-import no.nav.security.token.support.core.exceptions.JwtTokenValidatorException
 import no.nav.security.token.support.core.jwt.JwtToken
 import no.nav.security.token.support.spring.SpringTokenValidationContextHolder
 import org.springframework.stereotype.Service
@@ -15,7 +14,7 @@ class TilgangskontrollService(private val cachedTilgangskontrollService: CachedT
     }
 
     fun sjekkTilgangTilBruker(personIdent: String, tema: Tema = Tema.BAR): Tilgang {
-        val jwtToken = SpringTokenValidationContextHolder().getTokenValidationContext().getJwtToken("azuread") ?: throw JwtTokenValidatorException("Klarte ikke hente token fra issuer azuread")
+        val jwtToken = SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken("azuread")
         return cachedTilgangskontrollService.sjekkTilgang(personIdent, jwtToken, tema)
     }
 
@@ -27,7 +26,7 @@ class TilgangskontrollService(private val cachedTilgangskontrollService: CachedT
         if (tema != Tema.ENF && tema != Tema.BAR) {
             throw IllegalArgumentException("Har ikke lagt inn støtte for andre enn ENF eller BAR")
         }
-        val jwtToken = SpringTokenValidationContextHolder().getTokenValidationContext().getJwtToken("azuread") ?: throw JwtTokenValidatorException("Klarte ikke hente token fra issuer azuread")
+        val jwtToken = SpringTokenValidationContextHolder().tokenValidationContext.getJwtToken("azuread")
         return cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner(personIdent, jwtToken, tema)
     }
 }
