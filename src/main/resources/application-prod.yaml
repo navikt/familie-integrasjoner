@@ -153,7 +153,7 @@ no.nav.security.jwt:
 INTEGRASJONER_CLIENT_ID: ${AZURE_APP_CLIENT_ID}
 CLIENT_SECRET: ${AZURE_APP_CLIENT_SECRET}
 INFOTRYGD_KS_SCOPE: ${INFOTRYGD_KS_SCOPE}
-KODEVERK_SCOPE: api://prod-fss.team-rocket.kodeverk/.default
+KODEVERK_SCOPE: api://prod-gcp.team-rocket.kodeverk-api/.default
 DOKARKIV_SCOPE: api://prod-fss.teamdokumenthandtering.dokarkiv/.default
 PDL_SCOPE: api://prod-fss.pdl.pdl-api/.default
 DOKDISTKANAL_SCOPE: api://prod-fss.teamdokumenthandtering.dokdistkanal/.default
@@ -166,7 +166,7 @@ DOKARKIV_V1_URL: https://dokarkiv.intern.nav.no
 SAF_URL: https://saf.intern.nav.no
 FORSTESIDEGENERATOR_URL: https://foerstesidegenerator.intern.nav.no
 EGEN_ANSATT_URL: https://skjermede-personer-pip.nais.adeo.no
-KODEVERK_URL: http://kodeverk.team-rocket
+KODEVERK_URL: https://kodeverk-api.nav.no
 DOKDIST_URL: https://dokdistfordeling.intern.nav.no
 DOKDISTKANAL_URL: https://dokdistkanal.intern.nav.no
 AAREG_URL: https://aareg-services.intern.nav.no/api

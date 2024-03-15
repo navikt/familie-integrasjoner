@@ -26,6 +26,7 @@ spec:
     enabled: true
   secureLogs:
     enabled: true
+  webproxy: true
   azure:
     application:
       tenant: "trygdeetaten.no"
