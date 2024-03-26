@@ -30,7 +30,6 @@ import java.time.temporal.ChronoUnit
 @EnableScheduling
 @Import(NaisProxyCustomizer::class)
 class ApplicationConfig {
-
     private val logger = LoggerFactory.getLogger(ApplicationConfig::class.java)
 
     @Bean

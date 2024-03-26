@@ -34,12 +34,18 @@ class DokarkivService(
     private val dokarkivLogiskVedleggRestClient: DokarkivLogiskVedleggRestClient,
     private val førstesideGeneratorService: FørstesideGeneratorService,
 ) {
-
-    fun ferdistillJournalpost(journalpost: String, journalførendeEnhet: String, navIdent: String? = null) {
+    fun ferdistillJournalpost(
+        journalpost: String,
+        journalførendeEnhet: String,
+        navIdent: String? = null,
+    ) {
         dokarkivRestClient.ferdigstillJournalpost(journalpost, journalførendeEnhet, navIdent)
     }
 
-    fun lagJournalpost(arkiverDokumentRequest: ArkiverDokumentRequest, navIdent: String? = null): ArkiverDokumentResponse {
+    fun lagJournalpost(
+        arkiverDokumentRequest: ArkiverDokumentRequest,
+        navIdent: String? = null,
+    ): ArkiverDokumentResponse {
         val request = mapTilOpprettJournalpostRequest(arkiverDokumentRequest)
         val response = dokarkivRestClient.lagJournalpost(request, arkiverDokumentRequest.forsøkFerdigstill, navIdent)
         return mapTilArkiverDokumentResponse(response)
@@ -49,33 +55,37 @@ class DokarkivService(
         val dokarkivBruker = DokarkivBruker(BrukerIdType.FNR, arkiverDokumentRequest.fnr)
         val hoveddokument = arkiverDokumentRequest.hoveddokumentvarianter[0]
         val metadata = hoveddokument.dokumenttype.tilMetadata()
-        val avsenderMottaker = arkiverDokumentRequest.avsenderMottaker ?: arkiverDokumentRequest.fnr.let {
-            val navn = hentNavnForFnr(fnr = arkiverDokumentRequest.fnr, behandlingstema = metadata.tema)
-            AvsenderMottaker(it, BrukerIdType.FNR, navn)
-        }
+        val avsenderMottaker =
+            arkiverDokumentRequest.avsenderMottaker ?: arkiverDokumentRequest.fnr.let {
+                val navn = hentNavnForFnr(fnr = arkiverDokumentRequest.fnr, behandlingstema = metadata.tema)
+                AvsenderMottaker(it, BrukerIdType.FNR, navn)
+            }
 
         val dokumenter = mutableListOf(mapHoveddokument(arkiverDokumentRequest.hoveddokumentvarianter))
         dokumenter.addAll(arkiverDokumentRequest.vedleggsdokumenter.map(this::mapTilArkivdokument))
-        val sak = arkiverDokumentRequest.fagsakId?.let {
-            Sak(fagsakId = it, sakstype = "FAGSAK", fagsaksystem = metadata.fagsakSystem)
-        }
+        val sak =
+            arkiverDokumentRequest.fagsakId?.let {
+                Sak(fagsakId = it, sakstype = "FAGSAK", fagsaksystem = metadata.fagsakSystem)
+            }
 
         // førsteside
         arkiverDokumentRequest.førsteside?.also {
             val bytes = førstesideGeneratorService.genererForside(it, arkiverDokumentRequest.fnr, metadata.tema)
-            dokumenter += ArkivDokument(
-                brevkode = metadata.brevkode,
-                dokumentKategori = metadata.dokumentKategori,
-                tittel = arkiverDokumentRequest.førsteside?.overskriftstittel,
-                dokumentvarianter = listOf(
-                    Dokumentvariant(
-                        filtype = "PDFA",
-                        variantformat = "ARKIV",
-                        fysiskDokument = bytes,
-                        filnavn = "førsteside.pdf",
-                    ),
-                ),
-            )
+            dokumenter +=
+                ArkivDokument(
+                    brevkode = metadata.brevkode,
+                    dokumentKategori = metadata.dokumentKategori,
+                    tittel = arkiverDokumentRequest.førsteside?.overskriftstittel,
+                    dokumentvarianter =
+                        listOf(
+                            Dokumentvariant(
+                                filtype = "PDFA",
+                                variantformat = "ARKIV",
+                                fysiskDokument = bytes,
+                                filnavn = "førsteside.pdf",
+                            ),
+                        ),
+                )
         }
 
         LOG.info("Journalfører fagsak ${sak?.fagsakId} med tittel ${hoveddokument.tittel ?: metadata.tittel}")
@@ -103,7 +113,10 @@ class DokarkivService(
         return dokarkivRestClient.oppdaterJournalpost(supplerDefaultVerdier(request), journalpostId, navIdent)
     }
 
-    private fun hentNavnForFnr(fnr: String, behandlingstema: Tema): String {
+    private fun hentNavnForFnr(
+        fnr: String,
+        behandlingstema: Tema,
+    ): String {
         return personopplysningerService.hentPersoninfo(fnr, behandlingstema).navn
     }
 
@@ -114,10 +127,11 @@ class DokarkivService(
     private fun mapHoveddokument(dokumenter: List<Dokument>): ArkivDokument {
         val dokument = dokumenter[0]
         val metadata = dokument.dokumenttype.tilMetadata()
-        val dokumentvarianter = dokumenter.map {
-            val variantFormat: String = hentVariantformat(it)
-            Dokumentvariant(it.filtype.name, variantFormat, it.dokument, it.filnavn)
-        }
+        val dokumentvarianter =
+            dokumenter.map {
+                val variantFormat: String = hentVariantformat(it)
+                Dokumentvariant(it.filtype.name, variantFormat, it.dokument, it.filnavn)
+            }
 
         return ArkivDokument(
             brevkode = metadata.brevkode,
@@ -142,14 +156,15 @@ class DokarkivService(
             brevkode = metadata.brevkode,
             dokumentKategori = metadata.dokumentKategori,
             tittel = metadata.tittel ?: dokument.tittel,
-            dokumentvarianter = listOf(
-                Dokumentvariant(
-                    dokument.filtype.name,
-                    variantFormat,
-                    dokument.dokument,
-                    dokument.filnavn,
+            dokumentvarianter =
+                listOf(
+                    Dokumentvariant(
+                        dokument.filtype.name,
+                        variantFormat,
+                        dokument.dokument,
+                        dokument.filnavn,
+                    ),
                 ),
-            ),
         )
     }
 
@@ -168,16 +183,21 @@ class DokarkivService(
         return dokarkivLogiskVedleggRestClient.opprettLogiskVedlegg(dokumentInfoId, request)
     }
 
-    fun slettLogiskVedlegg(dokumentInfoId: String, logiskVedleggId: String) {
+    fun slettLogiskVedlegg(
+        dokumentInfoId: String,
+        logiskVedleggId: String,
+    ) {
         dokarkivLogiskVedleggRestClient.slettLogiskVedlegg(dokumentInfoId, logiskVedleggId)
     }
 
-    fun oppdaterLogiskeVedleggForDokument(dokumentinfoId: String, request: BulkOppdaterLogiskVedleggRequest) {
+    fun oppdaterLogiskeVedleggForDokument(
+        dokumentinfoId: String,
+        request: BulkOppdaterLogiskVedleggRequest,
+    ) {
         dokarkivLogiskVedleggRestClient.oppdaterLogiskeVedlegg(dokumentinfoId, request)
     }
 
     companion object {
-
         private val LOG = LoggerFactory.getLogger(DokarkivService::class.java)
     }
 }

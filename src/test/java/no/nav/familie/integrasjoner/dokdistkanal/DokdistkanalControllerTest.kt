@@ -36,7 +36,6 @@ import org.springframework.test.context.TestPropertySource
 @TestPropertySource(properties = ["DOKDISTKANAL_URL=http://localhost:28085", "REGOPPSLAG_URL=http://localhost:28085"])
 @AutoConfigureWireMock(port = 28085)
 class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
-
     @BeforeEach
     fun setup() {
         headers.setBearerAuth(lokalTestToken)
@@ -45,15 +44,17 @@ class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `dokdistkanal returnerer OK med distribusjonskanal`() {
-        val request = DokdistkanalRequest(
-            bruker = PersonIdent(BRUKER_ID),
-            mottaker = PersonIdent(BRUKER_ID),
-        )
-        val gyldigDokdistkanalRespons = BestemDistribusjonskanalResponse(
-            distribusjonskanal = "DITT_NAV",
-            regel = "BRUKER_HAR_GYLDIG_EPOST_ELLER_MOBILNUMMER",
-            regelBegrunnelse = "Bruker har gyldig e-post og/eller mobilnummer",
-        )
+        val request =
+            DokdistkanalRequest(
+                bruker = PersonIdent(BRUKER_ID),
+                mottaker = PersonIdent(BRUKER_ID),
+            )
+        val gyldigDokdistkanalRespons =
+            BestemDistribusjonskanalResponse(
+                distribusjonskanal = "DITT_NAV",
+                regel = "BRUKER_HAR_GYLDIG_EPOST_ELLER_MOBILNUMMER",
+                regelBegrunnelse = "Bruker har gyldig e-post og/eller mobilnummer",
+            )
 
         stubFor(post(anyUrl()).willReturn(okJson(objectMapper.writeValueAsString(gyldigDokdistkanalRespons))))
 
@@ -75,10 +76,11 @@ class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal kaste feil til klient når noe går galt mot tjenesten`() {
-        val request = DokdistkanalRequest(
-            bruker = PersonIdent(BRUKER_ID),
-            mottaker = PersonIdent(BRUKER_ID),
-        )
+        val request =
+            DokdistkanalRequest(
+                bruker = PersonIdent(BRUKER_ID),
+                mottaker = PersonIdent(BRUKER_ID),
+            )
         stubFor(post(anyUrl()).willReturn(status(500).withBody("{\"feilmelding\" : \"Noe gikk galt\"}")))
 
         val response =
@@ -109,18 +111,19 @@ class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
             ),
         )
 
-        val response = restTemplate.postForObject<Ressurs<String>>(
-            localhost(DOKDISTKANAL_URL),
-            HttpEntity(
-                /* body = */
-                DokdistkanalRequest(
-                    bruker = PersonIdent(BRUKER_ID),
-                    mottaker = PersonIdent(BRUKER_ID),
+        val response =
+            restTemplate.postForObject<Ressurs<String>>(
+                localhost(DOKDISTKANAL_URL),
+                HttpEntity(
+                    // body =
+                    DokdistkanalRequest(
+                        bruker = PersonIdent(BRUKER_ID),
+                        mottaker = PersonIdent(BRUKER_ID),
+                    ),
+                    // headers =
+                    headers,
                 ),
-                /* headers = */
-                headers,
-            ),
-        )
+            )
 
         assertThat(response?.status).isEqualTo(SUKSESS)
         assertThat(response?.data).isEqualTo(Distribusjonskanal.UKJENT.name)
@@ -132,16 +135,18 @@ class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `endrer respons fra PRINT til INGEN_DISTRIBUSJON dersom mottaker har ukjent adresse`() {
-        val request = DokdistkanalRequest(
-            bruker = PersonIdent(BRUKER_ID),
-            mottaker = PersonIdent(BRUKER_ID),
-        )
+        val request =
+            DokdistkanalRequest(
+                bruker = PersonIdent(BRUKER_ID),
+                mottaker = PersonIdent(BRUKER_ID),
+            )
 
-        val dokdistkanalRespons = BestemDistribusjonskanalResponse(
-            distribusjonskanal = "PRINT",
-            regel = "PERSON_ER_IKKE_I_PDL",
-            regelBegrunnelse = "Finner ikke personen i PDL",
-        )
+        val dokdistkanalRespons =
+            BestemDistribusjonskanalResponse(
+                distribusjonskanal = "PRINT",
+                regel = "PERSON_ER_IKKE_I_PDL",
+                regelBegrunnelse = "Finner ikke personen i PDL",
+            )
 
         stubFor(
             post(urlPathMatching("/rest/bestemDistribusjonskanal"))

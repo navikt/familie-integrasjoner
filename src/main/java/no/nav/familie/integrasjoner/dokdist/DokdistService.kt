@@ -20,17 +20,18 @@ class DokdistService(val dokdistRestClient: DokdistRestClient) {
             dokumentProdApp = request.dokumentProdApp,
             distribusjonstidspunkt = request.distribusjonstidspunkt,
             distribusjonstype = request.distribusjonstype,
-            adresse = request.adresse?.let { adresse ->
-                AdresseTo(
-                    adressetype = adresse.adresseType.name,
-                    adresselinje1 = adresse.adresselinje1,
-                    adresselinje2 = adresse.adresselinje2,
-                    adresselinje3 = adresse.adresselinje3,
-                    poststed = adresse.poststed,
-                    postnummer = adresse.postnummer,
-                    land = adresse.land,
-                )
-            },
+            adresse =
+                request.adresse?.let { adresse ->
+                    AdresseTo(
+                        adressetype = adresse.adresseType.name,
+                        adresselinje1 = adresse.adresselinje1,
+                        adresselinje2 = adresse.adresselinje2,
+                        adresselinje3 = adresse.adresselinje3,
+                        poststed = adresse.poststed,
+                        postnummer = adresse.postnummer,
+                        land = adresse.land,
+                    )
+                },
         )
     }
 }

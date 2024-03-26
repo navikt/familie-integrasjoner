@@ -23,7 +23,6 @@ class SkyggesakRestClient(
     @Qualifier("sts") private val restTemplate: RestOperations,
 ) :
     AbstractPingableRestClient(restTemplate, "skyggesak.sak") {
-
     override val pingUri: URI = URI.create("$skyggesakUrl/internal/alive")
     private val sakUri = URI.create("$skyggesakUrl/api/v1/saker")
 
@@ -49,12 +48,12 @@ class SkyggesakRestClient(
         }
     }
 
-    private fun httpHeaders(): HttpHeaders = HttpHeaders().apply {
-        add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
-    }
+    private fun httpHeaders(): HttpHeaders =
+        HttpHeaders().apply {
+            add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+        }
 
     companion object {
-
         private const val X_CORRELATION_ID = "X-Correlation-ID"
     }
 }

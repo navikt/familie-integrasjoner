@@ -8,7 +8,6 @@ data class PdlResponse<T>(
     val errors: List<PdlError>?,
     val extensions: PdlExtensions?,
 ) {
-
     fun harFeil(): Boolean {
         return errors != null && errors.isNotEmpty()
     }
@@ -31,13 +30,14 @@ data class PdlResponse<T>(
 }
 
 data class PersonDataBolk<T>(val ident: String, val code: String, val person: T?)
+
 data class PersonBolk<T>(val personBolk: List<PersonDataBolk<T>>)
+
 data class PdlBolkResponse<T>(
     val data: PersonBolk<T>?,
     val errors: List<PdlError>?,
     val extensions: PdlExtensions?,
 ) {
-
     fun errorMessages(): String {
         return errors?.joinToString { it -> it.message } ?: ""
     }
@@ -75,7 +75,6 @@ data class PdlError(
 )
 
 data class PdlErrorExtensions(val code: String?) {
-
     fun notFound() = code == "not_found"
 
     fun unauthorized() = code == "unauthorized"
@@ -91,7 +90,6 @@ data class PdlNavn(
     val mellomnavn: String? = null,
     val etternavn: String,
 ) {
-
     fun fulltNavn(): String {
         return when (mellomnavn) {
             null -> "$fornavn $etternavn"

@@ -22,19 +22,22 @@ class RegoppslagRestClient(
     @Qualifier("jwtBearer") private val restTemplate: RestOperations,
 ) :
     AbstractPingableRestClient(restTemplate, "regoppslag") {
-
     override val pingUri: URI = UriUtil.uri(regoppslagUri, PATH_PING)
 
     val uri = UriUtil.uri(regoppslagUri, PATH_POSTADRESSE)
 
-    fun hentPostadresse(ident: String, tema: Tema): PostadresseResponse? {
+    fun hentPostadresse(
+        ident: String,
+        tema: Tema,
+    ): PostadresseResponse? {
         return try {
             postForEntity(
                 uri,
-                payload = PostadresseRequest(
-                    ident = ident,
-                    tema = tema.name,
-                ),
+                payload =
+                    PostadresseRequest(
+                        ident = ident,
+                        tema = tema.name,
+                    ),
                 httpHeaders(),
             )
         } catch (e: RestClientResponseException) {
@@ -47,9 +50,10 @@ class RegoppslagRestClient(
         }
     }
 
-    private fun httpHeaders(): HttpHeaders = HttpHeaders().apply {
-        add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
-    }
+    private fun httpHeaders(): HttpHeaders =
+        HttpHeaders().apply {
+            add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+        }
 
     companion object {
         private const val PATH_PING = "actuator/health/liveness"

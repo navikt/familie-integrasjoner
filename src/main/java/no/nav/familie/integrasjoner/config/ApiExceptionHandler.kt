@@ -21,7 +21,6 @@ import java.nio.channels.ClosedChannelException
 
 @ControllerAdvice
 class ApiExceptionHandler {
-
     private val logger = LoggerFactory.getLogger(ApiExceptionHandler::class.java)
 
     @ExceptionHandler(JwtTokenUnauthorizedException::class)
@@ -137,7 +136,6 @@ class ApiExceptionHandler {
     }
 
     companion object {
-
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
     }
 }

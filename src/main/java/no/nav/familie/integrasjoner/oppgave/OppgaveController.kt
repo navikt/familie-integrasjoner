@@ -29,21 +29,26 @@ import org.springframework.web.bind.annotation.RestController
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/oppgave")
 class OppgaveController(private val oppgaveService: OppgaveService) {
-
     @GetMapping(path = ["/{oppgaveId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun hentOppgave(@PathVariable(name = "oppgaveId") oppgaveId: String): ResponseEntity<Ressurs<Oppgave>> {
+    fun hentOppgave(
+        @PathVariable(name = "oppgaveId") oppgaveId: String,
+    ): ResponseEntity<Ressurs<Oppgave>> {
         val oppgave = oppgaveService.hentOppgave(oppgaveId.toLong())
         return ResponseEntity.ok().body(success(oppgave, "Hent Oppgave OK"))
     }
 
     @PostMapping(path = ["/v4"])
-    fun finnOppgaverV4(@RequestBody finnOppgaveRequest: FinnOppgaveRequest): Ressurs<FinnOppgaveResponseDto> {
+    fun finnOppgaverV4(
+        @RequestBody finnOppgaveRequest: FinnOppgaveRequest,
+    ): Ressurs<FinnOppgaveResponseDto> {
         return success(oppgaveService.finnOppgaver(finnOppgaveRequest))
     }
 
     @PostMapping(path = ["/mappe/sok"])
     @Deprecated(message = "Bruk get under")
-    fun finnMapperV1Deprecated(@RequestBody finnMappeRequest: FinnMappeRequest): Ressurs<FinnMappeResponseDto> {
+    fun finnMapperV1Deprecated(
+        @RequestBody finnMappeRequest: FinnMappeRequest,
+    ): Ressurs<FinnMappeResponseDto> {
         return success(oppgaveService.finnMapper(finnMappeRequest))
     }
 
@@ -53,7 +58,9 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 
     @GetMapping(path = ["/mappe/finn/{enhetNr}"])
-    fun finnMapper(@PathVariable enhetNr: String): Ressurs<List<MappeDto>> {
+    fun finnMapper(
+        @PathVariable enhetNr: String,
+    ): Ressurs<List<MappeDto>> {
         return success(oppgaveService.finnMapper(enhetNr))
     }
 
@@ -82,19 +89,25 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdater"])
-    fun oppdaterOppgave(@RequestBody oppgave: Oppgave): ResponseEntity<Ressurs<OppgaveResponse>> {
+    fun oppdaterOppgave(
+        @RequestBody oppgave: Oppgave,
+    ): ResponseEntity<Ressurs<OppgaveResponse>> {
         val oppgaveId = oppgaveService.oppdaterOppgave(oppgave)
         return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
     }
 
     @PatchMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/{oppgaveId}/oppdater"])
-    fun patchOppgave(@RequestBody oppgave: Oppgave): ResponseEntity<Ressurs<OppgaveResponse>> {
+    fun patchOppgave(
+        @RequestBody oppgave: Oppgave,
+    ): ResponseEntity<Ressurs<OppgaveResponse>> {
         val oppgaveId = oppgaveService.patchOppgave(oppgave)
         return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/opprett"])
-    fun opprettOppgaveV2(@RequestBody oppgave: OpprettOppgaveRequest): ResponseEntity<Ressurs<OppgaveResponse>> {
+    fun opprettOppgaveV2(
+        @RequestBody oppgave: OpprettOppgaveRequest,
+    ): ResponseEntity<Ressurs<OppgaveResponse>> {
         val oppgaveId = oppgaveService.opprettOppgave(oppgave)
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(success(OppgaveResponse(oppgaveId = oppgaveId), "Opprett oppgave OK"))

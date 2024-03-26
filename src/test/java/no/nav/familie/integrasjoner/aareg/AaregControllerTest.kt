@@ -29,7 +29,6 @@ import java.time.LocalDate
 @TestPropertySource(properties = ["AAREG_URL=http://localhost:28085"])
 @AutoConfigureWireMock(port = 28085)
 class AaregControllerTest : OppslagSpringRunnerTest() {
-
     @BeforeEach
     fun setup() {
         headers.setBearerAuth(lokalTestToken)
@@ -87,7 +86,6 @@ class AaregControllerTest : OppslagSpringRunnerTest() {
     }
 
     companion object {
-
         private const val AAREG_URL = "/api/aareg"
         private const val ARBEIDSFORHOLD_URL = "$AAREG_URL/arbeidsforhold"
         private const val IDENT = "01012012345"

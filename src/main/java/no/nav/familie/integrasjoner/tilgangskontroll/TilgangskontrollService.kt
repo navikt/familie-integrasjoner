@@ -9,21 +9,33 @@ import org.springframework.stereotype.Service
 
 @Service
 class TilgangskontrollService(private val cachedTilgangskontrollService: CachedTilgangskontrollService) {
-
-    fun sjekkTilgangTilBrukere(personIdenter: List<String>, tema: Tema = Tema.BAR): List<Tilgang> {
+    fun sjekkTilgangTilBrukere(
+        personIdenter: List<String>,
+        tema: Tema = Tema.BAR,
+    ): List<Tilgang> {
         return personIdenter.map { ident -> sjekkTilgangTilBruker(ident, tema) }
     }
 
-    fun sjekkTilgangTilBruker(personIdent: String, tema: Tema = Tema.BAR): Tilgang {
+    fun sjekkTilgangTilBruker(
+        personIdent: String,
+        tema: Tema = Tema.BAR,
+    ): Tilgang {
         val jwtToken = SpringTokenValidationContextHolder().getTokenValidationContext().getJwtToken("azuread") ?: throw JwtTokenValidatorException("Klarte ikke hente token fra issuer azuread")
         return cachedTilgangskontrollService.sjekkTilgang(personIdent, jwtToken, tema)
     }
 
-    fun sjekkTilgang(personIdent: String, jwtToken: JwtToken, tema: Tema = Tema.BAR): Tilgang {
+    fun sjekkTilgang(
+        personIdent: String,
+        jwtToken: JwtToken,
+        tema: Tema = Tema.BAR,
+    ): Tilgang {
         return cachedTilgangskontrollService.sjekkTilgang(personIdent, jwtToken, tema)
     }
 
-    fun sjekkTilgangTilPersonMedRelasjoner(personIdent: String, tema: Tema): Tilgang {
+    fun sjekkTilgangTilPersonMedRelasjoner(
+        personIdent: String,
+        tema: Tema,
+    ): Tilgang {
         if (tema != Tema.ENF && tema != Tema.BAR) {
             throw IllegalArgumentException("Har ikke lagt inn støtte for andre enn ENF eller BAR")
         }

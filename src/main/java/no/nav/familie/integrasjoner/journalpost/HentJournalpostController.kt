@@ -24,7 +24,6 @@ import org.springframework.web.client.HttpStatusCodeException
 @RequestMapping("/api/journalpost")
 @ProtectedWithClaims(issuer = "azuread")
 class HentJournalpostController(private val journalpostService: JournalpostService) {
-
     @ExceptionHandler(JournalpostRestClientException::class)
     fun handleRestClientException(ex: JournalpostRestClientException): ResponseEntity<Ressurs<Any>> {
         val errorBaseMessage = "Feil ved henting av journalpost=${ex.journalpostId}"
@@ -70,26 +69,35 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
     }
 
     @GetMapping("sak")
-    fun hentSaksnummer(@RequestParam(name = "journalpostId") journalpostId: String): ResponseEntity<Ressurs<Map<String, String>>> {
-        val saksnummer = journalpostService.hentSaksnummer(journalpostId)
-            ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(failure("Sak mangler for journalpostId=$journalpostId", null))
+    fun hentSaksnummer(
+        @RequestParam(name = "journalpostId") journalpostId: String,
+    ): ResponseEntity<Ressurs<Map<String, String>>> {
+        val saksnummer =
+            journalpostService.hentSaksnummer(journalpostId)
+                ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(failure("Sak mangler for journalpostId=$journalpostId", null))
 
         return ResponseEntity.ok(success(mapOf("saksnummer" to saksnummer), "OK"))
     }
 
     @GetMapping
-    fun hentJournalpost(@RequestParam(name = "journalpostId") journalpostId: String): ResponseEntity<Ressurs<Journalpost>> {
+    fun hentJournalpost(
+        @RequestParam(name = "journalpostId") journalpostId: String,
+    ): ResponseEntity<Ressurs<Journalpost>> {
         return ResponseEntity.ok(success(journalpostService.hentJournalpost(journalpostId), "OK"))
     }
 
     @PostMapping
-    fun hentJournalpostForBruker(@RequestBody journalposterForBrukerRequest: JournalposterForBrukerRequest): ResponseEntity<Ressurs<List<Journalpost>>> {
+    fun hentJournalpostForBruker(
+        @RequestBody journalposterForBrukerRequest: JournalposterForBrukerRequest,
+    ): ResponseEntity<Ressurs<List<Journalpost>>> {
         return ResponseEntity.ok(success(journalpostService.finnJournalposter(journalposterForBrukerRequest), "OK"))
     }
 
     @PostMapping("temaer")
-    fun hentJournalpostForBrukerOgTema(@RequestBody journalposterForVedleggRequest: JournalposterForVedleggRequest): ResponseEntity<Ressurs<List<Journalpost>>> {
+    fun hentJournalpostForBrukerOgTema(
+        @RequestBody journalposterForVedleggRequest: JournalposterForVedleggRequest,
+    ): ResponseEntity<Ressurs<List<Journalpost>>> {
         return ResponseEntity.ok(success(journalpostService.finnJournalposter(journalposterForVedleggRequest), "OK"))
     }
 
@@ -108,7 +116,6 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
     }
 
     companion object {
-
         private val LOG = LoggerFactory.getLogger(HentJournalpostController::class.java)
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
     }

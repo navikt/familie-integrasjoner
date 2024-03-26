@@ -15,7 +15,6 @@ import java.io.IOException
 
 @Configuration
 class KodeverkTestConfig {
-
     @Bean
     @Profile("mock-kodeverk")
     @Primary

@@ -15,21 +15,26 @@ import org.springframework.web.context.annotation.ApplicationScope
 @Service
 @ApplicationScope
 class FørstesideGeneratorService(private val førstesidegeneratorClient: FørstesidegeneratorClient) {
-
-    fun genererForside(førsteside: Førsteside, brukerId: String, tema: Tema): ByteArray {
+    fun genererForside(
+        førsteside: Førsteside,
+        brukerId: String,
+        tema: Tema,
+    ): ByteArray {
         val postFørstesideRequest =
             PostFørstesideRequest(
                 språkkode = førsteside.språkkode,
-                adresse = Adresse(
-                    adresselinje1 = "Nav skanning",
-                    adresselinje2 = "Postboks 1400",
-                    postnummer = "0109",
-                    poststed = "OSLO",
-                ),
-                bruker = Bruker(
-                    brukerId = brukerId,
-                    brukerType = Brukertype.PERSON,
-                ),
+                adresse =
+                    Adresse(
+                        adresselinje1 = "Nav skanning",
+                        adresselinje2 = "Postboks 1400",
+                        postnummer = "0109",
+                        poststed = "OSLO",
+                    ),
+                bruker =
+                    Bruker(
+                        brukerId = brukerId,
+                        brukerType = Brukertype.PERSON,
+                    ),
                 navSkjemaId = førsteside.navSkjemaId, // NAV 33.00-07
                 førstesidetype = Førstesidetype.ETTERSENDELSE,
                 tema = tema.name,
@@ -45,7 +50,6 @@ class FørstesideGeneratorService(private val førstesidegeneratorClient: Først
     fun vedleggstekst(språkkode: Språkkode) = if (språkkode == Språkkode.NN) Companion.VEDLAGTEBREV_TEKST_NN else Companion.VEDLAGTEBREV_TEKST_NB
 
     companion object {
-
         const val VEDLAGTEBREV_TEKST_NN = "Sjå vedlagte brev"
         const val VEDLAGTEBREV_TEKST_NB = "Se vedlagte brev"
     }

@@ -18,19 +18,19 @@ import kotlin.random.Random
 
 @Configuration
 class AaregTestConfig {
-
     @Bean
     @Profile("mock-aareg")
     @Primary
-    fun AaregMockRestClient(): AaregRestClient {
+    fun aaregMockRestClient(): AaregRestClient {
         val klient: AaregRestClient = mockk(relaxed = true)
 
-        val arbeidsforhold = Arbeidsforhold(
-            navArbeidsforholdId = Random.Default.nextLong(),
-            arbeidstaker = Arbeidstaker("Person", "01012012345", "2364077210183"),
-            arbeidsgiver = Arbeidsgiver(ArbeidsgiverType.Organisasjon, "998877665"),
-            ansettelsesperiode = Ansettelsesperiode(Periode(fom = LocalDate.now().minusYears(1))),
-        )
+        val arbeidsforhold =
+            Arbeidsforhold(
+                navArbeidsforholdId = Random.Default.nextLong(),
+                arbeidstaker = Arbeidstaker("Person", "01012012345", "2364077210183"),
+                arbeidsgiver = Arbeidsgiver(ArbeidsgiverType.Organisasjon, "998877665"),
+                ansettelsesperiode = Ansettelsesperiode(Periode(fom = LocalDate.now().minusYears(1))),
+            )
 
         every {
             klient.hentArbeidsforhold(any(), any())

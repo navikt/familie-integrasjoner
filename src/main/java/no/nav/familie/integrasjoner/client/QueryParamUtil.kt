@@ -5,7 +5,6 @@ import no.nav.familie.kontrakter.felles.objectMapper
 import org.springframework.util.LinkedMultiValueMap
 
 object QueryParamUtil {
-
     fun toQueryParams(any: Any): LinkedMultiValueMap<String, String> {
         val writeValueAsString = objectMapper.writeValueAsString(any)
         val readValue: LinkedHashMap<String, Any?> = objectMapper.readValue(writeValueAsString)

@@ -37,34 +37,43 @@ class PdlRestClient(
     @Qualifier("jwtBearer") private val restTemplate: RestOperations,
 ) :
     AbstractRestClient(restTemplate, "pdl.personinfo") {
-
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
 
-    fun hentAdressebeskyttelse(personIdent: String, tema: Tema): PdlAdressebeskyttelse {
-        val pdlAdressebeskyttelseRequest = PdlPersonRequest(
-            variables = PdlPersonRequestVariables(personIdent),
-            query = HENT_ADRESSEBESKYTTELSE_QUERY,
-        )
+    fun hentAdressebeskyttelse(
+        personIdent: String,
+        tema: Tema,
+    ): PdlAdressebeskyttelse {
+        val pdlAdressebeskyttelseRequest =
+            PdlPersonRequest(
+                variables = PdlPersonRequestVariables(personIdent),
+                query = HENT_ADRESSEBESKYTTELSE_QUERY,
+            )
 
-        val response: PdlResponse<PdlPersonMedAdressebeskyttelse> = postForEntity(
-            pdlUri,
-            pdlAdressebeskyttelseRequest,
-            pdlHttpHeaders(tema),
-        )
+        val response: PdlResponse<PdlPersonMedAdressebeskyttelse> =
+            postForEntity(
+                pdlUri,
+                pdlAdressebeskyttelseRequest,
+                pdlHttpHeaders(tema),
+            )
 
         return feilsjekkOgReturnerData(response, personIdent) { it.person }
     }
 
-    fun hentPerson(personIdent: String, tema: Tema): Person {
-        val pdlPersonRequest = PdlPersonRequest(
-            variables = PdlPersonRequestVariables(personIdent),
-            query = HENT_PERSON,
-        )
-        val response = try {
-            postForEntity<PdlResponse<PdlPerson>>(pdlUri, pdlPersonRequest, pdlHttpHeaders(tema))
-        } catch (e: Exception) {
-            throw pdlOppslagException(personIdent, error = e)
-        }
+    fun hentPerson(
+        personIdent: String,
+        tema: Tema,
+    ): Person {
+        val pdlPersonRequest =
+            PdlPersonRequest(
+                variables = PdlPersonRequestVariables(personIdent),
+                query = HENT_PERSON,
+            )
+        val response =
+            try {
+                postForEntity<PdlResponse<PdlPerson>>(pdlUri, pdlPersonRequest, pdlHttpHeaders(tema))
+            } catch (e: Exception) {
+                throw pdlOppslagException(personIdent, error = e)
+            }
         return feilsjekkOgReturnerData(response, personIdent) { it.person }.let {
             Person(
                 navn = it.navn.first().fulltNavn(),
@@ -73,21 +82,32 @@ class PdlRestClient(
         }
     }
 
-    fun hentIdenter(ident: String, gruppe: String, tema: Tema, historikk: Boolean): List<PdlIdent> {
-        val pdlPersonRequest = PdlIdentRequest(
-            variables = PdlIdentRequestVariables(ident, gruppe, historikk),
-            query = HENT_IDENTER_QUERY,
-        )
+    fun hentIdenter(
+        ident: String,
+        gruppe: String,
+        tema: Tema,
+        historikk: Boolean,
+    ): List<PdlIdent> {
+        val pdlPersonRequest =
+            PdlIdentRequest(
+                variables = PdlIdentRequestVariables(ident, gruppe, historikk),
+                query = HENT_IDENTER_QUERY,
+            )
 
-        val response = try {
-            postForEntity<PdlResponse<PdlHentIdenter>>(pdlUri, pdlPersonRequest, pdlHttpHeaders(tema))
-        } catch (e: Exception) {
-            throw pdlOppslagException(ident, error = e)
-        }
+        val response =
+            try {
+                postForEntity<PdlResponse<PdlHentIdenter>>(pdlUri, pdlPersonRequest, pdlHttpHeaders(tema))
+            } catch (e: Exception) {
+                throw pdlOppslagException(ident, error = e)
+            }
         return feilsjekkOgReturnerData(response, ident) { it.hentIdenter }.identer
     }
 
-    private inline fun <reified DATA : Any, reified RESPONSE : Any> feilsjekkOgReturnerData(pdlResponse: PdlResponse<DATA>, personIdent: String, dataMapper: (DATA) -> RESPONSE?): RESPONSE {
+    private inline fun <reified DATA : Any, reified RESPONSE : Any> feilsjekkOgReturnerData(
+        pdlResponse: PdlResponse<DATA>,
+        personIdent: String,
+        dataMapper: (DATA) -> RESPONSE?,
+    ): RESPONSE {
         if (pdlResponse.harFeil()) {
             if (pdlResponse.harNotFoundFeil()) {
                 secureLogger.info("Finner ikke person for ident=$personIdent i PDL")
@@ -106,15 +126,19 @@ class PdlRestClient(
             log.warn("Advarsel ved henting av ${DATA::class} fra PDL. Se securelogs for detaljer.")
             secureLogger.warn("Advarsel ved henting av ${DATA::class} fra PDL: ${pdlResponse.extensions?.warnings}")
         }
-        val data = dataMapper.invoke(pdlResponse.data)
-            ?: throw pdlOppslagException(
-                feilmelding = "Feil ved oppslag på person. Objekt mangler på responsen fra PDL. Se secureLogs for mer info.",
-                personIdent = personIdent,
-            )
+        val data =
+            dataMapper.invoke(pdlResponse.data)
+                ?: throw pdlOppslagException(
+                    feilmelding = "Feil ved oppslag på person. Objekt mangler på responsen fra PDL. Se secureLogs for mer info.",
+                    personIdent = personIdent,
+                )
         return data
     }
 
-    fun hentGjeldendeAktørId(ident: String, tema: Tema): String {
+    fun hentGjeldendeAktørId(
+        ident: String,
+        tema: Tema,
+    ): String {
         val pdlIdenter = hentIdenter(ident, "AKTORID", tema, false)
         return pdlIdenter.firstOrNull()?.ident
             ?: throw pdlOppslagException(
@@ -123,7 +147,10 @@ class PdlRestClient(
             )
     }
 
-    fun hentGjeldendePersonident(ident: String, tema: Tema): String {
+    fun hentGjeldendePersonident(
+        ident: String,
+        tema: Tema,
+    ): String {
         val pdlIdenter = hentIdenter(ident, "FOLKEREGISTERIDENT", tema, false)
         return pdlIdenter.firstOrNull()?.ident
             ?: throw pdlOppslagException(
@@ -132,18 +159,22 @@ class PdlRestClient(
             )
     }
 
-    fun hentGeografiskTilknytning(personIdent: String, tema: Tema): GeografiskTilknytningDto {
+    fun hentGeografiskTilknytning(
+        personIdent: String,
+        tema: Tema,
+    ): GeografiskTilknytningDto {
         val pdlGeografiskTilknytningRequest =
             PdlGeografiskTilknytningRequest(
                 variables = PdlGeografiskTilknytningVariables(personIdent),
                 query = HENT_GEOGRAFISK_TILKNYTNING_QUERY,
             )
         try {
-            val response: PdlResponse<PdlHentGeografiskTilknytning> = postForEntity(
-                pdlUri,
-                pdlGeografiskTilknytningRequest,
-                pdlHttpHeaders(tema),
-            )
+            val response: PdlResponse<PdlHentGeografiskTilknytning> =
+                postForEntity(
+                    pdlUri,
+                    pdlGeografiskTilknytningRequest,
+                    pdlHttpHeaders(tema),
+                )
 
             if (response.harFeil()) {
                 if (response.harNotFoundFeil()) {
@@ -151,8 +182,9 @@ class PdlRestClient(
                     throw PdlNotFoundException()
                 }
                 throw pdlOppslagException(
-                    feilmelding = "Feil ved oppslag på geografisk tilknytning på person: " +
-                        response.errorMessages(),
+                    feilmelding =
+                        "Feil ved oppslag på geografisk tilknytning på person: " +
+                            response.errorMessages(),
                     personIdent = personIdent,
                 )
             }
@@ -188,7 +220,6 @@ class PdlRestClient(
     }
 
     companion object {
-
         private const val PATH_GRAPHQL = "graphql"
         private val HENT_PERSON = graphqlQuery("/pdl/hentperson-enkel.graphql")
         private val HENT_IDENTER_QUERY = graphqlQuery("/pdl/hentIdenter.graphql")

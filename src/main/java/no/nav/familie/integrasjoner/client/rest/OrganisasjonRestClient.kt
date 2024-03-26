@@ -13,7 +13,6 @@ class OrganisasjonRestClient(
     @Value("\${ORGANISASJON_URL}") private val organisasjonUri: URI,
     @Qualifier("noAuthorize") private val restTemplate: RestOperations,
 ) : AbstractPingableRestClient(restTemplate, "organisasjon") {
-
     override val pingUri: URI =
         UriComponentsBuilder.fromUri(organisasjonUri).pathSegment("ping").build().toUri()
 

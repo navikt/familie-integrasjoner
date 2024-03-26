@@ -16,7 +16,6 @@ import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.jvm.javaMethod
 
 class CachedKodeverkServiceTest {
-
     private val kodeverkClientMock: KodeverkClient = mockk()
     private val kodeverkService = CachedKodeverkService(kodeverkClientMock)
 
@@ -62,14 +61,14 @@ class CachedKodeverkServiceTest {
 
     @Test
     fun `alle public metoder skal være annotert med @Cacheable`() {
-        val publikMetoderUtenCacheable = CachedKodeverkService::class.declaredMemberFunctions
-            .filter { Modifier.isPublic(it.javaMethod!!.modifiers) }
-            .filter { it.annotations.none { it.annotationClass == Cacheable::class } }
+        val publikMetoderUtenCacheable =
+            CachedKodeverkService::class.declaredMemberFunctions
+                .filter { Modifier.isPublic(it.javaMethod!!.modifiers) }
+                .filter { it.annotations.none { it.annotationClass == Cacheable::class } }
         assertThat(publikMetoderUtenCacheable).isEmpty()
     }
 
     companion object {
-
         private const val POSTNUMMER = "0557"
         private const val POSTSTED = "Oslo"
         private const val LANDKODE = "NOR"

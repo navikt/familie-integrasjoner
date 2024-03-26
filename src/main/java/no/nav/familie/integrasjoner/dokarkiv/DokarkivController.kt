@@ -37,7 +37,6 @@ import java.util.function.Consumer
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/arkiv")
 class DokarkivController(private val journalføringService: DokarkivService) {
-
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidationExceptions(ex: MethodArgumentNotValidException): ResponseEntity<Ressurs<Any>> {
         val errors: MutableMap<String, String> = HashMap()
@@ -137,7 +136,6 @@ class DokarkivController(private val journalføringService: DokarkivService) {
     }
 
     companion object {
-
         private val LOG = LoggerFactory.getLogger(DokarkivController::class.java)
         const val ARKIVERT_OK_MELDING = "Arkivert journalpost OK"
         const val NAV_USER_ID = "Nav-User-Id"

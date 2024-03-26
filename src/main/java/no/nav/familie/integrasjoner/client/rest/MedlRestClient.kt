@@ -16,15 +16,15 @@ class MedlRestClient(
     @Qualifier("jwtBearer") private val restTemplate: RestOperations,
 ) :
     AbstractPingableRestClient(restTemplate, "medlemskap") {
-
     override val pingUri: URI = UriComponentsBuilder.fromUri(medl2BaseUrl).pathSegment(PATH_PING).build().toUri()
 
     val medlemskapsunntakUri: URI = UriComponentsBuilder.fromUri(medl2BaseUrl).pathSegment(PATH_MEDLEMSKAPSUNNTAK).build().toUri()
 
     fun hentMedlemskapsUnntakResponse(aktørId: String?): List<MedlemskapsunntakResponse> {
-        val httpHeaders = org.springframework.http.HttpHeaders().apply {
-            add(NavHttpHeaders.NAV_PERSONIDENT.asString(), aktørId)
-        }
+        val httpHeaders =
+            org.springframework.http.HttpHeaders().apply {
+                add(NavHttpHeaders.NAV_PERSONIDENT.asString(), aktørId)
+            }
 
         try {
             return getForEntity(medlemskapsunntakUri, httpHeaders)
@@ -34,7 +34,6 @@ class MedlRestClient(
     }
 
     companion object {
-
         private const val PATH_PING = "api/ping"
         private const val PATH_MEDLEMSKAPSUNNTAK = "api/v1/medlemskapsunntak"
     }

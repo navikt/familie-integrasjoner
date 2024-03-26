@@ -14,10 +14,11 @@ import java.util.UUID
 @RequestMapping(value = ["/api/saksbehandler"])
 @Profile("e2e")
 class SaksbehandlerControllerE2E {
-
     @GetMapping(path = ["/{id}"])
     @ProtectedWithClaims(issuer = "azuread")
-    fun hentSaksbehandler(@PathVariable id: String): Ressurs<Saksbehandler> {
+    fun hentSaksbehandler(
+        @PathVariable id: String,
+    ): Ressurs<Saksbehandler> {
         return Ressurs.success(
             Saksbehandler(
                 azureId = UUID.randomUUID(),

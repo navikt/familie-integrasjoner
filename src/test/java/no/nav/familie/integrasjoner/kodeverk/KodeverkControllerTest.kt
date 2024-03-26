@@ -25,7 +25,6 @@ import java.time.LocalDate
 @TestPropertySource(properties = ["KODEVERK_URL=http://localhost:28085"])
 @AutoConfigureWireMock(port = 28085)
 class KodeverkControllerTest : OppslagSpringRunnerTest() {
-
     @Test
     fun `skal hente landkoder for EØS`() {
         val beskrivelseFoo = BeskrivelseDto("Foo", "")
@@ -43,11 +42,12 @@ class KodeverkControllerTest : OppslagSpringRunnerTest() {
             ),
         )
 
-        val response: ResponseEntity<Ressurs<KodeverkDto>> = restTemplate.exchange(
-            localhost(KODEVERL_EEARG_URL),
-            HttpMethod.GET,
-            null,
-        )
+        val response: ResponseEntity<Ressurs<KodeverkDto>> =
+            restTemplate.exchange(
+                localhost(KODEVERL_EEARG_URL),
+                HttpMethod.GET,
+                null,
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body.data!!.betydninger).hasSize(2)
@@ -56,7 +56,6 @@ class KodeverkControllerTest : OppslagSpringRunnerTest() {
     }
 
     companion object {
-
         private const val KODEVERK_URL = "/api/kodeverk/"
         private const val KODEVERL_EEARG_URL = "$KODEVERK_URL/landkoder/eea"
         private const val GET_KODEVERK_EEAFREG_URL =

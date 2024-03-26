@@ -23,13 +23,16 @@ class CachedTilgangskontrollService(
     private val personopplysningerService: PersonopplysningerService,
     private val tilgangConfig: TilgangConfig,
 ) {
-
     @Cacheable(
         cacheNames = [TILGANG_TIL_BRUKER],
         key = "#jwtToken.subject.concat(#personIdent)",
         condition = "#personIdent != null && #jwtToken.subject != null",
     )
-    fun sjekkTilgang(personIdent: String, jwtToken: JwtToken, tema: Tema): Tilgang {
+    fun sjekkTilgang(
+        personIdent: String,
+        jwtToken: JwtToken,
+        tema: Tema,
+    ): Tilgang {
         return try {
             val adressebeskyttelse = personopplysningerService.hentAdressebeskyttelse(personIdent, tema).gradering
             hentTilgang(adressebeskyttelse, jwtToken, personIdent) { egenAnsattService.erEgenAnsatt(personIdent) }
@@ -43,7 +46,11 @@ class CachedTilgangskontrollService(
         key = "#jwtToken.subject.concat(#personIdent)",
         condition = "#jwtToken.subject != null",
     )
-    fun sjekkTilgangTilPersonMedRelasjoner(personIdent: String, jwtToken: JwtToken, tema: Tema): Tilgang {
+    fun sjekkTilgangTilPersonMedRelasjoner(
+        personIdent: String,
+        jwtToken: JwtToken,
+        tema: Tema,
+    ): Tilgang {
         val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent, tema)
         secureLogger.info("Sjekker tilgang til {}", personMedRelasjoner)
 
@@ -57,13 +64,14 @@ class CachedTilgangskontrollService(
         personIdent: String,
         egenAnsattSjekk: () -> Boolean,
     ): Tilgang {
-        val tilgang = when (adressebeskyttelsegradering) {
-            FORTROLIG -> hentTilgangForRolle(tilgangConfig.kode7, jwtToken, personIdent)
-            STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND ->
-                hentTilgangForRolle(tilgangConfig.kode6, jwtToken, personIdent)
+        val tilgang =
+            when (adressebeskyttelsegradering) {
+                FORTROLIG -> hentTilgangForRolle(tilgangConfig.kode7, jwtToken, personIdent)
+                STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND ->
+                    hentTilgangForRolle(tilgangConfig.kode6, jwtToken, personIdent)
 
-            else -> Tilgang(personIdent = personIdent, harTilgang = true)
-        }
+                else -> Tilgang(personIdent = personIdent, harTilgang = true)
+            }
         if (!tilgang.harTilgang) {
             return tilgang
         }
@@ -77,14 +85,19 @@ class CachedTilgangskontrollService(
      * Trenger kun å sjekke personen og barnets andre foreldrer for om de er ansatt
      */
     private fun erEgenAnsatt(personMedRelasjoner: PersonMedRelasjoner): Boolean {
-        val relevanteIdenter = setOf(personMedRelasjoner.personIdent) +
-            personMedRelasjoner.sivilstand.map { it.personIdent } +
-            personMedRelasjoner.barnsForeldrer.map { it.personIdent }
+        val relevanteIdenter =
+            setOf(personMedRelasjoner.personIdent) +
+                personMedRelasjoner.sivilstand.map { it.personIdent } +
+                personMedRelasjoner.barnsForeldrer.map { it.personIdent }
 
         return egenAnsattService.erEgenAnsatt(relevanteIdenter).any { it.value }
     }
 
-    private fun hentTilgangForRolle(adRolle: AdRolle?, jwtToken: JwtToken, personIdent: String): Tilgang {
+    private fun hentTilgangForRolle(
+        adRolle: AdRolle?,
+        jwtToken: JwtToken,
+        personIdent: String,
+    ): Tilgang {
         val grupper = jwtToken.jwtTokenClaims.getAsList("groups")
         if (grupper.any { it == adRolle?.rolleId }) {
             return Tilgang(personIdent, true)
@@ -97,7 +110,6 @@ class CachedTilgangskontrollService(
     }
 
     companion object {
-
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
         const val TILGANG_TIL_BRUKER = "tilgangTilBruker"

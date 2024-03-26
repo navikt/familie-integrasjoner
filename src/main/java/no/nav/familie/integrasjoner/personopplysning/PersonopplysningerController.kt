@@ -28,7 +28,6 @@ import org.springframework.web.client.HttpClientErrorException.Forbidden
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/personopplysning")
 class PersonopplysningerController(private val personopplysningerService: PersonopplysningerService) {
-
     @ExceptionHandler(HttpClientErrorException.NotFound::class)
     fun handleRestClientResponseException(e: HttpClientErrorException.NotFound): ResponseEntity<Ressurs<Any>> {
         return ResponseEntity.status(e.rawStatusCode)

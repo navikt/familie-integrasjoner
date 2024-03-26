@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component
 
 @Component
 object BarnetrygdInformasjonsbrevKanSøkeMetadata : Dokumentmetadata {
-
     override val journalpostType: JournalpostType = JournalpostType.UTGAAENDE
     override val fagsakSystem: Fagsystem = Fagsystem.BA
     override val tema: Tema = Tema.BAR

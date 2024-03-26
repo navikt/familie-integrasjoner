@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component
 
 @Component
 object SkolepengerFrittståendeBrevMetadata : Dokumentmetadata {
-
     override val journalpostType: JournalpostType = JournalpostType.UTGAAENDE
     override val fagsakSystem: Fagsystem = Fagsystem.EF
     override val tema: Tema = Tema.ENF

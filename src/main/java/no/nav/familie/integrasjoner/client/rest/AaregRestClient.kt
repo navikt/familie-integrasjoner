@@ -26,17 +26,20 @@ class AaregRestClient(
     private val stsRestClient: StsRestClient,
 ) :
     AbstractPingableRestClient(restOperations, "aareg") {
-
     // NAV_CALLID og NAV_CONSUMER_ID trengs for kall til ping
     override val pingUri: URI = URI.create("$aaregUrl/$PATH_PING")
 
-    fun hentArbeidsforhold(personIdent: String, ansettelsesperiodeFom: LocalDate): List<Arbeidsforhold> {
-        val uri = UriComponentsBuilder.fromUri(aaregUrl)
-            .path(PATH_ARBEIDSFORHOLD)
-            .queryParam("sporingsinformasjon", "false")
-            .queryParam("ansettelsesperiodeFom", ansettelsesperiodeFom.toString())
-            .queryParam("historikk", "true")
-            .build().toUri()
+    fun hentArbeidsforhold(
+        personIdent: String,
+        ansettelsesperiodeFom: LocalDate,
+    ): List<Arbeidsforhold> {
+        val uri =
+            UriComponentsBuilder.fromUri(aaregUrl)
+                .path(PATH_ARBEIDSFORHOLD)
+                .queryParam("sporingsinformasjon", "false")
+                .queryParam("ansettelsesperiodeFom", ansettelsesperiodeFom.toString())
+                .queryParam("historikk", "true")
+                .build().toUri()
 
         return try {
             getForEntity(uri, httpHeaders(personIdent))

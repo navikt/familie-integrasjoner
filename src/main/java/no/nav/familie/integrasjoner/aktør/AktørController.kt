@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/aktoer")
 class AktørController(private val aktørService: AktørService) {
-
     @PostMapping("v2/{tema}")
     fun finnAktørIdForPersonIdent(
         @RequestBody(required = true) ident: Ident,

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("api/medlemskap")
 class MedlemskapController(private val medlemskapService: MedlemskapService) {
-
     @PostMapping("v3")
     fun hentMedlemskapsunntakForIdentEllerAktørIdV3(
         @RequestBody(required = true) personIdent: PersonIdent,

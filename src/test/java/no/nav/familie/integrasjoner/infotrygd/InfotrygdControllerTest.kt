@@ -26,7 +26,6 @@ import org.springframework.test.context.ActiveProfiles
 @ExtendWith(MockServerExtension::class)
 @MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
 class InfotrygdControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTest() {
-
     @Autowired
     lateinit var infotrygdRestClient: InfotrygdRestClient
 
@@ -112,7 +111,6 @@ class InfotrygdControllerTest(val client: ClientAndServer) : OppslagSpringRunner
     }
 
     companion object {
-
         const val HAR_BARN_AKTIV_KONTANTSTØTTE = "/api/infotrygd/v1/harBarnAktivKontantstotte"
     }
 }

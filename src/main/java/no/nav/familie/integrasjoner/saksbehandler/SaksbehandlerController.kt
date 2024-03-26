@@ -13,10 +13,11 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping(value = ["/api/saksbehandler"])
 @Profile("!e2e")
 class SaksbehandlerController(private val saksbehandlerService: SaksbehandlerService) {
-
     @GetMapping(path = ["/{id}"])
     @ProtectedWithClaims(issuer = "azuread")
-    fun hentSaksbehandler(@PathVariable id: String): Ressurs<Saksbehandler> { // id kan være azure-id, e-post eller nav-ident
+    fun hentSaksbehandler(
+        @PathVariable id: String,
+    ): Ressurs<Saksbehandler> { // id kan være azure-id, e-post eller nav-ident
         return Ressurs.success(saksbehandlerService.hentSaksbehandler(id), "Hent saksbehandler OK")
     }
 }

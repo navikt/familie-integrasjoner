@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/arbeidsfordeling")
 @ProtectedWithClaims(issuer = "azuread")
 class ArbeidsfordelingController(private val service: ArbeidsfordelingService) {
-
     @PostMapping("/enhet/{tema}")
     fun hentBehandlendeEnhetForPersonIdentV2(
         @PathVariable(name = "tema") tema: Tema,
@@ -54,7 +53,9 @@ class ArbeidsfordelingController(private val service: ArbeidsfordelingService) {
     }
 
     @GetMapping("/nav-kontor/{enhetsid}")
-    fun hentNavKontor(@PathVariable(name = "enhetsid") enhetsId: String): ResponseEntity<Ressurs<NavKontorEnhet>> {
+    fun hentNavKontor(
+        @PathVariable(name = "enhetsid") enhetsId: String,
+    ): ResponseEntity<Ressurs<NavKontorEnhet>> {
         return ResponseEntity.ok(success(service.hentNavKontor(enhetsId)))
     }
 }

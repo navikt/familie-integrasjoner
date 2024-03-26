@@ -16,9 +16,9 @@ import org.junit.jupiter.api.Test
 import java.io.File
 
 class PdlGraphqlTest {
-
-    private val mapper = ObjectMapper()
-        .registerKotlinModule()
+    private val mapper =
+        ObjectMapper()
+            .registerKotlinModule()
 
     @Test
     fun testDeserialization() {
@@ -56,12 +56,13 @@ class PdlGraphqlTest {
 
     @Test
     fun testGeografiskTilknytningMapper() {
-        val pdlDto = GeografiskTilknytningDto(
-            gtType = GeografiskTilknytningType.KOMMUNE,
-            gtKommune = "0301",
-            gtBydel = null,
-            gtLand = null,
-        )
+        val pdlDto =
+            GeografiskTilknytningDto(
+                gtType = GeografiskTilknytningType.KOMMUNE,
+                gtKommune = "0301",
+                gtBydel = null,
+                gtLand = null,
+            )
 
         val resp: PdlResponse<PdlHentGeografiskTilknytning> =
             mapper.readValue(File(getFile("pdl/pdlGeografiskTilknytningResponse.json")))

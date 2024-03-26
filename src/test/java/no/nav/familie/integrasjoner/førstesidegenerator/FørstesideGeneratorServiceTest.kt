@@ -13,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class FørstesideGeneratorServiceTest {
-
     @MockK
     private lateinit var førstesidegeneratorClient: FørstesidegeneratorClient
 

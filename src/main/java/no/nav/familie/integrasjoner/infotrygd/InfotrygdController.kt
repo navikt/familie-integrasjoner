@@ -24,7 +24,6 @@ import org.springframework.web.client.HttpStatusCodeException
 class InfotrygdController(
     private val infotrygdRestClient: InfotrygdRestClient,
 ) {
-
     @ExceptionHandler(HttpStatusCodeException::class)
     fun handleExceptions(ex: HttpStatusCodeException): ResponseEntity<Ressurs<Any>> {
         if (ex is HttpClientErrorException.NotFound) {
@@ -60,7 +59,6 @@ class InfotrygdController(
     }
 
     companion object {
-
         private val LOG = LoggerFactory.getLogger(InfotrygdController::class.java)
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
     }

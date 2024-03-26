@@ -16,7 +16,6 @@ import java.io.IOException
 
 @Configuration
 class MedlemskapTestConfig {
-
     @Bean
     @Profile("mock-medlemskap")
     @Primary
@@ -45,9 +44,9 @@ class MedlemskapTestConfig {
     private val file: String = javaClass.classLoader.getResource("medlemskap/medlrespons.json").file
 
     companion object {
-
-        private val mapper = ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .registerKotlinModule()
-            .registerModule(JavaTimeModule())
+        private val mapper =
+            ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .registerKotlinModule()
+                .registerModule(JavaTimeModule())
     }
 }

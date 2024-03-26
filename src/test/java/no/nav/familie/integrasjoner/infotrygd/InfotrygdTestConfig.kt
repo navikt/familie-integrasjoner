@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Profile
 
 @Configuration
 class InfotrygdTestConfig {
-
     @Bean
     @Profile("mock-infotrygd")
     @Primary

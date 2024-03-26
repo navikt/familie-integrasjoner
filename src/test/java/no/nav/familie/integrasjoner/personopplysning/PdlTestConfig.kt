@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Profile
 
 @Configuration
 class PdlTestConfig {
-
     @Bean
     @Profile("mock-pdl")
     @Primary
@@ -20,10 +19,11 @@ class PdlTestConfig {
 
         every {
             klient.hentPerson(any(), any())
-        } returns Person(
-            navn = "Kari Normann",
-            adressebeskyttelseGradering = null,
-        )
+        } returns
+            Person(
+                navn = "Kari Normann",
+                adressebeskyttelseGradering = null,
+            )
         return klient
     }
 }
