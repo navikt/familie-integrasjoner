@@ -40,7 +40,6 @@ import java.util.UUID
 import kotlin.test.assertTrue
 
 class DokarkivServiceTest {
-
     private val navn = "Navn Navnesen"
 
     @MockK
@@ -61,12 +60,13 @@ class DokarkivServiceTest {
     fun setUp() {
         MDC.put(MDCConstants.MDC_CALL_ID, UUID.randomUUID().toString()) // settes vanligvis i LogFilter
         MockKAnnotations.init(this)
-        dokarkivService = DokarkivService(
-            dokarkivRestClient,
-            personopplysningerService,
-            dokarkivLogiskVedleggRestClient,
-            førstesideGeneratorService,
-        )
+        dokarkivService =
+            DokarkivService(
+                dokarkivRestClient,
+                personopplysningerService,
+                dokarkivLogiskVedleggRestClient,
+                førstesideGeneratorService,
+            )
     }
 
     @AfterEach
@@ -105,19 +105,20 @@ class DokarkivServiceTest {
                     adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
                 )
             }
-        val dto = ArkiverDokumentRequest(
-            FNR,
-            false,
-            listOf(
-                Dokument(
-                    PDF_DOK,
-                    Filtype.PDFA,
-                    FILNAVN,
-                    null,
-                    Dokumenttype.KONTANTSTØTTE_SØKNAD,
+        val dto =
+            ArkiverDokumentRequest(
+                FNR,
+                false,
+                listOf(
+                    Dokument(
+                        PDF_DOK,
+                        Filtype.PDFA,
+                        FILNAVN,
+                        null,
+                        Dokumenttype.KONTANTSTØTTE_SØKNAD,
+                    ),
                 ),
-            ),
-        )
+            )
 
         dokarkivService.lagJournalpost(dto)
 
@@ -145,24 +146,26 @@ class DokarkivServiceTest {
                     adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
                 )
             }
-        val dto = ArkiverDokumentRequest(
-            FNR,
-            false,
-            listOf(
-                Dokument(
-                    PDF_DOK,
-                    Filtype.PDFA,
-                    FILNAVN,
-                    null,
-                    Dokumenttype.KONTANTSTØTTE_SØKNAD,
+        val dto =
+            ArkiverDokumentRequest(
+                FNR,
+                false,
+                listOf(
+                    Dokument(
+                        PDF_DOK,
+                        Filtype.PDFA,
+                        FILNAVN,
+                        null,
+                        Dokumenttype.KONTANTSTØTTE_SØKNAD,
+                    ),
                 ),
-            ),
-            førsteside = Førsteside(
-                språkkode = Språkkode.NB,
-                navSkjemaId = "123",
-                overskriftstittel = "Testoverskrift",
-            ),
-        )
+                førsteside =
+                    Førsteside(
+                        språkkode = Språkkode.NB,
+                        navSkjemaId = "123",
+                        overskriftstittel = "Testoverskrift",
+                    ),
+            )
 
         dokarkivService.lagJournalpost(dto)
 
@@ -191,19 +194,20 @@ class DokarkivServiceTest {
                     adressebeskyttelseGradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
                 )
             }
-        val dto = ArkiverDokumentRequest(
-            FNR,
-            false,
-            listOf(
-                Dokument(
-                    PDF_DOK,
-                    Filtype.PDFA,
-                    FILNAVN,
-                    null,
-                    Dokumenttype.KONTANTSTØTTE_SØKNAD,
+        val dto =
+            ArkiverDokumentRequest(
+                FNR,
+                false,
+                listOf(
+                    Dokument(
+                        PDF_DOK,
+                        Filtype.PDFA,
+                        FILNAVN,
+                        null,
+                        Dokumenttype.KONTANTSTØTTE_SØKNAD,
+                    ),
                 ),
-            ),
-        )
+            )
 
         dokarkivService.lagJournalpost(dto)
 
@@ -230,29 +234,30 @@ class DokarkivServiceTest {
                 )
             }
 
-        val dto = ArkiverDokumentRequest(
-            FNR,
-            false,
-            listOf(
-                Dokument(
-                    PDF_DOK,
-                    Filtype.PDFA,
-                    FILNAVN,
-                    null,
-                    Dokumenttype.BARNETRYGD_VEDTAK,
+        val dto =
+            ArkiverDokumentRequest(
+                FNR,
+                false,
+                listOf(
+                    Dokument(
+                        PDF_DOK,
+                        Filtype.PDFA,
+                        FILNAVN,
+                        null,
+                        Dokumenttype.BARNETRYGD_VEDTAK,
+                    ),
                 ),
-            ),
-            listOf(
-                Dokument(
-                    PDF_DOK,
-                    Filtype.PDFA,
-                    null,
-                    TITTEL,
-                    Dokumenttype.BARNETRYGD_VEDLEGG,
+                listOf(
+                    Dokument(
+                        PDF_DOK,
+                        Filtype.PDFA,
+                        null,
+                        TITTEL,
+                        Dokumenttype.BARNETRYGD_VEDLEGG,
+                    ),
                 ),
-            ),
-            fagsakId = FAGSAK_ID,
-        )
+                fagsakId = FAGSAK_ID,
+            )
 
         dokarkivService.lagJournalpost(dto)
 
@@ -281,19 +286,20 @@ class DokarkivServiceTest {
                 )
             }
 
-        val dto = ArkiverDokumentRequest(
-            FNR,
-            false,
-            listOf(
-                Dokument(
-                    JSON_DOK,
-                    Filtype.JSON,
-                    FILNAVN,
-                    null,
-                    Dokumenttype.KONTANTSTØTTE_SØKNAD,
+        val dto =
+            ArkiverDokumentRequest(
+                FNR,
+                false,
+                listOf(
+                    Dokument(
+                        JSON_DOK,
+                        Filtype.JSON,
+                        FILNAVN,
+                        null,
+                        Dokumenttype.KONTANTSTØTTE_SØKNAD,
+                    ),
                 ),
-            ),
-        )
+            )
 
         dokarkivService.lagJournalpost(dto)
 
@@ -323,19 +329,20 @@ class DokarkivServiceTest {
                 )
             }
 
-        val dto = ArkiverDokumentRequest(
-            FNR,
-            false,
-            listOf(
-                Dokument(
-                    JSON_DOK,
-                    Filtype.JSON,
-                    FILNAVN,
-                    null,
-                    Dokumenttype.KONTANTSTØTTE_SØKNAD,
+        val dto =
+            ArkiverDokumentRequest(
+                FNR,
+                false,
+                listOf(
+                    Dokument(
+                        JSON_DOK,
+                        Filtype.JSON,
+                        FILNAVN,
+                        null,
+                        Dokumenttype.KONTANTSTØTTE_SØKNAD,
+                    ),
                 ),
-            ),
-        )
+            )
 
         val arkiverDokumentResponse = dokarkivService.lagJournalpost(dto)
 
@@ -406,7 +413,6 @@ class DokarkivServiceTest {
     }
 
     companion object {
-
         private const val FNR = "fnr"
         private val PDF_DOK = "dok".toByteArray()
         private const val ARKIV_VARIANTFORMAT = "ARKIV"

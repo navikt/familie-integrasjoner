@@ -16,6 +16,7 @@ data class Adresse(
     val landkode: String?,
     val land: String?,
 )
+
 enum class AdresseKildeCode {
     BOSTEDSADRESSE,
     OPPHOLDSADRESSE,

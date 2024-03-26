@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Profile
 
 @Configuration
 class DokdistRestClientTestConfig {
-
     @Bean
     @Profile("mock-dokdist")
     @Primary

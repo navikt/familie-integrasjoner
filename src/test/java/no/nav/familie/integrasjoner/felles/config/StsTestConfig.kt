@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Profile
 
 @Configuration
 class StsTestConfig {
-
     @Bean
     @Profile("mock-sts")
     fun stsRestClientMock(): StsRestClient {

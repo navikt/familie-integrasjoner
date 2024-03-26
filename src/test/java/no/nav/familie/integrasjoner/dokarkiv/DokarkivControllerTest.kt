@@ -49,7 +49,6 @@ import kotlin.test.assertFalse
 @ExtendWith(MockServerExtension::class)
 @MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
 class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSpringRunnerTest() {
-
     @BeforeEach
     fun setUp() {
         client.reset()
@@ -62,11 +61,12 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal returnere bad request hvis ingen hoveddokumenter`() {
-        val body = ArkiverDokumentRequest(
-            "fnr",
-            false,
-            LinkedList(),
-        )
+        val body =
+            ArkiverDokumentRequest(
+                "fnr",
+                false,
+                LinkedList(),
+            )
 
         val responseDeprecated: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
             restTemplate.exchange(
@@ -89,11 +89,12 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
                 .withQueryStringParameter("forsoekFerdigstill", "false"),
         )
             .respond(response().withBody(json(gyldigDokarkivResponse())))
-        val body = ArkiverDokumentRequest(
-            "FNR",
-            false,
-            listOf(HOVEDDOKUMENT),
-        )
+        val body =
+            ArkiverDokumentRequest(
+                "FNR",
+                false,
+                listOf(HOVEDDOKUMENT),
+            )
 
         val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
             restTemplate.exchange(
@@ -117,11 +118,12 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
                 .withQueryStringParameter("forsoekFerdigstill", "false"),
         )
             .respond(response().withBody(json(gyldigDokarkivResponse())))
-        val body = ArkiverDokumentRequest(
-            "FNR",
-            false,
-            listOf(HOVEDDOKUMENT),
-        )
+        val body =
+            ArkiverDokumentRequest(
+                "FNR",
+                false,
+                listOf(HOVEDDOKUMENT),
+            )
 
         val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
             restTemplate.exchange(
@@ -151,11 +153,12 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
                     .withHeader("Content-Type", "application/json;charset=UTF-8")
                     .withBody("Tekst fra body"),
             )
-        val body = ArkiverDokumentRequest(
-            "FNR",
-            false,
-            listOf(HOVEDDOKUMENT),
-        )
+        val body =
+            ArkiverDokumentRequest(
+                "FNR",
+                false,
+                listOf(HOVEDDOKUMENT),
+            )
 
         val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
             restTemplate.exchange(
@@ -178,12 +181,13 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
                 .withQueryStringParameter("forsoekFerdigstill", "false"),
         )
             .respond(response().withBody(json(gyldigDokarkivResponse())))
-        val body = ArkiverDokumentRequest(
-            "FNR",
-            false,
-            listOf(HOVEDDOKUMENT),
-            listOf(VEDLEGG),
-        )
+        val body =
+            ArkiverDokumentRequest(
+                "FNR",
+                false,
+                listOf(HOVEDDOKUMENT),
+                listOf(VEDLEGG),
+            )
 
         val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
             restTemplate.exchange(
@@ -212,11 +216,12 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
                     .withHeader("Content-Type", "application/json;charset=UTF-8")
                     .withBody("Tekst fra body"),
             )
-        val body = ArkiverDokumentRequest(
-            "FNR",
-            false,
-            listOf(HOVEDDOKUMENT),
-        )
+        val body =
+            ArkiverDokumentRequest(
+                "FNR",
+                false,
+                listOf(HOVEDDOKUMENT),
+            )
 
         val responseDeprecated: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
             restTemplate.exchange(
@@ -240,11 +245,12 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
         )
             .respond(response().withBody(json(gyldigDokarkivResponse())))
 
-        val body = OppdaterJournalpostRequest(
-            bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
-            tema = Tema.ENF,
-            sak = Sak("11111111", "fagsaksystem"),
-        )
+        val body =
+            OppdaterJournalpostRequest(
+                bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
+                tema = Tema.ENF,
+                sak = Sak("11111111", "fagsaksystem"),
+            )
 
         val response: ResponseEntity<Ressurs<OppdaterJournalpostResponse>> =
             restTemplate.exchange(
@@ -272,11 +278,12 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
                     .withBody(gyldigDokarkivResponse(500)),
             )
 
-        val body = OppdaterJournalpostRequest(
-            bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
-            tema = Tema.ENF,
-            sak = Sak("11111111", "fagsaksystem"),
-        )
+        val body =
+            OppdaterJournalpostRequest(
+                bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
+                tema = Tema.ENF,
+                sak = Sak("11111111", "fagsaksystem"),
+            )
 
         val response: ResponseEntity<Ressurs<OppdaterJournalpostResponse>> =
             restTemplate.exchange(
@@ -474,7 +481,6 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
     }
 
     companion object {
-
         private const val DOKARKIV_URL = "/api/arkiv"
         private const val DOKARKIV_URL_V2 = "$DOKARKIV_URL/v2"
         private const val DOKARKIV_URL_V4 = "$DOKARKIV_URL/v4"

@@ -20,7 +20,6 @@ import java.util.UUID
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(classes = [UnitTestLauncher::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 abstract class OppslagSpringRunnerTest {
-
     protected val listAppender = initLoggingEventListAppender()
     protected val loggingEvents: MutableList<ILoggingEvent> = listAppender.list
     protected val restTemplate = TestRestTemplate()
@@ -58,7 +57,10 @@ abstract class OppslagSpringRunnerTest {
         return LOCALHOST + getPort() + uri
     }
 
-    protected fun url(baseUrl: String, uri: String): String {
+    protected fun url(
+        baseUrl: String,
+        uri: String,
+    ): String {
         return baseUrl + uri
     }
 
@@ -78,22 +80,23 @@ abstract class OppslagSpringRunnerTest {
                 issuerId = issuerId,
                 subject = brukerId,
                 audience = listOf("aud-localhost"),
-                claims = mapOf(
-                    "oid" to brukerId,
-                    "azp" to clientId,
-                    "name" to saksbehandler,
-                    "NAVident" to saksbehandler,
-                    "groups" to emptyList<String>(),
-                ),
+                claims =
+                    mapOf(
+                        "oid" to brukerId,
+                        "azp" to clientId,
+                        "name" to saksbehandler,
+                        "NAVident" to saksbehandler,
+                        "groups" to emptyList<String>(),
+                    ),
                 expiry = 3600,
             ),
         ).serialize()
     }
 
     companion object {
-
         const val MOCK_SERVER_PORT = 18321
         private const val LOCALHOST = "http://localhost:"
+
         protected fun initLoggingEventListAppender(): ListAppender<ILoggingEvent> {
             val listAppender = ListAppender<ILoggingEvent>()
             listAppender.start()

@@ -33,7 +33,6 @@ class OppgaveService constructor(
     private val aktørService: AktørService,
     private val saksbehandlerService: SaksbehandlerService,
 ) {
-
     private val logger = LoggerFactory.getLogger(OppgaveService::class.java)
 
     fun finnOppgaver(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {
@@ -45,11 +44,12 @@ class OppgaveService constructor(
     }
 
     fun oppdaterOppgave(request: Oppgave): Long {
-        val oppgave: Oppgave = if (request.id == null) {
-            oppgaveRestClient.finnÅpenBehandleSakOppgave(request)
-        } else {
-            oppgaveRestClient.finnOppgaveMedId(request.id!!)
-        }
+        val oppgave: Oppgave =
+            if (request.id == null) {
+                oppgaveRestClient.finnÅpenBehandleSakOppgave(request)
+            } else {
+                oppgaveRestClient.finnOppgaveMedId(request.id!!)
+            }
         if (oppgave.status === StatusEnum.FERDIGSTILT) {
             logger.info(
                 "Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId={} journalpostId={} oppgaveId={}",
@@ -58,11 +58,12 @@ class OppgaveService constructor(
                 oppgave.id,
             )
         } else {
-            val patchOppgaveDto = oppgave.copy(
-                id = oppgave.id,
-                versjon = request.versjon ?: oppgave.versjon,
-                beskrivelse = oppgave.beskrivelse + request.beskrivelse,
-            )
+            val patchOppgaveDto =
+                oppgave.copy(
+                    id = oppgave.id,
+                    versjon = request.versjon ?: oppgave.versjon,
+                    beskrivelse = oppgave.beskrivelse + request.beskrivelse,
+                )
             oppgaveRestClient.oppdaterOppgave(patchOppgaveDto)
         }
         return oppgave.id!!
@@ -72,7 +73,11 @@ class OppgaveService constructor(
         return oppgaveRestClient.oppdaterOppgave(patchOppgave)?.id!!
     }
 
-    fun fordelOppgave(oppgaveId: Long, saksbehandler: String, versjon: Int?): Long {
+    fun fordelOppgave(
+        oppgaveId: Long,
+        saksbehandler: String,
+        versjon: Int?,
+    ): Long {
         val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
         if (oppgave.status === StatusEnum.FERDIGSTILT) {
@@ -93,18 +98,22 @@ class OppgaveService constructor(
             )
         }
 
-        val oppdatertOppgaveDto = oppgave.copy(
-            id = oppgave.id,
-            versjon = versjon ?: oppgave.versjon,
-            tilordnetRessurs = saksbehandler,
-            beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave, nySaksbehandlerIdent = saksbehandler),
-        )
+        val oppdatertOppgaveDto =
+            oppgave.copy(
+                id = oppgave.id,
+                versjon = versjon ?: oppgave.versjon,
+                tilordnetRessurs = saksbehandler,
+                beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave, nySaksbehandlerIdent = saksbehandler),
+            )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
 
         return oppgaveId
     }
 
-    fun tilbakestillFordelingPåOppgave(oppgaveId: Long, versjon: Int?): Long {
+    fun tilbakestillFordelingPåOppgave(
+        oppgaveId: Long,
+        versjon: Int?,
+    ): Long {
         val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
         if (oppgave.status === StatusEnum.FERDIGSTILT) {
@@ -125,18 +134,22 @@ class OppgaveService constructor(
             )
         }
 
-        val oppdatertOppgaveDto = oppgave.copy(
-            id = oppgave.id,
-            versjon = versjon ?: oppgave.versjon,
-            tilordnetRessurs = "",
-            beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave),
-        )
+        val oppdatertOppgaveDto =
+            oppgave.copy(
+                id = oppgave.id,
+                versjon = versjon ?: oppgave.versjon,
+                tilordnetRessurs = "",
+                beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave),
+            )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
 
         return oppgaveId
     }
 
-    private fun lagOppgaveBeskrivelseFordeling(oppgave: Oppgave, nySaksbehandlerIdent: String? = null): String {
+    private fun lagOppgaveBeskrivelseFordeling(
+        oppgave: Oppgave,
+        nySaksbehandlerIdent: String? = null,
+    ): String {
         val innloggetSaksbehandlerIdent = SikkerhetsContext.hentSaksbehandlerEllerSystembruker()
         val saksbehandlerNavn = SikkerhetsContext.hentSaksbehandlerNavn(strict = false)
 
@@ -145,51 +158,57 @@ class OppgaveService constructor(
         val prefix = "--- $formatertDato $saksbehandlerNavn ($innloggetSaksbehandlerIdent) ---\n"
         val endring = "Oppgave er flyttet fra ${oppgave.tilordnetRessurs ?: "<ingen>"} til ${nySaksbehandlerIdent ?: "<ingen>"}"
 
-        val nåværendeBeskrivelse = if (oppgave.beskrivelse != null) {
-            "\n\n${oppgave.beskrivelse}"
-        } else {
-            ""
-        }
+        val nåværendeBeskrivelse =
+            if (oppgave.beskrivelse != null) {
+                "\n\n${oppgave.beskrivelse}"
+            } else {
+                ""
+            }
 
         return prefix + endring + nåværendeBeskrivelse
     }
 
     fun opprettOppgave(request: OpprettOppgaveRequest): Long {
-        val oppgave = Oppgave(
-            aktoerId = if (erAktørIdEllerFnr(request.ident)) getAktørId(request.ident!!, request.tema) else null,
-            orgnr = if (request.ident?.gruppe == IdentGruppe.ORGNR) request.ident!!.ident else null,
-            samhandlernr = if (request.ident?.gruppe == IdentGruppe.SAMHANDLERNR) request.ident!!.ident else null,
-            saksreferanse = request.saksId,
-            journalpostId = request.journalpostId,
-            prioritet = request.prioritet,
-            tema = request.tema,
-            tildeltEnhetsnr = request.enhetsnummer,
-            behandlingstema = request.behandlingstema,
-            fristFerdigstillelse = request.fristFerdigstillelse.format(DateTimeFormatter.ISO_DATE),
-            aktivDato = request.aktivFra.format(DateTimeFormatter.ISO_DATE),
-            oppgavetype = request.oppgavetype.value,
-            beskrivelse = request.beskrivelse,
-            behandlingstype = request.behandlingstype,
-            tilordnetRessurs = request.tilordnetRessurs?.let { saksbehandlerService.hentNavIdent(it) },
-            behandlesAvApplikasjon = request.behandlesAvApplikasjon,
-            mappeId = request.mappeId,
-        )
+        val oppgave =
+            Oppgave(
+                aktoerId = if (erAktørIdEllerFnr(request.ident)) getAktørId(request.ident!!, request.tema) else null,
+                orgnr = if (request.ident?.gruppe == IdentGruppe.ORGNR) request.ident!!.ident else null,
+                samhandlernr = if (request.ident?.gruppe == IdentGruppe.SAMHANDLERNR) request.ident!!.ident else null,
+                saksreferanse = request.saksId,
+                journalpostId = request.journalpostId,
+                prioritet = request.prioritet,
+                tema = request.tema,
+                tildeltEnhetsnr = request.enhetsnummer,
+                behandlingstema = request.behandlingstema,
+                fristFerdigstillelse = request.fristFerdigstillelse.format(DateTimeFormatter.ISO_DATE),
+                aktivDato = request.aktivFra.format(DateTimeFormatter.ISO_DATE),
+                oppgavetype = request.oppgavetype.value,
+                beskrivelse = request.beskrivelse,
+                behandlingstype = request.behandlingstype,
+                tilordnetRessurs = request.tilordnetRessurs?.let { saksbehandlerService.hentNavIdent(it) },
+                behandlesAvApplikasjon = request.behandlesAvApplikasjon,
+                mappeId = request.mappeId,
+            )
 
         return oppgaveRestClient.opprettOppgave(oppgave)
     }
 
-    fun ferdigstill(oppgaveId: Long, versjon: Int?) {
+    fun ferdigstill(
+        oppgaveId: Long,
+        versjon: Int?,
+    ) {
         val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
         validerVersjon(versjon, oppgave)
 
         when (oppgave.status) {
             StatusEnum.OPPRETTET, StatusEnum.AAPNET, StatusEnum.UNDER_BEHANDLING -> {
-                val patchOppgaveDto = oppgave.copy(
-                    id = oppgave.id,
-                    versjon = versjon ?: oppgave.versjon,
-                    status = StatusEnum.FERDIGSTILT,
-                )
+                val patchOppgaveDto =
+                    oppgave.copy(
+                        id = oppgave.id,
+                        versjon = versjon ?: oppgave.versjon,
+                        status = StatusEnum.FERDIGSTILT,
+                    )
                 oppgaveRestClient.oppdaterOppgave(patchOppgaveDto)
             }
 
@@ -230,7 +249,10 @@ class OppgaveService constructor(
     private fun erAktørIdEllerFnr(oppgaveIdent: OppgaveIdentV2?) =
         oppgaveIdent?.gruppe == IdentGruppe.FOLKEREGISTERIDENT || oppgaveIdent?.gruppe == IdentGruppe.AKTOERID
 
-    private fun getAktørId(oppgaveIdentV2: OppgaveIdentV2, tema: Tema): String {
+    private fun getAktørId(
+        oppgaveIdentV2: OppgaveIdentV2,
+        tema: Tema,
+    ): String {
         return if (oppgaveIdentV2.gruppe == IdentGruppe.AKTOERID) {
             oppgaveIdentV2.ident ?: throw IllegalArgumentException("Mangler ident for gruppe=${oppgaveIdentV2.gruppe}")
         } else {
@@ -254,13 +276,21 @@ class OppgaveService constructor(
         return finnMapper(finnMappeRequest).mapper
     }
 
-    fun tilordneEnhet(oppgaveId: Long, enhet: String, fjernMappeFraOppgave: Boolean, versjon: Int?) {
+    fun tilordneEnhet(
+        oppgaveId: Long,
+        enhet: String,
+        fjernMappeFraOppgave: Boolean,
+        versjon: Int?,
+    ) {
         val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
         val mappeId = if (fjernMappeFraOppgave) null else oppgave.mappeId
         oppgaveRestClient.oppdaterEnhet(OppgaveByttEnhet(oppgaveId, enhet, versjon ?: oppgave.versjon!!, mappeId))
     }
 
-    fun fjernBehandlesAvApplikasjon(oppgaveId: Long, versjon: Int) {
+    fun fjernBehandlesAvApplikasjon(
+        oppgaveId: Long,
+        versjon: Int,
+    ) {
         oppgaveRestClient.fjernBehandlesAvApplikasjon(OppgaveFjernBehandlesAvApplikasjon(oppgaveId, versjon))
     }
 }

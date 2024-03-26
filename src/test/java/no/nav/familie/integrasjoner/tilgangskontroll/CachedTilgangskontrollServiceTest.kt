@@ -19,22 +19,23 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class CachedTilgangskontrollServiceTest {
-
     private val egenAnsattService = mockk<EgenAnsattService>()
     private val personopplysningerService = mockk<PersonopplysningerService>()
     private val kode7Id = "6"
     private val kode6Id = "7"
 
-    private val tilgangConfig = TilgangConfig(
-        kode7 = AdRolle(kode7Id, ""),
-        kode6 = AdRolle(kode6Id, ""),
-        egenAnsatt = AdRolle("", ""),
-    )
-    private val cachedTilgangskontrollService = CachedTilgangskontrollService(
-        egenAnsattService,
-        personopplysningerService,
-        tilgangConfig,
-    )
+    private val tilgangConfig =
+        TilgangConfig(
+            kode7 = AdRolle(kode7Id, ""),
+            kode6 = AdRolle(kode6Id, ""),
+            egenAnsatt = AdRolle("", ""),
+        )
+    private val cachedTilgangskontrollService =
+        CachedTilgangskontrollService(
+            egenAnsattService,
+            personopplysningerService,
+            tilgangConfig,
+        )
 
     private val jwtToken = mockk<JwtToken>(relaxed = true)
     private val jwtTokenClaims = mockk<JwtTokenClaims>()
@@ -189,7 +190,10 @@ internal class CachedTilgangskontrollServiceTest {
         )
     }
 
-    private fun lagPersonMedBeskyttelse(sivilstand: ADRESSEBESKYTTELSEGRADERING?, personIdent: String) =
+    private fun lagPersonMedBeskyttelse(
+        sivilstand: ADRESSEBESKYTTELSEGRADERING?,
+        personIdent: String,
+    ) =
         sivilstand?.let { listOf(PersonMedAdresseBeskyttelse(personIdent, it)) } ?: emptyList()
 
     private fun mockHentPersonMedAdressebeskyttelse(adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING = ADRESSEBESKYTTELSEGRADERING.UGRADERT) {

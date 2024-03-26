@@ -24,7 +24,6 @@ import java.nio.file.Files
 @TestPropertySource(properties = ["MEDL2_URL=http://localhost:28085"])
 @AutoConfigureWireMock(port = 28085)
 class MedlemskapControllerTest : OppslagSpringRunnerTest() {
-
     @BeforeEach
     fun setUp() {
         headers.setBearerAuth(lokalTestToken)
@@ -42,11 +41,12 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
                 ),
         )
 
-        val response: ResponseEntity<Ressurs<Medlemskapsinfo>> = restTemplate.exchange(
-            localhost(MEDLEMSKAP_URL),
-            HttpMethod.POST,
-            HttpEntity(PersonIdent("12345678911"), headers),
-        )
+        val response: ResponseEntity<Ressurs<Medlemskapsinfo>> =
+            restTemplate.exchange(
+                localhost(MEDLEMSKAP_URL),
+                HttpMethod.POST,
+                HttpEntity(PersonIdent("12345678911"), headers),
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.success(null).status)
@@ -64,11 +64,12 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
                 ),
         )
 
-        val response: ResponseEntity<Ressurs<Medlemskapsinfo>> = restTemplate.exchange(
-            localhost(MEDLEMSKAP_URL),
-            HttpMethod.POST,
-            HttpEntity(PersonIdent("12345678911"), headers),
-        )
+        val response: ResponseEntity<Ressurs<Medlemskapsinfo>> =
+            restTemplate.exchange(
+                localhost(MEDLEMSKAP_URL),
+                HttpMethod.POST,
+                HttpEntity(PersonIdent("12345678911"), headers),
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
     }
@@ -81,7 +82,6 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
     }
 
     companion object {
-
         private const val MEDLEMSKAP_URL = "/api/medlemskap/v3"
     }
 }

@@ -11,7 +11,6 @@ class SaksbehandlerService(
     private val azureGraphRestClient: AzureGraphRestClient,
     private val environment: Environment,
 ) {
-
     private val lengdeNavIdent = 7
 
     fun hentSaksbehandler(id: String): Saksbehandler {
@@ -36,16 +35,17 @@ class SaksbehandlerService(
             )
         }
 
-        val azureAdBruker = if (id.length == lengdeNavIdent) {
-            val azureAdBrukere = azureGraphRestClient.finnSaksbehandler(id)
+        val azureAdBruker =
+            if (id.length == lengdeNavIdent) {
+                val azureAdBrukere = azureGraphRestClient.finnSaksbehandler(id)
 
-            if (azureAdBrukere.value.size != 1) {
-                error("Feil ved søk. Oppslag på navIdent $id returnerte ${azureAdBrukere.value.size} forekomster.")
+                if (azureAdBrukere.value.size != 1) {
+                    error("Feil ved søk. Oppslag på navIdent $id returnerte ${azureAdBrukere.value.size} forekomster.")
+                }
+                azureAdBrukere.value.first()
+            } else {
+                azureGraphRestClient.hentSaksbehandler(id)
             }
-            azureAdBrukere.value.first()
-        } else {
-            azureGraphRestClient.hentSaksbehandler(id)
-        }
 
         return Saksbehandler(
             azureAdBruker.id,
@@ -60,7 +60,6 @@ class SaksbehandlerService(
         saksbehandlerId.takeIf { it.length == lengdeNavIdent } ?: hentSaksbehandler(saksbehandlerId).navIdent
 
     companion object {
-
         const val ID_VEDTAKSLØSNINGEN = "VL"
     }
 }

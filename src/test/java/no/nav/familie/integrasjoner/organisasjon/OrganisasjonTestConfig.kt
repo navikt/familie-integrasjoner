@@ -12,15 +12,15 @@ import org.springframework.context.annotation.Profile
 
 @Configuration
 class OrganisasjonTestConfig {
-
     @Bean
     @Profile("mock-organisasjon")
     @Primary
     fun organisasjonSoapClientMock(): OrganisasjonRestClient {
         val organisasjonRestClient = mockk<OrganisasjonRestClient>()
-        val organisasjon = HentOrganisasjonResponse(
-            navn = Navn("Navn på bedrift"),
-        )
+        val organisasjon =
+            HentOrganisasjonResponse(
+                navn = Navn("Navn på bedrift"),
+            )
         every { organisasjonRestClient.hentOrganisasjon(any()) } returns organisasjon
 
         return organisasjonRestClient

@@ -16,16 +16,19 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping(value = ["/api/tilgang"])
 @Profile("!e2e")
 class TilgangskontrollController(private val tilgangskontrollService: TilgangskontrollService) {
-
     @GetMapping(path = ["/person"])
     @ProtectedWithClaims(issuer = "azuread")
-    fun tilgangTilPerson(@RequestHeader(name = "Nav-Personident") personIdent: String): Tilgang {
+    fun tilgangTilPerson(
+        @RequestHeader(name = "Nav-Personident") personIdent: String,
+    ): Tilgang {
         return tilgangskontrollService.sjekkTilgangTilBruker(personIdent)
     }
 
     @PostMapping(path = ["/personer"])
     @ProtectedWithClaims(issuer = "azuread")
-    fun tilgangTilPersoner(@RequestBody personIdenter: List<String>): List<Tilgang> {
+    fun tilgangTilPersoner(
+        @RequestBody personIdenter: List<String>,
+    ): List<Tilgang> {
         return tilgangskontrollService.sjekkTilgangTilBrukere(personIdenter)
     }
 

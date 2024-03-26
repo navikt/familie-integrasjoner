@@ -11,26 +11,27 @@ import org.springframework.context.annotation.Import
 class DevLauncher
 
 fun main(args: Array<String>) {
-    val app = SpringApplicationBuilder(ApplicationConfig::class.java)
-        .profiles(
-            "dev",
-            "mock-aktor",
-            "mock-dokarkiv",
-            "mock-dokdist",
-            "mock-dokdistkanal",
-            "mock-egenansatt",
-            "mock-infotrygd",
-            "mock-infotrygdsak",
-            "mock-medlemskap",
-            "mock-oppgave",
-            "mock-personopplysninger",
-            "mock-saf",
-            "mock-sts",
-            "mock-kodeverk",
-            "mock-pdl",
-            "mock-aareg",
-            "mock-sak",
-            "mock-regoppslag",
-        ).build()
+    val app =
+        SpringApplicationBuilder(ApplicationConfig::class.java)
+            .profiles(
+                "dev",
+                "mock-aktor",
+                "mock-dokarkiv",
+                "mock-dokdist",
+                "mock-dokdistkanal",
+                "mock-egenansatt",
+                "mock-infotrygd",
+                "mock-infotrygdsak",
+                "mock-medlemskap",
+                "mock-oppgave",
+                "mock-personopplysninger",
+                "mock-saf",
+                "mock-sts",
+                "mock-kodeverk",
+                "mock-pdl",
+                "mock-aareg",
+                "mock-sak",
+                "mock-regoppslag",
+            ).build()
     app.run(*args)
 }

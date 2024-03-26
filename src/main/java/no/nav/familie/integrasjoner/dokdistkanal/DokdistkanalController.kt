@@ -32,7 +32,6 @@ class DokdistkanalController(
     private val dokdistkanalRestClient: DokdistkanalRestClient,
     private val personopplysningerService: PersonopplysningerService,
 ) {
-
     private val logger: Logger = LoggerFactory.getLogger(DokdistkanalController::class.java)
 
     @PostMapping(path = ["/{tema}"])
@@ -59,12 +58,13 @@ class DokdistkanalController(
         tema: Tema,
         valid: (Distribusjonskanal, String) -> Ressurs<Distribusjonskanal>,
     ): Ressurs<Distribusjonskanal> {
-        var distribusjonskanal = try {
-            Distribusjonskanal.valueOf(distribusjonskanal)
-        } catch (e: IllegalArgumentException) {
-            logger.error("Distribusjonskanal-kontrakten er utdatert og må oppdateres med ny verdi for $distribusjonskanal")
-            Distribusjonskanal.UKJENT
-        }
+        var distribusjonskanal =
+            try {
+                Distribusjonskanal.valueOf(distribusjonskanal)
+            } catch (e: IllegalArgumentException) {
+                logger.error("Distribusjonskanal-kontrakten er utdatert og må oppdateres med ny verdi for $distribusjonskanal")
+                Distribusjonskanal.UKJENT
+            }
         var melding = regelBegrunnelse
 
         if (distribusjonskanal == Distribusjonskanal.PRINT && !mottaker.harPostadresse(tema)) {

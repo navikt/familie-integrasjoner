@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.util.LinkedMultiValueMap
 
 internal class QueryParamUtilTest {
-
     @Test
     fun `toQueryParams ivaretar lister som lister`() {
         val queryParams: LinkedMultiValueMap<String, String> = toQueryParams(Testdata())

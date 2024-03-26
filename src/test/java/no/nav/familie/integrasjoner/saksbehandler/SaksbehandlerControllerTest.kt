@@ -25,7 +25,6 @@ import java.util.UUID
 @ExtendWith(MockServerExtension::class)
 @MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
 class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTest() {
-
     @BeforeEach
     fun setUp() {
         client.reset()
@@ -53,14 +52,16 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
                                            }""",
                     ),
             )
-        val uri = UriComponentsBuilder.fromHttpUrl(localhost(BASE_URL))
-            .pathSegment(id.toString()).toUriString()
+        val uri =
+            UriComponentsBuilder.fromHttpUrl(localhost(BASE_URL))
+                .pathSegment(id.toString()).toUriString()
 
-        val response: ResponseEntity<Ressurs<Saksbehandler>> = restTemplate.exchange(
-            uri,
-            HttpMethod.GET,
-            HttpEntity<String>(headers),
-        )
+        val response: ResponseEntity<Ressurs<Saksbehandler>> =
+            restTemplate.exchange(
+                uri,
+                HttpMethod.GET,
+                HttpEntity<String>(headers),
+            )
         print(id)
         val saksbehandler = response.body!!.data!!
         assertThat(saksbehandler.fornavn).isEqualTo("Bob")
@@ -105,14 +106,16 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
                                            }""",
                     ),
             )
-        val uri = UriComponentsBuilder.fromHttpUrl(localhost(BASE_URL))
-            .pathSegment(navIdent).toUriString()
+        val uri =
+            UriComponentsBuilder.fromHttpUrl(localhost(BASE_URL))
+                .pathSegment(navIdent).toUriString()
 
-        val response: ResponseEntity<Ressurs<Saksbehandler>> = restTemplate.exchange(
-            uri,
-            HttpMethod.GET,
-            HttpEntity<String>(headers),
-        )
+        val response: ResponseEntity<Ressurs<Saksbehandler>> =
+            restTemplate.exchange(
+                uri,
+                HttpMethod.GET,
+                HttpEntity<String>(headers),
+            )
         val saksbehandler = response.body!!.data!!
         assertThat(saksbehandler.fornavn).isEqualTo("Bob")
         assertThat(saksbehandler.etternavn).isEqualTo("Burger")
@@ -122,7 +125,6 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
     }
 
     companion object {
-
         const val BASE_URL = "/api/saksbehandler"
     }
 }

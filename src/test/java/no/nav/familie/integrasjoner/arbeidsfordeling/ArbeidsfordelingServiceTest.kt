@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager
 
 internal class ArbeidsfordelingServiceTest {
-
     private val restClient: ArbeidsfordelingRestClient = mockk()
     private val pdlRestClient: PdlRestClient = mockk()
     private val personopplysningerService: PersonopplysningerService = mockk()
@@ -76,12 +75,13 @@ internal class ArbeidsfordelingServiceTest {
                 ident,
                 any(),
             )
-        } returns GeografiskTilknytningDto(
-            gtType = GeografiskTilknytningType.KOMMUNE,
-            gtKommune = "2372",
-            gtBydel = null,
-            gtLand = null,
-        )
+        } returns
+            GeografiskTilknytningDto(
+                gtType = GeografiskTilknytningType.KOMMUNE,
+                gtKommune = "2372",
+                gtBydel = null,
+                gtLand = null,
+            )
 
         every { restClient.hentEnhet(any()) } returns mockk()
 
@@ -235,23 +235,29 @@ internal class ArbeidsfordelingServiceTest {
     private fun mockPersonInfoForBehandlendeEnhetForPerson() {
         every {
             personopplysningerService.hentPersoninfo(ident, any())
-        } returns Person(
-            navn = "",
-            adressebeskyttelseGradering = null,
-        )
+        } returns
+            Person(
+                navn = "",
+                adressebeskyttelseGradering = null,
+            )
         every {
             pdlRestClient.hentGeografiskTilknytning(any(), any())
-        } returns GeografiskTilknytningDto(
-            gtType = GeografiskTilknytningType.KOMMUNE,
-            gtBydel = null,
-            gtKommune = "3032",
-            gtLand = null,
-        )
+        } returns
+            GeografiskTilknytningDto(
+                gtType = GeografiskTilknytningType.KOMMUNE,
+                gtBydel = null,
+                gtKommune = "3032",
+                gtLand = null,
+            )
 
         every { egenAnsattService.erEgenAnsatt(eq(ident)) } returns false
     }
 
-    private fun mockPersonInfo(kode6: Set<String>, kode7: Set<String>, egenAnsatte: Set<String>) {
+    private fun mockPersonInfo(
+        kode6: Set<String>,
+        kode7: Set<String>,
+        egenAnsatte: Set<String>,
+    ) {
         val ektefelle = PersonMedAdresseBeskyttelse(ektefelleIdent, utledAdressebeskyttelse(ektefelleIdent, kode6, kode7))
         val fullmakt = PersonMedAdresseBeskyttelse(fullmaktIdent, utledAdressebeskyttelse(fullmaktIdent, kode6, kode7))
         val barnX = PersonMedAdresseBeskyttelse(barnXIdent, utledAdressebeskyttelse(barnXIdent, kode6, kode7))
@@ -260,14 +266,15 @@ internal class ArbeidsfordelingServiceTest {
             PersonMedAdresseBeskyttelse(annenForelderXIdent, utledAdressebeskyttelse(annenForelderXIdent, kode6, kode7))
         val annenForelderZ =
             PersonMedAdresseBeskyttelse(annenForelderZIdent, utledAdressebeskyttelse(annenForelderZIdent, kode6, kode7))
-        val relasjonerUtenGradering = PersonMedRelasjoner(
-            personIdent = ident,
-            adressebeskyttelse = utledAdressebeskyttelse(ident, kode6, kode7),
-            sivilstand = listOf(ektefelle),
-            fullmakt = listOf(fullmakt),
-            barn = listOf(barnX, barnZ),
-            barnsForeldrer = listOf(annenForelderX, annenForelderZ),
-        )
+        val relasjonerUtenGradering =
+            PersonMedRelasjoner(
+                personIdent = ident,
+                adressebeskyttelse = utledAdressebeskyttelse(ident, kode6, kode7),
+                sivilstand = listOf(ektefelle),
+                fullmakt = listOf(fullmakt),
+                barn = listOf(barnX, barnZ),
+                barnsForeldrer = listOf(annenForelderX, annenForelderZ),
+            )
         every {
             personopplysningerService.hentPersonMedRelasjoner(ident, any())
         } returns relasjonerUtenGradering
@@ -276,15 +283,20 @@ internal class ArbeidsfordelingServiceTest {
 
         every {
             pdlRestClient.hentGeografiskTilknytning(any(), any())
-        } returns GeografiskTilknytningDto(
-            gtType = GeografiskTilknytningType.KOMMUNE,
-            gtBydel = null,
-            gtKommune = "3032",
-            gtLand = null,
-        )
+        } returns
+            GeografiskTilknytningDto(
+                gtType = GeografiskTilknytningType.KOMMUNE,
+                gtBydel = null,
+                gtKommune = "3032",
+                gtLand = null,
+            )
     }
 
-    fun utledAdressebeskyttelse(personIdent: String, kode6: Set<String>, kode7: Set<String>): ADRESSEBESKYTTELSEGRADERING? {
+    fun utledAdressebeskyttelse(
+        personIdent: String,
+        kode6: Set<String>,
+        kode7: Set<String>,
+    ): ADRESSEBESKYTTELSEGRADERING? {
         return when {
             kode6.contains(personIdent) -> STRENGT_FORTROLIG
             kode7.contains(personIdent) -> FORTROLIG

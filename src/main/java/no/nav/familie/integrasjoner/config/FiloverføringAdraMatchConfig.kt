@@ -12,7 +12,6 @@ class FiloverføringAdraMatchConfig(
     val passphrase: String,
     val directory: String = "inbound",
 ) {
-
     val privateKeyDecoded = base64Decode(privateKey)
 
     private fun base64Decode(encoded: String): ByteArray {
@@ -20,7 +19,6 @@ class FiloverføringAdraMatchConfig(
     }
 
     companion object {
-
         const val JSCH_CHANNEL_TYPE_SFTP = "sftp"
     }
 }

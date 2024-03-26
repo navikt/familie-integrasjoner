@@ -29,13 +29,13 @@ class DokarkivRestClient(
     @Qualifier("jwtBearerOboOgSts") private val restOperations: RestOperations,
 ) :
     AbstractPingableRestClient(restOperations, "dokarkiv.opprett") {
-
     override val pingUri: URI = UriComponentsBuilder.fromUri(dokarkivUrl).path(PATH_PING).build().toUri()
 
     private val ferdigstillJournalPostClient = FerdigstillJournalPostClient(restOperations, dokarkivUrl)
 
-    fun lagJournalpostUri(ferdigstill: Boolean): URI = UriComponentsBuilder
-        .fromUri(dokarkivUrl).path(PATH_JOURNALPOST).query(QUERY_FERDIGSTILL).buildAndExpand(ferdigstill).toUri()
+    fun lagJournalpostUri(ferdigstill: Boolean): URI =
+        UriComponentsBuilder
+            .fromUri(dokarkivUrl).path(PATH_JOURNALPOST).query(QUERY_FERDIGSTILL).buildAndExpand(ferdigstill).toUri()
 
     fun lagJournalpost(
         jp: OpprettJournalpostRequest,
@@ -63,11 +63,19 @@ class DokarkivRestClient(
         }
     }
 
-    fun ferdigstillJournalpost(journalpostId: String, journalførendeEnhet: String, navIdent: String? = null) {
+    fun ferdigstillJournalpost(
+        journalpostId: String,
+        journalførendeEnhet: String,
+        navIdent: String? = null,
+    ) {
         ferdigstillJournalPostClient.ferdigstillJournalpost(journalpostId, journalførendeEnhet, navIdent)
     }
 
-    private fun oppslagExceptionVed(requestType: String, e: RuntimeException, brukerId: String?): Throwable {
+    private fun oppslagExceptionVed(
+        requestType: String,
+        e: RuntimeException,
+        brukerId: String?,
+    ): Throwable {
         val message = "Feil ved $requestType av journalpost "
         val sensitiveInfo = if (e is HttpStatusCodeException) e.responseBodyAsString else "$message for bruker $brukerId "
         val httpStatus = if (e is HttpStatusCodeException) e.statusCode else null
@@ -87,13 +95,16 @@ class DokarkivRestClient(
      */
     private class FerdigstillJournalPostClient(restOperations: RestOperations, private val dokarkivUrl: URI) :
         AbstractRestClient(restOperations, "dokarkiv.ferdigstill") {
-
         private fun ferdigstillJournalpostUri(journalpostId: String): URI {
             return UriComponentsBuilder
                 .fromUri(dokarkivUrl).path(String.format(PATH_FERDIGSTILL_JOURNALPOST, journalpostId)).build().toUri()
         }
 
-        fun ferdigstillJournalpost(journalpostId: String, journalførendeEnhet: String, navIdent: String?) {
+        fun ferdigstillJournalpost(
+            journalpostId: String,
+            journalførendeEnhet: String,
+            navIdent: String?,
+        ) {
             val uri = ferdigstillJournalpostUri(journalpostId)
             try {
                 patchForEntity<String>(uri, FerdigstillJournalPost(journalførendeEnhet), headers(navIdent))
@@ -110,7 +121,6 @@ class DokarkivRestClient(
     }
 
     companion object {
-
         private val logger = LoggerFactory.getLogger(DokarkivRestClient::class.java)
 
         private const val PATH_PING = "actuator/health/liveness"

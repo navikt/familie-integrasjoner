@@ -9,11 +9,10 @@ import org.springframework.context.annotation.Profile
 
 @Configuration
 class SkyggesakTestConfig {
-
     @Bean
     @Profile("mock-sak")
     @Primary
-    fun SkyggesakMockRestClient(): SkyggesakRestClient {
+    fun skyggesakMockRestClient(): SkyggesakRestClient {
         return mockk(relaxed = true)
     }
 }

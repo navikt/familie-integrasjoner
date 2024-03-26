@@ -8,7 +8,6 @@ import org.springframework.web.client.HttpClientErrorException
 
 @Service
 class OrganisasjonService(private val organisasjonRestClient: OrganisasjonRestClient) {
-
     @Cacheable("hentOrganisasjon")
     fun hentOrganisasjon(orgnr: String): Organisasjon {
         val organisasjonResponse = organisasjonRestClient.hentOrganisasjon(orgnr)

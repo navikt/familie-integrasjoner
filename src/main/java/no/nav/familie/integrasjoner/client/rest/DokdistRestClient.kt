@@ -16,7 +16,6 @@ class DokdistRestClient(
     @Qualifier("sts") private val restTemplate: RestOperations,
 ) :
     AbstractPingableRestClient(restTemplate, "dokdist") {
-
     override val pingUri: URI = UriUtil.uri(dokdistUri, PATH_PING)
 
     val distribuerUri = UriUtil.uri(dokdistUri, PATH_DISTRIBUERJOURNALPOST)

@@ -25,7 +25,6 @@ class SafHentDokumentRestClient(
     @Qualifier("jwtBearer") val restTemplate: RestOperations,
 ) :
     AbstractRestClient(restTemplate, "saf.journalpost") {
-
     private val safHentdokumentUri = UriComponentsBuilder.fromUri(safBaseUrl).path(PATH_HENT_DOKUMENT)
 
     private fun httpHeaders(): HttpHeaders {
@@ -35,7 +34,11 @@ class SafHentDokumentRestClient(
         }
     }
 
-    fun hentDokument(journalpostId: String, dokumentInfoId: String, variantFormat: String): ByteArray {
+    fun hentDokument(
+        journalpostId: String,
+        dokumentInfoId: String,
+        variantFormat: String,
+    ): ByteArray {
         val hentDokumentUri = safHentdokumentUri.buildAndExpand(journalpostId, dokumentInfoId, variantFormat).toUri()
         try {
             return getForEntity(hentDokumentUri, httpHeaders())

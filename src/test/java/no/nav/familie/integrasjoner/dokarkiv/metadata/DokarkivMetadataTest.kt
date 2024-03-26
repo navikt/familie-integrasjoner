@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test
 import kotlin.reflect.KClass
 
 internal class DokarkivMetadataTest {
-
     @Test
     internal fun `brevkode må være under 50 tegn`() {
         val tittelOver50Tegn = hentAlleDokumentMedadataKlasser().filter { (it.brevkode?.length ?: 0) > 50 }
@@ -28,9 +27,10 @@ internal class DokarkivMetadataTest {
         }
     }
 
-    private fun hentAlleDokumentMedadataKlasser() = Dokumentmetadata::class.sealedSubclasses
-        .hentNøstedeKlasser()
-        .mapNotNull { it.objectInstance }
+    private fun hentAlleDokumentMedadataKlasser() =
+        Dokumentmetadata::class.sealedSubclasses
+            .hentNøstedeKlasser()
+            .mapNotNull { it.objectInstance }
 
     private fun <T : Any> List<KClass<out T>>.hentNøstedeKlasser(): List<KClass<out T>> =
         flatMap {

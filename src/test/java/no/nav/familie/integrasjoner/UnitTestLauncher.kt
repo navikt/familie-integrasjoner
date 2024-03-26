@@ -13,23 +13,24 @@ import org.springframework.context.annotation.Profile
 class UnitTestLauncher
 
 fun main(args: Array<String>) {
-    val app = SpringApplicationBuilder(ApplicationConfig::class.java)
-        .profiles(
-            "integrasjonstest",
-            "mock-aktor",
-            "mock-dokarkiv",
-            "mock-dokdist",
-            "mock-dokdistkanal",
-            "mock-egenansatt",
-            "mock-infotrygd",
-            "mock-infotrygdsak",
-            "mock-medlemskap",
-            "mock-oppgave",
-            "mock-personopplysninger",
-            "mock-saf",
-            "mock-sts",
-            "mock-pdl",
-            "mock-regoppslag",
-        ).build()
+    val app =
+        SpringApplicationBuilder(ApplicationConfig::class.java)
+            .profiles(
+                "integrasjonstest",
+                "mock-aktor",
+                "mock-dokarkiv",
+                "mock-dokdist",
+                "mock-dokdistkanal",
+                "mock-egenansatt",
+                "mock-infotrygd",
+                "mock-infotrygdsak",
+                "mock-medlemskap",
+                "mock-oppgave",
+                "mock-personopplysninger",
+                "mock-saf",
+                "mock-sts",
+                "mock-pdl",
+                "mock-regoppslag",
+            ).build()
     app.run(*args)
 }

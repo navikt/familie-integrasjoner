@@ -18,7 +18,6 @@ class ArbeidsfordelingRestClient(
     restOperations: RestOperations,
 ) :
     AbstractPingableRestClient(restOperations, "norg2") {
-
     fun hentEnhet(geografiskOmråde: String): NavKontorEnhet {
         return getForEntity(
             UriComponentsBuilder.fromUri(norg2Uri)
@@ -38,10 +37,11 @@ class ArbeidsfordelingRestClient(
     }
 
     fun finnBehandlendeEnhetMedBesteMatch(arbeidsfordelingskriterie: ArbeidsfordelingKriterie): List<Enhet> {
-        val uri = UriComponentsBuilder.fromUri(norg2Uri)
-            .pathSegment("api/v1/arbeidsfordeling/enheter/bestmatch")
-            .build()
-            .toUri()
+        val uri =
+            UriComponentsBuilder.fromUri(norg2Uri)
+                .pathSegment("api/v1/arbeidsfordeling/enheter/bestmatch")
+                .build()
+                .toUri()
         return postForEntity<List<NavKontorEnhet>>(uri, arbeidsfordelingskriterie).map { Enhet(enhetId = it.enhetNr, enhetNavn = it.navn) }
     }
 

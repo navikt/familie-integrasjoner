@@ -31,19 +31,20 @@ class SafRestClient(
     @Qualifier("jwtBearer") val restTemplate: RestOperations,
 ) :
     AbstractRestClient(restTemplate, "saf.journalpost") {
-
     private val safUri = UriUtil.uri(safBaseUrl, PATH_GRAPHQL)
 
     fun hentJournalpost(journalpostId: String): Journalpost {
-        val safJournalpostRequest = SafJournalpostRequest(
-            SafRequestVariabler(journalpostId),
-            graphqlQuery("/saf/journalpostForId.graphql"),
-        )
-        val response = postForEntity<SafJournalpostResponse<SafJournalpostData>>(
-            safUri,
-            safJournalpostRequest,
-            httpHeaders(),
-        )
+        val safJournalpostRequest =
+            SafJournalpostRequest(
+                SafRequestVariabler(journalpostId),
+                graphqlQuery("/saf/journalpostForId.graphql"),
+            )
+        val response =
+            postForEntity<SafJournalpostResponse<SafJournalpostData>>(
+                safUri,
+                safJournalpostRequest,
+                httpHeaders(),
+            )
         if (!response.harFeil()) {
             return response.data?.journalpost ?: throw JournalpostRestClientException(
                 "Kan ikke hente journalpost",
@@ -67,18 +68,20 @@ class SafRestClient(
     }
 
     fun finnJournalposter(journalposterForVedleggRequest: JournalposterForVedleggRequest): List<Journalpost> {
-        val safJournalpostRequest = SafJournalpostRequest(
-            journalposterForVedleggRequest.tilSafRequest(),
-            graphqlQuery("/saf/journalposterForBruker.graphql"),
-        )
+        val safJournalpostRequest =
+            SafJournalpostRequest(
+                journalposterForVedleggRequest.tilSafRequest(),
+                graphqlQuery("/saf/journalposterForBruker.graphql"),
+            )
         return finnJournalposter(safJournalpostRequest)
     }
 
     fun finnJournalposter(journalposterForBrukerRequest: JournalposterForBrukerRequest): List<Journalpost> {
-        val safJournalpostRequest = SafJournalpostRequest(
-            journalposterForBrukerRequest.tilSafRequestForBruker(),
-            graphqlQuery("/saf/journalposterForBruker.graphql"),
-        )
+        val safJournalpostRequest =
+            SafJournalpostRequest(
+                journalposterForBrukerRequest.tilSafRequestForBruker(),
+                graphqlQuery("/saf/journalposterForBruker.graphql"),
+            )
         return finnJournalposter(safJournalpostRequest)
     }
 
@@ -122,7 +125,6 @@ class SafRestClient(
     }
 
     companion object {
-
         private const val PATH_GRAPHQL = "graphql"
         private const val NAV_CALL_ID = "Nav-Callid"
     }

@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class SwaggerDocumentationConfig {
-
     private val bearer = "Bearer"
 
     @Bean

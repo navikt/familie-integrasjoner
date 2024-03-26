@@ -18,7 +18,6 @@ class AzureGraphRestClient(
     @Value("\${AAD_GRAPH_API_URI}") private val aadGraphURI: URI,
 ) :
     AbstractRestClient(restTemplate, "AzureGraph") {
-
     val saksbehandlerUri: URI = UriComponentsBuilder.fromUri(aadGraphURI).pathSegment(ME).build().toUri()
 
     fun saksbehandlerUri(id: String): URI =
@@ -60,7 +59,6 @@ class AzureGraphRestClient(
     }
 
     companion object {
-
         private const val ME = "me"
         private const val USERS = "users"
         private const val GRUPPER = "memberOf"

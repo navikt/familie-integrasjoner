@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Profile
 
 @Configuration
 class EgenAnsattTestConfig {
-
     @Bean
     @Profile("mock-egenansatt")
     @Primary

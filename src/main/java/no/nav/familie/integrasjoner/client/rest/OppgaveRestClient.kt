@@ -7,8 +7,8 @@ import no.nav.familie.integrasjoner.client.QueryParamUtil.toQueryParams
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.oppgave.OppgaveByttEnhet
 import no.nav.familie.integrasjoner.oppgave.OppgaveFjernBehandlesAvApplikasjon
+import no.nav.familie.integrasjoner.oppgave.domene.LIMIT_MOT_OPPGAVE
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveRequest
-import no.nav.familie.integrasjoner.oppgave.domene.limitMotOppgave
 import no.nav.familie.integrasjoner.oppgave.domene.toDto
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeRequest
@@ -36,7 +36,6 @@ class OppgaveRestClient(
     @Qualifier("jwtBearer") private val restTemplate: RestOperations,
 ) :
     AbstractPingableRestClient(restTemplate, "oppgave") {
-
     override val pingUri = UriUtil.uri(oppgaveBaseUrl, PATH_PING)
 
     private val returnerteIngenOppgaver = Metrics.counter("oppslag.oppgave.response", "antall.oppgaver", "ingen")
@@ -50,11 +49,12 @@ class OppgaveRestClient(
             it.journalpostId == null
         } ?: error("Finner ikke journalpost id på request")
 
-        val requestUrl = lagRequestUrlMed(
-            request.aktoerId!!,
-            request.journalpostId!!,
-            request.tema?.name ?: KONTANTSTØTTE_TEMA.name,
-        )
+        val requestUrl =
+            lagRequestUrlMed(
+                request.aktoerId!!,
+                request.journalpostId!!,
+                request.tema?.name ?: KONTANTSTØTTE_TEMA.name,
+            )
         return requestOppgaveJson(requestUrl)
     }
 
@@ -89,7 +89,7 @@ class OppgaveRestClient(
             } else {
                 oppgaveRequest.offset + finnOppgaveRequest.limit!!
             }
-        offset += limitMotOppgave
+        offset += LIMIT_MOT_OPPGAVE
 
         while (offset < grense) {
             val nyeOppgaver =
@@ -98,16 +98,17 @@ class OppgaveRestClient(
                         oppgaveRequest
                             .copy(
                                 offset = offset,
-                                limit = min(
-                                    (grense - offset),
-                                    limitMotOppgave,
-                                ),
+                                limit =
+                                    min(
+                                        (grense - offset),
+                                        LIMIT_MOT_OPPGAVE,
+                                    ),
                             ),
                     ),
                     httpHeaders(),
                 )
             oppgaver.addAll(nyeOppgaver.oppgaver)
-            offset += limitMotOppgave
+            offset += LIMIT_MOT_OPPGAVE
         }
 
         return FinnOppgaveResponseDto(oppgaverOgAntall.antallTreffTotalt, oppgaver)
@@ -190,17 +191,18 @@ class OppgaveRestClient(
             onSuccess = { it },
             onFailure = {
                 var feilmelding = "Feil ved fjerning av behandlesAvApplikasjon for ${fjernBehandlesAvApplikasjon.id}."
-                val statusCode = if (it is HttpStatusCodeException) {
-                    feilmelding += " Response fra oppgave = ${it.responseBodyAsString}"
+                val statusCode =
+                    if (it is HttpStatusCodeException) {
+                        feilmelding += " Response fra oppgave = ${it.responseBodyAsString}"
 
-                    if (it.statusCode == HttpStatus.CONFLICT) {
-                        HttpStatus.CONFLICT
+                        if (it.statusCode == HttpStatus.CONFLICT) {
+                            HttpStatus.CONFLICT
+                        } else {
+                            HttpStatus.INTERNAL_SERVER_ERROR
+                        }
                     } else {
                         HttpStatus.INTERNAL_SERVER_ERROR
                     }
-                } else {
-                    HttpStatus.INTERNAL_SERVER_ERROR
-                }
 
                 throw OppslagException(
                     feilmelding,
@@ -234,7 +236,11 @@ class OppgaveRestClient(
             .getOrThrow()
     }
 
-    private fun lagRequestUrlMed(aktoerId: String, journalpostId: String, tema: String): URI {
+    private fun lagRequestUrlMed(
+        aktoerId: String,
+        journalpostId: String,
+        tema: String,
+    ): URI {
         return UriComponentsBuilder.fromUri(oppgaveBaseUrl)
             .path(PATH_OPPGAVE)
             .queryParam("aktoerId", aktoerId)
@@ -251,8 +257,9 @@ class OppgaveRestClient(
     }
 
     private fun requestOppgaveJson(requestUrl: URI): Oppgave {
-        val finnOppgaveResponseDto = getForEntity<FinnOppgaveResponseDto>(requestUrl, httpHeaders())
-            ?: error("Response fra FinnOppgave er null")
+        val finnOppgaveResponseDto =
+            getForEntity<FinnOppgaveResponseDto>(requestUrl, httpHeaders())
+                ?: error("Response fra FinnOppgave er null")
         if (finnOppgaveResponseDto.oppgaver.isEmpty()) {
             returnerteIngenOppgaver.increment()
             throw OppslagException(
@@ -269,12 +276,12 @@ class OppgaveRestClient(
         return finnOppgaveResponseDto.oppgaver[0]
     }
 
-    private fun httpHeaders(): HttpHeaders = HttpHeaders().apply {
-        add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
-    }
+    private fun httpHeaders(): HttpHeaders =
+        HttpHeaders().apply {
+            add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+        }
 
     companion object {
-
         private const val PATH_PING = "internal/alive"
         private const val PATH_OPPGAVE = "/api/v1/oppgaver"
         private const val PATH_MAPPE = "/api/v1/mapper"

@@ -30,7 +30,6 @@ import org.springframework.web.util.UriComponentsBuilder
 @ExtendWith(MockServerExtension::class)
 @MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
 class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTest() {
-
     private val testLogger = LoggerFactory.getLogger(PersonopplysningerControllerTest::class.java) as Logger
 
     private lateinit var uriHentIdenter: String
@@ -64,11 +63,12 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
                 HttpResponse.response().withBody(readfile("pdlIdenterResponse.json"))
                     .withHeaders(Header("Content-Type", "application/json")),
             )
-        val response = restTemplate.exchange<Ressurs<FinnPersonidenterResponse>>(
-            uriHentIdenter,
-            HttpMethod.POST,
-            HttpEntity(Ident(ident), headers),
-        )
+        val response =
+            restTemplate.exchange<Ressurs<FinnPersonidenterResponse>>(
+                uriHentIdenter,
+                HttpMethod.POST,
+                HttpEntity(Ident(ident), headers),
+            )
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         assertThat(response.body?.data!!.identer).hasSize(1)
@@ -80,15 +80,21 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
         val ident = "12345678901"
         val barnsIdent = "12345678910"
         mockPdlKall(ident, barnsIdent, "UGRADERT", "STRENGT_FORTROLIG")
-        val response = restTemplate.exchange<Ressurs<ADRESSEBESKYTTELSEGRADERING>>(
-            uriHentStrengesteGradering,
-            HttpMethod.POST,
-            HttpEntity(PersonIdent(ident), headers.apply { add("Nav-Tema", "ENF") }),
-        )
+        val response =
+            restTemplate.exchange<Ressurs<ADRESSEBESKYTTELSEGRADERING>>(
+                uriHentStrengesteGradering,
+                HttpMethod.POST,
+                HttpEntity(PersonIdent(ident), headers.apply { add("Nav-Tema", "ENF") }),
+            )
         assertThat(response.body?.data).isEqualTo(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG)
     }
 
-    private fun mockPdlKall(ident: String, barnsIdent: String, persongradering: String, barngradering: String) {
+    private fun mockPdlKall(
+        ident: String,
+        barnsIdent: String,
+        persongradering: String,
+        barngradering: String,
+    ) {
         client.`when`(
             HttpRequest.request()
                 .withMethod("POST")
@@ -126,7 +132,10 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
             )
     }
 
-    private fun gyldigRequestIdentListe(filnavn: String, ident: String = "12345678901"): String {
+    private fun gyldigRequestIdentListe(
+        filnavn: String,
+        ident: String = "12345678901",
+    ): String {
         return readfile("pdlGyldigRequestIdentListe.json")
             .replace(
                 "IDENT-PLACEHOLDER",
@@ -142,7 +151,6 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
     }
 
     companion object {
-
         const val PDL_BASE_URL = "/api/personopplysning/"
         const val TEMA = "BAR"
     }

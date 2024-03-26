@@ -18,7 +18,6 @@ import org.springframework.test.context.TestPropertySource
 @TestPropertySource(properties = ["ORGANISASJON_URL=http://localhost:28085"])
 @AutoConfigureWireMock(port = 28085)
 internal class OrganisasjonServiceTest : OppslagSpringRunnerTest() {
-
     @Autowired
     lateinit var organisasjonService: OrganisasjonService
 
@@ -54,17 +53,19 @@ internal class OrganisasjonServiceTest : OppslagSpringRunnerTest() {
         assertThat(organisasjonService.validerOrganisasjon("1")).isFalse
     }
 
-    private val bodyOrg = """
+    private val bodyOrg =
+        """
         {
           "navn": {
            "sammensattnavn": "NAV AS"
           }
         }
-    """.trimIndent()
+        """.trimIndent()
 
-    private val bodyOrgIkkeFunnet = """
+    private val bodyOrgIkkeFunnet =
+        """
         {
           "melding": "Ingen organisasjon med organisasjonsnummer 111 ble funnet"
         }
-    """.trimIndent()
+        """.trimIndent()
 }

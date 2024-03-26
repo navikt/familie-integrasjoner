@@ -30,7 +30,6 @@ import java.nio.file.Files
 @ExtendWith(MockServerExtension::class)
 @MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
 class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTest() {
-
     @BeforeEach
     fun setUp() {
         client.reset()
@@ -41,19 +40,21 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
     fun `dokdist returnerer OK uten kjernetid og distribusjonstidspunkt`() {
         mockGodkjentKallMotDokDist()
 
-        val body2 = """
+        val body2 =
+            """
             {
                 "journalpostId": "$JOURNALPOST_ID",
                 "bestillendeFagsystem": "BA",
                 "dokumentProdApp": "ba-sak"
             }
-        """.trimIndent()
+            """.trimIndent()
         headers.set("Content-Type", "application/json")
-        val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(
-            localhost(DOKDIST_URL),
-            HttpMethod.POST,
-            HttpEntity(body2, headers),
-        )
+        val response: ResponseEntity<Ressurs<String>> =
+            restTemplate.exchange(
+                localhost(DOKDIST_URL),
+                HttpMethod.POST,
+                HttpEntity(body2, headers),
+            )
 
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -65,11 +66,12 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
         mockGodkjentKallMotDokDist()
 
         val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak", Distribusjonstype.VIKTIG, Distribusjonstidspunkt.KJERNETID)
-        val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(
-            localhost(DOKDIST_URL),
-            HttpMethod.POST,
-            HttpEntity(body, headers),
-        )
+        val response: ResponseEntity<Ressurs<String>> =
+            restTemplate.exchange(
+                localhost(DOKDIST_URL),
+                HttpMethod.POST,
+                HttpEntity(body, headers),
+            )
 
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -81,11 +83,12 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
         mockGodkjentKallMotDokDist()
 
         val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak", null, Distribusjonstidspunkt.KJERNETID)
-        val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(
-            localhost(DOKDIST_URL),
-            HttpMethod.POST,
-            HttpEntity(body, headers),
-        )
+        val response: ResponseEntity<Ressurs<String>> =
+            restTemplate.exchange(
+                localhost(DOKDIST_URL),
+                HttpMethod.POST,
+                HttpEntity(body, headers),
+            )
 
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -115,11 +118,12 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
             .respond(HttpResponse.response().withStatusCode(200).withBody(""))
 
         val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak", null)
-        val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(
-            localhost(DOKDIST_URL),
-            HttpMethod.POST,
-            HttpEntity(body, headers),
-        )
+        val response: ResponseEntity<Ressurs<String>> =
+            restTemplate.exchange(
+                localhost(DOKDIST_URL),
+                HttpMethod.POST,
+                HttpEntity(body, headers),
+            )
 
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -140,11 +144,12 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
             )
 
         val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak", null)
-        val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(
-            localhost(DOKDIST_URL),
-            HttpMethod.POST,
-            HttpEntity(body, headers),
-        )
+        val response: ResponseEntity<Ressurs<String>> =
+            restTemplate.exchange(
+                localhost(DOKDIST_URL),
+                HttpMethod.POST,
+                HttpEntity(body, headers),
+            )
 
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -158,7 +163,6 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
     }
 
     companion object {
-
         private const val DOKDIST_URL = "/api/dist/v1"
         private const val JOURNALPOST_ID = "453492547"
     }

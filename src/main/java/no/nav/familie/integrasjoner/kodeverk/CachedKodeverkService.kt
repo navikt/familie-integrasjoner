@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class CachedKodeverkService(private val kodeverkClient: KodeverkClient) {
-
     @Cacheable("kodeverk_postestedMedHistorikk", sync = true)
     fun hentPostnummerMedHistorikk(): KodeverkDto = kodeverkClient.hentPostnummerMedHistorikk()
 

@@ -15,7 +15,6 @@ import org.springframework.test.context.TestPropertySource
 @TestPropertySource(properties = ["EGEN_ANSATT_URL=http://localhost:28085"])
 @AutoConfigureWireMock(port = 28085)
 class EgenAnsattControllerTest : OppslagSpringRunnerTest() {
-
     @Autowired
     lateinit var egenAnsattRestClient: EgenAnsattRestClient
 
@@ -51,7 +50,6 @@ class EgenAnsattControllerTest : OppslagSpringRunnerTest() {
     }
 
     companion object {
-
         const val FNR = "12345678910"
         private const val PATH_OG_QUERY = "/skjermet"
     }

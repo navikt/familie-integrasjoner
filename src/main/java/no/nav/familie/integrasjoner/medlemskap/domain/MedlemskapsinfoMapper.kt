@@ -7,17 +7,19 @@ import no.nav.familie.kontrakter.felles.medlemskap.PeriodeStatus
 import no.nav.familie.kontrakter.felles.medlemskap.PeriodeStatusÅrsak
 
 object MedlemskapsinfoMapper {
-
     fun tilMedlemskapsInfo(responsListe: List<MedlemskapsunntakResponse>): Medlemskapsinfo {
-        val gyldigePerioder: List<PeriodeInfo> = responsListe
-            .filter { PeriodeStatus.GYLD.name == it.status }
-            .map(this::tilPeriodeInfo)
-        val avvistePerioder: List<PeriodeInfo> = responsListe
-            .filter { PeriodeStatus.AVST.name == it.status }
-            .map(this::tilPeriodeInfo)
-        val uavklartePerioder: List<PeriodeInfo> = responsListe
-            .filter { PeriodeStatus.UAVK.name == it.status }
-            .map(this::tilPeriodeInfo)
+        val gyldigePerioder: List<PeriodeInfo> =
+            responsListe
+                .filter { PeriodeStatus.GYLD.name == it.status }
+                .map(this::tilPeriodeInfo)
+        val avvistePerioder: List<PeriodeInfo> =
+            responsListe
+                .filter { PeriodeStatus.AVST.name == it.status }
+                .map(this::tilPeriodeInfo)
+        val uavklartePerioder: List<PeriodeInfo> =
+            responsListe
+                .filter { PeriodeStatus.UAVK.name == it.status }
+                .map(this::tilPeriodeInfo)
         return Medlemskapsinfo(
             gyldigePerioder = gyldigePerioder,
             avvistePerioder = avvistePerioder,
@@ -35,7 +37,7 @@ object MedlemskapsinfoMapper {
             grunnlag = response.grunnlag,
             gjelderMedlemskapIFolketrygden = response.medlem,
             periodeStatusÅrsak =
-            if (response.statusaarsak == null) null else PeriodeStatusÅrsak.valueOf(response.statusaarsak),
+                if (response.statusaarsak == null) null else PeriodeStatusÅrsak.valueOf(response.statusaarsak),
         )
     }
 

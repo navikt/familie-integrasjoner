@@ -15,7 +15,6 @@ class KodeverkClient(
     @Qualifier("jwtBearer") private val restTemplate: RestOperations,
 ) :
     AbstractPingableRestClient(restTemplate, "kodeverk") {
-
     override val pingUri: URI = UriUtil.uri(kodeverkUri, PATH_PING)
 
     fun hentPostnummer(): KodeverkDto {

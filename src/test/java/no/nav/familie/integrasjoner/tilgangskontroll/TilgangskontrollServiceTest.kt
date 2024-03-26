@@ -15,13 +15,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 class TilgangskontrollServiceTest {
-
     private val saksbehandler: JwtToken = mockk(relaxed = true)
     private val jwtTokenClaims: JwtTokenClaims = mockk()
     private val egenAnsattService: EgenAnsattService = mockk(relaxed = true)
-    private val GRUPPE_EGEN_ANSATT = "utvidetTilgang1"
-    private val GRUPPE_TILGANG_6 = "kode62"
-    private val GRUPPE_TILGANG_7 = "kode73"
 
     private val tilgangConfig: TilgangConfig =
         TilgangConfig(
@@ -31,11 +27,12 @@ class TilgangskontrollServiceTest {
         )
     private val personopplysningerService: PersonopplysningerService = mockk(relaxed = true)
 
-    private val cachedTilgangskontrollService = CachedTilgangskontrollService(
-        egenAnsattService,
-        personopplysningerService,
-        tilgangConfig,
-    )
+    private val cachedTilgangskontrollService =
+        CachedTilgangskontrollService(
+            egenAnsattService,
+            personopplysningerService,
+            tilgangConfig,
+        )
     private var tilgangskontrollService: TilgangskontrollService = TilgangskontrollService(cachedTilgangskontrollService)
 
     @Test
@@ -159,5 +156,11 @@ class TilgangskontrollServiceTest {
             navn = "Navn Navnesen",
             adressebeskyttelseGradering = adressebeskyttelsegradering,
         )
+    }
+
+    companion object {
+        private const val GRUPPE_EGEN_ANSATT = "utvidetTilgang1"
+        private const val GRUPPE_TILGANG_6 = "kode62"
+        private const val GRUPPE_TILGANG_7 = "kode73"
     }
 }

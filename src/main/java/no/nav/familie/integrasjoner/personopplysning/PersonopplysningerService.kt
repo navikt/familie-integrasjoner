@@ -26,7 +26,6 @@ class PersonopplysningerService(
     private val pdlClientCredentialRestClient: PdlClientCredentialRestClient,
     private val regoppslagRestClient: RegoppslagRestClient,
 ) {
-
     fun hentPersoninfo(
         personIdent: String,
         tema: Tema,
@@ -34,17 +33,25 @@ class PersonopplysningerService(
         return pdlRestClient.hentPerson(personIdent, tema)
     }
 
-    fun hentIdenter(personIdent: String, tema: Tema, medHistorikk: Boolean): FinnPersonidenterResponse {
+    fun hentIdenter(
+        personIdent: String,
+        tema: Tema,
+        medHistorikk: Boolean,
+    ): FinnPersonidenterResponse {
         val response = pdlRestClient.hentIdenter(personIdent, "FOLKEREGISTERIDENT", tema, medHistorikk)
         return FinnPersonidenterResponse(response.map { PersonIdentMedHistorikk(it.ident, it.historisk) })
     }
 
     @Cacheable(cacheNames = ["PERSON_MED_RELASJONER"], key = "#personIdent + #tema", condition = "#personIdent != null")
-    fun hentPersonMedRelasjoner(personIdent: String, tema: Tema): PersonMedRelasjoner {
+    fun hentPersonMedRelasjoner(
+        personIdent: String,
+        tema: Tema,
+    ): PersonMedRelasjoner {
         val hovedperson = hentPersonMedRelasjonerOgAdressebeskyttelse(listOf(personIdent), tema).getOrThrow(personIdent)
-        val barnIdenter = hovedperson.forelderBarnRelasjon
-            .filter { it.relatertPersonsRolle == FORELDERBARNRELASJONROLLE.BARN }
-            .mapNotNull { it.relatertPersonsIdent }
+        val barnIdenter =
+            hovedperson.forelderBarnRelasjon
+                .filter { it.relatertPersonsRolle == FORELDERBARNRELASJONROLLE.BARN }
+                .mapNotNull { it.relatertPersonsIdent }
         val sivilstandIdenter = hovedperson.sivilstand.mapNotNull { it.relatertVedSivilstand }.distinct()
         val fullmaktIdenter = hovedperson.fullmakt.map { it.motpartsPersonident }.distinct()
 
@@ -64,12 +71,18 @@ class PersonopplysningerService(
         )
     }
 
-    fun hentAdressebeskyttelse(personIdent: String, tema: Tema): Adressebeskyttelse {
+    fun hentAdressebeskyttelse(
+        personIdent: String,
+        tema: Tema,
+    ): Adressebeskyttelse {
         return pdlRestClient.hentAdressebeskyttelse(personIdent, tema).adressebeskyttelse.firstOrNull()
             ?: Adressebeskyttelse(gradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
     }
 
-    fun hentPostadresse(personIdent: String, tema: Tema): PostadresseResponse? {
+    fun hentPostadresse(
+        personIdent: String,
+        tema: Tema,
+    ): PostadresseResponse? {
         return regoppslagRestClient.hentPostadresse(personIdent, tema)
     }
 
@@ -78,9 +91,10 @@ class PersonopplysningerService(
         personIdent: String,
         tema: Tema,
     ): List<PersonMedAdresseBeskyttelse> {
-        val barnsForeldrerIdenter = barnOpplysninger.flatMap { (_, personMedRelasjoner) ->
-            personMedRelasjoner.forelderBarnRelasjon.filter { it.relatertPersonsRolle != FORELDERBARNRELASJONROLLE.BARN }
-        }.filter { it.relatertPersonsIdent != personIdent }.mapNotNull { it.relatertPersonsIdent }.distinct()
+        val barnsForeldrerIdenter =
+            barnOpplysninger.flatMap { (_, personMedRelasjoner) ->
+                personMedRelasjoner.forelderBarnRelasjon.filter { it.relatertPersonsRolle != FORELDERBARNRELASJONROLLE.BARN }
+            }.filter { it.relatertPersonsIdent != personIdent }.mapNotNull { it.relatertPersonsIdent }.distinct()
         val barnsForeldrerOpplysninger = hentPersonMedRelasjonerOgAdressebeskyttelse(barnsForeldrerIdenter, tema)
 
         return mapPersonMedRelasjoner(barnsForeldrerIdenter, barnsForeldrerOpplysninger)

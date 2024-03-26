@@ -26,15 +26,20 @@ class ArbeidsfordelingService(
     private val personopplysningerService: PersonopplysningerService,
     private val cacheManager: CacheManager,
 ) {
-
     private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
-    fun finnBehandlendeEnhetForPerson(personIdent: String, tema: Tema): List<Enhet> {
+    fun finnBehandlendeEnhetForPerson(
+        personIdent: String,
+        tema: Tema,
+    ): List<Enhet> {
         val kriterie = lagArbeidsfordelingKritierieForPerson(personIdent, tema, tema)
         return restClient.finnBehandlendeEnhetMedBesteMatch(kriterie)
     }
 
-    fun finnBehandlendeEnhetForOppfølging(personIdent: String, tema: Tema): List<Enhet> {
+    fun finnBehandlendeEnhetForOppfølging(
+        personIdent: String,
+        tema: Tema,
+    ): List<Enhet> {
         val kriterie = lagArbeidsfordelingKritierieForPerson(personIdent, tema, Tema.OPP)
 
         return restClient.finnBehandlendeEnhetMedBesteMatch(kriterie)
@@ -58,7 +63,10 @@ class ArbeidsfordelingService(
     }
 
     @Improvement("Må ta høyde for om personIdent har diskresjonskode eller skjerming/er egen ansatt. Nå krasjer den for de med kode 6")
-    fun finnLokaltNavKontor(personIdent: String, tema: Tema): NavKontorEnhet? {
+    fun finnLokaltNavKontor(
+        personIdent: String,
+        tema: Tema,
+    ): NavKontorEnhet? {
         val geografiskTilknytning = pdlRestClient.hentGeografiskTilknytning(personIdent, tema)
 
         val geografiskTilknytningKode: String? = utledGeografiskTilknytningKode(geografiskTilknytning)
@@ -86,7 +94,10 @@ class ArbeidsfordelingService(
     }
 
     @Cacheable("enhet_for_person_med_relasjoner")
-    fun finnBehandlendeEnhetForPersonMedRelasjoner(personIdent: String, tema: Tema): List<Enhet> {
+    fun finnBehandlendeEnhetForPersonMedRelasjoner(
+        personIdent: String,
+        tema: Tema,
+    ): List<Enhet> {
         return cacheManager.getValue("navEnhet", personIdent) {
             val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent, tema)
 
@@ -97,19 +108,21 @@ class ArbeidsfordelingService(
                     personMedRelasjoner.sivilstand
             val egneAnsatte = finnEgneAnsatte(aktuellePersoner)
 
-            val personMedStrengestBehov = utledPersonMedStrengestBehov(
-                personIdent = personIdent,
-                personerMedAdresseBeskyttelse = aktuellePersoner,
-                egneAnsatte = egneAnsatte,
-            )
+            val personMedStrengestBehov =
+                utledPersonMedStrengestBehov(
+                    personIdent = personIdent,
+                    personerMedAdresseBeskyttelse = aktuellePersoner,
+                    egneAnsatte = egneAnsatte,
+                )
             val geografiskTilknytning = pdlRestClient.hentGeografiskTilknytning(personMedStrengestBehov.personIdent, tema)
 
-            val kriterier = ArbeidsfordelingKriterie(
-                tema = tema.name,
-                geografiskOmraade = utledGeografiskTilknytningKode(geografiskTilknytning),
-                diskresjonskode = personMedStrengestBehov.adressebeskyttelse?.diskresjonskode,
-                skjermet = egneAnsatte.contains(personMedStrengestBehov.personIdent),
-            )
+            val kriterier =
+                ArbeidsfordelingKriterie(
+                    tema = tema.name,
+                    geografiskOmraade = utledGeografiskTilknytningKode(geografiskTilknytning),
+                    diskresjonskode = personMedStrengestBehov.adressebeskyttelse?.diskresjonskode,
+                    skjermet = egneAnsatte.contains(personMedStrengestBehov.personIdent),
+                )
             restClient.finnBehandlendeEnhetMedBesteMatch(kriterier)
         }
     }
@@ -122,10 +135,11 @@ class ArbeidsfordelingService(
         personerMedAdresseBeskyttelse: List<PersonMedAdresseBeskyttelse>,
         egneAnsatte: Set<String>,
     ): PersonMedAdresseBeskyttelse {
-        val personMedStrengestGrad = personerMedAdresseBeskyttelse.personIdentMedKode6()
-            ?: egneAnsatte.firstOrNull()
-            ?: personerMedAdresseBeskyttelse.personMedKode7()
-            ?: personIdent
+        val personMedStrengestGrad =
+            personerMedAdresseBeskyttelse.personIdentMedKode6()
+                ?: egneAnsatte.firstOrNull()
+                ?: personerMedAdresseBeskyttelse.personMedKode7()
+                ?: personIdent
 
         return personerMedAdresseBeskyttelse.find { it.personIdent == personMedStrengestGrad }
             ?: error("Noe har gått veldig galt ettersom person strengest grad ikke finnes i listen over aktuelle personer")

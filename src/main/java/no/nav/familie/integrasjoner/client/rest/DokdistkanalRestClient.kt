@@ -19,7 +19,6 @@ class DokdistkanalRestClient(
     @Qualifier("jwtBearer") private val restTemplate: RestOperations,
 ) :
     AbstractPingableRestClient(restTemplate, "dokdistkanal") {
-
     override val pingUri: URI = UriUtil.uri(dokdistkanalUri, PATH_PING)
 
     val uri = UriUtil.uri(dokdistkanalUri, PATH_BESTEM_DISTRIBUSJONSKANAL)
@@ -28,9 +27,10 @@ class DokdistkanalRestClient(
         return postForEntity(uri, req, httpHeaders())
     }
 
-    private fun httpHeaders(): HttpHeaders = HttpHeaders().apply {
-        add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
-    }
+    private fun httpHeaders(): HttpHeaders =
+        HttpHeaders().apply {
+            add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+        }
 
     companion object {
         private const val PATH_PING = "actuator/health/liveness"

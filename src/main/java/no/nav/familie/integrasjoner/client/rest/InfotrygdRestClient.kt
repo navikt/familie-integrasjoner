@@ -15,15 +15,15 @@ class InfotrygdRestClient(
     @Value("\${INFOTRYGD_URL}") private val infotrygdURL: URI,
 ) :
     AbstractPingableRestClient(restTemplate, "infotrygd") {
-
     override val pingUri: URI = UriComponentsBuilder.fromUri(infotrygdURL).pathSegment(PATH_PING).build().toUri()
     private val harKontantstøtteUri =
         UriComponentsBuilder.fromUri(infotrygdURL).pathSegment(PATH_AKTIV_KONTANTSTØTTE).build().toUri()
 
     fun hentAktivKontantstøtteFor(fnr: String): AktivKontantstøtteInfo {
-        val httpHeaders = org.springframework.http.HttpHeaders().apply {
-            add("fnr", fnr)
-        }
+        val httpHeaders =
+            org.springframework.http.HttpHeaders().apply {
+                add("fnr", fnr)
+            }
         val response = getForEntity<AktivKontantstøtteInfo>(harKontantstøtteUri, httpHeaders)
         if (response == null) {
             error("Response fra infotrygd-kontantstøtte er null")

@@ -25,22 +25,23 @@ class PdlClientCredentialRestClient(
     @Qualifier("clientCredential") private val restTemplate: RestOperations,
 ) :
     AbstractRestClient(restTemplate, "pdl.personinfo.cc") {
-
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
 
     fun hentPersonMedRelasjonerOgAdressebeskyttelse(
         identer: List<String>,
         tema: Tema,
     ): Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse> {
-        val request = PdlPersonBolkRequest(
-            variables = PdlPersonBolkRequestVariables(identer),
-            query = HENT_PERSON_RELASJONER_ADRESSEBESKYTTELSE,
-        )
-        val response = postForEntity<PdlBolkResponse<PdlPersonMedRelasjonerOgAdressebeskyttelse>>(
-            pdlUri,
-            request,
-            pdlHttpHeaders(tema),
-        )
+        val request =
+            PdlPersonBolkRequest(
+                variables = PdlPersonBolkRequestVariables(identer),
+                query = HENT_PERSON_RELASJONER_ADRESSEBESKYTTELSE,
+            )
+        val response =
+            postForEntity<PdlBolkResponse<PdlPersonMedRelasjonerOgAdressebeskyttelse>>(
+                pdlUri,
+                request,
+                pdlHttpHeaders(tema),
+            )
         return feilsjekkOgReturnerData(response)
     }
 
@@ -63,7 +64,6 @@ class PdlClientCredentialRestClient(
     }
 
     companion object {
-
         private const val PATH_GRAPHQL = "graphql"
         private val HENT_PERSON_RELASJONER_ADRESSEBESKYTTELSE = graphqlQuery("/pdl/hentpersoner-relasjoner-adressebeskyttelse.graphql")
     }

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component
 @Component
 @Profile("!dev & !integrasjonstest")
 class KodeverkInitializer(private val cachedKodeverkService: CachedKodeverkService) : ApplicationListener<ApplicationReadyEvent> {
-
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @Scheduled(cron = "0 0 1 * * *")
@@ -27,7 +26,10 @@ class KodeverkInitializer(private val cachedKodeverkService: CachedKodeverkServi
         syncKodeverk("Inntekt", cachedKodeverkService::hentInntekt)
     }
 
-    private fun syncKodeverk(navn: String, henter: () -> Unit) {
+    private fun syncKodeverk(
+        navn: String,
+        henter: () -> Unit,
+    ) {
         try {
             logger.info("Henter $navn")
             henter.invoke()

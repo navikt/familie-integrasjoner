@@ -3,7 +3,6 @@ package no.nav.familie.integrasjoner.sikkerhet
 import no.nav.security.token.support.spring.SpringTokenValidationContextHolder
 
 object SikkerhetsContext {
-
     private const val SYSTEM_NAVN = "System"
     const val SYSTEM_FORKORTELSE = "VL"
 

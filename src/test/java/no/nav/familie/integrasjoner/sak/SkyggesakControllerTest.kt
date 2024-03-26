@@ -28,7 +28,6 @@ import org.springframework.test.context.TestPropertySource
 @TestPropertySource(properties = ["SKYGGE_SAK_URL=http://localhost:28085"])
 @AutoConfigureWireMock(port = 28085)
 class SkyggesakControllerTest : OppslagSpringRunnerTest() {
-
     @BeforeEach
     fun setup() {
         headers.setBearerAuth(lokalTestToken)

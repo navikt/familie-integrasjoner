@@ -27,7 +27,6 @@ import java.time.Duration
 class RestTemplateConfig(
     private val environment: Environment,
 ) {
-
     @Bean
     fun restTemplate(): RestTemplate {
         return RestTemplate()

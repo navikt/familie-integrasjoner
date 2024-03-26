@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component
 @Component
 object BarnetrygdSøknadOrdinærMetadata :
     Dokumentmetadata {
-
     override val journalpostType: JournalpostType = JournalpostType.INNGAAENDE
     override val fagsakSystem: Fagsystem? = null
     override val tema: Tema = Tema.BAR

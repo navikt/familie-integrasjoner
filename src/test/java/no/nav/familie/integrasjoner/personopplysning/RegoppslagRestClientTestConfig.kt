@@ -14,19 +14,19 @@ import org.springframework.context.annotation.Profile
 
 @Configuration
 class RegoppslagRestClientTestConfig {
-
     @Bean
     @Profile("mock-regoppslag")
     @Primary
-    fun RegoppslagRestClientMock(): RegoppslagRestClient {
+    fun regoppslagRestClientMock(): RegoppslagRestClient {
         val klient: RegoppslagRestClient = mockk(relaxed = true)
 
         every {
             klient.hentPostadresse(any(), any())
-        } returns PostadresseResponse(
-            navn = "Kari Normann",
-            adresse = Adresse(AdresseKildeCode.BOSTEDSADRESSE, PostadresseType.NORSKPOSTADRESSE, "", null, null, "", "", "", ""),
-        )
+        } returns
+            PostadresseResponse(
+                navn = "Kari Normann",
+                adresse = Adresse(AdresseKildeCode.BOSTEDSADRESSE, PostadresseType.NORSKPOSTADRESSE, "", null, null, "", "", "", ""),
+            )
         return klient
     }
 }

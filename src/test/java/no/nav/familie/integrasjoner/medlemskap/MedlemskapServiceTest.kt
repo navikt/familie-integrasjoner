@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class MedlemskapServiceTest {
-
     private lateinit var medlemskapService: MedlemskapService
     private lateinit var medlClient: MedlRestClient
 
@@ -70,7 +69,6 @@ class MedlemskapServiceTest {
     }
 
     companion object {
-
         private const val TEST_AKTØRID = "1000011111111"
     }
 }

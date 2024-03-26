@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Profile
 
 @Configuration
 class HentJournalpostTestConfig {
-
     @Bean
     @Profile("mock-saf")
     @Primary
@@ -36,30 +35,33 @@ class HentJournalpostTestConfig {
                 tema = "BAR",
                 tittel = "Ent tittel",
                 behandlingstema = null,
-                sak = Sak(
-                    "1111" + slot.captured,
-                    "GSAK",
-                    null,
-                    null,
-                    null,
-                ),
+                sak =
+                    Sak(
+                        "1111" + slot.captured,
+                        "GSAK",
+                        null,
+                        null,
+                        null,
+                    ),
                 bruker = Bruker("1234567890123", BrukerIdType.AKTOERID),
                 journalforendeEnhet = "9999",
                 kanal = "EIA",
-                dokumenter = listOf(
-                    DokumentInfo(
-                        dokumentInfoId = "1234",
-                        tittel = "Søknad om ytelse",
-                        dokumentstatus = Dokumentstatus.FERDIGSTILT,
-                        dokumentvarianter = emptyList(),
-                        logiskeVedlegg = listOf(
-                            LogiskVedlegg(
-                                logiskVedleggId = "0987",
-                                tittel = "Oppholdstillatelse",
-                            ),
+                dokumenter =
+                    listOf(
+                        DokumentInfo(
+                            dokumentInfoId = "1234",
+                            tittel = "Søknad om ytelse",
+                            dokumentstatus = Dokumentstatus.FERDIGSTILT,
+                            dokumentvarianter = emptyList(),
+                            logiskeVedlegg =
+                                listOf(
+                                    LogiskVedlegg(
+                                        logiskVedleggId = "0987",
+                                        tittel = "Oppholdstillatelse",
+                                    ),
+                                ),
                         ),
                     ),
-                ),
                 relevanteDatoer = emptyList(),
             )
         }

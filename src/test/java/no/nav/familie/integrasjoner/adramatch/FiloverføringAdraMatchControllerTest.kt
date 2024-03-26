@@ -17,7 +17,6 @@ import org.springframework.web.util.UriComponentsBuilder
 
 @ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
 class FiloverføringAdraMatchControllerTest : OppslagSpringRunnerTest() {
-
     @get:Rule
     val sftpServer: FakeSftpServerRule = FakeSftpServerRule().apply { port = MOCK_SERVER_PORT }
 
@@ -31,18 +30,18 @@ class FiloverføringAdraMatchControllerTest : OppslagSpringRunnerTest() {
         sftpServer.createDirectory("/inbound")
         val uri = UriComponentsBuilder.fromHttpUrl(localhost(BASE_URL)).toUriString()
         val payload = Fil("file.txt", "Filinnhold".toByteArray())
-        val response: ResponseEntity<Ressurs<String>> = restTemplate.exchange(
-            uri,
-            HttpMethod.PUT,
-            HttpEntity(payload, headers),
-        )
+        val response: ResponseEntity<Ressurs<String>> =
+            restTemplate.exchange(
+                uri,
+                HttpMethod.PUT,
+                HttpEntity(payload, headers),
+            )
         assertThat(response.body!!.data).isEqualTo("Fil lastet opp!")
         val fileContent = sftpServer.getFileContent("/inbound/file.txt")
         assertThat(fileContent).isEqualTo("Filinnhold".toByteArray())
     }
 
     companion object {
-
         const val BASE_URL = "/api/adramatch/avstemming"
         const val MOCK_SERVER_PORT = 18321
     }

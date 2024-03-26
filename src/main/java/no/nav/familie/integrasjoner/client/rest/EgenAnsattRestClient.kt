@@ -14,12 +14,12 @@ class EgenAnsattRestClient(
     @Qualifier("noAuthorize") private val restTemplate: RestOperations,
 ) :
     AbstractPingableRestClient(restTemplate, "egenansatt") {
-
     override val pingUri: URI = UriUtil.uri(uri, PATH_PING)
     private val egenAnsattUri: URI = UriUtil.uri(uri, "skjermet")
     private val egenAnsattBulkUri: URI = UriUtil.uri(uri, "skjermetBulk")
 
     data class SkjermetDataRequestDTO(val personident: String)
+
     data class SkjermetDataBolkRequestDTO(val personidenter: Set<String>)
 
     fun erEgenAnsatt(personIdent: String): Boolean = postForEntity(egenAnsattUri, SkjermetDataRequestDTO(personIdent))
@@ -27,7 +27,6 @@ class EgenAnsattRestClient(
     fun erEgenAnsatt(personidenter: Set<String>): Map<String, Boolean> = postForEntity(egenAnsattBulkUri, SkjermetDataBolkRequestDTO(personidenter))
 
     companion object {
-
         private const val PATH_PING = "internal/health/readiness"
     }
 }

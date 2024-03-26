@@ -47,7 +47,6 @@ import java.time.LocalDateTime
 @ExtendWith(MockServerExtension::class)
 @MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
 class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTest() {
-
     private val testLogger = LoggerFactory.getLogger(HentJournalpostController::class.java) as Logger
 
     private lateinit var uriHentSaksnummer: String
@@ -59,10 +58,12 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
         client.reset()
         testLogger.addAppender(listAppender)
         headers.setBearerAuth(lagToken("testbruker"))
-        uriHentSaksnummer = UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/sak")
-            .queryParam("journalpostId", JOURNALPOST_ID).toUriString()
-        uriHentJournalpost = UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
-            .queryParam("journalpostId", JOURNALPOST_ID).toUriString()
+        uriHentSaksnummer =
+            UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/sak")
+                .queryParam("journalpostId", JOURNALPOST_ID).toUriString()
+        uriHentJournalpost =
+            UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
+                .queryParam("journalpostId", JOURNALPOST_ID).toUriString()
         uriHentDokument = localhost(JOURNALPOST_BASE_URL) + "/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID"
     }
 
@@ -80,11 +81,12 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
                     .withHeaders(Header("Content-Type", "application/json")),
             )
 
-        val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(
-            uriHentSaksnummer,
-            HttpMethod.GET,
-            HttpEntity<String>(headers),
-        )
+        val response: ResponseEntity<Ressurs<Map<String, String>>> =
+            restTemplate.exchange(
+                uriHentSaksnummer,
+                HttpMethod.GET,
+                HttpEntity<String>(headers),
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -104,11 +106,12 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
                     .withHeaders(Header("Content-Type", "application/json")),
             )
 
-        val response: ResponseEntity<Ressurs<Journalpost>> = restTemplate.exchange(
-            uriHentJournalpost,
-            HttpMethod.GET,
-            HttpEntity<String>(headers),
-        )
+        val response: ResponseEntity<Ressurs<Journalpost>> =
+            restTemplate.exchange(
+                uriHentJournalpost,
+                HttpMethod.GET,
+                HttpEntity<String>(headers),
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -147,8 +150,9 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
         assertThat(response.body?.data?.first()?.journalposttype).isEqualTo(Journalposttype.I)
         assertThat(response.body?.data?.first()?.journalstatus).isEqualTo(Journalstatus.JOURNALFOERT)
         assertThat(response.body?.data?.first()?.datoMottatt).isEqualTo(LocalDateTime.parse("2020-01-31T08:00:17"))
-        val utsendingsinfo = response.body?.data?.find { it.utsendingsinfo != null }?.utsendingsinfo
-            ?: error("Finner ikke utsendingsinfo på noen journalposter")
+        val utsendingsinfo =
+            response.body?.data?.find { it.utsendingsinfo != null }?.utsendingsinfo
+                ?: error("Finner ikke utsendingsinfo på noen journalposter")
         assertThat(utsendingsinfo.utsendingsmåter).hasSize(1)
         assertThat(utsendingsinfo.utsendingsmåter).contains(Utsendingsmåte.DIGITAL_POST)
         assertThat(utsendingsinfo.digitalpostSendt?.adresse).isEqualTo("0000487236")
@@ -166,11 +170,12 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
         )
             .respond(HttpResponse().withBody("pdf".toByteArray()).withHeaders(Header("Content-Type", "application/pdf")))
 
-        val response: ResponseEntity<Ressurs<ByteArray>> = restTemplate.exchange(
-            uriHentDokument,
-            HttpMethod.GET,
-            HttpEntity<String>(headers),
-        )
+        val response: ResponseEntity<Ressurs<ByteArray>> =
+            restTemplate.exchange(
+                uriHentDokument,
+                HttpMethod.GET,
+                HttpEntity<String>(headers),
+            )
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
     }
@@ -188,11 +193,12 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
                     .withHeaders(Header("Content-Type", "application/json")),
             )
 
-        val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(
-            uriHentSaksnummer,
-            HttpMethod.GET,
-            HttpEntity<String>(headers),
-        )
+        val response: ResponseEntity<Ressurs<Map<String, String>>> =
+            restTemplate.exchange(
+                uriHentSaksnummer,
+                HttpMethod.GET,
+                HttpEntity<String>(headers),
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -212,11 +218,12 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
                     .withHeaders(Header("Content-Type", "application/json")),
             )
 
-        val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(
-            uriHentSaksnummer,
-            HttpMethod.GET,
-            HttpEntity<String>(headers),
-        )
+        val response: ResponseEntity<Ressurs<Map<String, String>>> =
+            restTemplate.exchange(
+                uriHentSaksnummer,
+                HttpMethod.GET,
+                HttpEntity<String>(headers),
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -236,11 +243,12 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
                     .withHeaders(Header("Content-Type", "application/json")),
             )
 
-        val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(
-            uriHentSaksnummer,
-            HttpMethod.GET,
-            HttpEntity<String>(headers),
-        )
+        val response: ResponseEntity<Ressurs<Map<String, String>>> =
+            restTemplate.exchange(
+                uriHentSaksnummer,
+                HttpMethod.GET,
+                HttpEntity<String>(headers),
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -265,11 +273,12 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
         )
             .respond(response().withStatusCode(500).withBody("feilmelding"))
 
-        val response: ResponseEntity<Ressurs<Map<String, String>>> = restTemplate.exchange(
-            uriHentSaksnummer,
-            HttpMethod.GET,
-            HttpEntity<String>(headers),
-        )
+        val response: ResponseEntity<Ressurs<Map<String, String>>> =
+            restTemplate.exchange(
+                uriHentSaksnummer,
+                HttpMethod.GET,
+                HttpEntity<String>(headers),
+            )
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -306,7 +315,6 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
     }
 
     companion object {
-
         const val JOURNALPOST_ID = "12345678"
         const val DOKUMENTINFO_ID = "123456789"
         const val SAKSNUMMER = "87654321"

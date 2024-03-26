@@ -29,7 +29,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 @ExtendWith(SpringExtension::class)
 @EnableCaching
 class AktørServiceTest {
-
     @Autowired
     private lateinit var aktørService: AktørService
 
@@ -42,7 +41,6 @@ class AktørServiceTest {
     @Configuration
     @Profile("AktørServiceTest")
     class AktørClientTestConfig {
-
         val cacheManagerToBe = CacheConfig().cacheManager()
 
         @Bean
@@ -99,7 +97,6 @@ class AktørServiceTest {
     }
 
     companion object {
-
         private const val PERSONIDENT = "11111111111"
         private const val PERSONIDENT_UTEN_IDENT = "22222222222"
         private const val TESTAKTORID = "1000011111111"

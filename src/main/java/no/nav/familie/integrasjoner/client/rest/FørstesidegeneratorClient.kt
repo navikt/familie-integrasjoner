@@ -23,7 +23,6 @@ class FørstesidegeneratorClient(
     @Qualifier("sts") private val restTemplate: RestOperations,
 ) :
     AbstractPingableRestClient(restTemplate, "førstesidegenterator") {
-
     override val pingUri: URI = UriUtil.uri(førstesidegeneratorURI, PATH_PING)
 
     fun genererFørsteside(dto: PostFørstesideRequest): PostFørstesideResponse {
@@ -46,13 +45,13 @@ class FørstesidegeneratorClient(
             .getOrThrow()
     }
 
-    private fun httpHeaders(): HttpHeaders = HttpHeaders().apply {
-        add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
-        add(NAV_CONSUMER_ID, "familie-integrasjoner")
-    }
+    private fun httpHeaders(): HttpHeaders =
+        HttpHeaders().apply {
+            add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+            add(NAV_CONSUMER_ID, "familie-integrasjoner")
+        }
 
     companion object {
-
         private const val PATH_PING = "internal/isAlive"
         private const val PATH_GENERER = "/api/foerstesidegenerator/v1/foersteside"
         private const val X_CORRELATION_ID = "X-Correlation-ID"

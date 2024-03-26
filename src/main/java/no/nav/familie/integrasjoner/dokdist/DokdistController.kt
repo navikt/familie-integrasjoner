@@ -20,28 +20,29 @@ import org.springframework.web.client.HttpClientErrorException
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/dist")
 class DokdistController(private val dokdistService: DokdistService) {
-
     @ExceptionHandler(HttpClientErrorException::class)
     fun handleHttpClientException(e: HttpClientErrorException): ResponseEntity<Ressurs<Any>> {
         secureLogger.warn("Feil ved distribusjon: ${e.message}")
-        val ressurs: Ressurs<Any> = Ressurs(
-            data = e.responseBodyAsString,
-            status = Ressurs.Status.FEILET,
-            melding = e.message ?: "Uventet feil status=${e.rawStatusCode}",
-            stacktrace = e.stackTraceToString(),
-        )
+        val ressurs: Ressurs<Any> =
+            Ressurs(
+                data = e.responseBodyAsString,
+                status = Ressurs.Status.FEILET,
+                melding = e.message ?: "Uventet feil status=${e.rawStatusCode}",
+                stacktrace = e.stackTraceToString(),
+            )
         return ResponseEntity.status(e.rawStatusCode).body(ressurs)
     }
 
     @PostMapping("v1")
     @ResponseStatus(HttpStatus.OK)
-    fun distribuerJournalpost(@RequestBody request: @Valid DistribuerJournalpostRequest): ResponseEntity<Ressurs<String>> {
+    fun distribuerJournalpost(
+        @RequestBody request: @Valid DistribuerJournalpostRequest,
+    ): ResponseEntity<Ressurs<String>> {
         val response = dokdistService.distribuerDokumentForJournalpost(request)
         return ResponseEntity.ok(success(response?.bestillingsId ?: throw NullResponseException()))
     }
 
     companion object {
-
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
     }
 }
