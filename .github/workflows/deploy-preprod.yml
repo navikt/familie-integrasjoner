@@ -41,6 +41,7 @@ jobs:
           tag: latest
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          byosbom: target/bom.json
 
     outputs:
       image: ${{ steps.docker-push.outputs.image }}
