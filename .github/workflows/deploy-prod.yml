@@ -13,7 +13,7 @@ permissions:
   id-token: "write"
 jobs:
   build:
-    name: Deploy tag til prod-fss
+    name: Bygg og test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,10 +37,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: mvn -B --no-transfer-progress package --settings .m2/maven-settings.xml --file pom.xml
 
-      - name: Bygg Docker image
-        run: |
-          docker build -t ${IMAGE} -t ${IMAGE_LATEST} .
-
       - uses: nais/docker-build-push@v0
         id: docker-push
         with:
@@ -57,7 +53,7 @@ jobs:
       image: ${{ steps.docker-push.outputs.image }}
 
   deploy-prod:
-    name: Deploy tag til prod-fss
+    name: Deploy til prod-fss
     needs: build
     runs-on: ubuntu-latest
     permissions:
@@ -75,7 +71,7 @@ jobs:
           VAR: image=${{ needs.build.outputs.image }}
 
   deploy-preprod:
-    name: Deploy tag til prod-fss
+    name: Deploy til prod-fss
     needs: build
     runs-on: ubuntu-latest
     permissions:
