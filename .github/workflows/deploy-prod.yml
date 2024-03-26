@@ -13,7 +13,7 @@ permissions:
   id-token: "write"
 jobs:
   build:
-    name: Deploy tag til prod-fss
+    name: Bygg og test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -57,7 +57,7 @@ jobs:
       image: ${{ steps.docker-push.outputs.image }}
 
   deploy-prod:
-    name: Deploy tag til prod-fss
+    name: Deploy til prod-fss
     needs: build
     runs-on: ubuntu-latest
     permissions:
@@ -75,7 +75,7 @@ jobs:
           VAR: image=${{ needs.build.outputs.image }}
 
   deploy-preprod:
-    name: Deploy tag til prod-fss
+    name: Deploy til prod-fss
     needs: build
     runs-on: ubuntu-latest
     permissions:
