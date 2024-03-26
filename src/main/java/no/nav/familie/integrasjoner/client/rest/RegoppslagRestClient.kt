@@ -40,7 +40,8 @@ class RegoppslagRestClient(
         } catch (e: RestClientResponseException) {
             when (e.statusCode) {
                 HttpStatus.NOT_FOUND,
-                HttpStatus.GONE -> null // Person er død og har ukjent adresse
+                HttpStatus.GONE,
+                -> null // Person er død og har ukjent adresse
                 else -> throw e
             }
         }

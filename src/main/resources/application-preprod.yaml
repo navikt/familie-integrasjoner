@@ -3,7 +3,6 @@ no.nav.security.jwt:
     discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
     accepted_audience: ${AZURE_APP_CLIENT_ID}
     proxyurl: http://webproxy-nais.nav.no:8088
-    cookie_name: azure_token
   client:
     registration:
       aad-graph-onbehalfof:
@@ -162,7 +161,7 @@ tilgang:
 INTEGRASJONER_CLIENT_ID: ${AZURE_APP_CLIENT_ID}
 CLIENT_SECRET: ${AZURE_APP_CLIENT_SECRET}
 INFOTRYGD_KS_SCOPE: ${INFOTRYGD_KS_SCOPE}
-KODEVERK_SCOPE: api://dev-fss.team-rocket.kodeverk/.default
+KODEVERK_SCOPE: api://dev-gcp.team-rocket.kodeverk-api/.default
 DOKARKIV_SCOPE: api://dev-fss.teamdokumenthandtering.dokarkiv/.default
 PDL_SCOPE: api://dev-fss.pdl.pdl-api/.default
 DOKDISTKANAL_SCOPE: api://dev-fss.teamdokumenthandtering.dokdistkanal/.default
@@ -174,7 +173,7 @@ DOKARKIV_V1_URL: https://dokarkiv-q2.dev.intern.nav.no
 MEDL2_URL: https://medlemskap-medl-api.dev.intern.nav.no
 SAF_URL: https://saf-q2.dev.intern.nav.no
 OPPGAVE_URL: https://oppgave.dev.adeo.no
-KODEVERK_URL: http://kodeverk.team-rocket
+KODEVERK_URL: https://kodeverk-api.nav.no
 FORSTESIDEGENERATOR_URL: https://foerstesidegenerator-q2.dev.intern.nav.no
 EGEN_ANSATT_URL: https://skjermede-personer-pip.nais.preprod.local
 DOKDIST_URL: https://dokdistfordeling-q2.dev.intern.nav.no
