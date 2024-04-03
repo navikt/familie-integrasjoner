@@ -48,6 +48,7 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata =
         Dokumenttype.BARNETRYGD_FORLENGET_SVARTIDSBREV_INSTITUSJON -> BarnetrygdForlengetSvartidsbrevInstitusjonMetadata
         Dokumenttype.BARNETRYGD_FORLENGET_SVARTIDSBREV -> BarnetrygdForlengetSvartidsbrevMetadata
         Dokumenttype.BARNETRYGD_HENLEGGE_TRUKKET_SØKNAD -> BarnetrygdHenleggelseMetadata
+        Dokumenttype.BARNETRYGD_HENLEGGE_TRUKKET_SØKNAD_INSTITUSJON -> BarnetrygdHenleggelseInstitusjonMetadata
         Dokumenttype.BARNETRYGD_INFORMASJONSBREV_DELT_BOSTED -> BarnetrygdInformasjonsbrevDeltBostedMetadata
         Dokumenttype.BARNETRYGD_INFORMASJONSBREV_FØDSEL_GENERELL -> BarnetrygdInformasjonsbrevFødselGenerell
         Dokumenttype.BARNETRYGD_INFORMASJONSBREV_FØDSEL_MINDREÅRIG -> BarnetrygdInformasjonsbrevFødselMindreårigMetadata
