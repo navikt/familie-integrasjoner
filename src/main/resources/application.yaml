@@ -49,6 +49,9 @@ management:
       info: "status/isAlive"
   prometheus.metrics.export.enabled: true
 
+familie:
+  tellAPIEndepunkterIBruk: true
+
 AZURE_APP_CLIENT_ID: "dummy-klient-id"
 AZURE_APP_CLIENT_SECRET: "dummy-klient-secret"
 INFOTRYGD_KS_SCOPE: "dummy-scope"

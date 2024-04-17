@@ -23,7 +23,7 @@ import java.time.Duration
 import java.time.temporal.ChronoUnit
 
 @SpringBootConfiguration
-@ComponentScan("no.nav.familie.integrasjoner")
+@ComponentScan("no.nav.familie.integrasjoner", "no.nav.familie.metrikker")
 @ConfigurationPropertiesScan
 @EnableJwtTokenValidation(ignore = ["org.springframework", "org.springdoc"])
 @EnableOAuth2Client(cacheEnabled = true)
