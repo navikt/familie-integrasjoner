@@ -4,12 +4,16 @@ import no.nav.familie.kontrakter.felles.PersonIdent
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.tilgangskontroll.Tilgang
 import no.nav.security.token.support.core.api.ProtectedWithClaims
+import no.nav.security.token.support.core.api.Unprotected
 import org.springframework.context.annotation.Profile
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -57,5 +61,21 @@ class TilgangskontrollController(private val tilgangskontrollService: Tilgangsko
         @RequestHeader(name = "Nav-Tema") tema: Tema,
     ): Tilgang {
         return tilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner(personIdent.ident, tema)
+    }
+
+    @GetMapping("/foo/{id}")
+    @ResponseBody
+    @Unprotected
+    fun foo(
+        @PathVariable id: String,
+    ) {
+    }
+
+    @PostMapping("/føø")
+    @ResponseBody
+    @Unprotected
+    fun føø(
+        @RequestParam id: String,
+    ) {
     }
 }
