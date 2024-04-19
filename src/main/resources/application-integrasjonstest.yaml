@@ -185,3 +185,5 @@ CREDENTIAL_PASSWORD: not-a-real-pw
 
 wiremock:
   reset-mappings-after-each-test: true
+
+NAIS_APP_NAME: familie-integrasjoner

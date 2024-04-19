@@ -2,7 +2,7 @@
 App for integrasjoner mot NAV-interne registre, GSAK, infotrygd mm. Brukes i saksbehandling av kontantstøtte, barnetrygd og enslig forsørger.
 
 ## Bygging lokalt
-Appen kjører på Java 11. Bygging gjøres ved å kjøre `mvn clean install`. 
+Appen kjører på Java 21. Bygging gjøres ved å kjøre `mvn clean install`. 
 
 ## Kjøring og testing lokalt
 For å kjøre opp appen lokalt kan en kjøre `DevLauncher` med Spring-profilen `dev` satt. Dette kan feks gjøres ved å sette

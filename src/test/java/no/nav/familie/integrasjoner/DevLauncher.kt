@@ -1,18 +1,18 @@
 package no.nav.familie.integrasjoner
 
 import no.nav.familie.integrasjoner.config.ApplicationConfig
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
+import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.context.annotation.Import
 
-@SpringBootApplication(exclude = [ErrorMvcAutoConfiguration::class])
 @Import(ApplicationConfig::class)
+@EnableMockOAuth2Server
 class DevLauncher
 
 fun main(args: Array<String>) {
+    System.setProperty("spring.profiles.active", "dev")
     val app =
-        SpringApplicationBuilder(ApplicationConfig::class.java)
+        SpringApplicationBuilder(DevLauncher::class.java)
             .profiles(
                 "dev",
                 "mock-aktor",
