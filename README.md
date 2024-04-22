@@ -1,5 +1,5 @@
 # familie-integrasjoner
-App for integrasjoner mot NAV-interne registre, GSAK, infotrygd mm. Brukes i saksbehandling av kontantstøtte, barnetrygd og enslig forsørger.
+App for integrasjoner mot NAV-interne registre, GSAK, mm. Brukes i saksbehandling av kontantstøtte, barnetrygd og enslig forsørger.
 
 ## Bygging lokalt
 Appen kjører på Java 21. Bygging gjøres ved å kjøre `mvn clean install`. 

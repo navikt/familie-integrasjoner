@@ -21,7 +21,6 @@ class KodeverkTestConfig {
     fun kodeverkClientMock(): KodeverkClient {
         val kodeverkClient: KodeverkClient = mockk()
         every { kodeverkClient.hentPostnummer() } returns mockPostnummerRespons()
-        every { kodeverkClient.ping() } returns Unit
         return kodeverkClient
     }
 

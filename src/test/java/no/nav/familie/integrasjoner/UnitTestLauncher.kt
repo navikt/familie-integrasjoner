@@ -22,8 +22,6 @@ fun main(args: Array<String>) {
                 "mock-dokdist",
                 "mock-dokdistkanal",
                 "mock-egenansatt",
-                "mock-infotrygd",
-                "mock-infotrygdsak",
                 "mock-medlemskap",
                 "mock-oppgave",
                 "mock-personopplysninger",
