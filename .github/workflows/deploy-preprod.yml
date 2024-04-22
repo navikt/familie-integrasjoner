@@ -34,6 +34,7 @@ jobs:
         run: mvn -B --no-transfer-progress package --settings .m2/maven-settings.xml --file pom.xml
 
       - name: Bygg og push docker image
+        if: github.event.pull_request.draft == false && github.triggering_actor != 'dependabot[bot]'
         uses: nais/docker-build-push@v0
         id: docker-push
         with:
@@ -47,7 +48,7 @@ jobs:
       image: ${{ steps.docker-push.outputs.image }}
 
   deploy-dev:
-    if: github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == false && github.triggering_actor != 'dependabot[bot]'
     name: Deploy to dev-fss
     needs: build-dev
     runs-on: ubuntu-latest
