@@ -54,7 +54,6 @@ familie:
 
 AZURE_APP_CLIENT_ID: "dummy-klient-id"
 AZURE_APP_CLIENT_SECRET: "dummy-klient-secret"
-INFOTRYGD_KS_SCOPE: "dummy-scope"
 KODEVERK_SCOPE: "dummy-scope"
 SAF_SCOPE: "dummy-scope"
 OPPGAVE_SCOPE: "dummy-scope"
@@ -63,7 +62,6 @@ DOKDISTKANAL_SCOPE: "dummy-scope"
 REGOPPSLAG_SCOPE: "dummy-scope"
 
 STS_URL: http://security-token-service.default.svc.nais.local/rest/v1/sts/token
-INFOTRYGD_URL: http://infotrygd-kontantstotte.default
 KODEVERK_URL: http://kodeverk.default
 PDL_URL: http://pdl-api.pdl
 DOKARKIV_V1_URL: http://dokarkiv.teamdokumenthandtering
