@@ -133,13 +133,4 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         oppgaveService.tilordneEnhet(oppgaveId, enhet, fjernMappeFraOppgave, versjon)
         return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
     }
-
-    @PatchMapping(path = ["/{oppgaveId}/fjern-behandles-av-applikasjon"])
-    fun fjernBehandlesAvApplikasjon(
-        @PathVariable(name = "oppgaveId") oppgaveId: Long,
-        @RequestParam(name = "versjon") versjon: Int,
-    ): ResponseEntity<Ressurs<OppgaveResponse>> {
-        oppgaveService.fjernBehandlesAvApplikasjon(oppgaveId, versjon)
-        return ResponseEntity.ok(success(OppgaveResponse(oppgaveId = oppgaveId), "ferdigstill OK"))
-    }
 }
