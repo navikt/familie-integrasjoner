@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.client.rest
 
-import no.nav.familie.http.client.AbstractPingableRestClient
+import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
 import org.springframework.beans.factory.annotation.Qualifier
@@ -14,9 +14,7 @@ class KodeverkClient(
     @Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
     @Qualifier("jwtBearer") private val restTemplate: RestOperations,
 ) :
-    AbstractPingableRestClient(restTemplate, "kodeverk") {
-    override val pingUri: URI = UriUtil.uri(kodeverkUri, PATH_PING)
-
+    AbstractRestClient(restTemplate, "kodeverk") {
     fun hentPostnummer(): KodeverkDto {
         return getForEntity(kodeverkUri("Postnummer"))
     }
