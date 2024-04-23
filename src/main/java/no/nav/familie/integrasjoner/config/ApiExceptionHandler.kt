@@ -9,6 +9,7 @@ import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.security.token.support.client.core.OAuth2ClientException
 import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
 import org.apache.commons.lang3.exception.ExceptionUtils
+import org.eclipse.jetty.http.HttpHeader
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -20,6 +21,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.client.RestClientResponseException
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException
 import java.nio.channels.ClosedChannelException
 
 @ControllerAdvice
@@ -35,11 +37,30 @@ class ApiExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotWritableException::class)
-    fun handleHttpMessageNotWritableException(e: HttpMessageNotWritableException?, request: HttpServletRequest): ResponseEntity<Ressurs<Any>>? {
-        return if (request.contentType.startsWith(MediaType.APPLICATION_JSON_VALUE)) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(failure("Kan ikke konvertere melding", error=e))
+    fun handleHttpMessageNotWritableException(
+        e: HttpMessageNotWritableException?,
+        request: HttpServletRequest,
+    ): ResponseEntity<Ressurs<Any>>? {
+        val hasContentType = request.headerNames.toList().contains(HttpHeader.CONTENT_TYPE.name)
+        return if (hasContentType && request.contentType.startsWith(MediaType.APPLICATION_JSON_VALUE)) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(failure("Kan ikke konvertere melding", error = e))
         } else {
             logger.warn("Kan ikke lese melding av type ${request.contentType} ${request.requestURI}", e)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+        }
+    }
+
+    @ExceptionHandler(AsyncRequestNotUsableException::class)
+    fun handlAsyncRequestNotUsableException(
+        e: AsyncRequestNotUsableException?,
+        request: HttpServletRequest,
+    ): ResponseEntity<Ressurs<Any>>? {
+        val hasContentType = request.headerNames.toList().contains(HttpHeader.CONTENT_TYPE.name)
+
+        return if (hasContentType && request.contentType.startsWith(MediaType.APPLICATION_JSON_VALUE)) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(failure("AsyncRequestNotUsableException", error = e))
+        } else {
+            logger.warn("AsyncRequestNotUsableException ${request.requestURI} ${request.headerNames} ${request.method} $request", e)
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
         }
     }
