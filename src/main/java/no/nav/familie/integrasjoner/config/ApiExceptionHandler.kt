@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.config
 
+import jakarta.servlet.http.HttpServletRequest
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.PdlUnauthorizedException
@@ -10,8 +11,10 @@ import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnaut
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.http.converter.HttpMessageNotWritableException
 import org.springframework.web.bind.MissingRequestHeaderException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -31,12 +34,22 @@ class ApiExceptionHandler {
             .body(failure(errorMessage = "Du er ikke logget inn.", frontendFeilmelding = "Du er ikke logget inn", error = e))
     }
 
+    @ExceptionHandler(HttpMessageNotWritableException::class)
+    fun handleHttpMessageNotWritableException(e: HttpMessageNotWritableException?, request: HttpServletRequest): ResponseEntity<Ressurs<Any>>? {
+        return if (request.contentType.startsWith(MediaType.APPLICATION_JSON_VALUE)) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(failure("Kan ikke konvertere melding", error=e))
+        } else {
+            logger.warn("Kan ikke lese melding av type ${request.contentType} ${request.requestURI}", e)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+        }
+    }
+
     @ExceptionHandler(RestClientResponseException::class)
     fun handleRestClientResponseException(e: RestClientResponseException): ResponseEntity<Ressurs<Any>> {
         secureLogger.error("RestClientResponseException : ${e.responseBodyAsString}", e)
         logger.error(
             "RestClientResponseException : {} {} {}",
-            e.rawStatusCode,
+            e.statusCode.value(),
             e.statusText,
             ExceptionUtils.getStackTrace(e),
         )
@@ -44,7 +57,7 @@ class ApiExceptionHandler {
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(
                 failure(
-                    errorMessage = "Feil mot ekstern tjeneste. ${e.rawStatusCode} ${e.responseBodyAsString} Message=${e.message}",
+                    errorMessage = "Feil mot ekstern tjeneste. ${e.statusCode.value()} ${e.responseBodyAsString} Message=${e.message}",
                     error = e,
                 ),
             )
