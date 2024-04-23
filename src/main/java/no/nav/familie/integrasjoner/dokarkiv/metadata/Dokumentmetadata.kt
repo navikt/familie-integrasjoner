@@ -56,6 +56,7 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata =
         Dokumenttype.BARNETRYGD_INFORMASJONSBREV_FØDSEL_VERGEMÅL -> BarnetrygdInformasjonsbrevFødselVergemålMetadata
         Dokumenttype.BARNETRYGD_INFORMASJONSBREV_KAN_SØKE_EØS -> BarnetrygdInformasjonsbrevKanSøkeEøsMetadata
         Dokumenttype.BARNETRYGD_INFORMASJONSBREV_KAN_SØKE -> BarnetrygdInformasjonsbrevKanSøkeMetadata
+        Dokumenttype.BARNETRYGD_INFORMASJONSBREV_OM_VALUTAJUSTERING -> BarnetrygdInformasjonsbrevOmValutajusteringMetadata
         Dokumenttype.BARNETRYGD_INFORMASJONSBREV_TIL_FORELDER_MED_SELVSTENDIG_RETT_VI_HAR_FÅTT_F016_KAN_SØKE_OM_BARNETRYGD -> BarnetrygdInformasjonsbrevTilForelderMedSelvstendigRettViHarFåttF016KanSøkeOmBarnetrygdMetadata
         Dokumenttype.BARNETRYGD_INFORMASJONSBREV_TIL_FORELDER_OMFATTET_NORSK_LOVGIVNING_HAR_FÅTT_EN_SØKNAD_FRA_ANNEN_FORELDER -> BarnetrygdInformasjonsbrevTilForelderOmfattetNorskLovgivningHarFåttEnSøknadFraAnnenForelderMetadata
         Dokumenttype.BARNETRYGD_INFORMASJONSBREV_TIL_FORELDER_OMFATTET_NORSK_LOVGIVNING_HAR_GJORT_VEDTAK_TIL_ANNEN_FORELDER -> BarnetrygdInformasjonsbrevTilForelderOmfattetNorskLovgivningHarGjortVedtakTilAnnenForelderMetadata
