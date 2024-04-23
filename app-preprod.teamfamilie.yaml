@@ -92,7 +92,6 @@ spec:
       cpu: 200m
   ingresses:
     - https://familie-integrasjoner.dev-fss-pub.nais.io
-    - https://familie-integrasjoner.dev.intern.nav.no #deprecated. Kan slettes når ks/ba har byttet til intern.dev.nav.no
     - https://familie-integrasjoner.intern.dev.nav.no
   env:
     - name: SPRING_PROFILES_ACTIVE
