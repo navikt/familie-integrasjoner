@@ -119,14 +119,11 @@ class OppgaveRestClient(
 
     fun oppdaterOppgave(patchDto: Oppgave): Oppgave? {
         return Result.runCatching {
-            val f =
-                patchForEntity<Oppgave>(
-                    requestUrl(patchDto.id ?: error("Kan ikke finne oppgaveId på oppgaven")),
-                    patchDto,
-                    httpHeaders(),
-                )
-
-            f
+            patchForEntity<Oppgave>(
+                requestUrl(patchDto.id ?: error("Kan ikke finne oppgaveId på oppgaven")),
+                patchDto,
+                httpHeaders(),
+            )
         }.fold(
             onSuccess = { it },
             onFailure = {
