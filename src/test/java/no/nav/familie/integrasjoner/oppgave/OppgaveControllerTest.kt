@@ -7,7 +7,6 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.exactly
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath
-import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.okJson
 import com.github.tomakehurst.wiremock.client.WireMock.patch
 import com.github.tomakehurst.wiremock.client.WireMock.patchRequestedFor
@@ -111,8 +110,6 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal logge stack trace og returnere internal server error ved IllegalStateException`() {
-        stubFor(get(GET_OPPGAVER_URL).willReturn(ok()))
-
         val oppgave =
             Oppgave(
                 aktoerId = "1234567891011",
@@ -123,14 +120,14 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
         val response: ResponseEntity<Ressurs<Map<String, Long>>> =
             restTemplate.exchange(
-                localhost(OPPDATER_OPPGAVE_URL),
-                HttpMethod.POST,
+                localhost("/api/oppgave/$OPPGAVE_ID/oppdater"),
+                HttpMethod.PATCH,
                 HttpEntity(oppgave, headers),
             )
 
         assertThat(loggingEvents)
             .extracting<String, RuntimeException> { obj: ILoggingEvent -> obj.formattedMessage }
-            .anyMatch { s: String -> s.contains("Exception : java.lang.IllegalStateException") }
+            .anyMatch { s: String -> s.contains("[Feil ved oppdatering av oppgave for null.][java.lang.IllegalStateException]") }
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
@@ -140,6 +137,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
         val oppgave =
             Oppgave(
+                id = OPPGAVE_ID,
                 aktoerId = "1234567891011",
                 journalpostId = "1",
                 beskrivelse = "test RestClientException",
@@ -148,8 +146,8 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
         val response: ResponseEntity<Ressurs<Map<String, Long>>> =
             restTemplate.exchange(
-                localhost(OPPDATER_OPPGAVE_URL),
-                HttpMethod.POST,
+                localhost("/api/oppgave/$OPPGAVE_ID/oppdater"),
+                HttpMethod.PATCH,
                 HttpEntity(oppgave, headers),
             )
 
@@ -157,98 +155,6 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
             .extracting<String, RuntimeException> { obj: ILoggingEvent -> obj.formattedMessage }
             .anyMatch { it.contains("HttpClientErrorException") }
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-    }
-
-    @Test
-    fun `skal logge og returnere not found ved oppgaveIkkeFunnetException`() {
-        stubFor(get(GET_OPPGAVER_URL).willReturn(okJson(gyldigOppgaveResponse("tom_response.json"))))
-
-        val oppgave =
-            Oppgave(
-                aktoerId = "1234567891011",
-                journalpostId = "1",
-                beskrivelse = "test oppgave ikke funnet",
-                tema = Tema.KON,
-            )
-
-        val response: ResponseEntity<Ressurs<Map<String, Long>>> =
-            restTemplate.exchange(
-                localhost(OPPDATER_OPPGAVE_URL),
-                HttpMethod.POST,
-                HttpEntity(oppgave, headers),
-            )
-
-        assertThat(loggingEvents)
-            .extracting<String, RuntimeException> { obj: ILoggingEvent -> obj.formattedMessage }
-            .anyMatch {
-                it.contains(
-                    "[oppgave][Ingen oppgaver funnet for http://localhost:28085/api/v1/oppgaver" +
-                        "?aktoerId=1234567891011&tema=KON&oppgavetype=BEH_SAK&journalpostId=1&statuskategori=AAPEN]",
-                )
-            }
-        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
-    }
-
-    @Test
-    fun `skal ignorere oppdatering hvis oppgave er ferdigstilt`() {
-        stubFor(get(GET_OPPGAVER_URL).willReturn(okJson(gyldigOppgaveResponse("ferdigstilt_oppgave.json"))))
-
-        val oppgave =
-            Oppgave(
-                aktoerId = "1234567891011",
-                journalpostId = "1",
-                beskrivelse = "test oppgave ikke funnet",
-                tema = null,
-            )
-
-        val response: ResponseEntity<Ressurs<Map<String, Long>>> =
-            restTemplate.exchange(
-                localhost(OPPDATER_OPPGAVE_URL),
-                HttpMethod.POST,
-                HttpEntity(oppgave, headers),
-            )
-
-        assertThat(loggingEvents).extracting<String, RuntimeException> { obj: ILoggingEvent -> obj.formattedMessage }
-            .anyMatch {
-                it.contains(
-                    "Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId=1234567891011 " +
-                        "journalpostId=123456789 oppgaveId=$OPPGAVE_ID",
-                )
-            }
-        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-    }
-
-    @Test
-    fun `skal oppdatere oppgave med ekstra beskrivelse, returnere oppgaveid og 200 OK`() {
-        stubFor(get(GET_OPPGAVER_URL).willReturn(okJson(gyldigOppgaveResponse("oppgave.json"))))
-
-        stubFor(
-            patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
-                .withRequestBody(matchingJsonPath("$.[?(@.beskrivelse == 'Behandle sak$EKSTRA_BESKRIVELSE')]"))
-                .willReturn(
-                    aResponse()
-                        .withStatus(201)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(gyldigOppgaveResponse("ferdigstilt_oppgave.json")),
-                ),
-        )
-
-        val oppgave =
-            Oppgave(
-                aktoerId = "1234567891011",
-                journalpostId = "1",
-                beskrivelse = EKSTRA_BESKRIVELSE,
-                tema = null,
-            )
-
-        val response: ResponseEntity<Ressurs<OppgaveResponse>> =
-            restTemplate.exchange(
-                localhost(OPPDATER_OPPGAVE_URL),
-                HttpMethod.POST,
-                HttpEntity(oppgave, headers),
-            )
-        assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
-        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
     }
 
     @Test
@@ -666,7 +572,6 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     companion object {
         private const val OPPGAVE_URL = "/api/oppgave"
         private const val OPPRETT_OPPGAVE_URL_V2 = "/api/oppgave/opprett"
-        private const val OPPDATER_OPPGAVE_URL = "$OPPGAVE_URL/oppdater"
         private const val OPPGAVE_ID = 315488374L
         private const val GET_OPPGAVER_URL =
             "/api/v1/oppgaver?aktoerId=1234567891011&tema=KON&oppgavetype=BEH_SAK&journalpostId=1&statuskategori=AAPEN"

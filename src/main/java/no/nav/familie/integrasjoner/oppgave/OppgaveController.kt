@@ -80,14 +80,6 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         )
     }
 
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdater"])
-    fun oppdaterOppgave(
-        @RequestBody oppgave: Oppgave,
-    ): ResponseEntity<Ressurs<OppgaveResponse>> {
-        val oppgaveId = oppgaveService.oppdaterOppgave(oppgave)
-        return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
-    }
-
     @PatchMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/{oppgaveId}/oppdater"])
     fun patchOppgave(
         @RequestBody oppgave: Oppgave,
