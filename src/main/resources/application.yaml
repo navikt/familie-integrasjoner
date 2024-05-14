@@ -50,7 +50,9 @@ management:
   prometheus.metrics.export.enabled: true
 
 familie:
-  tellAPIEndepunkterIBruk: true
+  tellAPIEndepunkterIBruk:
+    enabled: true
+    ekskluder: /internal, /api/tilgang
 
 AZURE_APP_CLIENT_ID: "dummy-klient-id"
 AZURE_APP_CLIENT_SECRET: "dummy-klient-secret"
