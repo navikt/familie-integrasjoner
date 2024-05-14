@@ -6,7 +6,6 @@ import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.client.QueryParamUtil.toQueryParams
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.oppgave.OppgaveByttEnhet
-import no.nav.familie.integrasjoner.oppgave.OppgaveFjernBehandlesAvApplikasjon
 import no.nav.familie.integrasjoner.oppgave.domene.LIMIT_MOT_OPPGAVE
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveRequest
 import no.nav.familie.integrasjoner.oppgave.domene.toDto
@@ -174,41 +173,6 @@ class OppgaveRestClient(
                     "Oppgave.byttEnhet",
                     OppslagException.Level.MEDIUM,
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    it,
-                )
-            },
-        )
-    }
-
-    fun fjernBehandlesAvApplikasjon(fjernBehandlesAvApplikasjon: OppgaveFjernBehandlesAvApplikasjon): Oppgave? {
-        return Result.runCatching {
-            patchForEntity<Oppgave>(
-                requestUrl(fjernBehandlesAvApplikasjon.id),
-                fjernBehandlesAvApplikasjon,
-                httpHeaders(),
-            )
-        }.fold(
-            onSuccess = { it },
-            onFailure = {
-                var feilmelding = "Feil ved fjerning av behandlesAvApplikasjon for ${fjernBehandlesAvApplikasjon.id}."
-                val statusCode =
-                    if (it is HttpStatusCodeException) {
-                        feilmelding += " Response fra oppgave = ${it.responseBodyAsString}"
-
-                        if (it.statusCode == HttpStatus.CONFLICT) {
-                            HttpStatus.CONFLICT
-                        } else {
-                            HttpStatus.INTERNAL_SERVER_ERROR
-                        }
-                    } else {
-                        HttpStatus.INTERNAL_SERVER_ERROR
-                    }
-
-                throw OppslagException(
-                    feilmelding,
-                    "Oppgave.fjernBehandlesAvApplikasjon",
-                    OppslagException.Level.LAV,
-                    statusCode,
                     it,
                 )
             },

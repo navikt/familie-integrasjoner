@@ -44,14 +44,6 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         return success(oppgaveService.finnOppgaver(finnOppgaveRequest))
     }
 
-    @PostMapping(path = ["/mappe/sok"])
-    @Deprecated(message = "Bruk get under")
-    fun finnMapperV1Deprecated(
-        @RequestBody finnMappeRequest: FinnMappeRequest,
-    ): Ressurs<FinnMappeResponseDto> {
-        return success(oppgaveService.finnMapper(finnMappeRequest))
-    }
-
     @GetMapping(path = ["/mappe/sok"])
     fun finnMapperV1(finnMappeRequest: FinnMappeRequest): Ressurs<FinnMappeResponseDto> {
         return success(oppgaveService.finnMapper(finnMappeRequest))
@@ -86,14 +78,6 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
                 },
             ),
         )
-    }
-
-    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/oppdater"])
-    fun oppdaterOppgave(
-        @RequestBody oppgave: Oppgave,
-    ): ResponseEntity<Ressurs<OppgaveResponse>> {
-        val oppgaveId = oppgaveService.oppdaterOppgave(oppgave)
-        return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
     }
 
     @PatchMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/{oppgaveId}/oppdater"])
@@ -140,14 +124,5 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     ): ResponseEntity<Ressurs<OppgaveResponse>> {
         oppgaveService.tilordneEnhet(oppgaveId, enhet, fjernMappeFraOppgave, versjon)
         return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
-    }
-
-    @PatchMapping(path = ["/{oppgaveId}/fjern-behandles-av-applikasjon"])
-    fun fjernBehandlesAvApplikasjon(
-        @PathVariable(name = "oppgaveId") oppgaveId: Long,
-        @RequestParam(name = "versjon") versjon: Int,
-    ): ResponseEntity<Ressurs<OppgaveResponse>> {
-        oppgaveService.fjernBehandlesAvApplikasjon(oppgaveId, versjon)
-        return ResponseEntity.ok(success(OppgaveResponse(oppgaveId = oppgaveId), "ferdigstill OK"))
     }
 }

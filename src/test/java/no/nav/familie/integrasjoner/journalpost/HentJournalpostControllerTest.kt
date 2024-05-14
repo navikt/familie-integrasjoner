@@ -1,8 +1,6 @@
 package no.nav.familie.integrasjoner.journalpost
 
-import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
-import ch.qos.logback.classic.spi.ILoggingEvent
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.felles.graphqlQuery
@@ -21,7 +19,6 @@ import no.nav.familie.kontrakter.felles.journalpost.VarselType
 import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockserver.integration.ClientAndServer
@@ -65,32 +62,6 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
             UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
                 .queryParam("journalpostId", JOURNALPOST_ID).toUriString()
         uriHentDokument = localhost(JOURNALPOST_BASE_URL) + "/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID"
-    }
-
-    @Test
-    @Disabled("Skrur av siden det er en test på kode som kun KS bruker og den feilet. TODO fiks eller få vekk fra ks-mottak")
-    fun `hent saksnummer skal returnere saksnummer og status ok`() {
-        client.`when`(
-            HttpRequest.request()
-                .withMethod("POST")
-                .withPath("/rest/saf/graphql")
-                .withBody(gyldigJournalPostIdRequest()),
-        )
-            .respond(
-                response().withBody(lesFil("gyldigsakresponse.json"))
-                    .withHeaders(Header("Content-Type", "application/json")),
-            )
-
-        val response: ResponseEntity<Ressurs<Map<String, String>>> =
-            restTemplate.exchange(
-                uriHentSaksnummer,
-                HttpMethod.GET,
-                HttpEntity<String>(headers),
-            )
-
-        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
-        assertThat(response.body?.data?.get("saksnummer")).isEqualTo(SAKSNUMMER)
     }
 
     @Test
@@ -180,115 +151,6 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
     }
 
-    @Test
-    fun `hent saksnummer skal returnere status 404 hvis sak mangler`() {
-        client.`when`(
-            HttpRequest.request()
-                .withMethod("POST")
-                .withHeader(Header("Content-Type", "application/json"))
-                .withPath("/rest/saf/graphql"),
-        )
-            .respond(
-                response().withBody(lesFil("mangler_sak.json"))
-                    .withHeaders(Header("Content-Type", "application/json")),
-            )
-
-        val response: ResponseEntity<Ressurs<Map<String, String>>> =
-            restTemplate.exchange(
-                uriHentSaksnummer,
-                HttpMethod.GET,
-                HttpEntity<String>(headers),
-            )
-
-        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
-        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        assertThat(response.body?.melding).isEqualTo("Sak mangler for journalpostId=$JOURNALPOST_ID")
-    }
-
-    @Test
-    fun `hent saksnummer skal returnere status 404 hvis sak ikke er gsak`() {
-        client.`when`(
-            HttpRequest.request()
-                .withMethod("POST")
-                .withHeader(Header("Content-Type", "application/json"))
-                .withPath("/rest/saf/graphql"),
-        )
-            .respond(
-                response().withBody(lesFil("feil_arkivsaksystem.json"))
-                    .withHeaders(Header("Content-Type", "application/json")),
-            )
-
-        val response: ResponseEntity<Ressurs<Map<String, String>>> =
-            restTemplate.exchange(
-                uriHentSaksnummer,
-                HttpMethod.GET,
-                HttpEntity<String>(headers),
-            )
-
-        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
-        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        assertThat(response.body?.melding).isEqualTo("Sak mangler for journalpostId=$JOURNALPOST_ID")
-    }
-
-    @Test
-    fun `hent saksnummer skal returnerer 500 hvis klient returnerer 200 med feilmeldinger`() {
-        client.`when`(
-            HttpRequest.request()
-                .withMethod("POST")
-                .withHeader(Header("Content-Type", "application/json"))
-                .withPath("/rest/saf/graphql"),
-        )
-            .respond(
-                response().withBody(lesFil("error_fra_saf.json"))
-                    .withHeaders(Header("Content-Type", "application/json")),
-            )
-
-        val response: ResponseEntity<Ressurs<Map<String, String>>> =
-            restTemplate.exchange(
-                uriHentSaksnummer,
-                HttpMethod.GET,
-                HttpEntity<String>(headers),
-            )
-
-        assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        assertThat(response.body?.melding)
-            .contains(
-                "Feil ved henting av journalpost=12345678 klientfeilmelding=Kan ikke hente journalpost " +
-                    "[SafError(message=Feilet ved henting av data (/journalpost) : null, " +
-                    "extensions=SafExtension(code=server_error, classification=DataFetchingException))]",
-            )
-        assertThat(loggingEvents)
-            .extracting<Level, RuntimeException> { obj: ILoggingEvent -> obj.level }
-            .containsExactly(Level.WARN)
-    }
-
-    @Test
-    fun `hent saksnummer skal returnere 500 ved ukjent feil`() {
-        client.`when`(
-            HttpRequest.request()
-                .withMethod("POST")
-                .withHeader(Header("Content-Type", "application/json"))
-                .withPath("/rest/saf/graphql"),
-        )
-            .respond(response().withStatusCode(500).withBody("feilmelding"))
-
-        val response: ResponseEntity<Ressurs<Map<String, String>>> =
-            restTemplate.exchange(
-                uriHentSaksnummer,
-                HttpMethod.GET,
-                HttpEntity<String>(headers),
-            )
-
-        assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        assertThat(response.body?.melding)
-            .contains("Feil ved henting av journalpost")
-        assertThat(loggingEvents)
-            .extracting<Level, RuntimeException> { obj: ILoggingEvent -> obj.level }
-            .containsExactly(Level.WARN)
-    }
-
     private fun gyldigJournalPostIdRequest(): String {
         return lesFil("gyldigJournalpostIdRequest.json")
             .replace(
@@ -317,7 +179,6 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
     companion object {
         const val JOURNALPOST_ID = "12345678"
         const val DOKUMENTINFO_ID = "123456789"
-        const val SAKSNUMMER = "87654321"
         const val JOURNALPOST_BASE_URL = "/api/journalpost"
     }
 }

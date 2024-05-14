@@ -43,32 +43,6 @@ class OppgaveService constructor(
         return oppgaveRestClient.finnOppgaveMedId(oppgaveId)
     }
 
-    fun oppdaterOppgave(request: Oppgave): Long {
-        val oppgave: Oppgave =
-            if (request.id == null) {
-                oppgaveRestClient.finnÅpenBehandleSakOppgave(request)
-            } else {
-                oppgaveRestClient.finnOppgaveMedId(request.id!!)
-            }
-        if (oppgave.status === StatusEnum.FERDIGSTILT) {
-            logger.info(
-                "Ignorerer oppdatering av oppgave som er ferdigstilt for aktørId={} journalpostId={} oppgaveId={}",
-                oppgave.aktoerId,
-                oppgave.journalpostId,
-                oppgave.id,
-            )
-        } else {
-            val patchOppgaveDto =
-                oppgave.copy(
-                    id = oppgave.id,
-                    versjon = request.versjon ?: oppgave.versjon,
-                    beskrivelse = oppgave.beskrivelse + request.beskrivelse,
-                )
-            oppgaveRestClient.oppdaterOppgave(patchOppgaveDto)
-        }
-        return oppgave.id!!
-    }
-
     fun patchOppgave(patchOppgave: Oppgave): Long {
         return oppgaveRestClient.oppdaterOppgave(patchOppgave)?.id!!
     }
@@ -286,13 +260,6 @@ class OppgaveService constructor(
         val mappeId = if (fjernMappeFraOppgave) null else oppgave.mappeId
         oppgaveRestClient.oppdaterEnhet(OppgaveByttEnhet(oppgaveId, enhet, versjon ?: oppgave.versjon!!, mappeId))
     }
-
-    fun fjernBehandlesAvApplikasjon(
-        oppgaveId: Long,
-        versjon: Int,
-    ) {
-        oppgaveRestClient.fjernBehandlesAvApplikasjon(OppgaveFjernBehandlesAvApplikasjon(oppgaveId, versjon))
-    }
 }
 
 data class OppgaveByttEnhet(
@@ -300,12 +267,6 @@ data class OppgaveByttEnhet(
     val tildeltEnhetsnr: String,
     val versjon: Int,
     @JsonInclude(JsonInclude.Include.ALWAYS) val mappeId: Long? = null,
-)
-
-data class OppgaveFjernBehandlesAvApplikasjon(
-    val id: Long,
-    val versjon: Int,
-    @JsonInclude(JsonInclude.Include.ALWAYS) val behandlesAvApplikasjon: Long? = null,
 )
 
 /**

@@ -15,15 +15,6 @@ class JournalpostService
         private val safRestClient: SafRestClient,
         private val safHentDokumentRestClient: SafHentDokumentRestClient,
     ) {
-        fun hentSaksnummer(journalpostId: String): String? {
-            val journalpost = safRestClient.hentJournalpost(journalpostId)
-            return if (journalpost.sak != null && journalpost.sak?.arkivsaksystem == "GSAK") {
-                journalpost.sak?.arkivsaksnummer
-            } else {
-                null
-            }
-        }
-
         fun hentJournalpost(journalpostId: String): Journalpost {
             return safRestClient.hentJournalpost(journalpostId)
         }

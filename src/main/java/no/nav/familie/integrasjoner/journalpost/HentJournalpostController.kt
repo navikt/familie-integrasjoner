@@ -68,18 +68,6 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
             .body(failure(errorMessage, error = ex))
     }
 
-    @GetMapping("sak")
-    fun hentSaksnummer(
-        @RequestParam(name = "journalpostId") journalpostId: String,
-    ): ResponseEntity<Ressurs<Map<String, String>>> {
-        val saksnummer =
-            journalpostService.hentSaksnummer(journalpostId)
-                ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(failure("Sak mangler for journalpostId=$journalpostId", null))
-
-        return ResponseEntity.ok(success(mapOf("saksnummer" to saksnummer), "OK"))
-    }
-
     @GetMapping
     fun hentJournalpost(
         @RequestParam(name = "journalpostId") journalpostId: String,
