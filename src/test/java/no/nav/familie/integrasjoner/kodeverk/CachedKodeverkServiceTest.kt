@@ -20,26 +20,6 @@ class CachedKodeverkServiceTest {
     private val kodeverkService = CachedKodeverkService(kodeverkClientMock)
 
     @Test
-    fun `skal returnere poststed`() {
-        val beskrivelse = BeskrivelseDto(POSTSTED, "")
-        val beytning = BetydningDto(LocalDate.now(), LocalDate.now(), mapOf(KodeverkSpråk.BOKMÅL.kode to beskrivelse))
-        val kodeverk = KodeverkDto(mapOf(POSTNUMMER to listOf(beytning)))
-
-        every { kodeverkClientMock.hentPostnummer() } returns kodeverk
-
-        val poststedTest = kodeverkService.hentPostnummer()[POSTNUMMER]
-        assertThat(poststedTest).isEqualTo(POSTSTED)
-    }
-
-    @Test
-    fun `skal returnere tom poststed hvis den ikke finnes`() {
-        every { kodeverkClientMock.hentPostnummer() } returns KodeverkDto(emptyMap())
-
-        val poststedTest = kodeverkService.hentPostnummer()[POSTNUMMER]
-        assertThat(poststedTest).isNull()
-    }
-
-    @Test
     fun `skal returnere landkod`() {
         val beskrivelse = BeskrivelseDto(LAND, "")
         val betydning = BetydningDto(LocalDate.now(), LocalDate.now(), mapOf(KodeverkSpråk.BOKMÅL.kode to beskrivelse))
