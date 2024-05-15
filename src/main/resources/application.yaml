@@ -52,7 +52,7 @@ management:
 familie:
   tellAPIEndepunkterIBruk:
     enabled: true
-    ekskluder: /internal, /api/tilgang
+    ekskluder: /internal, /api/tilgang, /v3, /favicon.ico, /swagger-ui.html
 
 AZURE_APP_CLIENT_ID: "dummy-klient-id"
 AZURE_APP_CLIENT_SECRET: "dummy-klient-secret"
