@@ -15,14 +15,6 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping(value = ["/api/tilgang"])
 @Profile("!e2e")
 class TilgangskontrollController(private val tilgangskontrollService: TilgangskontrollService) {
-    @PostMapping(path = ["/personer"])
-    @ProtectedWithClaims(issuer = "azuread")
-    @Deprecated("Brukes kun av familie-tilbake")
-    fun tilgangTilPersoner(
-        @RequestBody personIdenter: List<String>,
-    ): List<Tilgang> {
-        return tilgangskontrollService.sjekkTilgangTilBrukere(personIdenter)
-    }
 
     @PostMapping(path = ["/v2/personer"])
     @ProtectedWithClaims(issuer = "azuread")
