@@ -30,13 +30,13 @@ import org.springframework.web.client.HttpClientErrorException.Forbidden
 class PersonopplysningerController(private val personopplysningerService: PersonopplysningerService) {
     @ExceptionHandler(HttpClientErrorException.NotFound::class)
     fun handleRestClientResponseException(e: HttpClientErrorException.NotFound): ResponseEntity<Ressurs<Any>> {
-        return ResponseEntity.status(e.rawStatusCode)
-            .body(failure("Feil mot personopplysning. ${e.rawStatusCode} Message=${e.message}", null))
+        return ResponseEntity.status(e.statusCode.value())
+            .body(failure("Feil mot personopplysning. ${e.statusCode.value()} Message=${e.message}", null))
     }
 
     @ExceptionHandler(Forbidden::class)
     fun handleRestClientResponseException(e: Forbidden): ResponseEntity<Ressurs<Any>> {
-        return ResponseEntity.status(e.rawStatusCode)
+        return ResponseEntity.status(e.statusCode.value())
             .body(ikkeTilgang("Ikke tilgang mot personopplysning ${e.message}"))
     }
 
