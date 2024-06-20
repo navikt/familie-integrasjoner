@@ -53,7 +53,7 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
     fun setUp() {
         client.reset()
         headers.setBearerAuth(lokalTestToken)
-        objectMapper.registerModule(KotlinModule())
+        objectMapper.registerModule(KotlinModule.Builder().build())
 
         (LoggerFactory.getLogger("secureLogger") as Logger)
             .addAppender(listAppender)
