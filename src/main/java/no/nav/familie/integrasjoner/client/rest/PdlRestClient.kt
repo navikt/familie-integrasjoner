@@ -181,10 +181,13 @@ class PdlRestClient(
                     secureLogger.info("Finner ikke geografisk tilknytning for ident=$personIdent i PDL")
                     throw PdlNotFoundException()
                 }
+                if (response.harUnauthorizedFeil()) {
+                    secureLogger.info("Har ikke tilgang til å hente geografisk tilknytning for ident=$personIdent i PDL. Ekstra info: ${response.errors?.joinToString { it.extensions.toString() } ?: "Ingen detaljer"}")
+                    secureLogger.error("Ikke tilgang til oppslag på geografisk tilknytning på person. Feilmelding fra PDL: ${response.errorMessages()}")
+                    throw PdlUnauthorizedException()
+                }
                 throw pdlOppslagException(
-                    feilmelding =
-                        "Feil ved oppslag på geografisk tilknytning på person: " +
-                            response.errorMessages(),
+                    feilmelding = "Feil ved oppslag på geografisk tilknytning på person: ${response.errorMessages()}",
                     personIdent = personIdent,
                 )
             }
