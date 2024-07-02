@@ -74,7 +74,7 @@ data class PdlError(
     val extensions: PdlErrorExtensions?,
 )
 
-data class PdlErrorExtensions(val code: String?) {
+data class PdlErrorExtensions(val code: String?, val details: Any?) {
     fun notFound() = code == "not_found"
 
     fun unauthorized() = code == "unauthorized"
