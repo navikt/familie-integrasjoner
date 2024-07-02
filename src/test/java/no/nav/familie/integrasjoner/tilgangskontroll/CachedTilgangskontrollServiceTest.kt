@@ -148,6 +148,16 @@ internal class CachedTilgangskontrollServiceTest {
     }
 
     @Test
+    internal fun `har ikke tilgang når barn er egenansatt`() {
+        every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
+            lagPersonMedRelasjoner(barn = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
+        every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } answers {
+            firstArg<Set<String>>().associateWith { it == "barn" }
+        }
+        assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
+    }
+
+    @Test
     fun `skal returnere ident til etterspurt person når relasjon er fortrolig`() {
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
             lagPersonMedRelasjoner(barnsForeldrer = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
