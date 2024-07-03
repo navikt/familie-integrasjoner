@@ -88,6 +88,7 @@ class CachedTilgangskontrollService(
         val relevanteIdenter =
             setOf(personMedRelasjoner.personIdent) +
                 personMedRelasjoner.sivilstand.map { it.personIdent } +
+                personMedRelasjoner.barn.map { it.personIdent } +
                 personMedRelasjoner.barnsForeldrer.map { it.personIdent }
 
         return egenAnsattService.erEgenAnsatt(relevanteIdenter).any { it.value }
