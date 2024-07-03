@@ -82,7 +82,9 @@ class CachedTilgangskontrollService(
     }
 
     /**
-     * Trenger kun å sjekke personen og barnets andre foreldrer for om de er ansatt
+     * Vi ønsker å sjekke om person med relasjoner er egenAnsatt.
+     * Dette gjelder personen vi jobber med, barn (voksne barn er også med), personer relatert via sivilstand (gift med, separtert fra)
+     * og barnets andre foreldrer.
      */
     private fun erEgenAnsatt(personMedRelasjoner: PersonMedRelasjoner): Boolean {
         val relevanteIdenter =
