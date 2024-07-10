@@ -36,7 +36,9 @@ import java.util.function.Consumer
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/arkiv")
-class DokarkivController(private val journalføringService: DokarkivService) {
+class DokarkivController(
+    private val journalføringService: DokarkivService,
+) {
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidationExceptions(ex: MethodArgumentNotValidException): ResponseEntity<Ressurs<Any>> {
         val errors: MutableMap<String, String> = HashMap()
@@ -62,15 +64,15 @@ class DokarkivController(private val journalføringService: DokarkivService) {
         @RequestBody @Valid
         arkiverDokumentRequest: ArkiverDokumentRequest,
         @RequestHeader(name = NAV_USER_ID) navIdent: String? = null,
-    ): ResponseEntity<Ressurs<ArkiverDokumentResponse>> {
-        return ResponseEntity.status(HttpStatus.CREATED)
+    ): ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
+        ResponseEntity
+            .status(HttpStatus.CREATED)
             .body(
                 success(
                     journalføringService.lagJournalpost(arkiverDokumentRequest, navIdent),
                     Companion.ARKIVERT_OK_MELDING,
                 ),
             )
-    }
 
     @PutMapping(path = ["/v2/{journalpostId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun oppdaterJournalpost(
@@ -104,15 +106,15 @@ class DokarkivController(private val journalføringService: DokarkivService) {
         @PathVariable(name = "dokumentinfoId") dokumentinfoId: String,
         @RequestBody @Valid
         request: LogiskVedleggRequest,
-    ): ResponseEntity<Ressurs<LogiskVedleggResponse>> {
-        return ResponseEntity.status(HttpStatus.CREATED)
+    ): ResponseEntity<Ressurs<LogiskVedleggResponse>> =
+        ResponseEntity
+            .status(HttpStatus.CREATED)
             .body(
                 success(
                     journalføringService.lagNyttLogiskVedlegg(dokumentinfoId, request),
                     "Opprettet logisk vedlegg",
                 ),
             )
-    }
 
     @DeleteMapping(path = ["/dokument/{dokumentinfoId}/logiskVedlegg/{logiskVedleggId}"])
     fun slettLogiskVedlegg(
@@ -120,7 +122,8 @@ class DokarkivController(private val journalføringService: DokarkivService) {
         @PathVariable(name = "logiskVedleggId") logiskVedleggId: String,
     ): ResponseEntity<Ressurs<LogiskVedleggResponse>> {
         journalføringService.slettLogiskVedlegg(dokumentinfoId, logiskVedleggId)
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity
+            .status(HttpStatus.OK)
             .body(success(LogiskVedleggResponse(logiskVedleggId.toLong()), "logisk vedlegg slettet"))
     }
 
@@ -131,7 +134,8 @@ class DokarkivController(private val journalføringService: DokarkivService) {
         request: BulkOppdaterLogiskVedleggRequest,
     ): ResponseEntity<Ressurs<String>> {
         journalføringService.oppdaterLogiskeVedleggForDokument(dokumentinfoId, request)
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity
+            .status(HttpStatus.OK)
             .body(success(dokumentinfoId, "logiske vedlegg oppdatert for $dokumentinfoId"))
     }
 

@@ -33,7 +33,5 @@ class KodeverkTestConfig {
         }
     }
 
-    private fun getFile(): String {
-        return javaClass.classLoader?.getResource("kodeverk/postnummerrespons.json")?.file ?: error("Testkonfigurasjon feil")
-    }
+    private fun getFile(): String = javaClass.classLoader?.getResource("kodeverk/postnummerrespons.json")?.file ?: error("Testkonfigurasjon feil")
 }

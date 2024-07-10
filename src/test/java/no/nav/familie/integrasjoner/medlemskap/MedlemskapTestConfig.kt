@@ -45,7 +45,8 @@ class MedlemskapTestConfig {
 
     companion object {
         private val mapper =
-            ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .registerKotlinModule()
                 .registerModule(JavaTimeModule())
     }

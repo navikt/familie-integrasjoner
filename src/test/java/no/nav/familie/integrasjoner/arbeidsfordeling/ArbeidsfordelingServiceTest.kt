@@ -296,11 +296,10 @@ internal class ArbeidsfordelingServiceTest {
         personIdent: String,
         kode6: Set<String>,
         kode7: Set<String>,
-    ): ADRESSEBESKYTTELSEGRADERING? {
-        return when {
+    ): ADRESSEBESKYTTELSEGRADERING? =
+        when {
             kode6.contains(personIdent) -> STRENGT_FORTROLIG
             kode7.contains(personIdent) -> FORTROLIG
             else -> UGRADERT
         }
-    }
 }

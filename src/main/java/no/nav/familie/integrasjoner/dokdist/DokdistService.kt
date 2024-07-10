@@ -8,13 +8,13 @@ import no.nav.familie.kontrakter.felles.dokdist.DistribuerJournalpostRequest
 import org.springframework.stereotype.Service
 
 @Service
-class DokdistService(val dokdistRestClient: DokdistRestClient) {
-    fun distribuerDokumentForJournalpost(request: DistribuerJournalpostRequest): DistribuerJournalpostResponseTo? {
-        return dokdistRestClient.distribuerJournalpost(mapTilDistribuerJournalpostRequestTo(request))
-    }
+class DokdistService(
+    val dokdistRestClient: DokdistRestClient,
+) {
+    fun distribuerDokumentForJournalpost(request: DistribuerJournalpostRequest): DistribuerJournalpostResponseTo? = dokdistRestClient.distribuerJournalpost(mapTilDistribuerJournalpostRequestTo(request))
 
-    private fun mapTilDistribuerJournalpostRequestTo(request: DistribuerJournalpostRequest): DistribuerJournalpostRequestTo {
-        return DistribuerJournalpostRequestTo(
+    private fun mapTilDistribuerJournalpostRequestTo(request: DistribuerJournalpostRequest): DistribuerJournalpostRequestTo =
+        DistribuerJournalpostRequestTo(
             journalpostId = request.journalpostId,
             bestillendeFagsystem = request.bestillendeFagsystem.name,
             dokumentProdApp = request.dokumentProdApp,
@@ -33,5 +33,4 @@ class DokdistService(val dokdistRestClient: DokdistRestClient) {
                     )
                 },
         )
-    }
 }

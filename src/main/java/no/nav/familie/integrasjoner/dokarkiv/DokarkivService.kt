@@ -109,20 +109,14 @@ class DokarkivService(
         request: OppdaterJournalpostRequest,
         journalpostId: String,
         navIdent: String? = null,
-    ): OppdaterJournalpostResponse {
-        return dokarkivRestClient.oppdaterJournalpost(supplerDefaultVerdier(request), journalpostId, navIdent)
-    }
+    ): OppdaterJournalpostResponse = dokarkivRestClient.oppdaterJournalpost(supplerDefaultVerdier(request), journalpostId, navIdent)
 
     private fun hentNavnForFnr(
         fnr: String,
         behandlingstema: Tema,
-    ): String {
-        return personopplysningerService.hentPersoninfo(fnr, behandlingstema).navn
-    }
+    ): String = personopplysningerService.hentPersoninfo(fnr, behandlingstema).navn
 
-    private fun supplerDefaultVerdier(request: OppdaterJournalpostRequest): OppdaterJournalpostRequest {
-        return request.copy(sak = request.sak?.copy(sakstype = request.sak?.sakstype ?: "FAGSAK"))
-    }
+    private fun supplerDefaultVerdier(request: OppdaterJournalpostRequest): OppdaterJournalpostRequest = request.copy(sak = request.sak?.copy(sakstype = request.sak?.sakstype ?: "FAGSAK"))
 
     private fun mapHoveddokument(dokumenter: List<Dokument>): ArkivDokument {
         val dokument = dokumenter[0]
@@ -141,13 +135,12 @@ class DokarkivService(
         )
     }
 
-    private fun hentVariantformat(dokument: Dokument): String {
-        return if (dokument.filtype == Filtype.PDFA) {
+    private fun hentVariantformat(dokument: Dokument): String =
+        if (dokument.filtype == Filtype.PDFA) {
             "ARKIV" // ustrukturert dokumentDto
         } else {
             "ORIGINAL" // strukturert dokumentDto
         }
-    }
 
     private fun mapTilArkivdokument(dokument: Dokument): ArkivDokument {
         val metadata = dokument.dokumenttype.tilMetadata()
@@ -168,20 +161,17 @@ class DokarkivService(
         )
     }
 
-    private fun mapTilArkiverDokumentResponse(response: OpprettJournalpostResponse): ArkiverDokumentResponse {
-        return ArkiverDokumentResponse(
+    private fun mapTilArkiverDokumentResponse(response: OpprettJournalpostResponse): ArkiverDokumentResponse =
+        ArkiverDokumentResponse(
             response.journalpostId!!,
             response.journalpostferdigstilt ?: false,
             response.dokumenter,
         )
-    }
 
     fun lagNyttLogiskVedlegg(
         dokumentInfoId: String,
         request: LogiskVedleggRequest,
-    ): LogiskVedleggResponse {
-        return dokarkivLogiskVedleggRestClient.opprettLogiskVedlegg(dokumentInfoId, request)
-    }
+    ): LogiskVedleggResponse = dokarkivLogiskVedleggRestClient.opprettLogiskVedlegg(dokumentInfoId, request)
 
     fun slettLogiskVedlegg(
         dokumentInfoId: String,

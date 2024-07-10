@@ -14,14 +14,20 @@ class OrganisasjonRestClient(
     @Qualifier("noAuthorize") private val restTemplate: RestOperations,
 ) : AbstractPingableRestClient(restTemplate, "organisasjon") {
     override val pingUri: URI =
-        UriComponentsBuilder.fromUri(organisasjonUri).pathSegment("ping").build().toUri()
+        UriComponentsBuilder
+            .fromUri(organisasjonUri)
+            .pathSegment("ping")
+            .build()
+            .toUri()
 
     private fun nøkkelinfoUri(orgnr: String) =
-        UriComponentsBuilder.fromUri(organisasjonUri).pathSegment("v2/organisasjon", orgnr, "noekkelinfo").build().toUri()
+        UriComponentsBuilder
+            .fromUri(organisasjonUri)
+            .pathSegment("v2/organisasjon", orgnr, "noekkelinfo")
+            .build()
+            .toUri()
 
-    fun hentOrganisasjon(orgnr: String): HentOrganisasjonResponse {
-        return getForEntity(nøkkelinfoUri(orgnr))
-    }
+    fun hentOrganisasjon(orgnr: String): HentOrganisasjonResponse = getForEntity(nøkkelinfoUri(orgnr))
 }
 
 data class HentOrganisasjonResponse(

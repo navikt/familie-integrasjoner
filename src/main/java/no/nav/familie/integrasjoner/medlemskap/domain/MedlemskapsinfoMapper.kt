@@ -28,8 +28,8 @@ object MedlemskapsinfoMapper {
         )
     }
 
-    private fun tilPeriodeInfo(response: MedlemskapsunntakResponse): PeriodeInfo {
-        return PeriodeInfo(
+    private fun tilPeriodeInfo(response: MedlemskapsunntakResponse): PeriodeInfo =
+        PeriodeInfo(
             periodeStatus = PeriodeStatus.valueOf(response.status),
             fom = response.fraOgMed,
             tom = response.tilOgMed,
@@ -39,7 +39,6 @@ object MedlemskapsinfoMapper {
             periodeStatusÅrsak =
                 if (response.statusaarsak == null) null else PeriodeStatusÅrsak.valueOf(response.statusaarsak),
         )
-    }
 
     private fun tilPersonIdent(responseList: List<MedlemskapsunntakResponse>): String {
         val alleIdenter = responseList.map(MedlemskapsunntakResponse::ident).toSet()

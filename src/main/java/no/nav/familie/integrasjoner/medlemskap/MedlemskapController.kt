@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("api/medlemskap")
-class MedlemskapController(private val medlemskapService: MedlemskapService) {
+class MedlemskapController(
+    private val medlemskapService: MedlemskapService,
+) {
     @PostMapping("v3")
     fun hentMedlemskapsunntakForIdentEllerAktørIdV3(
         @RequestBody(required = true) personIdent: PersonIdent,
-    ): Ressurs<Medlemskapsinfo> {
-        return Ressurs.success(medlemskapService.hentMedlemskapsunntak(personIdent.ident))
-    }
+    ): Ressurs<Medlemskapsinfo> = Ressurs.success(medlemskapService.hentMedlemskapsunntak(personIdent.ident))
 }

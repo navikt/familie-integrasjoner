@@ -14,16 +14,17 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/skyggesak")
-class SkyggesakController(private val skyggesakRestClient: SkyggesakRestClient) {
+class SkyggesakController(
+    private val skyggesakRestClient: SkyggesakRestClient,
+) {
     @PostMapping(path = ["/v1"], consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun opprettSkyggesak(
         @RequestBody request: Skyggesak,
-    ): ResponseEntity<Ressurs<Unit>> {
-        return ResponseEntity.ok(
+    ): ResponseEntity<Ressurs<Unit>> =
+        ResponseEntity.ok(
             success(
                 skyggesakRestClient.opprettSak(request),
                 "Oppretter skyggesak for fagsak ${request.fagsakNr}",
             ),
         )
-    }
 }

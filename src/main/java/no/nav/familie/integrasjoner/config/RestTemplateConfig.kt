@@ -28,22 +28,18 @@ class RestTemplateConfig(
     private val environment: Environment,
 ) {
     @Bean
-    fun restTemplate(): RestTemplate {
-        return RestTemplate()
-    }
+    fun restTemplate(): RestTemplate = RestTemplate()
 
     @Bean
-    fun restTemplateMedProxy(naisProxyCustomizer: NaisProxyCustomizer): RestTemplate {
-        return RestTemplateBuilder()
+    fun restTemplateMedProxy(naisProxyCustomizer: NaisProxyCustomizer): RestTemplate =
+        RestTemplateBuilder()
             .medProxy(naisProxyCustomizer)
             .build()
-    }
 
     @Bean
-    fun restTemplateBuilderMedProxy(naisProxyCustomizer: NaisProxyCustomizer): RestTemplateBuilder {
-        return RestTemplateBuilder()
+    fun restTemplateBuilderMedProxy(naisProxyCustomizer: NaisProxyCustomizer): RestTemplateBuilder =
+        RestTemplateBuilder()
             .medProxy(naisProxyCustomizer)
-    }
 
     /**
      * Denne bruker jwt-bearer hvis den finnes, hvis ikke så bruker den client_credentials
@@ -53,94 +49,82 @@ class RestTemplateConfig(
         naisProxyCustomizer: NaisProxyCustomizer,
         consumerIdClientInterceptor: ConsumerIdClientInterceptor,
         bearerTokenClientInterceptor: BearerTokenClientInterceptor,
-    ): RestOperations {
-        return RestTemplateBuilder()
+    ): RestOperations =
+        RestTemplateBuilder()
             .medProxy(naisProxyCustomizer)
             .interceptors(
                 consumerIdClientInterceptor,
                 bearerTokenClientInterceptor,
                 MdcValuesPropagatingClientInterceptor(),
-            )
-            .setConnectTimeout(Duration.ofSeconds(20))
+            ).setConnectTimeout(Duration.ofSeconds(20))
             .setReadTimeout(Duration.ofSeconds(20))
             .build()
-    }
 
     @Bean("clientCredential")
     fun restTemplateClientCredential(
         naisProxyCustomizer: NaisProxyCustomizer,
         consumerIdClientInterceptor: ConsumerIdClientInterceptor,
         bearerTokenClientInterceptor: BearerTokenClientCredentialsClientInterceptor,
-    ): RestOperations {
-        return RestTemplateBuilder()
+    ): RestOperations =
+        RestTemplateBuilder()
             .medProxy(naisProxyCustomizer)
             .interceptors(
                 consumerIdClientInterceptor,
                 bearerTokenClientInterceptor,
                 MdcValuesPropagatingClientInterceptor(),
-            )
-            .setConnectTimeout(Duration.ofSeconds(20))
+            ).setConnectTimeout(Duration.ofSeconds(20))
             .setReadTimeout(Duration.ofSeconds(20))
             .build()
-    }
 
     @Bean("jwtBearerOboOgSts")
     fun restTemplateOboOgSts(
         naisProxyCustomizer: NaisProxyCustomizer,
         consumerIdClientInterceptor: ConsumerIdClientInterceptor,
         bearerTokenWithSTSFallbackClientInterceptor: BearerTokenWithSTSFallbackClientInterceptor,
-    ): RestOperations {
-        return RestTemplateBuilder()
+    ): RestOperations =
+        RestTemplateBuilder()
             .medProxy(naisProxyCustomizer)
             .interceptors(
                 consumerIdClientInterceptor,
                 bearerTokenWithSTSFallbackClientInterceptor,
                 MdcValuesPropagatingClientInterceptor(),
-            )
-            .setConnectTimeout(Duration.ofSeconds(20))
+            ).setConnectTimeout(Duration.ofSeconds(20))
             .setReadTimeout(Duration.ofSeconds(20))
             .build()
-    }
 
     @Bean("sts")
     fun restTemplateSts(
         stsBearerTokenClientInterceptor: StsBearerTokenClientInterceptor,
         consumerIdClientInterceptor: ConsumerIdClientInterceptor,
-    ): RestOperations {
-        return RestTemplateBuilder()
+    ): RestOperations =
+        RestTemplateBuilder()
             .interceptors(
                 consumerIdClientInterceptor,
                 stsBearerTokenClientInterceptor,
                 MdcValuesPropagatingClientInterceptor(),
-            )
-            .setConnectTimeout(Duration.ofSeconds(20))
+            ).setConnectTimeout(Duration.ofSeconds(20))
             .setReadTimeout(Duration.ofSeconds(20))
             .build()
-    }
 
     @Bean("noAuthorize")
-    fun restTemplateNoAuthorize(consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations {
-        return RestTemplateBuilder()
+    fun restTemplateNoAuthorize(consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations =
+        RestTemplateBuilder()
             .interceptors(
                 consumerIdClientInterceptor,
                 MdcValuesPropagatingClientInterceptor(),
-            )
-            .setConnectTimeout(Duration.ofSeconds(20))
+            ).setConnectTimeout(Duration.ofSeconds(20))
             .setReadTimeout(Duration.ofSeconds(20))
             .build()
-    }
 
-    private fun RestTemplateBuilder.medProxy(naisProxyCustomizer: NaisProxyCustomizer): RestTemplateBuilder {
-        return if (trengerProxy()) {
+    private fun RestTemplateBuilder.medProxy(naisProxyCustomizer: NaisProxyCustomizer): RestTemplateBuilder =
+        if (trengerProxy()) {
             this.additionalCustomizers(naisProxyCustomizer)
         } else {
             this
         }
-    }
 
-    private fun trengerProxy(): Boolean {
-        return !environment.activeProfiles.any {
+    private fun trengerProxy(): Boolean =
+        !environment.activeProfiles.any {
             listOf("e2e", "dev", "postgres", "integrasjonstest").contains(it.trim(' '))
         }
-    }
 }

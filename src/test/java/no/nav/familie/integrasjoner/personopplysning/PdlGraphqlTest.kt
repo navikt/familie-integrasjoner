@@ -23,7 +23,12 @@ class PdlGraphqlTest {
     @Test
     fun testDeserialization() {
         val resp: PdlResponse<PdlPerson> = mapper.readValue(File(getFile("pdl/pdlOkResponseEnkel.json")))
-        assertThat(resp.data.person!!.navn.first().fornavn).isEqualTo("ENGASJERT")
+        assertThat(
+            resp.data.person!!
+                .navn
+                .first()
+                .fornavn,
+        ).isEqualTo("ENGASJERT")
         assertThat(resp.errorMessages()).isEqualTo("")
     }
 
@@ -71,7 +76,5 @@ class PdlGraphqlTest {
         assertThat(resp.data.hentGeografiskTilknytning).usingRecursiveComparison().isEqualTo(pdlDto)
     }
 
-    private fun getFile(name: String): String {
-        return javaClass.classLoader?.getResource(name)?.file ?: error("Testkonfigurasjon feil")
-    }
+    private fun getFile(name: String): String = javaClass.classLoader?.getResource(name)?.file ?: error("Testkonfigurasjon feil")
 }

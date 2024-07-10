@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping(value = ["/api/adramatch/avstemming"])
 @Profile("!e2e")
-class FiloverføringAdraMatchController(private val sftpClient: FiloverføringAdraMatchClient) {
+class FiloverføringAdraMatchController(
+    private val sftpClient: FiloverføringAdraMatchClient,
+) {
     @PutMapping
     @ProtectedWithClaims(issuer = "azuread")
     fun lastOppFil(

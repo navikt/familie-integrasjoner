@@ -17,15 +17,12 @@ import java.net.URI
 class DokdistkanalRestClient(
     @Value("\${DOKDISTKANAL_URL}") private val dokdistkanalUri: URI,
     @Qualifier("jwtBearer") private val restTemplate: RestOperations,
-) :
-    AbstractPingableRestClient(restTemplate, "dokdistkanal") {
+) : AbstractPingableRestClient(restTemplate, "dokdistkanal") {
     override val pingUri: URI = UriUtil.uri(dokdistkanalUri, PATH_PING)
 
     val uri = UriUtil.uri(dokdistkanalUri, PATH_BESTEM_DISTRIBUSJONSKANAL)
 
-    fun bestemDistribusjonskanal(req: BestemDistribusjonskanalRequest): BestemDistribusjonskanalResponse {
-        return postForEntity(uri, req, httpHeaders())
-    }
+    fun bestemDistribusjonskanal(req: BestemDistribusjonskanalRequest): BestemDistribusjonskanalResponse = postForEntity(uri, req, httpHeaders())
 
     private fun httpHeaders(): HttpHeaders =
         HttpHeaders().apply {

@@ -78,12 +78,11 @@ class AaregControllerTest : OppslagSpringRunnerTest() {
         assertThat(response?.melding).contains("[Feil ved oppslag av arbeidsforhold.][org.springframework.web.client.HttpClientErrorException")
     }
 
-    private fun gyldigResponse(filnavn: String): String {
-        return Files.readString(
+    private fun gyldigResponse(filnavn: String): String =
+        Files.readString(
             ClassPathResource("aareg/$filnavn").file.toPath(),
             StandardCharsets.UTF_8,
         )
-    }
 
     companion object {
         private const val AAREG_URL = "/api/aareg"

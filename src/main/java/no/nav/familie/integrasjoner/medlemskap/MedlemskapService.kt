@@ -8,9 +8,11 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 @Service
-class MedlemskapService(private val medlRestClient: MedlRestClient) {
-    fun hentMedlemskapsunntak(ident: String): Medlemskapsinfo {
-        return try {
+class MedlemskapService(
+    private val medlRestClient: MedlRestClient,
+) {
+    fun hentMedlemskapsunntak(ident: String): Medlemskapsinfo =
+        try {
             MedlemskapsinfoMapper.tilMedlemskapsInfo(medlRestClient.hentMedlemskapsUnntakResponse(ident))
         } catch (e: Exception) {
             throw OppslagException(
@@ -22,5 +24,4 @@ class MedlemskapService(private val medlRestClient: MedlRestClient) {
                 "Feil ved oppslag av medlemskap ident=$ident",
             )
         }
-    }
 }

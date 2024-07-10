@@ -19,7 +19,9 @@ import org.springframework.web.client.HttpClientErrorException
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/dist")
-class DokdistController(private val dokdistService: DokdistService) {
+class DokdistController(
+    private val dokdistService: DokdistService,
+) {
     @ExceptionHandler(HttpClientErrorException::class)
     fun handleHttpClientException(e: HttpClientErrorException): ResponseEntity<Ressurs<Any>> {
         secureLogger.warn("Feil ved distribusjon: ${e.message}")

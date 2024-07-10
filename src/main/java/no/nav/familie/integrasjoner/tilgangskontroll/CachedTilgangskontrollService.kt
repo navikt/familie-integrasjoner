@@ -32,14 +32,13 @@ class CachedTilgangskontrollService(
         personIdent: String,
         jwtToken: JwtToken,
         tema: Tema,
-    ): Tilgang {
-        return try {
+    ): Tilgang =
+        try {
             val adressebeskyttelse = personopplysningerService.hentAdressebeskyttelse(personIdent, tema).gradering
             hentTilgang(adressebeskyttelse, jwtToken, personIdent) { egenAnsattService.erEgenAnsatt(personIdent) }
         } catch (pdlUnauthorizedException: PdlUnauthorizedException) {
             Tilgang(personIdent = personIdent, harTilgang = false)
         }
-    }
 
     @Cacheable(
         cacheNames = ["TILGANG_TIL_PERSON_MED_RELASJONER"],

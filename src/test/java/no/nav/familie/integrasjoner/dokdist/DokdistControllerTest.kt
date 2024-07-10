@@ -29,7 +29,9 @@ import java.nio.file.Files
 @ActiveProfiles(profiles = ["integrasjonstest", "mock-sts"])
 @ExtendWith(MockServerExtension::class)
 @MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
-class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTest() {
+class DokdistControllerTest(
+    val client: ClientAndServer,
+) : OppslagSpringRunnerTest() {
     @BeforeEach
     fun setUp() {
         client.reset()
@@ -96,13 +98,16 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
     }
 
     private fun mockGodkjentKallMotDokDist() {
-        client.`when`(
-            HttpRequest.request()
-                .withMethod("POST")
-                .withPath("/rest/v1/distribuerjournalpost"),
-        )
-            .respond(
-                HttpResponse.response().withStatusCode(200)
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("POST")
+                    .withPath("/rest/v1/distribuerjournalpost"),
+            ).respond(
+                HttpResponse
+                    .response()
+                    .withStatusCode(200)
                     .withHeader("Content-Type", "application/json;charset=UTF-8")
                     .withBody("{\"bestillingsId\": \"1234567\"}"),
             )
@@ -110,12 +115,13 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
 
     @Test
     fun `dokdist returnerer OK uten bestillingsId`() {
-        client.`when`(
-            HttpRequest.request()
-                .withMethod("POST")
-                .withPath("/rest/v1/distribuerjournalpost"),
-        )
-            .respond(HttpResponse.response().withStatusCode(200).withBody(""))
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("POST")
+                    .withPath("/rest/v1/distribuerjournalpost"),
+            ).respond(HttpResponse.response().withStatusCode(200).withBody(""))
 
         val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak", null)
         val response: ResponseEntity<Ressurs<String>> =
@@ -132,13 +138,16 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
 
     @Test
     fun `dokdist returnerer 400`() {
-        client.`when`(
-            HttpRequest.request()
-                .withMethod("POST")
-                .withPath("/rest/v1/distribuerjournalpost"),
-        )
-            .respond(
-                HttpResponse.response().withStatusCode(400)
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("POST")
+                    .withPath("/rest/v1/distribuerjournalpost"),
+            ).respond(
+                HttpResponse
+                    .response()
+                    .withStatusCode(400)
                     .withHeader("Content-Type", "application/json; charset=utf-8")
                     .withBody(badRequestResponse()),
             )
@@ -153,14 +162,13 @@ class DokdistControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTe
 
         Assertions.assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         Assertions.assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        Assertions.assertThat(response.body?.melding)
+        Assertions
+            .assertThat(response.body?.melding)
             .contains("validering av distribusjonsforespørsel for journalpostId=453492547 feilet, feilmelding=")
     }
 
     @Throws(IOException::class)
-    private fun badRequestResponse(): String {
-        return Files.readString(ClassPathResource("dokdist/badrequest.json").file.toPath(), StandardCharsets.UTF_8)
-    }
+    private fun badRequestResponse(): String = Files.readString(ClassPathResource("dokdist/badrequest.json").file.toPath(), StandardCharsets.UTF_8)
 
     companion object {
         private const val DOKDIST_URL = "/api/dist/v1"

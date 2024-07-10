@@ -29,8 +29,7 @@ import java.net.URI
 class SafRestClient(
     @Value("\${SAF_URL}") safBaseUrl: URI,
     @Qualifier("jwtBearer") val restTemplate: RestOperations,
-) :
-    AbstractRestClient(restTemplate, "saf.journalpost") {
+) : AbstractRestClient(restTemplate, "saf.journalpost") {
     private val safUri = UriUtil.uri(safBaseUrl, PATH_GRAPHQL)
 
     fun hentJournalpost(journalpostId: String): Journalpost {
@@ -116,13 +115,12 @@ class SafRestClient(
         }
     }
 
-    private fun httpHeaders(): HttpHeaders {
-        return HttpHeaders().apply {
+    private fun httpHeaders(): HttpHeaders =
+        HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
             accept = listOf(MediaType.APPLICATION_JSON)
             add(NAV_CALL_ID, MDCOperations.getCallId())
         }
-    }
 
     companion object {
         private const val PATH_GRAPHQL = "graphql"

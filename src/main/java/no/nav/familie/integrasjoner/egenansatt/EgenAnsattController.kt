@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/egenansatt")
-class EgenAnsattController(private val egenAnsattService: EgenAnsattService) {
+class EgenAnsattController(
+    private val egenAnsattService: EgenAnsattService,
+) {
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun erEgenAnsatt(
         @RequestBody(required = true) ident: Ident,
-    ): ResponseEntity<Ressurs<EgenAnsattResponse>> {
-        return ResponseEntity.ok().body(success(data = EgenAnsattResponse(egenAnsattService.erEgenAnsatt(ident.ident))))
-    }
+    ): ResponseEntity<Ressurs<EgenAnsattResponse>> = ResponseEntity.ok().body(success(data = EgenAnsattResponse(egenAnsattService.erEgenAnsatt(ident.ident))))
 }

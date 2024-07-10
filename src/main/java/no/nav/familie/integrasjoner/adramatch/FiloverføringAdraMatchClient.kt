@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service
 import java.io.ByteArrayInputStream
 
 @Service
-class FiloverføringAdraMatchClient(private val config: FiloverføringAdraMatchConfig) {
+class FiloverføringAdraMatchClient(
+    private val config: FiloverføringAdraMatchConfig,
+) {
     private val jSch =
         JSch().apply {
             addIdentity(

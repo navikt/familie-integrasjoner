@@ -8,7 +8,9 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
 @Service
-class CachedKodeverkService(private val kodeverkClient: KodeverkClient) {
+class CachedKodeverkService(
+    private val kodeverkClient: KodeverkClient,
+) {
     @Cacheable("kodeverk_postestedMedHistorikk", sync = true)
     fun hentPostnummerMedHistorikk(): KodeverkDto = kodeverkClient.hentPostnummerMedHistorikk()
 
@@ -25,9 +27,8 @@ class CachedKodeverkService(private val kodeverkClient: KodeverkClient) {
     fun hentEEALandkoder(): KodeverkDto = kodeverkClient.hentEEALandkoder()
 
     @Cacheable("inntekt")
-    fun hentInntekt(): InntektKodeverkDto {
-        return InntektKodeverkType.values().associateWith {
+    fun hentInntekt(): InntektKodeverkDto =
+        InntektKodeverkType.values().associateWith {
             kodeverkClient.hentKodeverk(it.kodeverk).mapTerm()
         }
-    }
 }

@@ -28,7 +28,9 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/oppgave")
-class OppgaveController(private val oppgaveService: OppgaveService) {
+class OppgaveController(
+    private val oppgaveService: OppgaveService,
+) {
     @GetMapping(path = ["/{oppgaveId}"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun hentOppgave(
         @PathVariable(name = "oppgaveId") oppgaveId: String,
@@ -40,21 +42,15 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
     @PostMapping(path = ["/v4"])
     fun finnOppgaverV4(
         @RequestBody finnOppgaveRequest: FinnOppgaveRequest,
-    ): Ressurs<FinnOppgaveResponseDto> {
-        return success(oppgaveService.finnOppgaver(finnOppgaveRequest))
-    }
+    ): Ressurs<FinnOppgaveResponseDto> = success(oppgaveService.finnOppgaver(finnOppgaveRequest))
 
     @GetMapping(path = ["/mappe/sok"])
-    fun finnMapperV1(finnMappeRequest: FinnMappeRequest): Ressurs<FinnMappeResponseDto> {
-        return success(oppgaveService.finnMapper(finnMappeRequest))
-    }
+    fun finnMapperV1(finnMappeRequest: FinnMappeRequest): Ressurs<FinnMappeResponseDto> = success(oppgaveService.finnMapper(finnMappeRequest))
 
     @GetMapping(path = ["/mappe/finn/{enhetNr}"])
     fun finnMapper(
         @PathVariable enhetNr: String,
-    ): Ressurs<List<MappeDto>> {
-        return success(oppgaveService.finnMapper(enhetNr))
-    }
+    ): Ressurs<List<MappeDto>> = success(oppgaveService.finnMapper(enhetNr))
 
     @PostMapping(path = ["/{oppgaveId}/fordel"])
     fun fordelOppgave(
@@ -93,7 +89,8 @@ class OppgaveController(private val oppgaveService: OppgaveService) {
         @RequestBody oppgave: OpprettOppgaveRequest,
     ): ResponseEntity<Ressurs<OppgaveResponse>> {
         val oppgaveId = oppgaveService.opprettOppgave(oppgave)
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
             .body(success(OppgaveResponse(oppgaveId = oppgaveId), "Opprett oppgave OK"))
     }
 

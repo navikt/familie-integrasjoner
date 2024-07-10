@@ -13,35 +13,20 @@ import java.net.URI
 class KodeverkClient(
     @Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
     @Qualifier("jwtBearer") private val restTemplate: RestOperations,
-) :
-    AbstractRestClient(restTemplate, "kodeverk") {
-    fun hentPostnummer(): KodeverkDto {
-        return getForEntity(kodeverkUri("Postnummer"))
-    }
+) : AbstractRestClient(restTemplate, "kodeverk") {
+    fun hentPostnummer(): KodeverkDto = getForEntity(kodeverkUri("Postnummer"))
 
-    fun hentPostnummerMedHistorikk(): KodeverkDto {
-        return getForEntity(kodeverkUri("Postnummer", true))
-    }
+    fun hentPostnummerMedHistorikk(): KodeverkDto = getForEntity(kodeverkUri("Postnummer", true))
 
-    fun hentLandkoder(): KodeverkDto {
-        return getForEntity(kodeverkUri("Landkoder"))
-    }
+    fun hentLandkoder(): KodeverkDto = getForEntity(kodeverkUri("Landkoder"))
 
-    fun hentLandkoderISO2(): KodeverkDto {
-        return getForEntity(kodeverkUri("LandkoderISO2"))
-    }
+    fun hentLandkoderISO2(): KodeverkDto = getForEntity(kodeverkUri("LandkoderISO2"))
 
-    fun hentLandkoderMedHistorikk(): KodeverkDto {
-        return getForEntity(kodeverkUri("Landkoder", true))
-    }
+    fun hentLandkoderMedHistorikk(): KodeverkDto = getForEntity(kodeverkUri("Landkoder", true))
 
-    fun hentEEALandkoder(): KodeverkDto {
-        return getForEntity(kodeverkUri("EEAFreg", medHistorikk = true))
-    }
+    fun hentEEALandkoder(): KodeverkDto = getForEntity(kodeverkUri("EEAFreg", medHistorikk = true))
 
-    fun hentKodeverk(kodeverksnavn: String): KodeverkDto {
-        return getForEntity(kodeverkUri(kodeverksnavn))
-    }
+    fun hentKodeverk(kodeverksnavn: String): KodeverkDto = getForEntity(kodeverkUri(kodeverksnavn))
 
     private fun kodeverkUri(
         kodeverksnavn: String,

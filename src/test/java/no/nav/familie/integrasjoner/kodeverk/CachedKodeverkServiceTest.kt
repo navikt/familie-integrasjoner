@@ -42,7 +42,8 @@ class CachedKodeverkServiceTest {
     @Test
     fun `alle public metoder skal være annotert med @Cacheable`() {
         val publikMetoderUtenCacheable =
-            CachedKodeverkService::class.declaredMemberFunctions
+            CachedKodeverkService::class
+                .declaredMemberFunctions
                 .filter { Modifier.isPublic(it.javaMethod!!.modifiers) }
                 .filter { it.annotations.none { it.annotationClass == Cacheable::class } }
         assertThat(publikMetoderUtenCacheable).isEmpty()

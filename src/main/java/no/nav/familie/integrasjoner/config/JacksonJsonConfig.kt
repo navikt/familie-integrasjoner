@@ -13,9 +13,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class JacksonJsonConfig {
     @Bean
-    fun objectMapper(): ObjectMapper {
-        return OM
-    }
+    fun objectMapper(): ObjectMapper = OM
 
     companion object {
         private val OM = ObjectMapper()

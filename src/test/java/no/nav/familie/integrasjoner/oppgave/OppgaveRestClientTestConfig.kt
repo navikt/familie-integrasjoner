@@ -37,17 +37,19 @@ class OppgaveRestClientTestConfig {
                 tema = Tema.BAR,
                 oppgavetype = Oppgavetype.Journalføring.value,
                 opprettetTidspunkt =
-                    LocalDate.of(
-                        2020,
-                        1,
-                        1,
-                    ).toString(),
+                    LocalDate
+                        .of(
+                            2020,
+                            1,
+                            1,
+                        ).toString(),
                 fristFerdigstillelse =
-                    LocalDate.of(
-                        2020,
-                        2,
-                        1,
-                    ).toString(),
+                    LocalDate
+                        .of(
+                            2020,
+                            2,
+                            1,
+                        ).toString(),
                 prioritet = OppgavePrioritet.NORM,
                 status = StatusEnum.OPPRETTET,
             )

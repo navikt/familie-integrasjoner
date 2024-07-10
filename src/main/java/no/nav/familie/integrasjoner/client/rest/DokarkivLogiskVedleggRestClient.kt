@@ -20,8 +20,7 @@ import java.net.URI
 class DokarkivLogiskVedleggRestClient(
     @Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
     @Qualifier("jwtBearerOboOgSts") private val restOperations: RestOperations,
-) :
-    AbstractRestClient(restOperations, "dokarkiv.logiskvedlegg.opprett") {
+) : AbstractRestClient(restOperations, "dokarkiv.logiskvedlegg.opprett") {
     private val slettVedleggClient = SlettLogiskVedleggClient(restOperations)
 
     fun opprettLogiskVedlegg(
@@ -100,8 +99,9 @@ class DokarkivLogiskVedleggRestClient(
     }
 
     // Egen klasse for egne metrikker
-    private class SlettLogiskVedleggClient(restOperations: RestOperations) :
-        AbstractRestClient(restOperations, "dokarkiv.logiskvedlegg.slett") {
+    private class SlettLogiskVedleggClient(
+        restOperations: RestOperations,
+    ) : AbstractRestClient(restOperations, "dokarkiv.logiskvedlegg.slett") {
         fun slettLogiskVedlegg(uri: URI) {
             deleteForEntity<String>(uri, null, headers())
         }
@@ -114,10 +114,9 @@ class DokarkivLogiskVedleggRestClient(
 
         private const val NAV_CALL_ID = "Nav-Callid"
 
-        private fun headers(): HttpHeaders {
-            return HttpHeaders().apply {
+        private fun headers(): HttpHeaders =
+            HttpHeaders().apply {
                 add(NAV_CALL_ID, MDCOperations.getCallId())
             }
-        }
     }
 }

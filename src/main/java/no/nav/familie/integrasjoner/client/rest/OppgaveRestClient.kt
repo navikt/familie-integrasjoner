@@ -33,8 +33,7 @@ import kotlin.math.min
 class OppgaveRestClient(
     @Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: URI,
     @Qualifier("jwtBearer") private val restTemplate: RestOperations,
-) :
-    AbstractPingableRestClient(restTemplate, "oppgave") {
+) : AbstractPingableRestClient(restTemplate, "oppgave") {
     override val pingUri = UriUtil.uri(oppgaveBaseUrl, PATH_PING)
 
     private val returnerteIngenOppgaver = Metrics.counter("oppslag.oppgave.response", "antall.oppgaver", "ingen")
@@ -57,19 +56,19 @@ class OppgaveRestClient(
         return requestOppgaveJson(requestUrl)
     }
 
-    fun finnOppgaveMedId(oppgaveId: Long): Oppgave {
-        return getForEntity(requestUrl(oppgaveId), httpHeaders())
-    }
+    fun finnOppgaveMedId(oppgaveId: Long): Oppgave = getForEntity(requestUrl(oppgaveId), httpHeaders())
 
     fun buildOppgaveRequestUri(oppgaveRequest: OppgaveRequest): URI =
-        UriComponentsBuilder.fromUri(oppgaveBaseUrl)
+        UriComponentsBuilder
+            .fromUri(oppgaveBaseUrl)
             .path(PATH_OPPGAVE)
             .queryParams(toQueryParams(oppgaveRequest))
             .build()
             .toUri()
 
     fun buildMappeRequestUri(mappeRequest: FinnMappeRequest) =
-        UriComponentsBuilder.fromUri(oppgaveBaseUrl)
+        UriComponentsBuilder
+            .fromUri(oppgaveBaseUrl)
             .path(PATH_MAPPE)
             .queryParams(toQueryParams(mappeRequest))
             .build()
@@ -113,75 +112,79 @@ class OppgaveRestClient(
         return FinnOppgaveResponseDto(oppgaverOgAntall.antallTreffTotalt, oppgaver)
     }
 
-    fun finnMapper(finnMappeRequest: FinnMappeRequest): FinnMappeResponseDto {
-        return getForEntity(buildMappeRequestUri(finnMappeRequest), httpHeaders())
-    }
+    fun finnMapper(finnMappeRequest: FinnMappeRequest): FinnMappeResponseDto = getForEntity(buildMappeRequestUri(finnMappeRequest), httpHeaders())
 
-    fun oppdaterOppgave(patchDto: Oppgave): Oppgave? {
-        return Result.runCatching {
-            patchForEntity<Oppgave>(
-                requestUrl(patchDto.id ?: error("Kan ikke finne oppgaveId på oppgaven")),
-                patchDto,
-                httpHeaders(),
-            )
-        }.fold(
-            onSuccess = { it },
-            onFailure = {
-                var feilmelding = "Feil ved oppdatering av oppgave for ${patchDto.id}."
-                if (it is HttpStatusCodeException) {
-                    feilmelding += " Response fra oppgave = ${it.responseBodyAsString}"
+    fun oppdaterOppgave(patchDto: Oppgave): Oppgave? =
+        Result
+            .runCatching {
+                patchForEntity<Oppgave>(
+                    requestUrl(patchDto.id ?: error("Kan ikke finne oppgaveId på oppgaven")),
+                    patchDto,
+                    httpHeaders(),
+                )
+            }.fold(
+                onSuccess = { it },
+                onFailure = {
+                    var feilmelding = "Feil ved oppdatering av oppgave for ${patchDto.id}."
+                    if (it is HttpStatusCodeException) {
+                        feilmelding += " Response fra oppgave = ${it.responseBodyAsString}"
 
-                    if (it.statusCode == HttpStatus.CONFLICT) {
-                        throw OppslagException(
-                            feilmelding,
-                            "Oppgave.oppdaterOppgave",
-                            OppslagException.Level.LAV,
-                            HttpStatus.CONFLICT,
-                            it,
-                        )
+                        if (it.statusCode == HttpStatus.CONFLICT) {
+                            throw OppslagException(
+                                feilmelding,
+                                "Oppgave.oppdaterOppgave",
+                                OppslagException.Level.LAV,
+                                HttpStatus.CONFLICT,
+                                it,
+                            )
+                        }
                     }
-                }
 
-                throw OppslagException(
-                    feilmelding,
-                    "Oppgave.oppdaterOppgave",
-                    OppslagException.Level.KRITISK,
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    it,
-                )
-            },
-        )
-    }
-
-    fun oppdaterEnhet(byttEnhetPatch: OppgaveByttEnhet): Oppgave? {
-        return Result.runCatching {
-            patchForEntity<Oppgave>(
-                requestUrl(byttEnhetPatch.id),
-                byttEnhetPatch,
-                httpHeaders(),
+                    throw OppslagException(
+                        feilmelding,
+                        "Oppgave.oppdaterOppgave",
+                        OppslagException.Level.KRITISK,
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        it,
+                    )
+                },
             )
-        }.fold(
-            onSuccess = { it },
-            onFailure = {
-                var feilmelding = "Feil ved bytte av enhet for oppgave for ${byttEnhetPatch.id}."
-                if (it is HttpStatusCodeException) {
-                    feilmelding += " Response fra oppgave = ${it.responseBodyAsString}"
-                }
 
-                throw OppslagException(
-                    feilmelding,
-                    "Oppgave.byttEnhet",
-                    OppslagException.Level.MEDIUM,
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    it,
+    fun oppdaterEnhet(byttEnhetPatch: OppgaveByttEnhet): Oppgave? =
+        Result
+            .runCatching {
+                patchForEntity<Oppgave>(
+                    requestUrl(byttEnhetPatch.id),
+                    byttEnhetPatch,
+                    httpHeaders(),
                 )
-            },
-        )
-    }
+            }.fold(
+                onSuccess = { it },
+                onFailure = {
+                    var feilmelding = "Feil ved bytte av enhet for oppgave for ${byttEnhetPatch.id}."
+                    if (it is HttpStatusCodeException) {
+                        feilmelding += " Response fra oppgave = ${it.responseBodyAsString}"
+                    }
+
+                    throw OppslagException(
+                        feilmelding,
+                        "Oppgave.byttEnhet",
+                        OppslagException.Level.MEDIUM,
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        it,
+                    )
+                },
+            )
 
     fun opprettOppgave(dto: Oppgave): Long {
-        val uri = UriComponentsBuilder.fromUri(oppgaveBaseUrl).path(PATH_OPPGAVE).build().toUri()
-        return Result.runCatching { postForEntity<Oppgave>(uri, dto, httpHeaders()) }
+        val uri =
+            UriComponentsBuilder
+                .fromUri(oppgaveBaseUrl)
+                .path(PATH_OPPGAVE)
+                .build()
+                .toUri()
+        return Result
+            .runCatching { postForEntity<Oppgave>(uri, dto, httpHeaders()) }
             .map { it.id ?: error("Kan ikke finne oppgaveId på oppgaven $it") }
             .onFailure {
                 var feilmelding = "Feil ved oppretting av oppgave for ${dto.aktoerId}."
@@ -196,16 +199,16 @@ class OppgaveRestClient(
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     it,
                 )
-            }
-            .getOrThrow()
+            }.getOrThrow()
     }
 
     private fun lagRequestUrlMed(
         aktoerId: String,
         journalpostId: String,
         tema: String,
-    ): URI {
-        return UriComponentsBuilder.fromUri(oppgaveBaseUrl)
+    ): URI =
+        UriComponentsBuilder
+            .fromUri(oppgaveBaseUrl)
             .path(PATH_OPPGAVE)
             .queryParam("aktoerId", aktoerId)
             .queryParam("tema", tema)
@@ -214,11 +217,14 @@ class OppgaveRestClient(
             .queryParam("statuskategori", "AAPEN")
             .build()
             .toUri()
-    }
 
-    private fun requestUrl(oppgaveId: Long): URI {
-        return UriComponentsBuilder.fromUri(oppgaveBaseUrl).path(PATH_OPPGAVE).pathSegment(oppgaveId.toString()).build().toUri()
-    }
+    private fun requestUrl(oppgaveId: Long): URI =
+        UriComponentsBuilder
+            .fromUri(oppgaveBaseUrl)
+            .path(PATH_OPPGAVE)
+            .pathSegment(oppgaveId.toString())
+            .build()
+            .toUri()
 
     private fun requestOppgaveJson(requestUrl: URI): Oppgave {
         val finnOppgaveResponseDto =

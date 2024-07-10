@@ -9,7 +9,8 @@ object QueryParamUtil {
         val writeValueAsString = objectMapper.writeValueAsString(any)
         val readValue: LinkedHashMap<String, Any?> = objectMapper.readValue(writeValueAsString)
         val queryParams = LinkedMultiValueMap<String, String>()
-        readValue.filterNot { it.value == null }
+        readValue
+            .filterNot { it.value == null }
             .filterNot { it.value is List<*> && (it.value as List<*>).isEmpty() }
             .forEach {
                 if (it.value is List<*>) {

@@ -4,7 +4,5 @@ data class SafJournalpostResponse<T>(
     val data: T? = null,
     val errors: List<SafError>? = null,
 ) {
-    fun harFeil(): Boolean {
-        return errors != null && errors.isNotEmpty()
-    }
+    fun harFeil(): Boolean = errors != null && errors.isNotEmpty()
 }

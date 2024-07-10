@@ -24,7 +24,9 @@ import java.util.UUID
 @ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
 @ExtendWith(MockServerExtension::class)
 @MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
-class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTest() {
+class SaksbehandlerControllerTest(
+    val client: ClientAndServer,
+) : OppslagSpringRunnerTest() {
     @BeforeEach
     fun setUp() {
         client.reset()
@@ -34,13 +36,16 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
     @Test
     fun `skal kalle korrekt tjeneste for oppslag på id`() {
         val id = UUID.randomUUID()
-        client.`when`(
-            HttpRequest.request()
-                .withMethod("GET")
-                .withPath("/users/$id"),
-        )
-            .respond(
-                HttpResponse.response().withHeader("Content-Type", "application/json")
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("GET")
+                    .withPath("/users/$id"),
+            ).respond(
+                HttpResponse
+                    .response()
+                    .withHeader("Content-Type", "application/json")
                     .withBody(
                         """{
                                            "givenName": "Bob",
@@ -53,8 +58,10 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
                     ),
             )
         val uri =
-            UriComponentsBuilder.fromHttpUrl(localhost(BASE_URL))
-                .pathSegment(id.toString()).toUriString()
+            UriComponentsBuilder
+                .fromHttpUrl(localhost(BASE_URL))
+                .pathSegment(id.toString())
+                .toUriString()
 
         val response: ResponseEntity<Ressurs<Saksbehandler>> =
             restTemplate.exchange(
@@ -76,21 +83,24 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
         val navIdent = "B857496"
         val id = UUID.randomUUID()
 
-        client.`when`(
-            HttpRequest.request()
-                .withMethod("GET")
-                .withPath("/users")
-                .withQueryStringParameters(
-                    Parameter("\$search", "\"onPremisesSamAccountName:B857496\""),
-                    Parameter(
-                        "\$select",
-                        "givenName,surname,onPremisesSamAccountName,id," +
-                            "userPrincipalName,streetAddress",
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("GET")
+                    .withPath("/users")
+                    .withQueryStringParameters(
+                        Parameter("\$search", "\"onPremisesSamAccountName:B857496\""),
+                        Parameter(
+                            "\$select",
+                            "givenName,surname,onPremisesSamAccountName,id," +
+                                "userPrincipalName,streetAddress",
+                        ),
                     ),
-                ),
-        )
-            .respond(
-                HttpResponse.response().withHeader("Content-Type", "application/json")
+            ).respond(
+                HttpResponse
+                    .response()
+                    .withHeader("Content-Type", "application/json")
                     .withBody(
                         """{
                                            "value": [
@@ -107,8 +117,10 @@ class SaksbehandlerControllerTest(val client: ClientAndServer) : OppslagSpringRu
                     ),
             )
         val uri =
-            UriComponentsBuilder.fromHttpUrl(localhost(BASE_URL))
-                .pathSegment(navIdent).toUriString()
+            UriComponentsBuilder
+                .fromHttpUrl(localhost(BASE_URL))
+                .pathSegment(navIdent)
+                .toUriString()
 
         val response: ResponseEntity<Ressurs<Saksbehandler>> =
             restTemplate.exchange(

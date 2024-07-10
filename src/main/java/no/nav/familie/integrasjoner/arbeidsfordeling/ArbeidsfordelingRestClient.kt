@@ -16,29 +16,29 @@ class ArbeidsfordelingRestClient(
     private val norg2Uri: URI,
     @Qualifier("noAuthorize")
     restOperations: RestOperations,
-) :
-    AbstractPingableRestClient(restOperations, "norg2") {
-    fun hentEnhet(geografiskOmråde: String): NavKontorEnhet {
-        return getForEntity(
-            UriComponentsBuilder.fromUri(norg2Uri)
+) : AbstractPingableRestClient(restOperations, "norg2") {
+    fun hentEnhet(geografiskOmråde: String): NavKontorEnhet =
+        getForEntity(
+            UriComponentsBuilder
+                .fromUri(norg2Uri)
                 .pathSegment("api/v1/enhet/navkontor/$geografiskOmråde")
                 .build()
                 .toUri(),
         )
-    }
 
-    fun hentNavkontor(enhetId: String): NavKontorEnhet {
-        return getForEntity(
-            UriComponentsBuilder.fromUri(norg2Uri)
+    fun hentNavkontor(enhetId: String): NavKontorEnhet =
+        getForEntity(
+            UriComponentsBuilder
+                .fromUri(norg2Uri)
                 .pathSegment("api/v1/enhet/$enhetId")
                 .build()
                 .toUri(),
         )
-    }
 
     fun finnBehandlendeEnhetMedBesteMatch(arbeidsfordelingskriterie: ArbeidsfordelingKriterie): List<Enhet> {
         val uri =
-            UriComponentsBuilder.fromUri(norg2Uri)
+            UriComponentsBuilder
+                .fromUri(norg2Uri)
                 .pathSegment("api/v1/arbeidsfordeling/enheter/bestmatch")
                 .build()
                 .toUri()
@@ -46,5 +46,10 @@ class ArbeidsfordelingRestClient(
     }
 
     override val pingUri: URI
-        get() = UriComponentsBuilder.fromUri(norg2Uri).pathSegment("api/ping").build().toUri()
+        get() =
+            UriComponentsBuilder
+                .fromUri(norg2Uri)
+                .pathSegment("api/ping")
+                .build()
+                .toUri()
 }

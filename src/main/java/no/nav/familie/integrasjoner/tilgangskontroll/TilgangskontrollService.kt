@@ -8,13 +8,13 @@ import no.nav.security.token.support.spring.SpringTokenValidationContextHolder
 import org.springframework.stereotype.Service
 
 @Service
-class TilgangskontrollService(private val cachedTilgangskontrollService: CachedTilgangskontrollService) {
+class TilgangskontrollService(
+    private val cachedTilgangskontrollService: CachedTilgangskontrollService,
+) {
     fun sjekkTilgangTilBrukere(
         personIdenter: List<String>,
         tema: Tema = Tema.BAR,
-    ): List<Tilgang> {
-        return personIdenter.map { ident -> sjekkTilgangTilBruker(ident, tema) }
-    }
+    ): List<Tilgang> = personIdenter.map { ident -> sjekkTilgangTilBruker(ident, tema) }
 
     fun sjekkTilgangTilBruker(
         personIdent: String,
@@ -28,9 +28,7 @@ class TilgangskontrollService(private val cachedTilgangskontrollService: CachedT
         personIdent: String,
         jwtToken: JwtToken,
         tema: Tema = Tema.BAR,
-    ): Tilgang {
-        return cachedTilgangskontrollService.sjekkTilgang(personIdent, jwtToken, tema)
-    }
+    ): Tilgang = cachedTilgangskontrollService.sjekkTilgang(personIdent, jwtToken, tema)
 
     fun sjekkTilgangTilPersonMedRelasjoner(
         personIdent: String,

@@ -433,8 +433,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
                 .withRequestBody(
                     WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":null}"""),
-                )
-                .willReturn(
+                ).willReturn(
                     aResponse()
                         .withStatus(201)
                         .withHeader("Content-Type", "application/json")
@@ -468,8 +467,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
                 .withRequestBody(
                     WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":1234}"""),
-                )
-                .willReturn(
+                ).willReturn(
                     aResponse()
                         .withStatus(201)
                         .withHeader("Content-Type", "application/json")
@@ -503,8 +501,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
                 .withRequestBody(
                     WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":1234}"""),
-                )
-                .willReturn(
+                ).willReturn(
                     aResponse()
                         .withStatus(400)
                         .withHeader("Content-Type", "application/json")
@@ -562,12 +559,11 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
-    private fun gyldigOppgaveResponse(filnavn: String): String {
-        return Files.readString(
+    private fun gyldigOppgaveResponse(filnavn: String): String =
+        Files.readString(
             ClassPathResource("oppgave/$filnavn").file.toPath(),
             StandardCharsets.UTF_8,
         )
-    }
 
     companion object {
         private const val OPPGAVE_URL = "/api/oppgave"

@@ -16,7 +16,8 @@ object SikkerhetsContext {
     }
 
     fun hentSaksbehandlerEllerSystembruker() =
-        Result.runCatching { SpringTokenValidationContextHolder().getTokenValidationContext() }
+        Result
+            .runCatching { SpringTokenValidationContextHolder().getTokenValidationContext() }
             .fold(
                 onSuccess = {
                     it.getClaims("azuread")?.get("NAVident")?.toString() ?: SYSTEM_FORKORTELSE
@@ -24,8 +25,9 @@ object SikkerhetsContext {
                 onFailure = { SYSTEM_FORKORTELSE },
             )
 
-    fun hentSaksbehandlerNavn(strict: Boolean = false): String {
-        return Result.runCatching { SpringTokenValidationContextHolder().getTokenValidationContext() }
+    fun hentSaksbehandlerNavn(strict: Boolean = false): String =
+        Result
+            .runCatching { SpringTokenValidationContextHolder().getTokenValidationContext() }
             .fold(
                 onSuccess = {
                     it.getClaims("azuread")?.get("name")?.toString()
@@ -33,5 +35,4 @@ object SikkerhetsContext {
                 },
                 onFailure = { if (strict) error("Finner ikke navn på innlogget bruker") else SYSTEM_NAVN },
             )
-    }
 }

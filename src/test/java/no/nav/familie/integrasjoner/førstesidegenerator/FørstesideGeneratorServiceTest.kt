@@ -36,7 +36,5 @@ class FørstesideGeneratorServiceTest {
         Assertions.assertThat(resultat.size == hentBytes().size)
     }
 
-    private fun hentBytes(): ByteArray {
-        return "PDF".toByteArray(Charsets.UTF_8)
-    }
+    private fun hentBytes(): ByteArray = "PDF".toByteArray(Charsets.UTF_8)
 }

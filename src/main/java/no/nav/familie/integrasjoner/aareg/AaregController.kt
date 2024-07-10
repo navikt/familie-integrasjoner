@@ -15,7 +15,9 @@ import java.time.LocalDate
 @RestController
 @RequestMapping("/api/aareg")
 @ProtectedWithClaims(issuer = "azuread")
-class AaregController(val aaregService: AaregService) {
+class AaregController(
+    val aaregService: AaregService,
+) {
     @PostMapping(path = ["/arbeidsforhold"], consumes = [MediaType.APPLICATION_JSON_VALUE], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun hentArbeidsforhold(
         @RequestBody(required = true) arbeidsforholdRequest: ArbeidsforholdRequest,

@@ -35,8 +35,7 @@ import java.net.URI
 class PdlRestClient(
     @Value("\${PDL_URL}") pdlBaseUrl: URI,
     @Qualifier("jwtBearer") private val restTemplate: RestOperations,
-) :
-    AbstractRestClient(restTemplate, "pdl.personinfo") {
+) : AbstractRestClient(restTemplate, "pdl.personinfo") {
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
 
     fun hentAdressebeskyttelse(
@@ -231,11 +230,10 @@ class PdlRestClient(
     }
 }
 
-fun pdlHttpHeaders(tema: Tema): HttpHeaders {
-    return HttpHeaders().apply {
+fun pdlHttpHeaders(tema: Tema): HttpHeaders =
+    HttpHeaders().apply {
         contentType = MediaType.APPLICATION_JSON
         accept = listOf(MediaType.APPLICATION_JSON)
         add("Tema", tema.name)
         add("behandlingsnummer", tema.behandlingsnummer)
     }
-}

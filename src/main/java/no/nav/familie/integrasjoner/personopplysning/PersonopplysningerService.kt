@@ -29,9 +29,7 @@ class PersonopplysningerService(
     fun hentPersoninfo(
         personIdent: String,
         tema: Tema,
-    ): Person {
-        return pdlRestClient.hentPerson(personIdent, tema)
-    }
+    ): Person = pdlRestClient.hentPerson(personIdent, tema)
 
     fun hentIdenter(
         personIdent: String,
@@ -74,17 +72,14 @@ class PersonopplysningerService(
     fun hentAdressebeskyttelse(
         personIdent: String,
         tema: Tema,
-    ): Adressebeskyttelse {
-        return pdlRestClient.hentAdressebeskyttelse(personIdent, tema).adressebeskyttelse.firstOrNull()
+    ): Adressebeskyttelse =
+        pdlRestClient.hentAdressebeskyttelse(personIdent, tema).adressebeskyttelse.firstOrNull()
             ?: Adressebeskyttelse(gradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
-    }
 
     fun hentPostadresse(
         personIdent: String,
         tema: Tema,
-    ): PostadresseResponse? {
-        return regoppslagRestClient.hentPostadresse(personIdent, tema)
-    }
+    ): PostadresseResponse? = regoppslagRestClient.hentPostadresse(personIdent, tema)
 
     private fun hentBarnsForeldrer(
         barnOpplysninger: Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>,
@@ -92,9 +87,12 @@ class PersonopplysningerService(
         tema: Tema,
     ): List<PersonMedAdresseBeskyttelse> {
         val barnsForeldrerIdenter =
-            barnOpplysninger.flatMap { (_, personMedRelasjoner) ->
-                personMedRelasjoner.forelderBarnRelasjon.filter { it.relatertPersonsRolle != FORELDERBARNRELASJONROLLE.BARN }
-            }.filter { it.relatertPersonsIdent != personIdent }.mapNotNull { it.relatertPersonsIdent }.distinct()
+            barnOpplysninger
+                .flatMap { (_, personMedRelasjoner) ->
+                    personMedRelasjoner.forelderBarnRelasjon.filter { it.relatertPersonsRolle != FORELDERBARNRELASJONROLLE.BARN }
+                }.filter { it.relatertPersonsIdent != personIdent }
+                .mapNotNull { it.relatertPersonsIdent }
+                .distinct()
         val barnsForeldrerOpplysninger = hentPersonMedRelasjonerOgAdressebeskyttelse(barnsForeldrerIdenter, tema)
 
         return mapPersonMedRelasjoner(barnsForeldrerIdenter, barnsForeldrerOpplysninger)
