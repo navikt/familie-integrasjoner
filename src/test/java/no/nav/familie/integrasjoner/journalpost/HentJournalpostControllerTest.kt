@@ -43,7 +43,9 @@ import java.time.LocalDateTime
 @ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
 @ExtendWith(MockServerExtension::class)
 @MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
-class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTest() {
+class HentJournalpostControllerTest(
+    val client: ClientAndServer,
+) : OppslagSpringRunnerTest() {
     private val testLogger = LoggerFactory.getLogger(HentJournalpostController::class.java) as Logger
 
     private lateinit var uriHentSaksnummer: String
@@ -56,24 +58,30 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
         testLogger.addAppender(listAppender)
         headers.setBearerAuth(lagToken("testbruker"))
         uriHentSaksnummer =
-            UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/sak")
-                .queryParam("journalpostId", JOURNALPOST_ID).toUriString()
+            UriComponentsBuilder
+                .fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/sak")
+                .queryParam("journalpostId", JOURNALPOST_ID)
+                .toUriString()
         uriHentJournalpost =
-            UriComponentsBuilder.fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
-                .queryParam("journalpostId", JOURNALPOST_ID).toUriString()
+            UriComponentsBuilder
+                .fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
+                .queryParam("journalpostId", JOURNALPOST_ID)
+                .toUriString()
         uriHentDokument = localhost(JOURNALPOST_BASE_URL) + "/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID"
     }
 
     @Test
     fun `hent journalpost skal returnere journalpost og status ok`() {
-        client.`when`(
-            HttpRequest.request()
-                .withMethod("POST")
-                .withPath("/rest/saf/graphql")
-                .withBody(gyldigJournalPostIdRequest()),
-        )
-            .respond(
-                response().withBody(json(lesFil("gyldigjournalpostresponse.json")))
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("POST")
+                    .withPath("/rest/saf/graphql")
+                    .withBody(gyldigJournalPostIdRequest()),
+            ).respond(
+                response()
+                    .withBody(json(lesFil("gyldigjournalpostresponse.json")))
                     .withHeaders(Header("Content-Type", "application/json")),
             )
 
@@ -93,13 +101,14 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
 
     @Test
     fun `hent journalpostForBruker skal returnere journalposter og status ok`() {
-        client.`when`(
-            HttpRequest.request()
-                .withMethod("POST")
-                .withPath("/rest/saf/graphql")
-                .withBody(objectMapper.writeValueAsString(gyldigBrukerRequest())),
-        )
-            .respond(response().withBody(json(lesFil("gyldigJournalposterResponse.json"))))
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("POST")
+                    .withPath("/rest/saf/graphql")
+                    .withBody(objectMapper.writeValueAsString(gyldigBrukerRequest())),
+            ).respond(response().withBody(json(lesFil("gyldigJournalposterResponse.json"))))
 
         val response: ResponseEntity<Ressurs<List<Journalpost>>> =
             restTemplate.exchange(
@@ -118,11 +127,29 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
-        assertThat(response.body?.data?.first()?.journalposttype).isEqualTo(Journalposttype.I)
-        assertThat(response.body?.data?.first()?.journalstatus).isEqualTo(Journalstatus.JOURNALFOERT)
-        assertThat(response.body?.data?.first()?.datoMottatt).isEqualTo(LocalDateTime.parse("2020-01-31T08:00:17"))
+        assertThat(
+            response.body
+                ?.data
+                ?.first()
+                ?.journalposttype,
+        ).isEqualTo(Journalposttype.I)
+        assertThat(
+            response.body
+                ?.data
+                ?.first()
+                ?.journalstatus,
+        ).isEqualTo(Journalstatus.JOURNALFOERT)
+        assertThat(
+            response.body
+                ?.data
+                ?.first()
+                ?.datoMottatt,
+        ).isEqualTo(LocalDateTime.parse("2020-01-31T08:00:17"))
         val utsendingsinfo =
-            response.body?.data?.find { it.utsendingsinfo != null }?.utsendingsinfo
+            response.body
+                ?.data
+                ?.find { it.utsendingsinfo != null }
+                ?.utsendingsinfo
                 ?: error("Finner ikke utsendingsinfo på noen journalposter")
         assertThat(utsendingsinfo.utsendingsmåter).hasSize(1)
         assertThat(utsendingsinfo.utsendingsmåter).contains(Utsendingsmåte.DIGITAL_POST)
@@ -134,12 +161,13 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
 
     @Test
     fun `hent dokument skal returnere dokument og status ok`() {
-        client.`when`(
-            HttpRequest.request()
-                .withMethod("GET")
-                .withPath("/rest/saf/rest/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID/ARKIV"),
-        )
-            .respond(HttpResponse().withBody("pdf".toByteArray()).withHeaders(Header("Content-Type", "application/pdf")))
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("GET")
+                    .withPath("/rest/saf/rest/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID/ARKIV"),
+            ).respond(HttpResponse().withBody("pdf".toByteArray()).withHeaders(Header("Content-Type", "application/pdf")))
 
         val response: ResponseEntity<Ressurs<ByteArray>> =
             restTemplate.exchange(
@@ -151,16 +179,15 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
     }
 
-    private fun gyldigJournalPostIdRequest(): String {
-        return lesFil("gyldigJournalpostIdRequest.json")
+    private fun gyldigJournalPostIdRequest(): String =
+        lesFil("gyldigJournalpostIdRequest.json")
             .replace(
                 "GRAPHQL-PLACEHOLDER",
                 lesFil("journalpostForId.graphql").graphqlCompatible(),
             )
-    }
 
-    private fun gyldigBrukerRequest(): SafJournalpostRequest {
-        return SafJournalpostRequest(
+    private fun gyldigBrukerRequest(): SafJournalpostRequest =
+        SafJournalpostRequest(
             SafRequestForBruker(
                 brukerId = Bruker("12345678901", BrukerIdType.FNR),
                 antall = 10,
@@ -170,11 +197,8 @@ class HentJournalpostControllerTest(val client: ClientAndServer) : OppslagSpring
             ),
             graphqlQuery("/saf/journalposterForBruker.graphql"),
         )
-    }
 
-    private fun lesFil(filnavn: String): String {
-        return ClassPathResource("saf/$filnavn").url.readText()
-    }
+    private fun lesFil(filnavn: String): String = ClassPathResource("saf/$filnavn").url.readText()
 
     companion object {
         const val JOURNALPOST_ID = "12345678"

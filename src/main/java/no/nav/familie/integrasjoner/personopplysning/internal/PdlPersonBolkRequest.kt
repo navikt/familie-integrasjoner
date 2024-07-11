@@ -5,4 +5,6 @@ data class PdlPersonBolkRequest(
     val query: String,
 )
 
-data class PdlPersonBolkRequestVariables(val identer: List<String>)
+data class PdlPersonBolkRequestVariables(
+    val identer: List<String>,
+)

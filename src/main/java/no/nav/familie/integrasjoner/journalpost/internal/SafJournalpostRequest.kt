@@ -6,7 +6,9 @@ import no.nav.familie.kontrakter.felles.journalpost.Bruker
 import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
 import no.nav.familie.kontrakter.felles.journalpost.Journalposttype
 
-data class SafRequestVariabler(val journalpostId: String)
+data class SafRequestVariabler(
+    val journalpostId: String,
+)
 
 data class SafRequest(
     val brukerId: Bruker,
@@ -36,22 +38,20 @@ data class JournalposterForVedleggRequest(
     val journalpostStatus: String?,
     val antall: Int = 200,
 ) {
-    fun tilSafRequest(): SafRequest {
-        return SafRequest(
+    fun tilSafRequest(): SafRequest =
+        SafRequest(
             brukerId = brukerId,
             tema = tema,
             journalposttype = dokumenttype,
             journalstatus = journalpostStatus?.let { listOf(it) },
             antall = antall,
         )
-    }
 }
 
-fun JournalposterForBrukerRequest.tilSafRequestForBruker(): SafRequestForBruker {
-    return SafRequestForBruker(
+fun JournalposterForBrukerRequest.tilSafRequestForBruker(): SafRequestForBruker =
+    SafRequestForBruker(
         brukerId = brukerId,
         tema = tema,
         journalposttype = journalposttype,
         antall = antall,
     )
-}

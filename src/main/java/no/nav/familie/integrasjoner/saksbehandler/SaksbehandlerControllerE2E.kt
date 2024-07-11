@@ -18,8 +18,8 @@ class SaksbehandlerControllerE2E {
     @ProtectedWithClaims(issuer = "azuread")
     fun hentSaksbehandler(
         @PathVariable id: String,
-    ): Ressurs<Saksbehandler> {
-        return Ressurs.success(
+    ): Ressurs<Saksbehandler> =
+        Ressurs.success(
             Saksbehandler(
                 azureId = UUID.randomUUID(),
                 navIdent = id,
@@ -29,5 +29,4 @@ class SaksbehandlerControllerE2E {
             ),
             "Hent saksbehandler OK",
         )
-    }
 }

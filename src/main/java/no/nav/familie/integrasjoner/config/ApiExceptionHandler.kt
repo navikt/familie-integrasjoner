@@ -102,9 +102,7 @@ class ApiExceptionHandler {
     }
 
     @ExceptionHandler(PdlUnauthorizedException::class)
-    fun handleThrowable(feil: PdlUnauthorizedException): ResponseEntity<Ressurs<Nothing>> {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(failure(frontendFeilmelding = "Har ikke tilgang til å slå opp personen i PDL"))
-    }
+    fun handleThrowable(feil: PdlUnauthorizedException): ResponseEntity<Ressurs<Nothing>> = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(failure(frontendFeilmelding = "Har ikke tilgang til å slå opp personen i PDL"))
 
     @ExceptionHandler(OppslagException::class)
     fun handleOppslagException(e: OppslagException): ResponseEntity<Ressurs<Any>> {

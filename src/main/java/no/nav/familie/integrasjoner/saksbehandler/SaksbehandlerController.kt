@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping(value = ["/api/saksbehandler"])
 @Profile("!e2e")
-class SaksbehandlerController(private val saksbehandlerService: SaksbehandlerService) {
+class SaksbehandlerController(
+    private val saksbehandlerService: SaksbehandlerService,
+) {
     @GetMapping(path = ["/{id}"])
     @ProtectedWithClaims(issuer = "azuread")
     fun hentSaksbehandler(

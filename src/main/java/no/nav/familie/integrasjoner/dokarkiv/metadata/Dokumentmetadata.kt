@@ -18,7 +18,9 @@ sealed interface Dokumentmetadata {
     val dokumentKategori: Dokumentkategori
 }
 
-enum class Dokumentkategori(private val beskrivelse: String) {
+enum class Dokumentkategori(
+    private val beskrivelse: String,
+) {
     B("Brev"),
     VB("Vedtaksbrev"),
     IB("Infobrev"),

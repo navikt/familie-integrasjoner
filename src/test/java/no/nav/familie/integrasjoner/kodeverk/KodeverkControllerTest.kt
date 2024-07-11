@@ -51,8 +51,18 @@ class KodeverkControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.data?.betydninger).hasSize(2)
-        assertThat(response.body?.data?.betydninger?.get("FOO")).contains(betydningFoo)
-        assertThat(response.body?.data?.betydninger?.get("BAR")).contains(betydningBar)
+        assertThat(
+            response.body
+                ?.data
+                ?.betydninger
+                ?.get("FOO"),
+        ).contains(betydningFoo)
+        assertThat(
+            response.body
+                ?.data
+                ?.betydninger
+                ?.get("BAR"),
+        ).contains(betydningBar)
     }
 
     companion object {

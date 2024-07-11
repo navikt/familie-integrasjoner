@@ -38,20 +38,20 @@ class DokdistkanalController(
     fun hentDistribusjonskanal(
         @RequestBody request: DokdistkanalRequest,
         @PathVariable tema: Tema,
-    ): Ressurs<Distribusjonskanal> {
-        return dokdistkanalRestClient.bestemDistribusjonskanal(
-            BestemDistribusjonskanalRequest(
-                brukerId = request.bruker.ident,
-                mottakerId = request.mottaker.ident,
-                tema = tema,
-                dokumenttypeId = request.dokumenttypeId,
-                erArkivert = request.erArkivert,
-                forsendelseStørrelse = request.forsendelseStørrelseIMegabytes,
-            ),
-        ).valider(request.mottaker, tema) { distribusjonskanal, melding ->
-            success(data = distribusjonskanal, melding = melding)
-        }
-    }
+    ): Ressurs<Distribusjonskanal> =
+        dokdistkanalRestClient
+            .bestemDistribusjonskanal(
+                BestemDistribusjonskanalRequest(
+                    brukerId = request.bruker.ident,
+                    mottakerId = request.mottaker.ident,
+                    tema = tema,
+                    dokumenttypeId = request.dokumenttypeId,
+                    erArkivert = request.erArkivert,
+                    forsendelseStørrelse = request.forsendelseStørrelseIMegabytes,
+                ),
+            ).valider(request.mottaker, tema) { distribusjonskanal, melding ->
+                success(data = distribusjonskanal, melding = melding)
+            }
 
     private fun BestemDistribusjonskanalResponse.valider(
         mottaker: PersonIdent,

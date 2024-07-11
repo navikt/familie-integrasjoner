@@ -35,17 +35,11 @@ class OppgaveService constructor(
 ) {
     private val logger = LoggerFactory.getLogger(OppgaveService::class.java)
 
-    fun finnOppgaver(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto {
-        return oppgaveRestClient.finnOppgaver(finnOppgaveRequest)
-    }
+    fun finnOppgaver(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto = oppgaveRestClient.finnOppgaver(finnOppgaveRequest)
 
-    fun hentOppgave(oppgaveId: Long): Oppgave {
-        return oppgaveRestClient.finnOppgaveMedId(oppgaveId)
-    }
+    fun hentOppgave(oppgaveId: Long): Oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
-    fun patchOppgave(patchOppgave: Oppgave): Long {
-        return oppgaveRestClient.oppdaterOppgave(patchOppgave)?.id!!
-    }
+    fun patchOppgave(patchOppgave: Oppgave): Long = oppgaveRestClient.oppdaterOppgave(patchOppgave)?.id!!
 
     fun fordelOppgave(
         oppgaveId: Long,
@@ -226,13 +220,12 @@ class OppgaveService constructor(
     private fun getAktørId(
         oppgaveIdentV2: OppgaveIdentV2,
         tema: Tema,
-    ): String {
-        return if (oppgaveIdentV2.gruppe == IdentGruppe.AKTOERID) {
+    ): String =
+        if (oppgaveIdentV2.gruppe == IdentGruppe.AKTOERID) {
             oppgaveIdentV2.ident ?: throw IllegalArgumentException("Mangler ident for gruppe=${oppgaveIdentV2.gruppe}")
         } else {
             aktørService.getAktørIdFraPdl(oppgaveIdentV2.ident!!, tema)
         }
-    }
 
     fun finnMapper(finnMappeRequest: FinnMappeRequest): FinnMappeResponseDto {
         val mappeRespons = oppgaveRestClient.finnMapper(finnMappeRequest)

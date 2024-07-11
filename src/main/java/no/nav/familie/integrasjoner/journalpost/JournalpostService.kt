@@ -15,23 +15,15 @@ class JournalpostService
         private val safRestClient: SafRestClient,
         private val safHentDokumentRestClient: SafHentDokumentRestClient,
     ) {
-        fun hentJournalpost(journalpostId: String): Journalpost {
-            return safRestClient.hentJournalpost(journalpostId)
-        }
+        fun hentJournalpost(journalpostId: String): Journalpost = safRestClient.hentJournalpost(journalpostId)
 
-        fun finnJournalposter(journalposterForBrukerRequest: JournalposterForBrukerRequest): List<Journalpost> {
-            return safRestClient.finnJournalposter(journalposterForBrukerRequest)
-        }
+        fun finnJournalposter(journalposterForBrukerRequest: JournalposterForBrukerRequest): List<Journalpost> = safRestClient.finnJournalposter(journalposterForBrukerRequest)
 
-        fun finnJournalposter(journalposterForVedleggRequest: JournalposterForVedleggRequest): List<Journalpost> {
-            return safRestClient.finnJournalposter(journalposterForVedleggRequest)
-        }
+        fun finnJournalposter(journalposterForVedleggRequest: JournalposterForVedleggRequest): List<Journalpost> = safRestClient.finnJournalposter(journalposterForVedleggRequest)
 
         fun hentDokument(
             journalpostId: String,
             dokumentInfoId: String,
             variantFormat: String,
-        ): ByteArray {
-            return safHentDokumentRestClient.hentDokument(journalpostId, dokumentInfoId, variantFormat)
-        }
+        ): ByteArray = safHentDokumentRestClient.hentDokument(journalpostId, dokumentInfoId, variantFormat)
     }

@@ -127,9 +127,11 @@ class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(response?.status).isEqualTo(SUKSESS)
         assertThat(response?.data).isEqualTo(Distribusjonskanal.UKJENT.name)
-        assertThat(loggingEvents).extracting<Level> { it.level }
+        assertThat(loggingEvents)
+            .extracting<Level> { it.level }
             .containsExactly(Level.ERROR)
-        assertThat(loggingEvents).extracting<String> { it.formattedMessage }
+        assertThat(loggingEvents)
+            .extracting<String> { it.formattedMessage }
             .containsExactly("Distribusjonskanal-kontrakten er utdatert og må oppdateres med ny verdi for NY_KANAL")
     }
 

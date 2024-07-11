@@ -48,7 +48,9 @@ import kotlin.test.assertFalse
 @ActiveProfiles(profiles = ["integrasjonstest", "mock-sts", "mock-aktor", "mock-personopplysninger", "mock-pdl"])
 @ExtendWith(MockServerExtension::class)
 @MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
-class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSpringRunnerTest() {
+class DokarkivControllerTest(
+    private val client: ClientAndServer,
+) : OppslagSpringRunnerTest() {
     @BeforeEach
     fun setUp() {
         client.reset()
@@ -82,13 +84,13 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal midlertidig journalføre dokument`() {
-        client.`when`(
-            request()
-                .withMethod("POST")
-                .withPath("/rest/journalpostapi/v1/journalpost")
-                .withQueryStringParameter("forsoekFerdigstill", "false"),
-        )
-            .respond(response().withBody(json(gyldigDokarkivResponse())))
+        client
+            .`when`(
+                request()
+                    .withMethod("POST")
+                    .withPath("/rest/journalpostapi/v1/journalpost")
+                    .withQueryStringParameter("forsoekFerdigstill", "false"),
+            ).respond(response().withBody(json(gyldigDokarkivResponse())))
         val body =
             ArkiverDokumentRequest(
                 "FNR",
@@ -111,13 +113,13 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal sende med navIdent fra header til journalpost`() {
-        client.`when`(
-            request()
-                .withMethod("POST")
-                .withPath("/rest/journalpostapi/v1/journalpost")
-                .withQueryStringParameter("forsoekFerdigstill", "false"),
-        )
-            .respond(response().withBody(json(gyldigDokarkivResponse())))
+        client
+            .`when`(
+                request()
+                    .withMethod("POST")
+                    .withPath("/rest/journalpostapi/v1/journalpost")
+                    .withQueryStringParameter("forsoekFerdigstill", "false"),
+            ).respond(response().withBody(json(gyldigDokarkivResponse())))
         val body =
             ArkiverDokumentRequest(
                 "FNR",
@@ -141,13 +143,13 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal returnere 409 ved 409 response fra dokarkiv`() {
-        client.`when`(
-            request()
-                .withMethod("POST")
-                .withPath("/rest/journalpostapi/v1/journalpost")
-                .withQueryStringParameter("forsoekFerdigstill", "false"),
-        )
-            .respond(
+        client
+            .`when`(
+                request()
+                    .withMethod("POST")
+                    .withPath("/rest/journalpostapi/v1/journalpost")
+                    .withQueryStringParameter("forsoekFerdigstill", "false"),
+            ).respond(
                 response()
                     .withStatusCode(409)
                     .withHeader("Content-Type", "application/json;charset=UTF-8")
@@ -174,13 +176,13 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal midlertidig journalføre dokument med vedlegg`() {
-        client.`when`(
-            request()
-                .withMethod("POST")
-                .withPath("/rest/journalpostapi/v1/journalpost")
-                .withQueryStringParameter("forsoekFerdigstill", "false"),
-        )
-            .respond(response().withBody(json(gyldigDokarkivResponse())))
+        client
+            .`when`(
+                request()
+                    .withMethod("POST")
+                    .withPath("/rest/journalpostapi/v1/journalpost")
+                    .withQueryStringParameter("forsoekFerdigstill", "false"),
+            ).respond(response().withBody(json(gyldigDokarkivResponse())))
         val body =
             ArkiverDokumentRequest(
                 "FNR",
@@ -204,13 +206,13 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `dokarkiv returnerer 401`() {
-        client.`when`(
-            request()
-                .withMethod("POST")
-                .withPath("/rest/journalpostapi/v1/journalpost")
-                .withQueryStringParameter("forsoekFerdigstill", "false"),
-        )
-            .respond(
+        client
+            .`when`(
+                request()
+                    .withMethod("POST")
+                    .withPath("/rest/journalpostapi/v1/journalpost")
+                    .withQueryStringParameter("forsoekFerdigstill", "false"),
+            ).respond(
                 response()
                     .withStatusCode(401)
                     .withHeader("Content-Type", "application/json;charset=UTF-8")
@@ -238,12 +240,12 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
     @Test
     fun `oppdaterJournalpost returnerer OK`() {
         val journalpostId = "12345678"
-        client.`when`(
-            request()
-                .withMethod("PUT")
-                .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId"),
-        )
-            .respond(response().withBody(json(gyldigDokarkivResponse())))
+        client
+            .`when`(
+                request()
+                    .withMethod("PUT")
+                    .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId"),
+            ).respond(response().withBody(json(gyldigDokarkivResponse())))
 
         val body =
             OppdaterJournalpostRequest(
@@ -267,13 +269,14 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
     @Test
     fun `dokarkiv skal logge detaljert feilmelding til secureLogger ved HttpServerErrorExcetion`() {
         val journalpostId = "12345678"
-        client.`when`(
-            request()
-                .withMethod("PUT")
-                .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId"),
-        )
-            .respond(
-                response().withStatusCode(500)
+        client
+            .`when`(
+                request()
+                    .withMethod("PUT")
+                    .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId"),
+            ).respond(
+                response()
+                    .withStatusCode(500)
                     .withHeader("Content-Type", "application/json;charset=UTF-8")
                     .withBody(gyldigDokarkivResponse(500)),
             )
@@ -301,12 +304,12 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `ferdigstill returnerer ok`() {
-        client.`when`(
-            request()
-                .withMethod("PATCH")
-                .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill"),
-        )
-            .respond(response().withStatusCode(200).withBody("Journalpost ferdigstilt"))
+        client
+            .`when`(
+                request()
+                    .withMethod("PATCH")
+                    .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill"),
+            ).respond(response().withStatusCode(200).withBody("Journalpost ferdigstilt"))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> =
             restTemplate.exchange(
@@ -322,12 +325,12 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `ferdigstill returnerer 400 hvis ikke mulig ferdigstill`() {
-        client.`when`(
-            request()
-                .withMethod("PATCH")
-                .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill"),
-        )
-            .respond(response().withStatusCode(400))
+        client
+            .`when`(
+                request()
+                    .withMethod("PATCH")
+                    .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill"),
+            ).respond(response().withStatusCode(400))
 
         val response: ResponseEntity<Ressurs<Map<String, String>>> =
             restTemplate.exchange(
@@ -343,12 +346,12 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal opprette logisk vedlegg`() {
-        client.`when`(
-            request()
-                .withMethod("POST")
-                .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"),
-        )
-            .respond(
+        client
+            .`when`(
+                request()
+                    .withMethod("POST")
+                    .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"),
+            ).respond(
                 response()
                     .withStatusCode(200)
                     .withBody(json(objectMapper.writeValueAsString(LogiskVedleggResponse(21L)))),
@@ -368,12 +371,12 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal returnere feil hvis man ikke kan opprette logisk vedlegg`() {
-        client.`when`(
-            request()
-                .withMethod("POST")
-                .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"),
-        )
-            .respond(
+        client
+            .`when`(
+                request()
+                    .withMethod("POST")
+                    .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"),
+            ).respond(
                 response()
                     .withStatusCode(404)
                     .withBody("melding fra klient"),
@@ -393,12 +396,12 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal slette logisk vedlegg`() {
-        client.`when`(
-            request()
-                .withMethod("DELETE")
-                .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/432"),
-        )
-            .respond(
+        client
+            .`when`(
+                request()
+                    .withMethod("DELETE")
+                    .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/432"),
+            ).respond(
                 response()
                     .withStatusCode(200),
             )
@@ -418,12 +421,12 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal bulk oppdatere logiske vedlegg for et dokument`() {
-        client.`when`(
-            request()
-                .withMethod("PUT")
-                .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg"),
-        )
-            .respond(
+        client
+            .`when`(
+                request()
+                    .withMethod("PUT")
+                    .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg"),
+            ).respond(
                 response()
                     .withStatusCode(204),
             )
@@ -443,12 +446,12 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
 
     @Test
     fun `skal returnere feil hvis man ikke kan slette logisk vedlegg`() {
-        client.`when`(
-            request()
-                .withMethod("DELETE")
-                .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/432"),
-        )
-            .respond(
+        client
+            .`when`(
+                request()
+                    .withMethod("DELETE")
+                    .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/432"),
+            ).respond(
                 response()
                     .withStatusCode(404)
                     .withBody("sletting feilet"),
@@ -467,18 +470,16 @@ class DokarkivControllerTest(private val client: ClientAndServer) : OppslagSprin
     }
 
     @Throws(IOException::class)
-    private fun gyldigDokarkivResponse(statusKode: Int? = null): String {
-        return Files.readString(
+    private fun gyldigDokarkivResponse(statusKode: Int? = null): String =
+        Files.readString(
             ClassPathResource("dokarkiv/gyldig${statusKode ?: ""}response.json").file.toPath(),
             StandardCharsets.UTF_8,
         )
-    }
 
-    private fun headersWithNavUserId(): HttpHeaders {
-        return headers.apply {
+    private fun headersWithNavUserId(): HttpHeaders =
+        headers.apply {
             add("Nav-User-Id", NAV_USER_ID_VALUE)
         }
-    }
 
     companion object {
         private const val DOKARKIV_URL = "/api/arkiv"

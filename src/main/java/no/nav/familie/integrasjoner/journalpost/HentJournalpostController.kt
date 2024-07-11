@@ -23,13 +23,16 @@ import org.springframework.web.client.HttpStatusCodeException
 @RestController
 @RequestMapping("/api/journalpost")
 @ProtectedWithClaims(issuer = "azuread")
-class HentJournalpostController(private val journalpostService: JournalpostService) {
+class HentJournalpostController(
+    private val journalpostService: JournalpostService,
+) {
     @ExceptionHandler(JournalpostRestClientException::class)
     fun handleRestClientException(ex: JournalpostRestClientException): ResponseEntity<Ressurs<Any>> {
         val errorBaseMessage = "Feil ved henting av journalpost=${ex.journalpostId}"
         val errorExtMessage = byggFeilmelding(ex)
         LOG.warn(errorBaseMessage, ex)
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(failure(errorBaseMessage + errorExtMessage, error = ex))
     }
 
@@ -38,7 +41,8 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
         val errorBaseMessage = "Feil ved henting av journalpost for ${ex.safJournalpostRequest}"
         val errorExtMessage = byggFeilmelding(ex)
         secureLogger.warn(errorBaseMessage, ex)
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(failure(errorBaseMessage + errorExtMessage, error = ex))
     }
 
@@ -51,57 +55,50 @@ class HentJournalpostController(private val journalpostService: JournalpostServi
             .body(Ressurs.ikkeTilgang(e.message ?: "Bruker eller system har ikke tilgang til saf ressurs"))
     }
 
-    private fun byggFeilmelding(ex: RuntimeException): String {
-        return if (ex.cause is HttpStatusCodeException) {
+    private fun byggFeilmelding(ex: RuntimeException): String =
+        if (ex.cause is HttpStatusCodeException) {
             val cex = ex.cause as HttpStatusCodeException
             " statuscode=${cex.statusCode} body=${cex.responseBodyAsString}"
         } else {
             " klientfeilmelding=${ex.message}"
         }
-    }
 
     @ExceptionHandler(RuntimeException::class)
     fun handleRequestParserException(ex: RuntimeException): ResponseEntity<Ressurs<Any>> {
         val errorMessage = "Feil ved henting av journalpost. ${ex.message}"
         LOG.warn(errorMessage, ex)
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(failure(errorMessage, error = ex))
     }
 
     @GetMapping
     fun hentJournalpost(
         @RequestParam(name = "journalpostId") journalpostId: String,
-    ): ResponseEntity<Ressurs<Journalpost>> {
-        return ResponseEntity.ok(success(journalpostService.hentJournalpost(journalpostId), "OK"))
-    }
+    ): ResponseEntity<Ressurs<Journalpost>> = ResponseEntity.ok(success(journalpostService.hentJournalpost(journalpostId), "OK"))
 
     @PostMapping
     fun hentJournalpostForBruker(
         @RequestBody journalposterForBrukerRequest: JournalposterForBrukerRequest,
-    ): ResponseEntity<Ressurs<List<Journalpost>>> {
-        return ResponseEntity.ok(success(journalpostService.finnJournalposter(journalposterForBrukerRequest), "OK"))
-    }
+    ): ResponseEntity<Ressurs<List<Journalpost>>> = ResponseEntity.ok(success(journalpostService.finnJournalposter(journalposterForBrukerRequest), "OK"))
 
     @PostMapping("temaer")
     fun hentJournalpostForBrukerOgTema(
         @RequestBody journalposterForVedleggRequest: JournalposterForVedleggRequest,
-    ): ResponseEntity<Ressurs<List<Journalpost>>> {
-        return ResponseEntity.ok(success(journalpostService.finnJournalposter(journalposterForVedleggRequest), "OK"))
-    }
+    ): ResponseEntity<Ressurs<List<Journalpost>>> = ResponseEntity.ok(success(journalpostService.finnJournalposter(journalposterForVedleggRequest), "OK"))
 
     @GetMapping("hentdokument/{journalpostId}/{dokumentInfoId}")
     fun hentDokument(
         @PathVariable journalpostId: String,
         @PathVariable dokumentInfoId: String,
         @RequestParam("variantFormat", required = false) variantFormat: String?,
-    ): ResponseEntity<Ressurs<ByteArray>> {
-        return ResponseEntity.ok(
+    ): ResponseEntity<Ressurs<ByteArray>> =
+        ResponseEntity.ok(
             success(
                 journalpostService.hentDokument(journalpostId, dokumentInfoId, variantFormat ?: "ARKIV"),
                 "OK",
             ),
         )
-    }
 
     companion object {
         private val LOG = LoggerFactory.getLogger(HentJournalpostController::class.java)

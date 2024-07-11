@@ -78,9 +78,7 @@ class ArbeidsfordelingService(
         return restClient.hentEnhet(geografiskTilknytningKode)
     }
 
-    fun hentNavKontor(enhetsId: String): NavKontorEnhet {
-        return restClient.hentNavkontor(enhetsId)
-    }
+    fun hentNavKontor(enhetsId: String): NavKontorEnhet = restClient.hentNavkontor(enhetsId)
 
     private fun utledGeografiskTilknytningKode(geografiskTilknytning: GeografiskTilknytningDto): String? {
         geografiskTilknytning.let {
@@ -97,8 +95,8 @@ class ArbeidsfordelingService(
     fun finnBehandlendeEnhetForPersonMedRelasjoner(
         personIdent: String,
         tema: Tema,
-    ): List<Enhet> {
-        return cacheManager.getValue("navEnhet", personIdent) {
+    ): List<Enhet> =
+        cacheManager.getValue("navEnhet", personIdent) {
             val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent, tema)
 
             val aktuellePersoner: List<PersonMedAdresseBeskyttelse> =
@@ -125,7 +123,6 @@ class ArbeidsfordelingService(
                 )
             restClient.finnBehandlendeEnhetMedBesteMatch(kriterier)
         }
-    }
 
     private fun finnEgneAnsatte(aktuellePersoner: List<PersonMedAdresseBeskyttelse>) =
         egenAnsattService.erEgenAnsatt(aktuellePersoner.map { it.personIdent }.toSet()).filter { it.value }.keys

@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpClientErrorException
 
 @Service
-class OrganisasjonService(private val organisasjonRestClient: OrganisasjonRestClient) {
+class OrganisasjonService(
+    private val organisasjonRestClient: OrganisasjonRestClient,
+) {
     @Cacheable("hentOrganisasjon")
     fun hentOrganisasjon(orgnr: String): Organisasjon {
         val organisasjonResponse = organisasjonRestClient.hentOrganisasjon(orgnr)
@@ -15,12 +17,11 @@ class OrganisasjonService(private val organisasjonRestClient: OrganisasjonRestCl
     }
 
     @Cacheable("validerOrganisasjon")
-    fun validerOrganisasjon(orgnr: String): Boolean {
-        return try {
+    fun validerOrganisasjon(orgnr: String): Boolean =
+        try {
             organisasjonRestClient.hentOrganisasjon(orgnr)
             true
         } catch (e: HttpClientErrorException.NotFound) {
             false
         }
-    }
 }

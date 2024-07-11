@@ -32,9 +32,11 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `skal korrekt behandle returobjekt`() {
         WireMock.stubFor(
-            WireMock.get(WireMock.urlEqualTo("/api/v1/medlemskapsunntak"))
+            WireMock
+                .get(WireMock.urlEqualTo("/api/v1/medlemskapsunntak"))
                 .willReturn(
-                    WireMock.aResponse()
+                    WireMock
+                        .aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody(gyldigOppgaveResponse("medlrespons.json")),
@@ -56,9 +58,11 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `skal kaste feil for ikke funnet`() {
         WireMock.stubFor(
-            WireMock.get(WireMock.urlEqualTo("/api/v1/medlemskapsunntak"))
+            WireMock
+                .get(WireMock.urlEqualTo("/api/v1/medlemskapsunntak"))
                 .willReturn(
-                    WireMock.aResponse()
+                    WireMock
+                        .aResponse()
                         .withStatus(404)
                         .withHeader("Content-Type", "application/json"),
                 ),
@@ -74,12 +78,11 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
-    private fun gyldigOppgaveResponse(filnavn: String): String {
-        return Files.readString(
+    private fun gyldigOppgaveResponse(filnavn: String): String =
+        Files.readString(
             ClassPathResource("medlemskap/$filnavn").file.toPath(),
             StandardCharsets.UTF_8,
         )
-    }
 
     companion object {
         private const val MEDLEMSKAP_URL = "/api/medlemskap/v3"

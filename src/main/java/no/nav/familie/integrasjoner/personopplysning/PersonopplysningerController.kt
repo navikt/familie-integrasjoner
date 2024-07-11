@@ -27,18 +27,20 @@ import org.springframework.web.client.HttpClientErrorException.Forbidden
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/personopplysning")
-class PersonopplysningerController(private val personopplysningerService: PersonopplysningerService) {
+class PersonopplysningerController(
+    private val personopplysningerService: PersonopplysningerService,
+) {
     @ExceptionHandler(HttpClientErrorException.NotFound::class)
-    fun handleRestClientResponseException(e: HttpClientErrorException.NotFound): ResponseEntity<Ressurs<Any>> {
-        return ResponseEntity.status(e.rawStatusCode)
+    fun handleRestClientResponseException(e: HttpClientErrorException.NotFound): ResponseEntity<Ressurs<Any>> =
+        ResponseEntity
+            .status(e.rawStatusCode)
             .body(failure("Feil mot personopplysning. ${e.rawStatusCode} Message=${e.message}", null))
-    }
 
     @ExceptionHandler(Forbidden::class)
-    fun handleRestClientResponseException(e: Forbidden): ResponseEntity<Ressurs<Any>> {
-        return ResponseEntity.status(e.rawStatusCode)
+    fun handleRestClientResponseException(e: Forbidden): ResponseEntity<Ressurs<Any>> =
+        ResponseEntity
+            .status(e.rawStatusCode)
             .body(ikkeTilgang("Ikke tilgang mot personopplysning ${e.message}"))
-    }
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/identer/{tema}"])
     fun hentIdenter(
@@ -49,9 +51,7 @@ class PersonopplysningerController(private val personopplysningerService: Person
             required = false,
             defaultValue = "false",
         ) medHistorikk: Boolean,
-    ): Ressurs<FinnPersonidenterResponse> {
-        return success(personopplysningerService.hentIdenter(ident.ident, tema, medHistorikk))
-    }
+    ): Ressurs<FinnPersonidenterResponse> = success(personopplysningerService.hentIdenter(ident.ident, tema, medHistorikk))
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["strengeste-adressebeskyttelse-for-person-med-relasjoner"])
     fun hentStrengesteAdressebeskyttelseForPersonMedRelasjoner(

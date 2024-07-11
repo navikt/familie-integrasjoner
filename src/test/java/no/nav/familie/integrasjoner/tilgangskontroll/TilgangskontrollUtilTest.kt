@@ -66,8 +66,8 @@ internal class TilgangskontrollUtilTest {
         fullmakt: ADRESSEBESKYTTELSEGRADERING? = null,
         barn: ADRESSEBESKYTTELSEGRADERING? = null,
         barnsForeldrer: ADRESSEBESKYTTELSEGRADERING? = null,
-    ): PersonMedRelasjoner {
-        return PersonMedRelasjoner(
+    ): PersonMedRelasjoner =
+        PersonMedRelasjoner(
             personIdent = "",
             adressebeskyttelse = adressebeskyttelse,
             sivilstand = lagPersonMedBeskyttelse(sivilstand, "sivilstand"),
@@ -75,7 +75,6 @@ internal class TilgangskontrollUtilTest {
             barn = lagPersonMedBeskyttelse(barn, "barn"),
             barnsForeldrer = lagPersonMedBeskyttelse(barnsForeldrer, "barnsForeldrer"),
         )
-    }
 
     private fun lagPersonMedBeskyttelse(
         sivilstand: ADRESSEBESKYTTELSEGRADERING?,

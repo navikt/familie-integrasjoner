@@ -5,5 +5,6 @@ import no.nav.familie.integrasjoner.client.rest.EgenAnsattRestClient
 import org.springframework.stereotype.Component
 
 @Component
-internal class EgenAnsattHelsesjekk(egenAnsattRestClient: EgenAnsattRestClient) :
-    AbstractHealthIndicator(egenAnsattRestClient, "helsesjekk.egenansatt")
+internal class EgenAnsattHelsesjekk(
+    egenAnsattRestClient: EgenAnsattRestClient,
+) : AbstractHealthIndicator(egenAnsattRestClient, "helsesjekk.egenansatt")

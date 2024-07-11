@@ -27,15 +27,23 @@ import java.net.URI
 class DokarkivRestClient(
     @Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
     @Qualifier("jwtBearerOboOgSts") private val restOperations: RestOperations,
-) :
-    AbstractPingableRestClient(restOperations, "dokarkiv.opprett") {
-    override val pingUri: URI = UriComponentsBuilder.fromUri(dokarkivUrl).path(PATH_PING).build().toUri()
+) : AbstractPingableRestClient(restOperations, "dokarkiv.opprett") {
+    override val pingUri: URI =
+        UriComponentsBuilder
+            .fromUri(dokarkivUrl)
+            .path(PATH_PING)
+            .build()
+            .toUri()
 
     private val ferdigstillJournalPostClient = FerdigstillJournalPostClient(restOperations, dokarkivUrl)
 
     fun lagJournalpostUri(ferdigstill: Boolean): URI =
         UriComponentsBuilder
-            .fromUri(dokarkivUrl).path(PATH_JOURNALPOST).query(QUERY_FERDIGSTILL).buildAndExpand(ferdigstill).toUri()
+            .fromUri(dokarkivUrl)
+            .path(PATH_JOURNALPOST)
+            .query(QUERY_FERDIGSTILL)
+            .buildAndExpand(ferdigstill)
+            .toUri()
 
     fun lagJournalpost(
         jp: OpprettJournalpostRequest,
@@ -55,7 +63,12 @@ class DokarkivRestClient(
         journalpostId: String,
         navIdent: String? = null,
     ): OppdaterJournalpostResponse {
-        val uri = UriComponentsBuilder.fromUri(dokarkivUrl).pathSegment(PATH_JOURNALPOST, journalpostId).build().toUri()
+        val uri =
+            UriComponentsBuilder
+                .fromUri(dokarkivUrl)
+                .pathSegment(PATH_JOURNALPOST, journalpostId)
+                .build()
+                .toUri()
         try {
             return putForEntity(uri, jp, headers(navIdent))
         } catch (e: RuntimeException) {
@@ -93,12 +106,16 @@ class DokarkivRestClient(
      * Privat klasse for å gi egne metrics for ferdigstilling av journalpost.
      *
      */
-    private class FerdigstillJournalPostClient(restOperations: RestOperations, private val dokarkivUrl: URI) :
-        AbstractRestClient(restOperations, "dokarkiv.ferdigstill") {
-        private fun ferdigstillJournalpostUri(journalpostId: String): URI {
-            return UriComponentsBuilder
-                .fromUri(dokarkivUrl).path(String.format(PATH_FERDIGSTILL_JOURNALPOST, journalpostId)).build().toUri()
-        }
+    private class FerdigstillJournalPostClient(
+        restOperations: RestOperations,
+        private val dokarkivUrl: URI,
+    ) : AbstractRestClient(restOperations, "dokarkiv.ferdigstill") {
+        private fun ferdigstillJournalpostUri(journalpostId: String): URI =
+            UriComponentsBuilder
+                .fromUri(dokarkivUrl)
+                .path(String.format(PATH_FERDIGSTILL_JOURNALPOST, journalpostId))
+                .build()
+                .toUri()
 
         fun ferdigstillJournalpost(
             journalpostId: String,
@@ -131,8 +148,8 @@ class DokarkivRestClient(
 
         private val NAVIDENT_REGEX = """^[a-zA-Z]\d{6}$""".toRegex()
 
-        fun headers(navIdent: String?): HttpHeaders {
-            return HttpHeaders().apply {
+        fun headers(navIdent: String?): HttpHeaders =
+            HttpHeaders().apply {
                 add(NAV_CALL_ID, MDCOperations.getCallId())
                 if (!navIdent.isNullOrEmpty()) {
                     if (NAVIDENT_REGEX.matches(navIdent)) {
@@ -142,6 +159,5 @@ class DokarkivRestClient(
                     }
                 }
             }
-        }
     }
 }

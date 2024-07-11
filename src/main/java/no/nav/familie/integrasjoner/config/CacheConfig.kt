@@ -23,7 +23,9 @@ class CacheConfig {
                         .initialCapacity(100)
                         .maximumSize(1000)
                         .expireAfterWrite(2, TimeUnit.HOURS)
-                        .recordStats().build<Any, Any>().asMap()
+                        .recordStats()
+                        .build<Any, Any>()
+                        .asMap()
                 return ConcurrentMapCache(name, concurrentMap, true)
             }
         }

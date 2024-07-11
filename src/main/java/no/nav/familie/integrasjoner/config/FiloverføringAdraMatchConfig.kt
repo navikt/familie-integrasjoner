@@ -14,9 +14,7 @@ class FiloverføringAdraMatchConfig(
 ) {
     val privateKeyDecoded = base64Decode(privateKey)
 
-    private fun base64Decode(encoded: String): ByteArray {
-        return Base64.getDecoder().decode(encoded)
-    }
+    private fun base64Decode(encoded: String): ByteArray = Base64.getDecoder().decode(encoded)
 
     companion object {
         const val JSCH_CHANNEL_TYPE_SFTP = "sftp"

@@ -18,23 +18,19 @@ import org.springframework.web.bind.annotation.RestController
 @Unprotected
 @RestController
 @RequestMapping(path = ["/api/kodeverk"], produces = [MediaType.APPLICATION_JSON_VALUE])
-class KodeverkController(private val kodeverkService: CachedKodeverkService) {
+class KodeverkController(
+    private val kodeverkService: CachedKodeverkService,
+) {
     @GetMapping("/poststed")
-    fun hentPoststed(): ResponseEntity<Ressurs<KodeverkDto>> {
-        return ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentPostnummerMedHistorikk()))
-    }
+    fun hentPoststed(): ResponseEntity<Ressurs<KodeverkDto>> = ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentPostnummerMedHistorikk()))
 
     @GetMapping("/landkoder")
-    fun hentLandkoder(): ResponseEntity<Ressurs<KodeverkDto>> {
-        return ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentLandkoderMedHistorikk()))
-    }
+    fun hentLandkoder(): ResponseEntity<Ressurs<KodeverkDto>> = ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentLandkoderMedHistorikk()))
 
     @GetMapping("/landkoder/{landkode}")
     fun hentLandkod(
         @PathVariable landkode: String,
-    ): ResponseEntity<Ressurs<String>> {
-        return ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentLandkoder().getOrDefault(landkode, "")))
-    }
+    ): ResponseEntity<Ressurs<String>> = ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentLandkoder().getOrDefault(landkode, "")))
 
     @GetMapping("/landkoderISO2")
     fun hentLandkoderISO2(): ResponseEntity<Ressurs<Map<String, String>>> =

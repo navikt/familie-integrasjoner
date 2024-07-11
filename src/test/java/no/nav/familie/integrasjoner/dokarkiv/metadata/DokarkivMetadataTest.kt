@@ -28,7 +28,8 @@ internal class DokarkivMetadataTest {
     }
 
     private fun hentAlleDokumentMedadataKlasser() =
-        Dokumentmetadata::class.sealedSubclasses
+        Dokumentmetadata::class
+            .sealedSubclasses
             .hentNøstedeKlasser()
             .mapNotNull { it.objectInstance }
 

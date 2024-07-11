@@ -20,8 +20,7 @@ import java.net.URI
 class RegoppslagRestClient(
     @Value("\${REGOPPSLAG_URL}") private val regoppslagUri: URI,
     @Qualifier("jwtBearer") private val restTemplate: RestOperations,
-) :
-    AbstractPingableRestClient(restTemplate, "regoppslag") {
+) : AbstractPingableRestClient(restTemplate, "regoppslag") {
     override val pingUri: URI = UriUtil.uri(regoppslagUri, PATH_PING)
 
     val uri = UriUtil.uri(regoppslagUri, PATH_POSTADRESSE)
@@ -29,8 +28,8 @@ class RegoppslagRestClient(
     fun hentPostadresse(
         ident: String,
         tema: Tema,
-    ): PostadresseResponse? {
-        return try {
+    ): PostadresseResponse? =
+        try {
             postForEntity(
                 uri,
                 payload =
@@ -48,7 +47,6 @@ class RegoppslagRestClient(
                 else -> throw e
             }
         }
-    }
 
     private fun httpHeaders(): HttpHeaders =
         HttpHeaders().apply {

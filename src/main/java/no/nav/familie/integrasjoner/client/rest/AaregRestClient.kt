@@ -24,8 +24,7 @@ class AaregRestClient(
     private val aaregUrl: URI,
     @Qualifier("sts") restOperations: RestOperations,
     private val stsRestClient: StsRestClient,
-) :
-    AbstractPingableRestClient(restOperations, "aareg") {
+) : AbstractPingableRestClient(restOperations, "aareg") {
     // NAV_CALLID og NAV_CONSUMER_ID trengs for kall til ping
     override val pingUri: URI = URI.create("$aaregUrl/$PATH_PING")
 
@@ -34,12 +33,14 @@ class AaregRestClient(
         ansettelsesperiodeFom: LocalDate,
     ): List<Arbeidsforhold> {
         val uri =
-            UriComponentsBuilder.fromUri(aaregUrl)
+            UriComponentsBuilder
+                .fromUri(aaregUrl)
                 .path(PATH_ARBEIDSFORHOLD)
                 .queryParam("sporingsinformasjon", "false")
                 .queryParam("ansettelsesperiodeFom", ansettelsesperiodeFom.toString())
                 .queryParam("historikk", "true")
-                .build().toUri()
+                .build()
+                .toUri()
 
         return try {
             getForEntity(uri, httpHeaders(personIdent))
@@ -59,13 +60,12 @@ class AaregRestClient(
         }
     }
 
-    private fun httpHeaders(personIdent: String): HttpHeaders {
-        return HttpHeaders().apply {
+    private fun httpHeaders(personIdent: String): HttpHeaders =
+        HttpHeaders().apply {
             add(NavHttpHeaders.NAV_PERSONIDENT.asString(), personIdent)
             add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             add("Nav-Consumer-Token", "Bearer ${stsRestClient.systemOIDCToken}")
         }
-    }
 
     companion object {
         private const val PATH_PING = "ping"

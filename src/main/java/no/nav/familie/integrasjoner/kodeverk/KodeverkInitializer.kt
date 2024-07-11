@@ -9,7 +9,9 @@ import org.springframework.stereotype.Component
 
 @Component
 @Profile("!dev & !integrasjonstest")
-class KodeverkInitializer(private val cachedKodeverkService: CachedKodeverkService) : ApplicationListener<ApplicationReadyEvent> {
+class KodeverkInitializer(
+    private val cachedKodeverkService: CachedKodeverkService,
+) : ApplicationListener<ApplicationReadyEvent> {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @Scheduled(cron = "0 0 1 * * *")

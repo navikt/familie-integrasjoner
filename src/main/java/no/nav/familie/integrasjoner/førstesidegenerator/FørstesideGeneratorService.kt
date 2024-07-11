@@ -14,7 +14,9 @@ import org.springframework.web.context.annotation.ApplicationScope
 
 @Service
 @ApplicationScope
-class FørstesideGeneratorService(private val førstesidegeneratorClient: FørstesidegeneratorClient) {
+class FørstesideGeneratorService(
+    private val førstesidegeneratorClient: FørstesidegeneratorClient,
+) {
     fun genererForside(
         førsteside: Førsteside,
         brukerId: String,

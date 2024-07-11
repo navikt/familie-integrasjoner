@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class AaregService(private val aaregRestClient: AaregRestClient) {
+class AaregService(
+    private val aaregRestClient: AaregRestClient,
+) {
     fun hentArbeidsforhold(
         personIdent: String,
         ansettelsesperiodeFom: LocalDate,
-    ): List<Arbeidsforhold> {
-        return aaregRestClient.hentArbeidsforhold(personIdent, ansettelsesperiodeFom)
-    }
+    ): List<Arbeidsforhold> = aaregRestClient.hentArbeidsforhold(personIdent, ansettelsesperiodeFom)
 }

@@ -12,15 +12,18 @@ import java.net.URI
 class EgenAnsattRestClient(
     @Value("\${EGEN_ANSATT_URL}") private val uri: URI,
     @Qualifier("noAuthorize") private val restTemplate: RestOperations,
-) :
-    AbstractPingableRestClient(restTemplate, "egenansatt") {
+) : AbstractPingableRestClient(restTemplate, "egenansatt") {
     override val pingUri: URI = UriUtil.uri(uri, PATH_PING)
     private val egenAnsattUri: URI = UriUtil.uri(uri, "skjermet")
     private val egenAnsattBulkUri: URI = UriUtil.uri(uri, "skjermetBulk")
 
-    data class SkjermetDataRequestDTO(val personident: String)
+    data class SkjermetDataRequestDTO(
+        val personident: String,
+    )
 
-    data class SkjermetDataBolkRequestDTO(val personidenter: Set<String>)
+    data class SkjermetDataBolkRequestDTO(
+        val personidenter: Set<String>,
+    )
 
     fun erEgenAnsatt(personIdent: String): Boolean = postForEntity(egenAnsattUri, SkjermetDataRequestDTO(personIdent))
 

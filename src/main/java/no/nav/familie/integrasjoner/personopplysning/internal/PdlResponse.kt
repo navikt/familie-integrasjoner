@@ -8,49 +8,45 @@ data class PdlResponse<T>(
     val errors: List<PdlError>?,
     val extensions: PdlExtensions?,
 ) {
-    fun harFeil(): Boolean {
-        return errors != null && errors.isNotEmpty()
-    }
+    fun harFeil(): Boolean = errors != null && errors.isNotEmpty()
 
-    fun harAdvarsel(): Boolean {
-        return !extensions?.warnings.isNullOrEmpty()
-    }
+    fun harAdvarsel(): Boolean = !extensions?.warnings.isNullOrEmpty()
 
-    fun errorMessages(): String {
-        return errors?.joinToString { it -> it.message } ?: ""
-    }
+    fun errorMessages(): String = errors?.joinToString { it -> it.message } ?: ""
 
-    fun harNotFoundFeil(): Boolean {
-        return errors?.any { it.extensions?.notFound() == true } ?: false
-    }
+    fun harNotFoundFeil(): Boolean = errors?.any { it.extensions?.notFound() == true } ?: false
 
-    fun harUnauthorizedFeil(): Boolean {
-        return errors?.any { it.extensions?.unauthorized() == true } ?: false
-    }
+    fun harUnauthorizedFeil(): Boolean = errors?.any { it.extensions?.unauthorized() == true } ?: false
 }
 
-data class PersonDataBolk<T>(val ident: String, val code: String, val person: T?)
+data class PersonDataBolk<T>(
+    val ident: String,
+    val code: String,
+    val person: T?,
+)
 
-data class PersonBolk<T>(val personBolk: List<PersonDataBolk<T>>)
+data class PersonBolk<T>(
+    val personBolk: List<PersonDataBolk<T>>,
+)
 
 data class PdlBolkResponse<T>(
     val data: PersonBolk<T>?,
     val errors: List<PdlError>?,
     val extensions: PdlExtensions?,
 ) {
-    fun errorMessages(): String {
-        return errors?.joinToString { it -> it.message } ?: ""
-    }
+    fun errorMessages(): String = errors?.joinToString { it -> it.message } ?: ""
 
-    fun harAdvarsel(): Boolean {
-        return !extensions?.warnings.isNullOrEmpty()
-    }
+    fun harAdvarsel(): Boolean = !extensions?.warnings.isNullOrEmpty()
 }
 
-data class PdlPersonMedAdressebeskyttelse(val person: PdlAdressebeskyttelse?)
+data class PdlPersonMedAdressebeskyttelse(
+    val person: PdlAdressebeskyttelse?,
+)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class PdlAdressebeskyttelse(val adressebeskyttelse: List<Adressebeskyttelse>)
+data class PdlAdressebeskyttelse(
+    val adressebeskyttelse: List<Adressebeskyttelse>,
+)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlPersonMedRelasjonerOgAdressebeskyttelse(
@@ -60,7 +56,9 @@ data class PdlPersonMedRelasjonerOgAdressebeskyttelse(
     val adressebeskyttelse: List<Adressebeskyttelse>,
 )
 
-data class PdlPerson(val person: PdlPersonData?)
+data class PdlPerson(
+    val person: PdlPersonData?,
+)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlPersonData(
@@ -74,15 +72,25 @@ data class PdlError(
     val extensions: PdlErrorExtensions?,
 )
 
-data class PdlErrorExtensions(val code: String?, val details: Any?) {
+data class PdlErrorExtensions(
+    val code: String?,
+    val details: Any?,
+) {
     fun notFound() = code == "not_found"
 
     fun unauthorized() = code == "unauthorized"
 }
 
-data class PdlExtensions(val warnings: List<PdlWarning>?)
+data class PdlExtensions(
+    val warnings: List<PdlWarning>?,
+)
 
-data class PdlWarning(val details: Any?, val id: String?, val message: String?, val query: String?)
+data class PdlWarning(
+    val details: Any?,
+    val id: String?,
+    val message: String?,
+    val query: String?,
+)
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PdlNavn(
@@ -90,12 +98,11 @@ data class PdlNavn(
     val mellomnavn: String? = null,
     val etternavn: String,
 ) {
-    fun fulltNavn(): String {
-        return when (mellomnavn) {
+    fun fulltNavn(): String =
+        when (mellomnavn) {
             null -> "$fornavn $etternavn"
             else -> "$fornavn $mellomnavn $etternavn"
         }
-    }
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -116,7 +123,9 @@ data class Sivilstand(
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-data class Fullmakt(val motpartsPersonident: String)
+data class Fullmakt(
+    val motpartsPersonident: String,
+)
 
 enum class KJØNN {
     MANN,
@@ -131,7 +140,9 @@ enum class FORELDERBARNRELASJONROLLE {
     MOR,
 }
 
-enum class ADRESSEBESKYTTELSEGRADERING(val diskresjonskode: String?) {
+enum class ADRESSEBESKYTTELSEGRADERING(
+    val diskresjonskode: String?,
+) {
     STRENGT_FORTROLIG_UTLAND("SPSF"), // Kode 19
     FORTROLIG("SPFO"), // Kode 7
     STRENGT_FORTROLIG("SPSF"), // Kode 6

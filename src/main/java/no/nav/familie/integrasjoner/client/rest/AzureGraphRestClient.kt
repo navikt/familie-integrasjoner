@@ -16,47 +16,51 @@ import java.net.URI
 class AzureGraphRestClient(
     @Qualifier("jwtBearer") restTemplate: RestOperations,
     @Value("\${AAD_GRAPH_API_URI}") private val aadGraphURI: URI,
-) :
-    AbstractRestClient(restTemplate, "AzureGraph") {
-    val saksbehandlerUri: URI = UriComponentsBuilder.fromUri(aadGraphURI).pathSegment(ME).build().toUri()
+) : AbstractRestClient(restTemplate, "AzureGraph") {
+    val saksbehandlerUri: URI =
+        UriComponentsBuilder
+            .fromUri(aadGraphURI)
+            .pathSegment(ME)
+            .build()
+            .toUri()
 
     fun saksbehandlerUri(id: String): URI =
-        UriComponentsBuilder.fromUri(aadGraphURI)
+        UriComponentsBuilder
+            .fromUri(aadGraphURI)
             .pathSegment(USERS, id)
             .queryParam("\$select", FELTER)
             .build()
             .toUri()
 
     fun saksbehandlersøkUri(navIdent: String): URI =
-        UriComponentsBuilder.fromUri(aadGraphURI)
+        UriComponentsBuilder
+            .fromUri(aadGraphURI)
             .pathSegment(USERS)
             .queryParam("\$search", "\"onPremisesSamAccountName:{navIdent}\"")
             .queryParam("\$select", FELTER)
             .buildAndExpand(navIdent)
             .toUri()
 
-    val grupperUri: URI = UriComponentsBuilder.fromUri(aadGraphURI).pathSegment(ME, GRUPPER).build().toUri()
+    val grupperUri: URI =
+        UriComponentsBuilder
+            .fromUri(aadGraphURI)
+            .pathSegment(ME, GRUPPER)
+            .build()
+            .toUri()
 
-    fun finnSaksbehandler(navIdent: String): AzureAdBrukere {
-        return getForEntity(
+    fun finnSaksbehandler(navIdent: String): AzureAdBrukere =
+        getForEntity(
             saksbehandlersøkUri(navIdent),
             HttpHeaders().apply {
                 add("ConsistencyLevel", "eventual")
             },
         )
-    }
 
-    fun hentSaksbehandler(): AzureAdBruker {
-        return getForEntity(saksbehandlerUri)
-    }
+    fun hentSaksbehandler(): AzureAdBruker = getForEntity(saksbehandlerUri)
 
-    fun hentSaksbehandler(id: String): AzureAdBruker {
-        return getForEntity(saksbehandlerUri(id))
-    }
+    fun hentSaksbehandler(id: String): AzureAdBruker = getForEntity(saksbehandlerUri(id))
 
-    fun hentGrupper(): Grupper {
-        return getForEntity(grupperUri)
-    }
+    fun hentGrupper(): Grupper = getForEntity(grupperUri)
 
     companion object {
         private const val ME = "me"

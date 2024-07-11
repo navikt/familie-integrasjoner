@@ -29,7 +29,9 @@ import org.springframework.web.util.UriComponentsBuilder
 @ActiveProfiles("integrasjonstest", "mock-personopplysninger", "mock-oauth")
 @ExtendWith(MockServerExtension::class)
 @MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
-class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpringRunnerTest() {
+class PersonopplysningerControllerTest(
+    val client: ClientAndServer,
+) : OppslagSpringRunnerTest() {
     private val testLogger = LoggerFactory.getLogger(PersonopplysningerControllerTest::class.java) as Logger
 
     private lateinit var uriHentIdenter: String
@@ -40,27 +42,32 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
     fun setUp() {
         client.reset()
         testLogger.addAppender(listAppender)
-        headers.apply {
-            add("Nav-Personident", "12345678901")
-        }.setBearerAuth(lagToken("testbruker"))
+        headers
+            .apply {
+                add("Nav-Personident", "12345678901")
+            }.setBearerAuth(lagToken("testbruker"))
         uriHentIdenter = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}v1/identer/$TEMA").toUriString()
         uriHentAktørId = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}aktorId/$TEMA").toUriString()
         uriHentStrengesteGradering =
-            UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}strengeste-adressebeskyttelse-for-person-med-relasjoner")
+            UriComponentsBuilder
+                .fromHttpUrl("${localhost(PDL_BASE_URL)}strengeste-adressebeskyttelse-for-person-med-relasjoner")
                 .toUriString()
     }
 
     @Test
     fun `hent identer til en person`() {
         val ident = "12345678901"
-        client.`when`(
-            HttpRequest.request()
-                .withMethod("POST")
-                .withPath("/rest/pdl/graphql")
-                .withHeader("Tema", TEMA),
-        )
-            .respond(
-                HttpResponse.response().withBody(readfile("pdlIdenterResponse.json"))
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("POST")
+                    .withPath("/rest/pdl/graphql")
+                    .withHeader("Tema", TEMA),
+            ).respond(
+                HttpResponse
+                    .response()
+                    .withBody(readfile("pdlIdenterResponse.json"))
                     .withHeaders(Header("Content-Type", "application/json")),
             )
         val response =
@@ -72,7 +79,13 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         assertThat(response.body?.data!!.identer).hasSize(1)
-        assertThat(response.body?.data!!.identer.first().personIdent).isEqualTo(ident)
+        assertThat(
+            response.body
+                ?.data!!
+                .identer
+                .first()
+                .personIdent,
+        ).isEqualTo(ident)
     }
 
     @Test
@@ -95,48 +108,52 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
         persongradering: String,
         barngradering: String,
     ) {
-        client.`when`(
-            HttpRequest.request()
-                .withMethod("POST")
-                .withPath("/rest/pdl/graphql")
-                .withBody(gyldigRequestIdentListe("hentpersoner-relasjoner-adressebeskyttelse.graphql"))
-                .withHeader("Tema", "ENF"),
-        )
-            .respond(
-                HttpResponse.response().withBody(
-                    readfile("pdlPersonMedRelasjonerOkResponse.json").replace("IDENT-PLACEHOLDER", ident)
-                        .replace("GRADERING-PLACEHOLDER", persongradering),
-                )
-                    .withHeaders(Header("Content-Type", "application/json")),
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("POST")
+                    .withPath("/rest/pdl/graphql")
+                    .withBody(gyldigRequestIdentListe("hentpersoner-relasjoner-adressebeskyttelse.graphql"))
+                    .withHeader("Tema", "ENF"),
+            ).respond(
+                HttpResponse
+                    .response()
+                    .withBody(
+                        readfile("pdlPersonMedRelasjonerOkResponse.json")
+                            .replace("IDENT-PLACEHOLDER", ident)
+                            .replace("GRADERING-PLACEHOLDER", persongradering),
+                    ).withHeaders(Header("Content-Type", "application/json")),
             )
 
-        client.`when`(
-            HttpRequest.request()
-                .withMethod("POST")
-                .withPath("/rest/pdl/graphql")
-                .withBody(
-                    gyldigRequestIdentListe(
-                        "hentpersoner-relasjoner-adressebeskyttelse.graphql",
-                        ident = barnsIdent,
-                    ),
-                )
-                .withHeader("Tema", "ENF"),
-        )
-            .respond(
-                HttpResponse.response()
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("POST")
+                    .withPath("/rest/pdl/graphql")
                     .withBody(
-                        readfile("pdlPersonMedRelasjonerOkResponse.json").replace("IDENT-PLACEHOLDER", barnsIdent)
+                        gyldigRequestIdentListe(
+                            "hentpersoner-relasjoner-adressebeskyttelse.graphql",
+                            ident = barnsIdent,
+                        ),
+                    ).withHeader("Tema", "ENF"),
+            ).respond(
+                HttpResponse
+                    .response()
+                    .withBody(
+                        readfile("pdlPersonMedRelasjonerOkResponse.json")
+                            .replace("IDENT-PLACEHOLDER", barnsIdent)
                             .replace("GRADERING-PLACEHOLDER", barngradering),
-                    )
-                    .withHeaders(Header("Content-Type", "application/json")),
+                    ).withHeaders(Header("Content-Type", "application/json")),
             )
     }
 
     private fun gyldigRequestIdentListe(
         filnavn: String,
         ident: String = "12345678901",
-    ): String {
-        return readfile("pdlGyldigRequestIdentListe.json")
+    ): String =
+        readfile("pdlGyldigRequestIdentListe.json")
             .replace(
                 "IDENT-PLACEHOLDER",
                 ident,
@@ -144,11 +161,8 @@ class PersonopplysningerControllerTest(val client: ClientAndServer) : OppslagSpr
                 "GRAPHQL-PLACEHOLDER",
                 readfile(filnavn).graphqlCompatible(),
             )
-    }
 
-    private fun readfile(filnavn: String): String {
-        return this::class.java.getResource("/pdl/$filnavn").readText()
-    }
+    private fun readfile(filnavn: String): String = this::class.java.getResource("/pdl/$filnavn").readText()
 
     companion object {
         const val PDL_BASE_URL = "/api/personopplysning/"

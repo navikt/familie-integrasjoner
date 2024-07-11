@@ -47,12 +47,12 @@ class TilgangskontrollServiceTest {
             .returns(listOf("bob"))
 
         assertThat(
-            tilgangskontrollService.sjekkTilgang(
-                "123",
-                saksbehandler,
-            ).harTilgang,
-        )
-            .isFalse
+            tilgangskontrollService
+                .sjekkTilgang(
+                    "123",
+                    saksbehandler,
+                ).harTilgang,
+        ).isFalse
     }
 
     @Test
@@ -151,12 +151,11 @@ class TilgangskontrollServiceTest {
             .isTrue
     }
 
-    private fun personMedAdressebeskyttelse(adressebeskyttelsegradering: ADRESSEBESKYTTELSEGRADERING?): Person {
-        return Person(
+    private fun personMedAdressebeskyttelse(adressebeskyttelsegradering: ADRESSEBESKYTTELSEGRADERING?): Person =
+        Person(
             navn = "Navn Navnesen",
             adressebeskyttelseGradering = adressebeskyttelsegradering,
         )
-    }
 
     companion object {
         private const val GRUPPE_EGEN_ANSATT = "utvidetTilgang1"

@@ -12,7 +12,5 @@ class SkyggesakTestConfig {
     @Bean
     @Profile("mock-sak")
     @Primary
-    fun skyggesakMockRestClient(): SkyggesakRestClient {
-        return mockk(relaxed = true)
-    }
+    fun skyggesakMockRestClient(): SkyggesakRestClient = mockk(relaxed = true)
 }

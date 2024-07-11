@@ -16,30 +16,30 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/aktoer")
-class AktørController(private val aktørService: AktørService) {
+class AktørController(
+    private val aktørService: AktørService,
+) {
     @PostMapping("v2/{tema}")
     fun finnAktørIdForPersonIdent(
         @RequestBody(required = true) ident: Ident,
         @PathVariable tema: Tema,
-    ): ResponseEntity<Ressurs<Map<String, String>>> {
-        return ResponseEntity.ok(
+    ): ResponseEntity<Ressurs<Map<String, String>>> =
+        ResponseEntity.ok(
             success(
                 mapOf("aktørId" to aktørService.getAktørIdFraPdl(ident.ident, tema)),
                 "Hent aktør for personident OK",
             ),
         )
-    }
 
     @PostMapping("v2/fraaktorid/{tema}")
     fun finnPersonIdentForAktørId(
         @RequestBody(required = true) aktørId: String,
         @PathVariable tema: Tema,
-    ): ResponseEntity<Ressurs<Map<String, String>>> {
-        return ResponseEntity.ok(
+    ): ResponseEntity<Ressurs<Map<String, String>>> =
+        ResponseEntity.ok(
             success(
                 mapOf("personIdent" to aktørService.getPersonIdentFraPdl(AktørId(aktørId), tema)),
                 "Hent aktør for personident OK",
             ),
         )
-    }
 }

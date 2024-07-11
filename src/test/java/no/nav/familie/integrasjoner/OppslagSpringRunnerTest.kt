@@ -44,25 +44,20 @@ abstract class OppslagSpringRunnerTest {
 
     private fun clearCaches() {
         listOf(cacheManager).forEach {
-            it.cacheNames.mapNotNull { cacheName -> it.getCache(cacheName) }
+            it.cacheNames
+                .mapNotNull { cacheName -> it.getCache(cacheName) }
                 .forEach { cache -> cache.clear() }
         }
     }
 
-    protected fun getPort(): String {
-        return port.toString()
-    }
+    protected fun getPort(): String = port.toString()
 
-    protected fun localhost(uri: String): String {
-        return LOCALHOST + getPort() + uri
-    }
+    protected fun localhost(uri: String): String = LOCALHOST + getPort() + uri
 
     protected fun url(
         baseUrl: String,
         uri: String,
-    ): String {
-        return baseUrl + uri
-    }
+    ): String = baseUrl + uri
 
     protected val lokalTestToken: String
         get() {
@@ -73,24 +68,25 @@ abstract class OppslagSpringRunnerTest {
         val clientId = UUID.randomUUID().toString()
         val brukerId = UUID.randomUUID().toString()
         val issuerId = "azuread"
-        return mockOAuth2Server.issueToken(
-            issuerId = issuerId,
-            clientId = clientId,
-            DefaultOAuth2TokenCallback(
+        return mockOAuth2Server
+            .issueToken(
                 issuerId = issuerId,
-                subject = brukerId,
-                audience = listOf("aud-localhost"),
-                claims =
-                    mapOf(
-                        "oid" to brukerId,
-                        "azp" to clientId,
-                        "name" to saksbehandler,
-                        "NAVident" to saksbehandler,
-                        "groups" to emptyList<String>(),
-                    ),
-                expiry = 3600,
-            ),
-        ).serialize()
+                clientId = clientId,
+                DefaultOAuth2TokenCallback(
+                    issuerId = issuerId,
+                    subject = brukerId,
+                    audience = listOf("aud-localhost"),
+                    claims =
+                        mapOf(
+                            "oid" to brukerId,
+                            "azp" to clientId,
+                            "name" to saksbehandler,
+                            "NAVident" to saksbehandler,
+                            "groups" to emptyList<String>(),
+                        ),
+                    expiry = 3600,
+                ),
+            ).serialize()
     }
 
     companion object {

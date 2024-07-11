@@ -23,16 +23,14 @@ import java.net.URI
 class SafHentDokumentRestClient(
     @Value("\${SAF_URL}") safBaseUrl: URI,
     @Qualifier("jwtBearer") val restTemplate: RestOperations,
-) :
-    AbstractRestClient(restTemplate, "saf.journalpost") {
+) : AbstractRestClient(restTemplate, "saf.journalpost") {
     private val safHentdokumentUri = UriComponentsBuilder.fromUri(safBaseUrl).path(PATH_HENT_DOKUMENT)
 
-    private fun httpHeaders(): HttpHeaders {
-        return HttpHeaders().apply {
+    private fun httpHeaders(): HttpHeaders =
+        HttpHeaders().apply {
             accept = listOf(MediaType.ALL)
             add(NAV_CALL_ID, MDCOperations.getCallId())
         }
-    }
 
     fun hentDokument(
         journalpostId: String,

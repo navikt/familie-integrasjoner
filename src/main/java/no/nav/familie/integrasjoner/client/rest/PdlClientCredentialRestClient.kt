@@ -23,8 +23,7 @@ import java.net.URI
 class PdlClientCredentialRestClient(
     @Value("\${PDL_URL}") pdlBaseUrl: URI,
     @Qualifier("clientCredential") private val restTemplate: RestOperations,
-) :
-    AbstractRestClient(restTemplate, "pdl.personinfo.cc") {
+) : AbstractRestClient(restTemplate, "pdl.personinfo.cc") {
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
 
     fun hentPersonMedRelasjonerOgAdressebeskyttelse(
@@ -51,7 +50,11 @@ class PdlClientCredentialRestClient(
             throw PdlRequestException("Data er null fra PDL -  ${T::class}. Se secure logg for detaljer.")
         }
 
-        val feil = pdlResponse.data.personBolk.filter { it.code != "ok" }.map { it.ident to it.code }.toMap()
+        val feil =
+            pdlResponse.data.personBolk
+                .filter { it.code != "ok" }
+                .map { it.ident to it.code }
+                .toMap()
         if (feil.isNotEmpty()) {
             secureLogger.error("Feil ved henting av ${T::class} fra PDL: $feil")
             throw PdlRequestException("Feil ved henting av ${T::class} fra PDL. Se secure logg for detaljer.")

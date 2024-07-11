@@ -5,7 +5,9 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
 @Service
-class EgenAnsattService(private val egenAnsattRestClient: EgenAnsattRestClient) {
+class EgenAnsattService(
+    private val egenAnsattRestClient: EgenAnsattRestClient,
+) {
     @Cacheable("erEgenAnsatt")
     fun erEgenAnsatt(personIdent: String): Boolean = egenAnsattRestClient.erEgenAnsatt(personIdent)
 

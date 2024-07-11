@@ -189,8 +189,8 @@ internal class CachedTilgangskontrollServiceTest {
         fullmakt: ADRESSEBESKYTTELSEGRADERING? = null,
         barn: ADRESSEBESKYTTELSEGRADERING? = null,
         barnsForeldrer: ADRESSEBESKYTTELSEGRADERING? = null,
-    ): PersonMedRelasjoner {
-        return PersonMedRelasjoner(
+    ): PersonMedRelasjoner =
+        PersonMedRelasjoner(
             personIdent = "",
             adressebeskyttelse = adressebeskyttelse,
             sivilstand = lagPersonMedBeskyttelse(sivilstand, "sivilstand"),
@@ -198,7 +198,6 @@ internal class CachedTilgangskontrollServiceTest {
             barn = lagPersonMedBeskyttelse(barn, "barn"),
             barnsForeldrer = lagPersonMedBeskyttelse(barnsForeldrer, "barnsForeldrer"),
         )
-    }
 
     private fun lagPersonMedBeskyttelse(
         sivilstand: ADRESSEBESKYTTELSEGRADERING?,

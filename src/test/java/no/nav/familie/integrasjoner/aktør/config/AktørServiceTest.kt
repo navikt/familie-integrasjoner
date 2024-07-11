@@ -49,9 +49,7 @@ class AktørServiceTest {
 
         @Bean
         @Primary
-        fun cacheManager(): CacheManager {
-            return cacheManagerToBe
-        }
+        fun cacheManager(): CacheManager = cacheManagerToBe
 
         @Bean
         @Primary
