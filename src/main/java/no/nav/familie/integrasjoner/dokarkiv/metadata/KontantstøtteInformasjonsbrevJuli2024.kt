@@ -15,7 +15,7 @@ object KontantstøtteInformasjonsbrevJuli2024 : Dokumentmetadata {
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.KONTANTSTØTTE_INFORMASJONSBREV_LOVENDRING_JULI_2024
-    override val tittel: String = "Kontantstøtte – viktig informasjon"
+    override val tittel: String = "Kontantstøtte – overgangsordning"
     override val brevkode: String = "kontantstoette-infobrev-juli-2024"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
