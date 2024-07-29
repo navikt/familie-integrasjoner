@@ -110,6 +110,7 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata =
         Dokumenttype.KONTANTSTØTTE_INNHENTE_OPPLYSNINGER_ETTER_SØKNAD_I_SED -> KontantstøtteInnhenteOpplysningerEtterSøknadISedMetadata
         Dokumenttype.KONTANTSTØTTE_INNHENTE_OPPLYSNINGER -> KontantstøtteInnhenteOpplysningerMetadata
         Dokumenttype.KONTANTSTØTTE_INNHENTE_OPPLYSNINGER_OG_INFORMASJON_OM_AT_ANNEN_FORELDER_MED_SELVSTENDIG_RETT_HAR_SØKT -> KontantstøtteInnhenteOpplysningerOgInformasjonOmAtAnnenForelderMedSelvstendigRettHarSøktMetadata
+        Dokumenttype.KONTANTSTØTTE_INFORMASJONSBREV_LOVENDRING_JULI_2024 -> KontantstøtteInformasjonsbrevJuli2024
         Dokumenttype.KONTANTSTØTTE_VARSEL_ANNEN_FORELDER_MED_SELVSTENDIG_RETT_SØKT -> KontantstøtteVarselAnnenForelderMedSelvstendigRettSøkt
         Dokumenttype.KONTANTSTØTTE_OPPHØR -> KontantstøtteOpphørMetadata
         Dokumenttype.KONTANTSTØTTE_SVARTIDSBREV -> KontantstøtteSvartidsbrevMetadata
