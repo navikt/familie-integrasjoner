@@ -8,7 +8,6 @@ import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.OppslagException.Level
 import no.nav.familie.integrasjoner.saksbehandler.SaksbehandlerService
 import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
-import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
@@ -139,7 +138,8 @@ class OppgaveService constructor(
     fun opprettOppgave(request: OpprettOppgaveRequest): Long {
         val oppgave =
             Oppgave(
-                aktoerId = if (erAktørIdEllerFnr(request.ident)) getAktørId(request.ident!!, request.tema) else null,
+                aktoerId = if (erAktørId(request.ident)) request.ident!!.ident else null,
+                personident = if (erPersonident(request.ident)) request.ident!!.ident else null,
                 orgnr = if (request.ident?.gruppe == IdentGruppe.ORGNR) request.ident!!.ident else null,
                 samhandlernr = if (request.ident?.gruppe == IdentGruppe.SAMHANDLERNR) request.ident!!.ident else null,
                 saksreferanse = request.saksId,
@@ -214,18 +214,9 @@ class OppgaveService constructor(
         }
     }
 
-    private fun erAktørIdEllerFnr(oppgaveIdent: OppgaveIdentV2?) =
-        oppgaveIdent?.gruppe == IdentGruppe.FOLKEREGISTERIDENT || oppgaveIdent?.gruppe == IdentGruppe.AKTOERID
+    private fun erPersonident(oppgaveIdent: OppgaveIdentV2?) = oppgaveIdent?.gruppe == IdentGruppe.FOLKEREGISTERIDENT
 
-    private fun getAktørId(
-        oppgaveIdentV2: OppgaveIdentV2,
-        tema: Tema,
-    ): String =
-        if (oppgaveIdentV2.gruppe == IdentGruppe.AKTOERID) {
-            oppgaveIdentV2.ident ?: throw IllegalArgumentException("Mangler ident for gruppe=${oppgaveIdentV2.gruppe}")
-        } else {
-            aktørService.getAktørIdFraPdl(oppgaveIdentV2.ident!!, tema)
-        }
+    private fun erAktørId(oppgaveIdent: OppgaveIdentV2?) = oppgaveIdent?.gruppe == IdentGruppe.AKTOERID
 
     fun finnMapper(finnMappeRequest: FinnMappeRequest): FinnMappeResponseDto {
         val mappeRespons = oppgaveRestClient.finnMapper(finnMappeRequest)
