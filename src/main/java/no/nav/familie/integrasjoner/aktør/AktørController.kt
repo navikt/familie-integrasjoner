@@ -19,6 +19,11 @@ import org.springframework.web.bind.annotation.RestController
 class AktørController(
     private val aktørService: AktørService,
 ) {
+
+    /**
+     * Dette endepunktet brukes av familie-ef-iverksett for å sende fattet vedtak til Arena.
+     * Kan fjernes hvis behovet for å sende med aktørID i vedtakshendelsen forsvinner.
+     */
     @PostMapping("v2/{tema}")
     fun finnAktørIdForPersonIdent(
         @RequestBody(required = true) ident: Ident,
@@ -31,6 +36,10 @@ class AktørController(
             ),
         )
 
+    /**
+     * Denne brukes av familie-ef-mottak for å finne behandlende enhet.
+     * Kan fjernes når eller hvis det blir mulig å assosiere journalposter med kun personident.
+     */
     @PostMapping("v2/fraaktorid/{tema}")
     fun finnPersonIdentForAktørId(
         @RequestBody(required = true) aktørId: String,
