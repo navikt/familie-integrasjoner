@@ -6,12 +6,15 @@ import java.time.LocalDateTime
 import kotlin.math.min
 
 const val LIMIT_MOT_OPPGAVE = 50L
+const val DEFAULT_SORTERINGSFELT = "OPPRETTET_TIDSPUNKT"
+const val DEFAULT_STATUSKATEGORI = "AAPEN"
+const val DEFAULT_SORTERINGSREKKEFOLGE = "DESC"
 
 data class OppgaveRequest(
-    val statuskategori: String = "AAPEN",
+    val statuskategori: String = DEFAULT_STATUSKATEGORI,
     val tema: String,
-    val sorteringsfelt: String = "OPPRETTET_TIDSPUNKT",
-    val sorteringsrekkefolge: String = "DESC",
+    val sorteringsfelt: String = DEFAULT_SORTERINGSFELT,
+    val sorteringsrekkefolge: String = DEFAULT_SORTERINGSREKKEFOLGE,
     val limit: Long = LIMIT_MOT_OPPGAVE,
     val offset: Long = 0,
     val behandlingstema: String?,
@@ -55,4 +58,6 @@ fun FinnOppgaveRequest.toDto() =
         mappeId = this.mappeId,
         aktoerId = this.aktørId,
         saksreferanse = this.saksreferanse,
+        sorteringsfelt = this.sorteringsfelt?.name ?: DEFAULT_SORTERINGSFELT,
+        sorteringsrekkefolge = this.sorteringsrekkefølge?.name ?: DEFAULT_SORTERINGSREKKEFOLGE,
     )
