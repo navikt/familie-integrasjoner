@@ -68,16 +68,17 @@ internal class OppgaveServiceTest {
     fun `skal sette personident når identgruppe er folkeregisterident`() {
         val personIdent = "12345678912"
         val oppgaveSlot = slot<Oppgave>()
-        val request = OpprettOppgaveRequest(
-            ident = OppgaveIdentV2(personIdent, IdentGruppe.FOLKEREGISTERIDENT),
-            fristFerdigstillelse = LocalDate.now().plusDays(3),
-            behandlingstema = "behandlingstema",
-            enhetsnummer = "enhetsnummer",
-            tema = Tema.BAR,
-            oppgavetype = Oppgavetype.BehandleSak,
-            saksId = "saksid",
-            beskrivelse = "Oppgavetekst",
-        )
+        val request =
+            OpprettOppgaveRequest(
+                ident = OppgaveIdentV2(personIdent, IdentGruppe.FOLKEREGISTERIDENT),
+                fristFerdigstillelse = LocalDate.now().plusDays(3),
+                behandlingstema = "behandlingstema",
+                enhetsnummer = "enhetsnummer",
+                tema = Tema.BAR,
+                oppgavetype = Oppgavetype.BehandleSak,
+                saksId = "saksid",
+                beskrivelse = "Oppgavetekst",
+            )
 
         every { oppgaveRestClient.opprettOppgave(capture(oppgaveSlot)) } returns 0L
         every { saksbehandlerService.hentNavIdent(any()) } returns "ident"
@@ -92,16 +93,17 @@ internal class OppgaveServiceTest {
     fun `skal sette aktørid når identgruppe er aktørid`() {
         val aktørid = "12345678912"
         val oppgaveSlot = slot<Oppgave>()
-        val request = OpprettOppgaveRequest(
-            ident = OppgaveIdentV2(aktørid, IdentGruppe.AKTOERID),
-            fristFerdigstillelse = LocalDate.now().plusDays(3),
-            behandlingstema = "behandlingstema",
-            enhetsnummer = "enhetsnummer",
-            tema = Tema.BAR,
-            oppgavetype = Oppgavetype.BehandleSak,
-            saksId = "saksid",
-            beskrivelse = "Oppgavetekst",
-        )
+        val request =
+            OpprettOppgaveRequest(
+                ident = OppgaveIdentV2(aktørid, IdentGruppe.AKTOERID),
+                fristFerdigstillelse = LocalDate.now().plusDays(3),
+                behandlingstema = "behandlingstema",
+                enhetsnummer = "enhetsnummer",
+                tema = Tema.BAR,
+                oppgavetype = Oppgavetype.BehandleSak,
+                saksId = "saksid",
+                beskrivelse = "Oppgavetekst",
+            )
 
         every { oppgaveRestClient.opprettOppgave(capture(oppgaveSlot)) } returns 0L
         every { saksbehandlerService.hentNavIdent(any()) } returns "ident"

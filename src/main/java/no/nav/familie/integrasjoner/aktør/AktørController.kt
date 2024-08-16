@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController
 class AktørController(
     private val aktørService: AktørService,
 ) {
-
     /**
      * Dette endepunktet brukes av familie-ef-iverksett for å sende fattet vedtak til Arena.
      * Kan fjernes hvis behovet for å sende med aktørID i vedtakshendelsen forsvinner.
