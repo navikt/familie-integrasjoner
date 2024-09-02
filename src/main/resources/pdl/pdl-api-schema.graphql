@@ -157,15 +157,6 @@ type Foreldreansvar {
     metadata: Metadata!
 }
 
-type Fullmakt {
-    gyldigFraOgMed: Date!
-    gyldigTilOgMed: Date!
-    metadata: Metadata!
-    motpartsPersonident: String!
-    motpartsRolle: FullmaktsRolle!
-    omraader: [String!]!
-}
-
 type GeografiskTilknytning {
     gtBydel: String
     gtKommune: String
@@ -445,7 +436,6 @@ type Person {
     folkeregisterpersonstatus(historikk: Boolean = false): [Folkeregisterpersonstatus!]!
     forelderBarnRelasjon: [ForelderBarnRelasjon!]!
     foreldreansvar(historikk: Boolean = false): [Foreldreansvar!]!
-    fullmakt(historikk: Boolean = false): [Fullmakt!]!
     identitetsgrunnlag(historikk: Boolean = false): [Identitetsgrunnlag!]!
     innflyttingTilNorge: [InnflyttingTilNorge!]!
     kjoenn(historikk: Boolean = false): [Kjoenn!]!
@@ -725,11 +715,6 @@ enum ForelderBarnRelasjonRolle {
     FAR
     MEDMOR
     MOR
-}
-
-enum FullmaktsRolle {
-    FULLMAKTSGIVER
-    FULLMEKTIG
 }
 
 enum GtType {

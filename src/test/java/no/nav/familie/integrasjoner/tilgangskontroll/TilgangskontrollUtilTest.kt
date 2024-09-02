@@ -53,7 +53,6 @@ internal class TilgangskontrollUtilTest {
                 adressebeskyttelse = null,
                 barn = ADRESSEBESKYTTELSEGRADERING.UGRADERT,
                 sivilstand = ADRESSEBESKYTTELSEGRADERING.FORTROLIG,
-                fullmakt = ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG,
                 barnsForeldrer = ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG_UTLAND,
             )
 
@@ -63,7 +62,6 @@ internal class TilgangskontrollUtilTest {
     private fun lagPersonMedRelasjoner(
         adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING? = null,
         sivilstand: ADRESSEBESKYTTELSEGRADERING? = null,
-        fullmakt: ADRESSEBESKYTTELSEGRADERING? = null,
         barn: ADRESSEBESKYTTELSEGRADERING? = null,
         barnsForeldrer: ADRESSEBESKYTTELSEGRADERING? = null,
     ): PersonMedRelasjoner =
@@ -71,7 +69,6 @@ internal class TilgangskontrollUtilTest {
             personIdent = "",
             adressebeskyttelse = adressebeskyttelse,
             sivilstand = lagPersonMedBeskyttelse(sivilstand, "sivilstand"),
-            fullmakt = lagPersonMedBeskyttelse(fullmakt, "fullmakt"),
             barn = lagPersonMedBeskyttelse(barn, "barn"),
             barnsForeldrer = lagPersonMedBeskyttelse(barnsForeldrer, "barnsForeldrer"),
         )

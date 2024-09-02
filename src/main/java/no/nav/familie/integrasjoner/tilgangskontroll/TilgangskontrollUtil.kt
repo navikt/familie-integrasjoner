@@ -20,6 +20,6 @@ object TilgangskontrollUtil {
     }
 
     private fun lagListeAvRelasjonersAdressegraderinger(personUtvidet: PersonMedRelasjoner) =
-        listOf(personUtvidet.sivilstand, personUtvidet.fullmakt, personUtvidet.barn, personUtvidet.barnsForeldrer)
+        listOf(personUtvidet.sivilstand, personUtvidet.barn, personUtvidet.barnsForeldrer)
             .flatMap { relasjoner -> relasjoner.mapNotNull { it.adressebeskyttelse } }
 }

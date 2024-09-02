@@ -43,7 +43,6 @@ internal class ArbeidsfordelingServiceTest {
     val annenForelderXIdent = "22222222221"
     val barnZIdent = "33333333333"
     val annenForelderZIdent = "33333333331"
-    val fullmaktIdent = "99999999999"
 
     @BeforeEach
     internal fun setUp() {
@@ -259,7 +258,6 @@ internal class ArbeidsfordelingServiceTest {
         egenAnsatte: Set<String>,
     ) {
         val ektefelle = PersonMedAdresseBeskyttelse(ektefelleIdent, utledAdressebeskyttelse(ektefelleIdent, kode6, kode7))
-        val fullmakt = PersonMedAdresseBeskyttelse(fullmaktIdent, utledAdressebeskyttelse(fullmaktIdent, kode6, kode7))
         val barnX = PersonMedAdresseBeskyttelse(barnXIdent, utledAdressebeskyttelse(barnXIdent, kode6, kode7))
         val barnZ = PersonMedAdresseBeskyttelse(barnZIdent, utledAdressebeskyttelse(barnZIdent, kode6, kode7))
         val annenForelderX =
@@ -271,7 +269,6 @@ internal class ArbeidsfordelingServiceTest {
                 personIdent = ident,
                 adressebeskyttelse = utledAdressebeskyttelse(ident, kode6, kode7),
                 sivilstand = listOf(ektefelle),
-                fullmakt = listOf(fullmakt),
                 barn = listOf(barnX, barnZ),
                 barnsForeldrer = listOf(annenForelderX, annenForelderZ),
             )
