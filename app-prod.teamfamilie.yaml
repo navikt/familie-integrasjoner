@@ -88,6 +88,14 @@ spec:
     - https://familie-integrasjoner.prod-fss-pub.nais.io
     - https://familie-integrasjoner.nais.adeo.no
     - https://familie-integrasjoner.intern.nav.no
+
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+      destinations:
+        - id: "grafana-lgtm"
+        - id: "elastic-apm"
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: prod
