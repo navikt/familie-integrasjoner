@@ -93,6 +93,11 @@ spec:
   ingresses:
     - https://familie-integrasjoner.dev-fss-pub.nais.io
     - https://familie-integrasjoner.intern.dev.nav.no
+
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: preprod

@@ -165,9 +165,3 @@ OPPGAVE_URL: https://oppgave.nais.adeo.no
 NORG2_URL: https://norg2.nais.adeo.no/norg2/
 REGOPPSLAG_URL: https://regoppslag.intern.nav.no
 SFTP_HOST: a01drvl099.adeo.no
-
-# Appdynamics
-APPDYNAMICS_CONTROLLER_HOST_NAME: appdynamics.adeo.no
-APPDYNAMICS_CONTROLLER_PORT: 443
-APPDYNAMICS_CONTROLLER_SSL_ENABLED: true
-APPDYNAMICS_AGENT_ACCOUNT_NAME: PROD
