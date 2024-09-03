@@ -52,7 +52,6 @@ data class PdlAdressebeskyttelse(
 data class PdlPersonMedRelasjonerOgAdressebeskyttelse(
     val forelderBarnRelasjon: List<PdlForelderBarnRelasjon>,
     val sivilstand: List<Sivilstand>,
-    val fullmakt: List<Fullmakt>,
     val adressebeskyttelse: List<Adressebeskyttelse>,
 )
 
@@ -120,11 +119,6 @@ data class Adressebeskyttelse(
 data class Sivilstand(
     val type: SIVILSTAND,
     val relatertVedSivilstand: String?,
-)
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class Fullmakt(
-    val motpartsPersonident: String,
 )
 
 enum class KJØNN {

@@ -117,13 +117,6 @@ internal class CachedTilgangskontrollServiceTest {
     }
 
     @Test
-    internal fun `har ikke tilgang når fullmakt inneholder FORTROLIG`() {
-        every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-            lagPersonMedRelasjoner(fullmakt = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
-        assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
-    }
-
-    @Test
     internal fun `har ikke tilgang når barn inneholder FORTROLIG`() {
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
             lagPersonMedRelasjoner(barn = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
@@ -186,7 +179,6 @@ internal class CachedTilgangskontrollServiceTest {
     private fun lagPersonMedRelasjoner(
         adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING? = null,
         sivilstand: ADRESSEBESKYTTELSEGRADERING? = null,
-        fullmakt: ADRESSEBESKYTTELSEGRADERING? = null,
         barn: ADRESSEBESKYTTELSEGRADERING? = null,
         barnsForeldrer: ADRESSEBESKYTTELSEGRADERING? = null,
     ): PersonMedRelasjoner =
@@ -194,7 +186,6 @@ internal class CachedTilgangskontrollServiceTest {
             personIdent = "",
             adressebeskyttelse = adressebeskyttelse,
             sivilstand = lagPersonMedBeskyttelse(sivilstand, "sivilstand"),
-            fullmakt = lagPersonMedBeskyttelse(fullmakt, "fullmakt"),
             barn = lagPersonMedBeskyttelse(barn, "barn"),
             barnsForeldrer = lagPersonMedBeskyttelse(barnsForeldrer, "barnsForeldrer"),
         )

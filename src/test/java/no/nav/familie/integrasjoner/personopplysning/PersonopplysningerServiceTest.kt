@@ -8,7 +8,6 @@ import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.client.rest.RegoppslagRestClient
 import no.nav.familie.integrasjoner.personopplysning.internal.Adressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.FORELDERBARNRELASJONROLLE
-import no.nav.familie.integrasjoner.personopplysning.internal.Fullmakt
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlForelderBarnRelasjon
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedRelasjonerOgAdressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.Sivilstand
@@ -48,7 +47,6 @@ class PersonopplysningerServiceTest {
                             ),
                         ),
                     sivilstand = listOf(Sivilstand(SIVILSTAND.GIFT, "3")),
-                    fullmakt = listOf(Fullmakt("4")),
                 )
         val barn =
             lagPdlPersonMedRelasjoner(
@@ -70,11 +68,10 @@ class PersonopplysningerServiceTest {
         assertThat(hentPersonMedRelasjoner.barn.single().personIdent).isEqualTo("2")
         assertThat(hentPersonMedRelasjoner.barnsForeldrer.single().personIdent).isEqualTo("22")
         assertThat(hentPersonMedRelasjoner.sivilstand.single().personIdent).isEqualTo("3")
-        assertThat(hentPersonMedRelasjoner.fullmakt.single().personIdent).isEqualTo("4")
 
         verify(exactly = 1) {
             pdlClientCredentialRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(listOf("1"), any())
-            pdlClientCredentialRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(listOf("2", "3", "4"), any())
+            pdlClientCredentialRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(listOf("2", "3"), any())
             pdlClientCredentialRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(listOf("22"), any())
         }
     }
@@ -82,8 +79,7 @@ class PersonopplysningerServiceTest {
     private fun lagPdlPersonMedRelasjoner(
         familierelasjoner: List<PdlForelderBarnRelasjon> = emptyList(),
         sivilstand: List<Sivilstand> = emptyList(),
-        fullmakt: List<Fullmakt> = emptyList(),
         adressebeskyttelse: List<Adressebeskyttelse> = emptyList(),
     ) =
-        PdlPersonMedRelasjonerOgAdressebeskyttelse(familierelasjoner, sivilstand, fullmakt, adressebeskyttelse)
+        PdlPersonMedRelasjonerOgAdressebeskyttelse(familierelasjoner, sivilstand, adressebeskyttelse)
 }

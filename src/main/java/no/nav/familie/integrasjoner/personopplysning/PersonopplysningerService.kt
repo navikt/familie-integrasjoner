@@ -51,9 +51,8 @@ class PersonopplysningerService(
                 .filter { it.relatertPersonsRolle == FORELDERBARNRELASJONROLLE.BARN }
                 .mapNotNull { it.relatertPersonsIdent }
         val sivilstandIdenter = hovedperson.sivilstand.mapNotNull { it.relatertVedSivilstand }.distinct()
-        val fullmaktIdenter = hovedperson.fullmakt.map { it.motpartsPersonident }.distinct()
 
-        val tilknyttedeIdenter = (barnIdenter + sivilstandIdenter + fullmaktIdenter).distinct()
+        val tilknyttedeIdenter = (barnIdenter + sivilstandIdenter).distinct()
         val tilknyttedeIdenterData = hentPersonMedRelasjonerOgAdressebeskyttelse(tilknyttedeIdenter, tema)
 
         val barnOpplysninger = tilknyttedeIdenterData.filter { (ident, _) -> barnIdenter.contains(ident) }
@@ -63,7 +62,6 @@ class PersonopplysningerService(
             personIdent = personIdent,
             adressebeskyttelse = hovedperson.gradering(),
             sivilstand = mapPersonMedRelasjoner(sivilstandIdenter, tilknyttedeIdenterData),
-            fullmakt = mapPersonMedRelasjoner(fullmaktIdenter, tilknyttedeIdenterData),
             barn = mapPersonMedRelasjoner(barnIdenter, tilknyttedeIdenterData),
             barnsForeldrer = barnsForeldrer,
         )

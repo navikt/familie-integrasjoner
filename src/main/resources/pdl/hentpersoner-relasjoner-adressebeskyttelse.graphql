@@ -14,9 +14,6 @@ query($identer: [ID!]!){
                 type
                 relatertVedSivilstand
             }
-            fullmakt {
-                motpartsPersonident
-            }
         }
     }
 }
