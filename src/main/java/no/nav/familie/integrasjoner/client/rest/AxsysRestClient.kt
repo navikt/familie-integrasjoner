@@ -12,7 +12,7 @@ import java.net.URI
 
 @Service
 class AxsysRestClient(
-    @Value("\${ENHET_URL}") private val enhetBaseUrl: URI,
+    @Value("\${AXSYS_URL}") private val enhetBaseUrl: URI,
     @Qualifier("jwtBearer") private val restTemplate: RestOperations,
 ) : AbstractRestClient(restTemplate, "enhet") {
     fun hentTilgang(saksbehandlerId: SaksbehandlerId): TilgangV2DTO {
