@@ -19,7 +19,7 @@ class AxsysRestClient(
         val uri =
             UriComponentsBuilder
                 .fromUri(enhetBaseUrl)
-                .pathSegment("/v2/tilgang/${saksbehandlerId.verdi}")
+                .pathSegment("v2/tilgang/${saksbehandlerId.verdi}")
                 .build()
                 .toUri()
         return getForEntity<TilgangV2DTO>(uri)
