@@ -12,7 +12,7 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlForelderBarnRel
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedRelasjonerOgAdressebeskyttelse
 import no.nav.familie.integrasjoner.personopplysning.internal.Sivilstand
 import no.nav.familie.kontrakter.felles.Tema
-import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
+import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTANDTYPE
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -46,7 +46,7 @@ class PersonopplysningerServiceTest {
                                 FORELDERBARNRELASJONROLLE.BARN,
                             ),
                         ),
-                    sivilstand = listOf(Sivilstand(SIVILSTAND.GIFT, "3")),
+                    sivilstand = listOf(Sivilstand(SIVILSTANDTYPE.GIFT, "3")),
                 )
         val barn =
             lagPdlPersonMedRelasjoner(
