@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.personopplysning.internal
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTAND
+import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTANDTYPE
 
 data class PdlResponse<T>(
     val data: T,
@@ -117,7 +117,7 @@ data class Adressebeskyttelse(
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Sivilstand(
-    val type: SIVILSTAND,
+    val type: SIVILSTANDTYPE,
     val relatertVedSivilstand: String?,
 )
 
