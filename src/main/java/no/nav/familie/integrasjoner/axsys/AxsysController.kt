@@ -17,8 +17,9 @@ class AxsysController(
     @PostMapping(
         consumes = [MediaType.APPLICATION_JSON_VALUE],
         produces = [MediaType.APPLICATION_JSON_VALUE],
+        path = ["/enheter"]
     )
-    fun hentTilgang(
+    fun hentEnheterNavIdentHarTilgangTil(
         @RequestBody(required = true) navIdent: NavIdent,
     ): List<Enhet> = axsysService.hentEnheterNavIdentHarTilgangTil(navIdent)
 }

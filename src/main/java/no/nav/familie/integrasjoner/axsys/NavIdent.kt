@@ -5,7 +5,7 @@ data class NavIdent(
 ) {
     init {
         if (ident.isBlank()) {
-            throw IllegalStateException("Verdi kan ikke være tom")
+            throw IllegalStateException("Ident kan ikke være tom")
         }
     }
 }
