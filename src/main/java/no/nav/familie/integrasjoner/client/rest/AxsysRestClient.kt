@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractRestClient
-import no.nav.familie.integrasjoner.axsys.SaksbehandlerId
+import no.nav.familie.integrasjoner.axsys.NavIdent
 import no.nav.familie.integrasjoner.axsys.TilgangV2DTO
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -15,11 +15,11 @@ class AxsysRestClient(
     @Value("\${AXSYS_URL}") private val enhetBaseUrl: URI,
     @Qualifier("jwtBearer") private val restTemplate: RestOperations,
 ) : AbstractRestClient(restTemplate, "enhet") {
-    fun hentTilgang(saksbehandlerId: SaksbehandlerId): TilgangV2DTO {
+    fun hentEnheterNavIdentHarTilgangTil(navIdent: NavIdent): TilgangV2DTO {
         val uri =
             UriComponentsBuilder
                 .fromUri(enhetBaseUrl)
-                .pathSegment("v2/tilgang/${saksbehandlerId.verdi}")
+                .pathSegment("v2/tilgang/${navIdent.ident}")
                 .build()
                 .toUri()
         return getForEntity<TilgangV2DTO>(uri)

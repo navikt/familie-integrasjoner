@@ -1,10 +1,10 @@
 package no.nav.familie.integrasjoner.axsys
 
-data class SaksbehandlerId(
-    val verdi: String,
+data class NavIdent(
+    val ident: String,
 ) {
     init {
-        if (verdi.isBlank()) {
+        if (ident.isBlank()) {
             throw IllegalStateException("Verdi kan ikke være tom")
         }
     }
