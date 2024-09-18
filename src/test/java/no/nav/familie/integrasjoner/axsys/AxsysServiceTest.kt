@@ -22,12 +22,13 @@ class AxsysServiceTest {
 
         every {
             axsysRestClient.hentEnheterNavIdentHarTilgangTil(navIdent)
-        } returns TilgangV2DTO(
-            listOf(
-                EnhetV2DTO(enhetId = enhet1, temaer = listOf(Tema.BAR.name), navn = "Enhetsnavn1"),
-                EnhetV2DTO(enhetId = enhet2, temaer = listOf(Tema.KON.name), navn = "Enhetsnavn2"),
-            ),
-        )
+        } returns
+            TilgangV2DTO(
+                listOf(
+                    EnhetV2DTO(enhetId = enhet1, temaer = listOf(Tema.BAR.name), navn = "Enhetsnavn1"),
+                    EnhetV2DTO(enhetId = enhet2, temaer = listOf(Tema.KON.name), navn = "Enhetsnavn2"),
+                ),
+            )
 
         // Act
         val enheter = axsysService.hentEnheterNavIdentHarTilgangTil(navIdent = navIdent, tema = Tema.BAR)
