@@ -433,7 +433,7 @@ type Person {
     doedsfall: [Doedsfall!]!
     falskIdentitet: FalskIdentitet
     foedselsdato: [Foedselsdato!]!
-    foedsested: [Foedested!]!
+    foedested: [Foedested!]!
     folkeregisteridentifikator(historikk: Boolean = false): [Folkeregisteridentifikator!]!
     folkeregisterpersonstatus(historikk: Boolean = false): [Folkeregisterpersonstatus!]!
     forelderBarnRelasjon: [ForelderBarnRelasjon!]!
