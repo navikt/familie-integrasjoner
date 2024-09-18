@@ -1,7 +1,6 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractRestClient
-import no.nav.familie.integrasjoner.axsys.NavIdent
 import no.nav.familie.integrasjoner.axsys.TilgangV2DTO
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
+import no.nav.familie.kontrakter.felles.NavIdent
 
 @Service
 class AxsysRestClient(
