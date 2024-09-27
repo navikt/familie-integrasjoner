@@ -1,5 +1,7 @@
 package no.nav.familie.integrasjoner.axsys
 
+import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.enhet.Enhet
 import no.nav.familie.kontrakter.felles.enhet.HentEnheterNavIdentHarTilgangTilRequest
 import no.nav.security.token.support.core.api.ProtectedWithClaims
@@ -22,8 +24,8 @@ class AxsysController(
     )
     fun hentEnheterNavIdentHarTilgangTil(
         @RequestBody(required = true) hentEnheterNavIdentHarTilgangTilRequest: HentEnheterNavIdentHarTilgangTilRequest,
-    ): ResponseEntity<List<Enhet>> {
+    ): ResponseEntity<Ressurs<List<Enhet>>> {
         val (navIdent, tema) = hentEnheterNavIdentHarTilgangTilRequest
-        return ResponseEntity.ok(axsysService.hentEnheterNavIdentHarTilgangTil(navIdent, tema))
+        return ResponseEntity.ok(success(axsysService.hentEnheterNavIdentHarTilgangTil(navIdent, tema)))
     }
 }
