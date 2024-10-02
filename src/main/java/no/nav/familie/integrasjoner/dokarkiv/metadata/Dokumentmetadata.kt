@@ -124,6 +124,7 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata =
         Dokumenttype.KONTANTSTØTTE_VEDLEGG -> KontantstøtteVedleggMetadata
         Dokumenttype.KONTANTSTØTTE_VEDTAK_AVSLAG -> KontantstøtteVedtakAvslagMetadata
         Dokumenttype.KONTANTSTØTTE_VEDTAK_INNVILGELSE -> KontantstøtteVedtakInnvilgetMetadata
+        Dokumenttype.KONTANTSTØTTE_VEDTAK_ENDRET -> KontantstøtteVedtakEndretMetadata
         Dokumenttype.KONTANTSTØTTE_VEDTAK -> KontantstøtteVedtakMetadata
         Dokumenttype.OVERGANGSSTØNAD_BLANKETT -> OvergangsstønadBlankettMetadata
         Dokumenttype.OVERGANGSSTØNAD_BLANKETT_SAKSBEHANDLING -> OvergangsstønadBlankettSaksbehandlingMetadata
