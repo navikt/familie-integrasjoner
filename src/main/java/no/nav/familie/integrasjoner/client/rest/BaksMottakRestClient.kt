@@ -10,7 +10,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Service
-class MottakRestClient(
+class BaksMottakRestClient(
     @Value("\${FAMILIE_BAKS_MOTTAK_URL}") val mottakBaseUrl: URI,
     @Qualifier("jwtBearer") val restTemplate: RestOperations,
 ) : AbstractRestClient(restTemplate, "baks-mottak") {

@@ -2,7 +2,7 @@ package no.nav.familie.integrasjoner.journalpost
 
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.familie.integrasjoner.mottak.MottakService
+import no.nav.familie.integrasjoner.mottak.BaksMottakService
 import no.nav.familie.integrasjoner.tilgangskontroll.TilgangskontrollService
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.journalpost.Journalpost
@@ -12,13 +12,13 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 
 class TilgangsstyrtJournalpostServiceTest {
-    private val mottakService: MottakService = mockk()
+    private val baksMottakService: BaksMottakService = mockk()
 
     private val tilgangskontrollService: TilgangskontrollService = mockk()
 
     private val tilgangsstyrtJournalpostService: TilgangsstyrtJournalpostService =
         TilgangsstyrtJournalpostService(
-            mottakService = mottakService,
+            baksMottakService = baksMottakService,
             tilgangskontrollService = tilgangskontrollService,
         )
 
@@ -31,7 +31,7 @@ class TilgangsstyrtJournalpostServiceTest {
         every { journalpost1.tema } returns Tema.BAR.name
         every { journalpost1.erDigitalSøknad(any()) } returns true
 
-        every { mottakService.hentPersonerIDigitalSøknad(Tema.BAR, any()) } returns listOf("123", "456")
+        every { baksMottakService.hentPersonerIDigitalSøknad(Tema.BAR, any()) } returns listOf("123", "456")
         every { tilgangskontrollService.sjekkTilgangTilBrukere(any(), any()) } returns listOf(Tilgang("123", true), Tilgang("456", true))
 
         // Act
@@ -52,7 +52,7 @@ class TilgangsstyrtJournalpostServiceTest {
         every { journalpost1.tema } returns Tema.BAR.name
         every { journalpost1.erDigitalSøknad(any()) } returns true
 
-        every { mottakService.hentPersonerIDigitalSøknad(Tema.BAR, any()) } returns listOf("123", "456")
+        every { baksMottakService.hentPersonerIDigitalSøknad(Tema.BAR, any()) } returns listOf("123", "456")
         every { tilgangskontrollService.sjekkTilgangTilBrukere(any(), any()) } returns listOf(Tilgang("123", false), Tilgang("456", false))
 
         // Act

@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.journalpost
 
-import no.nav.familie.integrasjoner.mottak.MottakService
+import no.nav.familie.integrasjoner.mottak.BaksMottakService
 import no.nav.familie.integrasjoner.tilgangskontroll.TilgangskontrollService
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.journalpost.Journalpost
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class TilgangsstyrtJournalpostService(
-    private val mottakService: MottakService,
+    private val baksMottakService: BaksMottakService,
     private val tilgangskontrollService: TilgangskontrollService,
 ) {
     fun tilTilgangstyrteJournalposter(journalposter: List<Journalpost>): List<TilgangsstyrtJournalpost> =
@@ -34,7 +34,7 @@ class TilgangsstyrtJournalpostService(
         journalpost: Journalpost,
         tema: Tema,
     ): Boolean {
-        val personerIDigitalSøknad = mottakService.hentPersonerIDigitalSøknad(tema = tema, journalpostId = journalpost.journalpostId)
+        val personerIDigitalSøknad = baksMottakService.hentPersonerIDigitalSøknad(tema = tema, journalpostId = journalpost.journalpostId)
         return tilgangskontrollService.sjekkTilgangTilBrukere(personIdenter = personerIDigitalSøknad, tema = tema).all { tilgang -> tilgang.harTilgang }
     }
 }
