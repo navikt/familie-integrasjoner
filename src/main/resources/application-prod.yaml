@@ -167,6 +167,7 @@ PDL_SCOPE: api://prod-fss.pdl.pdl-api/.default
 DOKDISTKANAL_SCOPE: api://prod-fss.teamdokumenthandtering.dokdistkanal/.default
 REGOPPSLAG_SCOPE: api://prod-fss.teamdokumenthandtering.regoppslag/.default
 AXSYS_SCOPE: api://prod-fss.org.axsys/.default
+FAMILIE_BAKS_MOTTAK_SCOPE: api://prod-gcp.teamfamilie.familie-baks-mottak/.default
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 ORGANISASJON_URL: https://ereg-services.intern.nav.no
@@ -185,3 +186,4 @@ NORG2_URL: https://norg2.nais.adeo.no/norg2/
 REGOPPSLAG_URL: https://regoppslag.intern.nav.no
 SFTP_HOST: a01drvl099.adeo.no
 AXSYS_URL: https://axsys.intern.nav.no/api
+FAMILIE_BAKS_MOTTAK_URL: https://familie-baks-mottak.intern.nav.no/api

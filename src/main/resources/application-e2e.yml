@@ -159,6 +159,7 @@ MEDL2_URL: http://vtp:8060/rest/medl2
 NORG2_URL: #Mockes lokalt
 
 AXSYS_URL: http://familie-mock-server:1337/rest/api/enhetstilganger/
+FAMILIE_BAKS_MOTTAK_URL: http://familie-mock-server:1337/rest/api/mottak/
 DOKDIST_URL: http://familie-mock-server:1337/rest/api/dokdist/
 DOKARKIV_V1_URL: http://familie-mock-server:1337/rest/api/dokarkiv/
 OPPGAVE_URL: http://familie-mock-server:1337/rest/api/oppgave/

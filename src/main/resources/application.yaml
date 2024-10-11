@@ -63,6 +63,7 @@ DOKARKIV_SCOPE: "dummy-scope"
 DOKDISTKANAL_SCOPE: "dummy-scope"
 REGOPPSLAG_SCOPE: "dummy-scope"
 AXSYS_SCOPE: "dummy-scope"
+FAMILIE_BAKS_MOTTAK_SCOPE: "dummy-scope"
 
 STS_URL: http://security-token-service.default.svc.nais.local/rest/v1/sts/token
 KODEVERK_URL: http://kodeverk.default
