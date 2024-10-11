@@ -6,6 +6,8 @@ import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostRequest
 import no.nav.familie.integrasjoner.journalpost.internal.SafRequestForBruker
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonRequest
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonRequestVariables
 import no.nav.familie.kontrakter.felles.BrukerIdType
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Tema
@@ -14,6 +16,7 @@ import no.nav.familie.kontrakter.felles.journalpost.Journalpost
 import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
 import no.nav.familie.kontrakter.felles.journalpost.Journalposttype
 import no.nav.familie.kontrakter.felles.journalpost.Journalstatus
+import no.nav.familie.kontrakter.felles.journalpost.TilgangsstyrtJournalpost
 import no.nav.familie.kontrakter.felles.journalpost.Utsendingsmåte
 import no.nav.familie.kontrakter.felles.journalpost.VarselType
 import no.nav.familie.kontrakter.felles.objectMapper
@@ -40,7 +43,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.util.UriComponentsBuilder
 import java.time.LocalDateTime
 
-@ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
+@ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth", "mock-egenansatt-false")
 @ExtendWith(MockServerExtension::class)
 @MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
 class HentJournalpostControllerTest(
@@ -50,6 +53,7 @@ class HentJournalpostControllerTest(
 
     private lateinit var uriHentSaksnummer: String
     private lateinit var uriHentJournalpost: String
+    private lateinit var uriHentTilgangsstyrtJournalpost: String
     private lateinit var uriHentDokument: String
 
     @BeforeEach
@@ -67,6 +71,11 @@ class HentJournalpostControllerTest(
                 .fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
                 .queryParam("journalpostId", JOURNALPOST_ID)
                 .toUriString()
+        uriHentTilgangsstyrtJournalpost =
+            UriComponentsBuilder
+                .fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/tilgangsstyrt")
+                .queryParam("journalpostId", JOURNALPOST_ID)
+                .toUriString()
         uriHentDokument = localhost(JOURNALPOST_BASE_URL) + "/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID"
     }
 
@@ -81,7 +90,7 @@ class HentJournalpostControllerTest(
                     .withBody(gyldigJournalPostIdRequest()),
             ).respond(
                 response()
-                    .withBody(json(lesFil("gyldigjournalpostresponse.json")))
+                    .withBody(json(lesFil("saf/gyldigjournalpostresponse.json")))
                     .withHeaders(Header("Content-Type", "application/json")),
             )
 
@@ -108,7 +117,7 @@ class HentJournalpostControllerTest(
                     .withMethod("POST")
                     .withPath("/rest/saf/graphql")
                     .withBody(objectMapper.writeValueAsString(gyldigBrukerRequest())),
-            ).respond(response().withBody(json(lesFil("gyldigJournalposterResponse.json"))))
+            ).respond(response().withBody(json(lesFil("saf/gyldigJournalposterResponse.json"))))
 
         val response: ResponseEntity<Ressurs<List<Journalpost>>> =
             restTemplate.exchange(
@@ -160,6 +169,75 @@ class HentJournalpostControllerTest(
     }
 
     @Test
+    fun `hentTilgangsstyrteJournalposterForBruker skal returnere tilgangsstyrte journalposter og status ok`() {
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("POST")
+                    .withPath("/rest/saf/graphql")
+                    .withBody(objectMapper.writeValueAsString(gyldigBrukerRequest())),
+            ).respond(response().withBody(json(lesFil("saf/gyldigJournalposterResponseBarnetrygd.json"))))
+
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("GET")
+                    .withPath("/soknad/hent-personer-i-digital-soknad/BAR/453492634"),
+            ).respond(response().withBody(json(lesFil("mottak/gyldigPersonerIDigitalSøknadResponse.json"))))
+
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("POST")
+                    .withPath("/rest/pdl/graphql")
+                    .withBody(objectMapper.writeValueAsString(gyldigPdlPersonRequest("12345678910"))),
+            ).respond(response().withBody(json(lesFil("pdl/pdlAdressebeskyttelseResponse.json"))))
+
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("POST")
+                    .withPath("/rest/pdl/graphql")
+                    .withBody(objectMapper.writeValueAsString(gyldigPdlPersonRequest("12345678911"))),
+            ).respond(response().withBody(json(lesFil("pdl/pdlAdressebeskyttelseResponse.json"))))
+
+        val response: ResponseEntity<Ressurs<List<TilgangsstyrtJournalpost>>> =
+            restTemplate.exchange(
+                uriHentTilgangsstyrtJournalpost,
+                HttpMethod.POST,
+                HttpEntity(
+                    JournalposterForBrukerRequest(
+                        Bruker("12345678901", BrukerIdType.FNR),
+                        10,
+                        listOf(Tema.BAR),
+                        listOf(Journalposttype.I),
+                    ),
+                    headers,
+                ),
+            )
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(
+            response.body
+                ?.data
+                ?.first()
+                ?.journalpost
+                ?.journalpostId,
+        ).isEqualTo("453492634")
+        assertThat(
+            response.body
+                ?.data
+                ?.first()
+                ?.harTilgang,
+        ).isEqualTo(true)
+    }
+
+    @Test
     fun `hent dokument skal returnere dokument og status ok`() {
         client
             .`when`(
@@ -180,10 +258,10 @@ class HentJournalpostControllerTest(
     }
 
     private fun gyldigJournalPostIdRequest(): String =
-        lesFil("gyldigJournalpostIdRequest.json")
+        lesFil("saf/gyldigJournalpostIdRequest.json")
             .replace(
                 "GRAPHQL-PLACEHOLDER",
-                lesFil("journalpostForId.graphql").graphqlCompatible(),
+                lesFil("saf/journalpostForId.graphql").graphqlCompatible(),
             )
 
     private fun gyldigBrukerRequest(): SafJournalpostRequest =
@@ -198,7 +276,13 @@ class HentJournalpostControllerTest(
             graphqlQuery("/saf/journalposterForBruker.graphql"),
         )
 
-    private fun lesFil(filnavn: String): String = ClassPathResource("saf/$filnavn").url.readText()
+    private fun gyldigPdlPersonRequest(ident: String): PdlPersonRequest =
+        PdlPersonRequest(
+            variables = PdlPersonRequestVariables(ident),
+            query = graphqlQuery("/pdl/adressebeskyttelse.graphql"),
+        )
+
+    private fun lesFil(path: String): String = ClassPathResource(path).url.readText()
 
     companion object {
         const val JOURNALPOST_ID = "12345678"
