@@ -173,6 +173,7 @@ internal class OppgaveServiceTest {
 
         verify(exactly = 1) { oppgaveRestClient.finnOppgaveMedId(oppgaveId) }
         verify(exactly = 1) { oppgaveRestClient.oppdaterEnhet(oppgaveByttEnhet) }
+        verify(exactly = 0) { oppgaveRestClient.oppdaterOppgave(any()) }
     }
 
     @Test
