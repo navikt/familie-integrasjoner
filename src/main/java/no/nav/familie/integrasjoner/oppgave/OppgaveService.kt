@@ -234,15 +234,20 @@ class OppgaveService constructor(
         return finnMapper(finnMappeRequest).mapper
     }
 
-    fun tilordneEnhet(
+    fun tilordneEnhetOgNullstillTilordnetRessurs(
         oppgaveId: Long,
         enhet: String,
         fjernMappeFraOppgave: Boolean,
+        nullstillTilordnetRessurs: Boolean,
         versjon: Int?,
     ) {
         val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
         val mappeId = if (fjernMappeFraOppgave) null else oppgave.mappeId
         oppgaveRestClient.oppdaterEnhet(OppgaveByttEnhet(oppgaveId, enhet, versjon ?: oppgave.versjon!!, mappeId))
+
+        if (nullstillTilordnetRessurs) {
+            oppgaveRestClient.oppdaterOppgave(Oppgave(id = oppgaveId, tilordnetRessurs = null))
+        }
     }
 }
 
