@@ -30,5 +30,6 @@
   "endretTidspunkt": "2020-01-02T13:15:22.551+01:00",
   "prioritet": "NORM",
   "status": "OPPRETTET",
-  "metadata": {}
+  "metadata": {},
+  "tilordnetRessurs": "NAV_1"
 }

@@ -234,23 +234,34 @@ class OppgaveService constructor(
         return finnMapper(finnMappeRequest).mapper
     }
 
-    fun tilordneEnhet(
+    fun tilordneEnhetOgNullstillTilordnetRessurs(
         oppgaveId: Long,
         enhet: String,
         fjernMappeFraOppgave: Boolean,
+        nullstillTilordnetRessurs: Boolean,
         versjon: Int?,
     ) {
         val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
         val mappeId = if (fjernMappeFraOppgave) null else oppgave.mappeId
-        oppgaveRestClient.oppdaterEnhet(OppgaveByttEnhet(oppgaveId, enhet, versjon ?: oppgave.versjon!!, mappeId))
+        val tilordnetRessurs = if (nullstillTilordnetRessurs) null else oppgave.tilordnetRessurs
+        oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(
+            OppgaveByttEnhetOgTilordnetRessurs(
+                id = oppgaveId,
+                tildeltEnhetsnr = enhet,
+                versjon = versjon ?: oppgave.versjon!!,
+                mappeId = mappeId,
+                tilordnetRessurs = tilordnetRessurs,
+            ),
+        )
     }
 }
 
-data class OppgaveByttEnhet(
+data class OppgaveByttEnhetOgTilordnetRessurs(
     val id: Long,
     val tildeltEnhetsnr: String,
     val versjon: Int,
     @JsonInclude(JsonInclude.Include.ALWAYS) val mappeId: Long? = null,
+    @JsonInclude(JsonInclude.Include.ALWAYS) val tilordnetRessurs: String? = null,
 )
 
 /**
