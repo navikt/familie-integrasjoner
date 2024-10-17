@@ -6,6 +6,7 @@ import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.journalpost.Journalpost
 import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
+import no.nav.familie.kontrakter.felles.journalpost.TilgangsstyrtJournalpost
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -81,6 +82,11 @@ class HentJournalpostController(
     fun hentJournalpostForBruker(
         @RequestBody journalposterForBrukerRequest: JournalposterForBrukerRequest,
     ): ResponseEntity<Ressurs<List<Journalpost>>> = ResponseEntity.ok(success(journalpostService.finnJournalposter(journalposterForBrukerRequest), "OK"))
+
+    @PostMapping("tilgangsstyrt/baks")
+    fun hentTilgangsstyrteJournalposterForBruker(
+        @RequestBody journalposterForBrukerRequest: JournalposterForBrukerRequest,
+    ): ResponseEntity<Ressurs<List<TilgangsstyrtJournalpost>>> = ResponseEntity.ok(success(journalpostService.finnTilgangsstyrteBaksJournalposter(journalposterForBrukerRequest), "OK"))
 
     @PostMapping("temaer")
     fun hentJournalpostForBrukerOgTema(
