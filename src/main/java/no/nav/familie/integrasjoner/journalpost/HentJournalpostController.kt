@@ -83,10 +83,10 @@ class HentJournalpostController(
         @RequestBody journalposterForBrukerRequest: JournalposterForBrukerRequest,
     ): ResponseEntity<Ressurs<List<Journalpost>>> = ResponseEntity.ok(success(journalpostService.finnJournalposter(journalposterForBrukerRequest), "OK"))
 
-    @PostMapping("tilgangsstyrt")
+    @PostMapping("tilgangsstyrt/baks")
     fun hentTilgangsstyrteJournalposterForBruker(
         @RequestBody journalposterForBrukerRequest: JournalposterForBrukerRequest,
-    ): ResponseEntity<Ressurs<List<TilgangsstyrtJournalpost>>> = ResponseEntity.ok(success(journalpostService.finnTilgangsstyrteJournalposter(journalposterForBrukerRequest), "OK"))
+    ): ResponseEntity<Ressurs<List<TilgangsstyrtJournalpost>>> = ResponseEntity.ok(success(journalpostService.finnTilgangsstyrteBaksJournalposter(journalposterForBrukerRequest), "OK"))
 
     @PostMapping("temaer")
     fun hentJournalpostForBrukerOgTema(

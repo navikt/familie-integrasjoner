@@ -183,7 +183,6 @@ AAREG_URL: #Mockes lokalt
 SKYGGE_SAK_URL: #Mocker lokalt
 NORG2_URL: #Mockes lokalt
 AXSYS_URL: http://localhost:18321
-FAMILIE_BAKS_MOTTAK_URL: http://localhost:18321
 
 MEDL2_URL: http://localhost:18321
 SAF_URL: http://localhost:18321/rest/saf

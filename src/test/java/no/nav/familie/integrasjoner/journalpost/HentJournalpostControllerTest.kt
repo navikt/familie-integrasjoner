@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.journalpost
 
 import ch.qos.logback.classic.Logger
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.integrasjoner.baks.søknad.lagBarnetrygdSøknad
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostRequest
@@ -73,7 +74,7 @@ class HentJournalpostControllerTest(
                 .toUriString()
         uriHentTilgangsstyrtJournalpost =
             UriComponentsBuilder
-                .fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/tilgangsstyrt")
+                .fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/tilgangsstyrt/baks")
                 .queryParam("journalpostId", JOURNALPOST_ID)
                 .toUriString()
         uriHentDokument = localhost(JOURNALPOST_BASE_URL) + "/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID"
@@ -170,6 +171,7 @@ class HentJournalpostControllerTest(
 
     @Test
     fun `hentTilgangsstyrteJournalposterForBruker skal returnere tilgangsstyrte journalposter og status ok`() {
+        val barnetrygdSøknad = lagBarnetrygdSøknad("12345678910", "12345678911")
         client
             .`when`(
                 HttpRequest
@@ -204,6 +206,14 @@ class HentJournalpostControllerTest(
                     .withPath("/rest/pdl/graphql")
                     .withBody(objectMapper.writeValueAsString(gyldigPdlPersonRequest("12345678911"))),
             ).respond(response().withBody(json(lesFil("pdl/pdlAdressebeskyttelseResponse.json"))))
+
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("GET")
+                    .withPath("/rest/saf/rest/hentdokument/453492634/453871494/ORIGINAL"),
+            ).respond(HttpResponse().withBody(objectMapper.writeValueAsBytes(barnetrygdSøknad)).withHeaders(Header("Content-Type", "application/json")))
 
         val response: ResponseEntity<Ressurs<List<TilgangsstyrtJournalpost>>> =
             restTemplate.exchange(

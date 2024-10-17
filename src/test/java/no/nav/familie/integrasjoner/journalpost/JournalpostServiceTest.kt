@@ -19,13 +19,13 @@ class JournalpostServiceTest {
 
     private val safHentDokumentRestClient: SafHentDokumentRestClient = mockk()
 
-    private val tilgangsstyrtJournalpostService: TilgangsstyrtJournalpostService = mockk()
+    private val baksTilgangsstyrtJournalpostService: BaksTilgangsstyrtJournalpostService = mockk()
 
     private val journalpostService =
         JournalpostService(
             safRestClient = safRestClient,
             safHentDokumentRestClient = safHentDokumentRestClient,
-            tilgangsstyrtJournalpostService = tilgangsstyrtJournalpostService,
+            baksTilgangsstyrtJournalpostService = baksTilgangsstyrtJournalpostService,
         )
 
     @Nested
@@ -36,14 +36,14 @@ class JournalpostServiceTest {
             val journalposterForBrukerRequest = JournalposterForBrukerRequest(brukerId = Bruker("1", BrukerIdType.FNR), antall = 100, tema = listOf(Tema.BAR))
             val journalposter = listOf(mockk<Journalpost>())
             every { safRestClient.finnJournalposter(journalposterForBrukerRequest) } returns journalposter
-            every { tilgangsstyrtJournalpostService.tilTilgangstyrteJournalposter(journalposter) } returns listOf(mockk<TilgangsstyrtJournalpost>())
+            every { baksTilgangsstyrtJournalpostService.tilTilgangstyrteJournalposter(journalposter) } returns listOf(mockk<TilgangsstyrtJournalpost>())
 
             // Act
-            journalpostService.finnTilgangsstyrteJournalposter(journalposterForBrukerRequest)
+            journalpostService.finnTilgangsstyrteBaksJournalposter(journalposterForBrukerRequest)
 
             // Assert
             verify(exactly = 1) { safRestClient.finnJournalposter(journalposterForBrukerRequest) }
-            verify(exactly = 1) { tilgangsstyrtJournalpostService.tilTilgangstyrteJournalposter(journalposter) }
+            verify(exactly = 1) { baksTilgangsstyrtJournalpostService.tilTilgangstyrteJournalposter(journalposter) }
         }
     }
 }
