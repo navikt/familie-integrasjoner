@@ -5,7 +5,7 @@ import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.client.QueryParamUtil.toQueryParams
 import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.familie.integrasjoner.oppgave.OppgaveByttEnhet
+import no.nav.familie.integrasjoner.oppgave.OppgaveByttEnhetOgTilordnetRessurs
 import no.nav.familie.integrasjoner.oppgave.domene.LIMIT_MOT_OPPGAVE
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveRequest
 import no.nav.familie.integrasjoner.oppgave.domene.toDto
@@ -150,18 +150,18 @@ class OppgaveRestClient(
                 },
             )
 
-    fun oppdaterEnhet(byttEnhetPatch: OppgaveByttEnhet): Oppgave? =
+    fun oppdaterEnhetOgTilordnetRessurs(byttEnhetOgTilordnetRessursPatch: OppgaveByttEnhetOgTilordnetRessurs): Oppgave? =
         Result
             .runCatching {
                 patchForEntity<Oppgave>(
-                    requestUrl(byttEnhetPatch.id),
-                    byttEnhetPatch,
+                    requestUrl(byttEnhetOgTilordnetRessursPatch.id),
+                    byttEnhetOgTilordnetRessursPatch,
                     httpHeaders(),
                 )
             }.fold(
                 onSuccess = { it },
                 onFailure = {
-                    var feilmelding = "Feil ved bytte av enhet for oppgave for ${byttEnhetPatch.id}."
+                    var feilmelding = "Feil ved bytte av enhet for oppgave for ${byttEnhetOgTilordnetRessursPatch.id}."
                     if (it is HttpStatusCodeException) {
                         feilmelding += " Response fra oppgave = ${it.responseBodyAsString}"
                     }

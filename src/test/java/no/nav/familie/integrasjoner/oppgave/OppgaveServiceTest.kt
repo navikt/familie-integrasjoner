@@ -119,11 +119,11 @@ internal class OppgaveServiceTest {
     fun `tilordneEnhetOgNullstillTilordnetRessurs skal fjerne mappe fra oppgave dersom det settes til true`() {
         // Arrange
         val oppgaveId = 1L
-        val oppgaveByttEnhetSlot = slot<OppgaveByttEnhet>()
+        val oppgaveByttEnhetOgTilordnetRessursRessursSlot = slot<OppgaveByttEnhetOgTilordnetRessurs>()
         val oppgaveMedMappe = Oppgave(id = oppgaveId, mappeId = 50)
 
         every { oppgaveRestClient.finnOppgaveMedId(oppgaveId) } returns oppgaveMedMappe
-        every { oppgaveRestClient.oppdaterEnhet(capture(oppgaveByttEnhetSlot)) } returns oppgaveMedMappe
+        every { oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(capture(oppgaveByttEnhetOgTilordnetRessursRessursSlot)) } returns oppgaveMedMappe
 
         // Act
         oppgaveService.tilordneEnhetOgNullstillTilordnetRessurs(
@@ -135,25 +135,25 @@ internal class OppgaveServiceTest {
         )
 
         // Assert
-        val oppgaveByttEnhet = oppgaveByttEnhetSlot.captured
+        val oppgaveByttEnhetOgTilordnetRessurs = oppgaveByttEnhetOgTilordnetRessursRessursSlot.captured
 
-        assertThat(oppgaveByttEnhet.id).isEqualTo(1)
-        assertThat(oppgaveByttEnhet.mappeId).isNull()
-        assertThat(oppgaveByttEnhet.tildeltEnhetsnr).isEqualTo("nyEnhet")
+        assertThat(oppgaveByttEnhetOgTilordnetRessurs.id).isEqualTo(1)
+        assertThat(oppgaveByttEnhetOgTilordnetRessurs.mappeId).isNull()
+        assertThat(oppgaveByttEnhetOgTilordnetRessurs.tildeltEnhetsnr).isEqualTo("nyEnhet")
 
         verify(exactly = 1) { oppgaveRestClient.finnOppgaveMedId(oppgaveId) }
-        verify(exactly = 1) { oppgaveRestClient.oppdaterEnhet(oppgaveByttEnhet) }
+        verify(exactly = 1) { oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(oppgaveByttEnhetOgTilordnetRessurs) }
     }
 
     @Test
     fun `tilordneEnhetOgNullstillTilordnetRessurs skal ikke fjerne mappe fra oppgave dersom det settes til false`() {
         // Arrange
         val oppgaveId = 1L
-        val oppgaveByttEnhetSlot = slot<OppgaveByttEnhet>()
+        val oppgaveByttEnhetOgTilordnetRessursRessursSlot = slot<OppgaveByttEnhetOgTilordnetRessurs>()
         val oppgaveMedMappe = Oppgave(id = oppgaveId, mappeId = 50)
 
         every { oppgaveRestClient.finnOppgaveMedId(oppgaveId) } returns oppgaveMedMappe
-        every { oppgaveRestClient.oppdaterEnhet(capture(oppgaveByttEnhetSlot)) } returns oppgaveMedMappe
+        every { oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(capture(oppgaveByttEnhetOgTilordnetRessursRessursSlot)) } returns oppgaveMedMappe
 
         // Act
         oppgaveService.tilordneEnhetOgNullstillTilordnetRessurs(
@@ -165,28 +165,25 @@ internal class OppgaveServiceTest {
         )
 
         // Assert
-        val oppgaveByttEnhet = oppgaveByttEnhetSlot.captured
+        val oppgaveByttEnhetOgTilordnetRessurs = oppgaveByttEnhetOgTilordnetRessursRessursSlot.captured
 
-        assertThat(oppgaveByttEnhet.id).isEqualTo(1)
-        assertThat(oppgaveByttEnhet.mappeId).isEqualTo(50)
-        assertThat(oppgaveByttEnhet.tildeltEnhetsnr).isEqualTo("nyEnhet")
+        assertThat(oppgaveByttEnhetOgTilordnetRessurs.id).isEqualTo(1)
+        assertThat(oppgaveByttEnhetOgTilordnetRessurs.mappeId).isEqualTo(50)
+        assertThat(oppgaveByttEnhetOgTilordnetRessurs.tildeltEnhetsnr).isEqualTo("nyEnhet")
 
         verify(exactly = 1) { oppgaveRestClient.finnOppgaveMedId(oppgaveId) }
-        verify(exactly = 1) { oppgaveRestClient.oppdaterEnhet(oppgaveByttEnhet) }
-        verify(exactly = 0) { oppgaveRestClient.oppdaterOppgave(any()) }
+        verify(exactly = 1) { oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(oppgaveByttEnhetOgTilordnetRessurs) }
     }
 
     @Test
     fun `tilordneEnhetOgNullstillTilordnetRessurs skal nullstille tilordnet ressurs hvis det settes til true`() {
         // Arrange
         val oppgaveId = 1L
-        val oppgaveByttEnhetSlot = slot<OppgaveByttEnhet>()
-        val oppgaveSlot = slot<Oppgave>()
-        val oppgaveMedMappe = Oppgave(id = oppgaveId, mappeId = 50)
+        val oppgaveByttEnhetOgTilordnetRessursRessursSlot = slot<OppgaveByttEnhetOgTilordnetRessurs>()
+        val oppgaveMedMappe = Oppgave(id = oppgaveId, mappeId = 50, tilordnetRessurs = "tilordnetRessurs")
 
         every { oppgaveRestClient.finnOppgaveMedId(oppgaveId) } returns oppgaveMedMappe
-        every { oppgaveRestClient.oppdaterEnhet(capture(oppgaveByttEnhetSlot)) } returns oppgaveMedMappe
-        every { oppgaveRestClient.oppdaterOppgave(capture(oppgaveSlot)) } returns oppgaveMedMappe
+        every { oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(capture(oppgaveByttEnhetOgTilordnetRessursRessursSlot)) } returns oppgaveMedMappe
 
         // Act
         oppgaveService.tilordneEnhetOgNullstillTilordnetRessurs(
@@ -198,14 +195,12 @@ internal class OppgaveServiceTest {
         )
 
         // Assert
-        val oppgaveByttEnhet = oppgaveByttEnhetSlot.captured
-        val nullstiltOppgave = oppgaveSlot.captured
+        val oppgaveByttEnhetOgTilordnetRessurs = oppgaveByttEnhetOgTilordnetRessursRessursSlot.captured
 
-        assertThat(nullstiltOppgave.id).isEqualTo(1L)
-        assertThat(nullstiltOppgave.tilordnetRessurs).isNull()
+        assertThat(oppgaveByttEnhetOgTilordnetRessurs.id).isEqualTo(1L)
+        assertThat(oppgaveByttEnhetOgTilordnetRessurs.tilordnetRessurs).isNull()
 
         verify(exactly = 1) { oppgaveRestClient.finnOppgaveMedId(oppgaveId) }
-        verify(exactly = 1) { oppgaveRestClient.oppdaterEnhet(oppgaveByttEnhet) }
-        verify(exactly = 1) { oppgaveRestClient.oppdaterOppgave(capture(oppgaveSlot)) }
+        verify(exactly = 1) { oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(oppgaveByttEnhetOgTilordnetRessurs) }
     }
 }

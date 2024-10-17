@@ -432,7 +432,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
                 .withRequestBody(
-                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":null}"""),
+                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":null,"tilordnetRessurs" : "NAV_1"}"""),
                 ).willReturn(
                     aResponse()
                         .withStatus(201)
@@ -466,7 +466,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
                 .withRequestBody(
-                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":1234}"""),
+                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":1234, "tilordnetRessurs": "NAV_1"}"""),
                 ).willReturn(
                     aResponse()
                         .withStatus(201)
@@ -486,6 +486,40 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
                 localhost("$OPPGAVE_URL/$OPPGAVE_ID/enhet/4833?fjernMappeFraOppgave=false"),
+                HttpMethod.PATCH,
+                HttpEntity(oppgave, headers),
+            )
+        assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    @Test
+    fun `Endre enhet på oppgave skal endre enhet og nullstille tilordnet ressurs hvis nullstillTilordnetRessurs-flagg er satt til true`() {
+        stubFor(get("/api/v1/oppgaver/$OPPGAVE_ID").willReturn(okJson(gyldigOppgaveResponse("hentOppgave.json"))))
+
+        stubFor(
+            patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
+                .withRequestBody(
+                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":1234, "tilordnetRessurs": null}"""),
+                ).willReturn(
+                    aResponse()
+                        .withStatus(201)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(gyldigOppgaveResponse("ferdigstilt_oppgave.json")),
+                ),
+        )
+
+        val oppgave =
+            Oppgave(
+                aktoerId = "1234567891011",
+                journalpostId = "1",
+                beskrivelse = EKSTRA_BESKRIVELSE,
+                tema = null,
+            )
+
+        val response: ResponseEntity<Ressurs<OppgaveResponse>> =
+            restTemplate.exchange(
+                localhost("$OPPGAVE_URL/$OPPGAVE_ID/enhet/4833?fjernMappeFraOppgave=false&nullstillTilordnetRessurs=true"),
                 HttpMethod.PATCH,
                 HttpEntity(oppgave, headers),
             )
