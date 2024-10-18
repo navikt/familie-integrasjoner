@@ -27,10 +27,10 @@ class BaksTilgangsstyrtJournalpostService(
         val tema = journalpost.tema?.let { tema -> Tema.valueOf(tema) }
         return if (tema != null && journalpost.harDigitalSøknad(tema)) {
             try {
-                val versjonertSøknad = baksVersjonertSøknadService.hentBaksSøknadBase(journalpost, tema)
+                val baksSøknadBase = baksVersjonertSøknadService.hentBaksSøknadBase(journalpost, tema)
                 tilgangskontrollService
                     .sjekkTilgangTilBrukere(
-                        personIdenter = versjonertSøknad.personerISøknad(),
+                        personIdenter = baksSøknadBase.personerISøknad(),
                         tema = tema,
                     ).all { tilgang -> tilgang.harTilgang }
             } catch (e: MissingVersionException) {
