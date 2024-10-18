@@ -8,7 +8,7 @@ import no.nav.familie.integrasjoner.tilgangskontroll.TilgangskontrollService
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.journalpost.DokumentInfo
 import no.nav.familie.kontrakter.felles.journalpost.Journalpost
-import no.nav.familie.kontrakter.felles.søknad.MissingVersionImplementationException
+import no.nav.familie.kontrakter.felles.søknad.MissingVersionException
 import no.nav.familie.kontrakter.felles.søknad.UnsupportedVersionException
 import no.nav.familie.kontrakter.felles.tilgangskontroll.Tilgang
 import org.assertj.core.api.Assertions.assertThat
@@ -131,7 +131,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         every { journalpost1.harDigitalSøknad(any()) } returns true
         every { journalpost1.dokumenter } returns listOf(dokumentInfo)
 
-        every { baksVersjonertSøknadService.hentBaksSøknadBase(any(), any()) } throws UnsupportedVersionException("JSON-String inneholder ikke feltet 'kontraktVersjon'")
+        every { baksVersjonertSøknadService.hentBaksSøknadBase(any(), any()) } throws MissingVersionException("JSON-String inneholder ikke feltet 'kontraktVersjon'")
         // Act
         val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.tilTilgangstyrteJournalposter(listOf(journalpost1))
 
@@ -152,7 +152,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         every { journalpost1.harDigitalSøknad(any()) } returns true
         every { journalpost1.dokumenter } returns listOf(dokumentInfo)
 
-        every { baksVersjonertSøknadService.hentBaksSøknadBase(any(), any()) } throws MissingVersionImplementationException("Har ikke implementert støtte for deserialisering av søknadsversjonen")
+        every { baksVersjonertSøknadService.hentBaksSøknadBase(any(), any()) } throws UnsupportedVersionException("Har ikke implementert støtte for deserialisering av søknadsversjonen")
         // Act
         val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.tilTilgangstyrteJournalposter(listOf(journalpost1))
 

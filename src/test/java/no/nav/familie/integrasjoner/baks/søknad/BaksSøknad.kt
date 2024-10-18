@@ -143,7 +143,7 @@ fun lagBarnetrygdSøker(fnr: String): BarnetrygdSøker =
         statsborgerskap = lagStringSøknadsfelt(listOf("Norge")),
         adresse =
             lagStringSøknadsfelt(
-                no.nav.familie.kontrakter.ba.søknad.SøknadAdresse(
+                no.nav.familie.kontrakter.ba.søknad.v1.SøknadAdresse(
                     adressenavn = "Gate",
                     postnummer = null,
                     husbokstav = null,
@@ -153,7 +153,7 @@ fun lagBarnetrygdSøker(fnr: String): BarnetrygdSøker =
                 ),
             ),
         adressebeskyttelse = false,
-        sivilstand = lagStringSøknadsfelt(no.nav.familie.kontrakter.ba.søknad.SIVILSTANDTYPE.UOPPGITT),
+        sivilstand = lagStringSøknadsfelt(no.nav.familie.kontrakter.ba.søknad.v1.SIVILSTANDTYPE.UOPPGITT),
         utenlandsperioder = emptyList(),
         arbeidsperioderUtland = emptyList(),
         pensjonsperioderUtland = emptyList(),
