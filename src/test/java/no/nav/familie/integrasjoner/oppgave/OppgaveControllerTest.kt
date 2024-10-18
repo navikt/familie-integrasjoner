@@ -495,6 +495,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `Endre enhet på oppgave skal endre enhet og nullstille tilordnet ressurs hvis nullstillTilordnetRessurs-flagg er satt til true`() {
+        // Arrange
         stubFor(get("/api/v1/oppgaver/$OPPGAVE_ID").willReturn(okJson(gyldigOppgaveResponse("hentOppgave.json"))))
 
         stubFor(
@@ -517,12 +518,15 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 tema = null,
             )
 
+        // Act
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
                 localhost("$OPPGAVE_URL/$OPPGAVE_ID/enhet/4833?fjernMappeFraOppgave=false&nullstillTilordnetRessurs=true"),
                 HttpMethod.PATCH,
                 HttpEntity(oppgave, headers),
             )
+
+        // Assert
         assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
     }
