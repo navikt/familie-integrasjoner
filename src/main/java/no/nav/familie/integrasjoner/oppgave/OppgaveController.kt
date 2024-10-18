@@ -115,11 +115,14 @@ class OppgaveController(
         @Parameter(description = "Settes til true hvis man ønsker å flytte en oppgave uten å ta med seg mappa opp på oppgaven. Noen mapper hører spesifikt til en enhet, og man får da ikke flyttet oppgaven uten at mappen fjernes ")
         @RequestParam(name = "fjernMappeFraOppgave")
         fjernMappeFraOppgave: Boolean,
+        @Parameter(description = "Settes til true hvis man ønsker å nullstille tilordnet ressurs etter at enheten er endret.")
+        @RequestParam(name = "nullstillTilordnetRessurs")
+        nullstillTilordnetRessurs: Boolean = false,
         @Parameter(description = "Vil feile med 409 Conflict dersom versjonen ikke stemmer overens med oppgavesystemets versjon")
         @RequestParam(name = "versjon")
         versjon: Int?,
     ): ResponseEntity<Ressurs<OppgaveResponse>> {
-        oppgaveService.tilordneEnhet(oppgaveId, enhet, fjernMappeFraOppgave, versjon)
+        oppgaveService.tilordneEnhetOgNullstillTilordnetRessurs(oppgaveId, enhet, fjernMappeFraOppgave, nullstillTilordnetRessurs, versjon)
         return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
     }
 }
