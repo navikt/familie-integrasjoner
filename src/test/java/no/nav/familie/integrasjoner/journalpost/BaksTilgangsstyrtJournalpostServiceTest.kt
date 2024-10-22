@@ -12,7 +12,6 @@ import no.nav.familie.kontrakter.felles.søknad.MissingVersionException
 import no.nav.familie.kontrakter.felles.søknad.UnsupportedVersionException
 import no.nav.familie.kontrakter.felles.tilgangskontroll.Tilgang
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 
 class BaksTilgangsstyrtJournalpostServiceTest {
@@ -52,7 +51,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
         val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost1.journalpostId && it.harTilgang }
-        assertNotNull(tilgangsstyrtJournalpost)
+        assertThat(tilgangsstyrtJournalpost).isNotNull
     }
 
     @Test
@@ -82,83 +81,83 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
         val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost1.journalpostId && !it.harTilgang }
-        assertNotNull(tilgangsstyrtJournalpost)
+        assertThat(tilgangsstyrtJournalpost).isNotNull
     }
 
     @Test
     fun `skal mappe om liste av Journalpost til liste av TilgangsstyrtJournalpost med harTilgang satt til true dersom ikke digital søknad`() {
         // Arrange
-        val journalpost1 = mockk<Journalpost>()
+        val journalpost = mockk<Journalpost>()
 
-        every { journalpost1.journalpostId } returns "1"
-        every { journalpost1.tema } returns Tema.BAR.name
-        every { journalpost1.harDigitalSøknad(any()) } returns false
+        every { journalpost.journalpostId } returns "1"
+        every { journalpost.tema } returns Tema.BAR.name
+        every { journalpost.harDigitalSøknad(any()) } returns false
 
         // Act
-        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost1))
+        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost))
 
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
-        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost1.journalpostId && it.harTilgang }
-        assertNotNull(tilgangsstyrtJournalpost)
+        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && it.harTilgang }
+        assertThat(tilgangsstyrtJournalpost).isNotNull
     }
 
     @Test
     fun `skal mappe om liste av Journalpost til liste av TilgangsstyrtJournalpost med harTilgang satt til true dersom tema ikke er satt`() {
         // Arrange
-        val journalpost1 = mockk<Journalpost>()
+        val journalpost = mockk<Journalpost>()
 
-        every { journalpost1.journalpostId } returns "1"
-        every { journalpost1.tema } returns null
+        every { journalpost.journalpostId } returns "1"
+        every { journalpost.tema } returns null
 
         // Act
-        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost1))
+        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost))
 
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
-        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost1.journalpostId && it.harTilgang }
-        assertNotNull(tilgangsstyrtJournalpost)
+        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && it.harTilgang }
+        assertThat(tilgangsstyrtJournalpost).isNotNull
     }
 
     @Test
     fun `skal mappe om liste av Journalpost til liste av TilgangsstyrtJournalpost med harTilgang satt til true dersom digital søknad og feilen UnsupportedVersionException kastes ved deserialisering`() {
         // Arrange
-        val journalpost1 = mockk<Journalpost>()
+        val journalpost = mockk<Journalpost>()
         val dokumentInfo = mockk<DokumentInfo>()
 
-        every { journalpost1.journalpostId } returns "1"
-        every { journalpost1.tema } returns Tema.KON.name
-        every { journalpost1.harDigitalSøknad(any()) } returns true
-        every { journalpost1.dokumenter } returns listOf(dokumentInfo)
+        every { journalpost.journalpostId } returns "1"
+        every { journalpost.tema } returns Tema.KON.name
+        every { journalpost.harDigitalSøknad(any()) } returns true
+        every { journalpost.dokumenter } returns listOf(dokumentInfo)
 
         every { baksVersjonertSøknadService.hentBaksSøknadBase(any(), any()) } throws MissingVersionException("JSON-String inneholder ikke feltet 'kontraktVersjon'")
         // Act
-        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost1))
+        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost))
 
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
-        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost1.journalpostId && it.harTilgang }
-        assertNotNull(tilgangsstyrtJournalpost)
+        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && it.harTilgang }
+        assertThat(tilgangsstyrtJournalpost).isNotNull
     }
 
     @Test
     fun `skal mappe om liste av Journalpost til liste av TilgangsstyrtJournalpost med harTilgang satt til false dersom digital søknad og feilen MissingVersionImplementationException kastes ved deserialisering`() {
         // Arrange
-        val journalpost1 = mockk<Journalpost>()
+        val journalpost = mockk<Journalpost>()
         val dokumentInfo = mockk<DokumentInfo>()
 
-        every { journalpost1.journalpostId } returns "1"
-        every { journalpost1.tema } returns Tema.KON.name
-        every { journalpost1.harDigitalSøknad(any()) } returns true
-        every { journalpost1.dokumenter } returns listOf(dokumentInfo)
+        every { journalpost.journalpostId } returns "1"
+        every { journalpost.tema } returns Tema.KON.name
+        every { journalpost.harDigitalSøknad(any()) } returns true
+        every { journalpost.dokumenter } returns listOf(dokumentInfo)
 
         every { baksVersjonertSøknadService.hentBaksSøknadBase(any(), any()) } throws UnsupportedVersionException("Har ikke implementert støtte for deserialisering av søknadsversjonen")
         // Act
-        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost1))
+        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost))
 
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
-        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost1.journalpostId && !it.harTilgang }
-        assertNotNull(tilgangsstyrtJournalpost)
+        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && !it.harTilgang }
+        assertThat(tilgangsstyrtJournalpost).isNotNull
     }
 }
