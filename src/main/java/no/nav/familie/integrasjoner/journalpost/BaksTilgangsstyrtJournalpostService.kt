@@ -15,7 +15,7 @@ class BaksTilgangsstyrtJournalpostService(
     private val baksVersjonertSøknadService: BaksVersjonertSøknadService,
     private val tilgangskontrollService: TilgangskontrollService,
 ) {
-    fun tilTilgangstyrteJournalposter(journalposter: List<Journalpost>): List<TilgangsstyrtJournalpost> =
+    fun mapTilTilgangsstyrteJournalposter(journalposter: List<Journalpost>): List<TilgangsstyrtJournalpost> =
         journalposter.map { journalpost ->
             TilgangsstyrtJournalpost(
                 journalpost = journalpost,
@@ -25,7 +25,10 @@ class BaksTilgangsstyrtJournalpostService(
 
     private fun harTilgangTilJournalpost(journalpost: Journalpost): Boolean {
         val tema = journalpost.tema?.let { tema -> Tema.valueOf(tema) }
-        return if (tema != null && journalpost.harDigitalSøknad(tema)) {
+        if (tema == null) {
+            return true
+        }
+        return if (journalpost.harDigitalSøknad(tema)) {
             try {
                 val baksSøknadBase = baksVersjonertSøknadService.hentBaksSøknadBase(journalpost, tema)
                 tilgangskontrollService

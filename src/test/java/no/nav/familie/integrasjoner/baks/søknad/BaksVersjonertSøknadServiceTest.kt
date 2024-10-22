@@ -84,24 +84,4 @@ class BaksVersjonertSøknadServiceTest {
             assertEquals("Støtter ikke deserialisering av søknad for tema ${Tema.ENF.name}", exception.message)
         }
     }
-
-    @Nested
-    inner class HentVersjonertBarnetrygdSøknad {
-        @Test
-        fun `skal kaste feil dersom tema ikke er BAR`() {
-            // Act && Assert
-            val exception = assertThrows<IllegalArgumentException> { baksVersjonertSøknadService.hentVersjonertBarnetrygdSøknad(mockk(), Tema.KON) }
-            assertEquals("Kan ikke hente VersjonertBarnetrygdSøknad for journalpost med tema ${Tema.KON.name}", exception.message)
-        }
-    }
-
-    @Nested
-    inner class HentVersjonertKontantstøtteSøknad {
-        @Test
-        fun `skal kaste feil dersom tema ikke er KON`() {
-            // Act && Assert
-            val exception = assertThrows<IllegalArgumentException> { baksVersjonertSøknadService.hentVersjonertKontantstøtteSøknad(mockk(), Tema.BAR) }
-            assertEquals("Kan ikke hente VersjonertKontantstøtteSøknad for journalpost med tema ${Tema.BAR.name}", exception.message)
-        }
-    }
 }

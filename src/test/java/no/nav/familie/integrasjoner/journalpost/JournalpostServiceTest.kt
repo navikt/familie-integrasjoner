@@ -36,14 +36,14 @@ class JournalpostServiceTest {
             val journalposterForBrukerRequest = JournalposterForBrukerRequest(brukerId = Bruker("1", BrukerIdType.FNR), antall = 100, tema = listOf(Tema.BAR))
             val journalposter = listOf(mockk<Journalpost>())
             every { safRestClient.finnJournalposter(journalposterForBrukerRequest) } returns journalposter
-            every { baksTilgangsstyrtJournalpostService.tilTilgangstyrteJournalposter(journalposter) } returns listOf(mockk<TilgangsstyrtJournalpost>())
+            every { baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(journalposter) } returns listOf(mockk<TilgangsstyrtJournalpost>())
 
             // Act
             journalpostService.finnTilgangsstyrteBaksJournalposter(journalposterForBrukerRequest)
 
             // Assert
             verify(exactly = 1) { safRestClient.finnJournalposter(journalposterForBrukerRequest) }
-            verify(exactly = 1) { baksTilgangsstyrtJournalpostService.tilTilgangstyrteJournalposter(journalposter) }
+            verify(exactly = 1) { baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(journalposter) }
         }
     }
 }

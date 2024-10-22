@@ -47,7 +47,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         every { tilgangskontrollService.sjekkTilgangTilBrukere(any(), any()) } returns listOf(Tilgang(søkerFnr, true), Tilgang(barnFnr, true))
 
         // Act
-        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.tilTilgangstyrteJournalposter(listOf(journalpost1))
+        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost1))
 
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
@@ -77,7 +77,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         every { tilgangskontrollService.sjekkTilgangTilBrukere(any(), any()) } returns listOf(Tilgang(søkerFnr, false), Tilgang(barnFnr, false))
 
         // Act
-        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.tilTilgangstyrteJournalposter(listOf(journalpost1))
+        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost1))
 
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
@@ -95,7 +95,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         every { journalpost1.harDigitalSøknad(any()) } returns false
 
         // Act
-        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.tilTilgangstyrteJournalposter(listOf(journalpost1))
+        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost1))
 
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
@@ -112,7 +112,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         every { journalpost1.tema } returns null
 
         // Act
-        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.tilTilgangstyrteJournalposter(listOf(journalpost1))
+        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost1))
 
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
@@ -133,7 +133,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
 
         every { baksVersjonertSøknadService.hentBaksSøknadBase(any(), any()) } throws MissingVersionException("JSON-String inneholder ikke feltet 'kontraktVersjon'")
         // Act
-        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.tilTilgangstyrteJournalposter(listOf(journalpost1))
+        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost1))
 
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
@@ -154,7 +154,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
 
         every { baksVersjonertSøknadService.hentBaksSøknadBase(any(), any()) } throws UnsupportedVersionException("Har ikke implementert støtte for deserialisering av søknadsversjonen")
         // Act
-        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.tilTilgangstyrteJournalposter(listOf(journalpost1))
+        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost1))
 
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)

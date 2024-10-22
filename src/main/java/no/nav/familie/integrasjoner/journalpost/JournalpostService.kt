@@ -23,7 +23,7 @@ class JournalpostService
 
         fun finnTilgangsstyrteBaksJournalposter(journalposterForBrukerRequest: JournalposterForBrukerRequest): List<TilgangsstyrtJournalpost> {
             val journalposter = safRestClient.finnJournalposter(journalposterForBrukerRequest)
-            return baksTilgangsstyrtJournalpostService.tilTilgangstyrteJournalposter(journalposter)
+            return baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(journalposter)
         }
 
         fun finnJournalposter(journalposterForVedleggRequest: JournalposterForVedleggRequest): List<Journalpost> = safRestClient.finnJournalposter(journalposterForVedleggRequest)

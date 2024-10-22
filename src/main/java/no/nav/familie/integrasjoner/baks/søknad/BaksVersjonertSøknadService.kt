@@ -20,30 +20,18 @@ class BaksVersjonertSøknadService(
         tema: Tema,
     ): BaksSøknadBase =
         when (tema) {
-            Tema.KON -> hentVersjonertKontantstøtteSøknad(journalpost, tema).baksSøknadBase
-            Tema.BAR -> hentVersjonertBarnetrygdSøknad(journalpost, tema).baksSøknadBase
+            Tema.KON -> hentVersjonertKontantstøtteSøknad(journalpost).baksSøknadBase
+            Tema.BAR -> hentVersjonertBarnetrygdSøknad(journalpost).baksSøknadBase
             else -> throw IllegalArgumentException("Støtter ikke deserialisering av søknad for tema $tema")
         }
 
     fun hentVersjonertBarnetrygdSøknad(
         journalpost: Journalpost,
-        tema: Tema,
-    ): VersjonertBarnetrygdSøknad {
-        if (tema != Tema.BAR) {
-            throw IllegalArgumentException("Kan ikke hente VersjonertBarnetrygdSøknad for journalpost med tema $tema")
-        }
-        return objectMapper.readValue<VersjonertBarnetrygdSøknad>(hentSøknadJson(journalpost, tema))
-    }
+    ): VersjonertBarnetrygdSøknad = objectMapper.readValue<VersjonertBarnetrygdSøknad>(hentSøknadJson(journalpost, Tema.BAR))
 
     fun hentVersjonertKontantstøtteSøknad(
         journalpost: Journalpost,
-        tema: Tema,
-    ): VersjonertKontantstøtteSøknad {
-        if (tema != Tema.KON) {
-            throw IllegalArgumentException("Kan ikke hente VersjonertKontantstøtteSøknad for journalpost med tema $tema")
-        }
-        return objectMapper.readValue<VersjonertKontantstøtteSøknad>(hentSøknadJson(journalpost, tema))
-    }
+    ): VersjonertKontantstøtteSøknad = objectMapper.readValue<VersjonertKontantstøtteSøknad>(hentSøknadJson(journalpost, Tema.KON))
 
     private fun hentSøknadJson(
         journalpost: Journalpost,
