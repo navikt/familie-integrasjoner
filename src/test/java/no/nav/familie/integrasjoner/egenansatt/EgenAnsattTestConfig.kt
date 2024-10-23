@@ -18,4 +18,13 @@ class EgenAnsattTestConfig {
         every { egenAnsattClient.erEgenAnsatt(any<String>()) } returns true
         return egenAnsattClient
     }
+
+    @Bean
+    @Profile("mock-egenansatt-false")
+    @Primary
+    fun egenAnssattClientMockDefaultFalse(): EgenAnsattRestClient {
+        val egenAnsattClient: EgenAnsattRestClient = mockk(relaxed = true)
+        every { egenAnsattClient.erEgenAnsatt(any<String>()) } returns false
+        return egenAnsattClient
+    }
 }
