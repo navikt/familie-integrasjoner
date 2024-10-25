@@ -33,4 +33,17 @@ class JournalpostService
             dokumentInfoId: String,
             variantFormat: String,
         ): ByteArray = safHentDokumentRestClient.hentDokument(journalpostId, dokumentInfoId, variantFormat)
+
+        fun hentTilgangsstyrtBaksDokument(
+            journalpostId: String,
+            dokumentInfoId: String,
+            variantFormat: String,
+        ): ByteArray {
+            val journalpost = hentJournalpost(journalpostId)
+            if (baksTilgangsstyrtJournalpostService.harTilgangTilJournalpost(journalpost)) {
+                return hentDokument(journalpostId, dokumentInfoId, variantFormat)
+            } else {
+                throw JournalpostForbiddenException("Kan ikke hente dokument. Krever ekstra tilganger.")
+            }
+        }
     }

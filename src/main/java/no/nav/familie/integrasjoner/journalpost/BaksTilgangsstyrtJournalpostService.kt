@@ -23,7 +23,7 @@ class BaksTilgangsstyrtJournalpostService(
             )
         }
 
-    private fun harTilgangTilJournalpost(journalpost: Journalpost): Boolean {
+    fun harTilgangTilJournalpost(journalpost: Journalpost): Boolean {
         val tema = journalpost.tema?.let { tema -> Tema.valueOf(tema) }
         if (tema == null) {
             return true

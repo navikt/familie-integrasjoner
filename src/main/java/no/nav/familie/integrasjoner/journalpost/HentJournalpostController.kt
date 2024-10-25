@@ -106,6 +106,19 @@ class HentJournalpostController(
             ),
         )
 
+    @GetMapping("hentdokument/tilgangsstyrt/baks/{journalpostId}/{dokumentInfoId}")
+    fun hentTilgangsstyrtBaksDokument(
+        @PathVariable journalpostId: String,
+        @PathVariable dokumentInfoId: String,
+        @RequestParam("variantFormat", required = false) variantFormat: String?,
+    ): ResponseEntity<Ressurs<ByteArray>> =
+        ResponseEntity.ok(
+            success(
+                journalpostService.hentTilgangsstyrtBaksDokument(journalpostId, dokumentInfoId, variantFormat ?: "ARKIV"),
+                "OK",
+            ),
+        )
+
     companion object {
         private val LOG = LoggerFactory.getLogger(HentJournalpostController::class.java)
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
