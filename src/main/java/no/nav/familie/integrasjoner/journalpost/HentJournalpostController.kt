@@ -78,6 +78,11 @@ class HentJournalpostController(
         @RequestParam(name = "journalpostId") journalpostId: String,
     ): ResponseEntity<Ressurs<Journalpost>> = ResponseEntity.ok(success(journalpostService.hentJournalpost(journalpostId), "OK"))
 
+    @GetMapping("tilgangsstyrt/baks")
+    fun hentTilgangsstyrtBaksJournalpost(
+        @RequestParam(name = "journalpostId") journalpostId: String,
+    ): ResponseEntity<Ressurs<Journalpost>> = ResponseEntity.ok(success(journalpostService.hentTilgangsstyrtBaksJournalpost(journalpostId), "OK"))
+
     @PostMapping
     fun hentJournalpostForBruker(
         @RequestBody journalposterForBrukerRequest: JournalposterForBrukerRequest,
