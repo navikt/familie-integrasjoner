@@ -110,6 +110,40 @@ class HentJournalpostControllerTest(
     }
 
     @Test
+    fun `hent tilgangsstyrt baks journalpost skal returnere journalpost og status ok`() {
+        val uriHentTilgangsstyrtBaksJournalpost =
+            UriComponentsBuilder
+                .fromHttpUrl(localhost("$JOURNALPOST_BASE_URL/tilgangsstyrt/baks"))
+                .queryParam("journalpostId", JOURNALPOST_ID)
+                .toUriString()
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("POST")
+                    .withPath("/rest/saf/graphql")
+                    .withBody(gyldigJournalPostIdRequest()),
+            ).respond(
+                response()
+                    .withBody(json(lesFil("saf/gyldigjournalpostresponse.json")))
+                    .withHeaders(Header("Content-Type", "application/json")),
+            )
+
+        val response: ResponseEntity<Ressurs<Journalpost>> =
+            restTemplate.exchange(
+                uriHentTilgangsstyrtBaksJournalpost,
+                HttpMethod.GET,
+                HttpEntity<String>(headers),
+            )
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.body?.data?.journalposttype).isEqualTo(Journalposttype.I)
+        assertThat(response.body?.data?.journalstatus).isEqualTo(Journalstatus.JOURNALFOERT)
+        assertThat(response.body?.data?.datoMottatt).isEqualTo(LocalDateTime.of(2020, 3, 26, 1, 0))
+    }
+
+    @Test
     fun `hent journalpostForBruker skal returnere journalposter og status ok`() {
         client
             .`when`(
@@ -260,6 +294,41 @@ class HentJournalpostControllerTest(
         val response: ResponseEntity<Ressurs<ByteArray>> =
             restTemplate.exchange(
                 uriHentDokument,
+                HttpMethod.GET,
+                HttpEntity<String>(headers),
+            )
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+    }
+
+    @Test
+    fun `hent tilgangsstyrt baks dokument skal returnere dokument og status ok`() {
+        val uriHentTilgangsstyrtBaksDokument = localhost(JOURNALPOST_BASE_URL) + "/hentdokument/tilgangsstyrt/baks/$JOURNALPOST_ID/$DOKUMENTINFO_ID"
+
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("POST")
+                    .withPath("/rest/saf/graphql")
+                    .withBody(gyldigJournalPostIdRequest()),
+            ).respond(
+                response()
+                    .withBody(json(lesFil("saf/gyldigjournalpostresponse.json")))
+                    .withHeaders(Header("Content-Type", "application/json")),
+            )
+
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("GET")
+                    .withPath("/rest/saf/rest/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID/ARKIV"),
+            ).respond(HttpResponse().withBody("pdf".toByteArray()).withHeaders(Header("Content-Type", "application/pdf")))
+
+        val response: ResponseEntity<Ressurs<ByteArray>> =
+            restTemplate.exchange(
+                uriHentTilgangsstyrtBaksDokument,
                 HttpMethod.GET,
                 HttpEntity<String>(headers),
             )
