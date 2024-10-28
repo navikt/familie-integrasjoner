@@ -78,6 +78,11 @@ class HentJournalpostController(
         @RequestParam(name = "journalpostId") journalpostId: String,
     ): ResponseEntity<Ressurs<Journalpost>> = ResponseEntity.ok(success(journalpostService.hentJournalpost(journalpostId), "OK"))
 
+    @GetMapping("tilgangsstyrt/baks")
+    fun hentTilgangsstyrtBaksJournalpost(
+        @RequestParam(name = "journalpostId") journalpostId: String,
+    ): ResponseEntity<Ressurs<Journalpost>> = ResponseEntity.ok(success(journalpostService.hentTilgangsstyrtBaksJournalpost(journalpostId), "OK"))
+
     @PostMapping
     fun hentJournalpostForBruker(
         @RequestBody journalposterForBrukerRequest: JournalposterForBrukerRequest,
@@ -102,6 +107,19 @@ class HentJournalpostController(
         ResponseEntity.ok(
             success(
                 journalpostService.hentDokument(journalpostId, dokumentInfoId, variantFormat ?: "ARKIV"),
+                "OK",
+            ),
+        )
+
+    @GetMapping("hentdokument/tilgangsstyrt/baks/{journalpostId}/{dokumentInfoId}")
+    fun hentTilgangsstyrtBaksDokument(
+        @PathVariable journalpostId: String,
+        @PathVariable dokumentInfoId: String,
+        @RequestParam("variantFormat", required = false) variantFormat: String?,
+    ): ResponseEntity<Ressurs<ByteArray>> =
+        ResponseEntity.ok(
+            success(
+                journalpostService.hentTilgangsstyrtBaksDokument(journalpostId, dokumentInfoId, variantFormat ?: "ARKIV"),
                 "OK",
             ),
         )

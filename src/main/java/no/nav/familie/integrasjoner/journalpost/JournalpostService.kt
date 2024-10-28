@@ -19,6 +19,15 @@ class JournalpostService
     ) {
         fun hentJournalpost(journalpostId: String): Journalpost = safRestClient.hentJournalpost(journalpostId)
 
+        fun hentTilgangsstyrtBaksJournalpost(journalpostId: String): Journalpost {
+            val journalpost = hentJournalpost(journalpostId)
+            if (baksTilgangsstyrtJournalpostService.harTilgangTilJournalpost(journalpost)) {
+                return journalpost
+            } else {
+                throw JournalpostForbiddenException("Kan ikke hente journalpost. Krever ekstra tilganger.")
+            }
+        }
+
         fun finnJournalposter(journalposterForBrukerRequest: JournalposterForBrukerRequest): List<Journalpost> = safRestClient.finnJournalposter(journalposterForBrukerRequest)
 
         fun finnTilgangsstyrteBaksJournalposter(journalposterForBrukerRequest: JournalposterForBrukerRequest): List<TilgangsstyrtJournalpost> {
@@ -33,4 +42,17 @@ class JournalpostService
             dokumentInfoId: String,
             variantFormat: String,
         ): ByteArray = safHentDokumentRestClient.hentDokument(journalpostId, dokumentInfoId, variantFormat)
+
+        fun hentTilgangsstyrtBaksDokument(
+            journalpostId: String,
+            dokumentInfoId: String,
+            variantFormat: String,
+        ): ByteArray {
+            val journalpost = hentJournalpost(journalpostId)
+            if (baksTilgangsstyrtJournalpostService.harTilgangTilJournalpost(journalpost)) {
+                return hentDokument(journalpostId, dokumentInfoId, variantFormat)
+            } else {
+                throw JournalpostForbiddenException("Kan ikke hente dokument. Krever ekstra tilganger.")
+            }
+        }
     }
