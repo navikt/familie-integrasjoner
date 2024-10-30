@@ -24,6 +24,7 @@ import no.nav.familie.kontrakter.felles.dokarkiv.Sak
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.ArkiverDokumentRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Dokument
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Filtype
+import no.nav.familie.kontrakter.felles.journalpost.AvsenderMottakerIdType
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
@@ -58,7 +59,7 @@ class DokarkivService(
         val avsenderMottaker =
             arkiverDokumentRequest.avsenderMottaker ?: arkiverDokumentRequest.fnr.let {
                 val navn = hentNavnForFnr(fnr = arkiverDokumentRequest.fnr, behandlingstema = metadata.tema)
-                AvsenderMottaker(it, BrukerIdType.FNR, navn)
+                AvsenderMottaker(it, AvsenderMottakerIdType.FNR, navn)
             }
 
         val dokumenter = mutableListOf(mapHoveddokument(arkiverDokumentRequest.hoveddokumentvarianter))

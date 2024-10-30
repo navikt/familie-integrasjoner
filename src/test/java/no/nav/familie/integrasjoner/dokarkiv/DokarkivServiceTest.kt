@@ -30,6 +30,7 @@ import no.nav.familie.kontrakter.felles.dokarkiv.v2.ArkiverDokumentRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Dokument
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Filtype
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Førsteside
+import no.nav.familie.kontrakter.felles.journalpost.AvsenderMottakerIdType
 import no.nav.familie.log.mdc.MDCConstants
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -358,7 +359,7 @@ class DokarkivServiceTest {
         sak: Sak? = null,
     ) {
         assertThat(request.avsenderMottaker!!.id).isEqualTo(FNR)
-        assertThat(request.avsenderMottaker!!.idType).isEqualTo(BrukerIdType.FNR)
+        assertThat(request.avsenderMottaker!!.idType).isEqualTo(AvsenderMottakerIdType.FNR)
         assertThat(request.bruker!!.id).isEqualTo(FNR)
         assertThat(request.bruker!!.idType).isEqualTo(BrukerIdType.FNR)
         assertThat(request.behandlingstema).isEqualTo(KontanstøtteSøknadMetadata.behandlingstema.value)
@@ -386,7 +387,7 @@ class DokarkivServiceTest {
         sak: Sak,
     ) {
         assertThat(request.avsenderMottaker!!.id).isEqualTo(FNR)
-        assertThat(request.avsenderMottaker!!.idType).isEqualTo(BrukerIdType.FNR)
+        assertThat(request.avsenderMottaker!!.idType).isEqualTo(AvsenderMottakerIdType.FNR)
         assertThat(request.bruker!!.id).isEqualTo(FNR)
         assertThat(request.bruker!!.idType).isEqualTo(BrukerIdType.FNR)
         assertThat(request.behandlingstema).isEqualTo(BarnetrygdVedtakMetadata.behandlingstema.value)
