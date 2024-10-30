@@ -20,8 +20,8 @@ class BaksVersjonertSøknadService(
         tema: Tema,
     ): BaksSøknadBase =
         when (tema) {
-            Tema.KON -> hentVersjonertKontantstøtteSøknad(journalpost).baksSøknadBase
-            Tema.BAR -> hentVersjonertBarnetrygdSøknad(journalpost).baksSøknadBase
+            Tema.KON -> hentVersjonertKontantstøtteSøknad(journalpost).kontantstøtteSøknad
+            Tema.BAR -> hentVersjonertBarnetrygdSøknad(journalpost).barnetrygdSøknad
             else -> throw IllegalArgumentException("Støtter ikke deserialisering av søknad for tema $tema")
         }
 
