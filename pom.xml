@@ -24,7 +24,7 @@
         <springdoc.version>2.6.0</springdoc.version>
         <felles.version>3.20240913110742_adb42f8</felles.version>
         <kontrakt.version>3.0_20241102131210_d65efd1</kontrakt.version>
-        <token-validation-spring.version>5.0.5</token-validation-spring.version>
+        <token-validation-spring.version>5.0.10</token-validation-spring.version>
 
         <mock-server.version>5.15.0</mock-server.version>
 
@@ -386,7 +386,7 @@
                     <dependency>
                         <groupId>com.pinterest.ktlint</groupId>
                         <artifactId>ktlint-cli</artifactId>
-                        <version>1.4.0</version>
+                        <version>1.4.1</version>
                     </dependency>
                     <!-- additional 3rd party ruleset(s) can be specified here -->
                 </dependencies>
