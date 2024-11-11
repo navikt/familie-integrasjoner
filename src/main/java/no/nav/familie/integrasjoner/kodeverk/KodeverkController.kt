@@ -33,14 +33,11 @@ class KodeverkController(
     ): ResponseEntity<Ressurs<String>> = ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentLandkoder().getOrDefault(landkode, "")))
 
     @GetMapping("/landkoderISO2")
-    fun hentLandkoderISO2(): ResponseEntity<Ressurs<Map<String, String>>> =
-        ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentLandkoderISO2()))
+    fun hentLandkoderISO2(): ResponseEntity<Ressurs<Map<String, String>>> = ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentLandkoderISO2()))
 
     @GetMapping("/landkoder/eea")
-    fun hentEEALand(): ResponseEntity<Ressurs<KodeverkDto>> =
-        ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentEEALandkoder()))
+    fun hentEEALand(): ResponseEntity<Ressurs<KodeverkDto>> = ResponseEntity.ok(Ressurs.Companion.success(kodeverkService.hentEEALandkoder()))
 
     @GetMapping("inntekt")
-    fun hentKodeverkForInntekt(): Ressurs<InntektKodeverkDto> =
-        Ressurs.Companion.success(kodeverkService.hentInntekt())
+    fun hentKodeverkForInntekt(): Ressurs<InntektKodeverkDto> = Ressurs.Companion.success(kodeverkService.hentInntekt())
 }

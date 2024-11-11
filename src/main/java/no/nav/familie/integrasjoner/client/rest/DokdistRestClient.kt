@@ -19,8 +19,7 @@ class DokdistRestClient(
 
     val distribuerUri = UriUtil.uri(dokdistUri, PATH_DISTRIBUERJOURNALPOST)
 
-    fun distribuerJournalpost(req: DistribuerJournalpostRequestTo): DistribuerJournalpostResponseTo? =
-        postForEntity(distribuerUri, req)
+    fun distribuerJournalpost(req: DistribuerJournalpostRequestTo): DistribuerJournalpostResponseTo? = postForEntity(distribuerUri, req)
 
     companion object {
         private const val PATH_PING = "actuator/health/liveness"

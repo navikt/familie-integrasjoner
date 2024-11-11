@@ -22,5 +22,4 @@ fun List<PersonMedAdresseBeskyttelse>.personIdentMedKode6(): String? =
         .find { it.adressebeskyttelse == STRENGT_FORTROLIG || it.adressebeskyttelse == STRENGT_FORTROLIG_UTLAND }
         ?.personIdent
 
-fun List<PersonMedAdresseBeskyttelse>.personMedKode7(): String? =
-    this.find { it.adressebeskyttelse == FORTROLIG }?.personIdent
+fun List<PersonMedAdresseBeskyttelse>.personMedKode7(): String? = this.find { it.adressebeskyttelse == FORTROLIG }?.personIdent
