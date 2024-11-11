@@ -171,8 +171,7 @@ internal class CachedTilgangskontrollServiceTest {
         assertThat(tilgang.personIdent).isEqualTo("søker")
     }
 
-    private fun sjekkTilgangTilPersonMedRelasjoner() =
-        cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner("", jwtToken, Tema.ENF).harTilgang
+    private fun sjekkTilgangTilPersonMedRelasjoner() = cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner("", jwtToken, Tema.ENF).harTilgang
 
     private fun sjekkTilgangTilPerson() = cachedTilgangskontrollService.sjekkTilgang("", jwtToken, Tema.ENF).harTilgang
 
@@ -193,8 +192,7 @@ internal class CachedTilgangskontrollServiceTest {
     private fun lagPersonMedBeskyttelse(
         sivilstand: ADRESSEBESKYTTELSEGRADERING?,
         personIdent: String,
-    ) =
-        sivilstand?.let { listOf(PersonMedAdresseBeskyttelse(personIdent, it)) } ?: emptyList()
+    ) = sivilstand?.let { listOf(PersonMedAdresseBeskyttelse(personIdent, it)) } ?: emptyList()
 
     private fun mockHentPersonMedAdressebeskyttelse(adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING = ADRESSEBESKYTTELSEGRADERING.UGRADERT) {
         every { personopplysningerService.hentAdressebeskyttelse(any(), any()) } returns Adressebeskyttelse(adressebeskyttelse)

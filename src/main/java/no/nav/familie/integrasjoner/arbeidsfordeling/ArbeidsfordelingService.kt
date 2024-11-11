@@ -124,8 +124,7 @@ class ArbeidsfordelingService(
             restClient.finnBehandlendeEnhetMedBesteMatch(kriterier)
         }
 
-    private fun finnEgneAnsatte(aktuellePersoner: List<PersonMedAdresseBeskyttelse>) =
-        egenAnsattService.erEgenAnsatt(aktuellePersoner.map { it.personIdent }.toSet()).filter { it.value }.keys
+    private fun finnEgneAnsatte(aktuellePersoner: List<PersonMedAdresseBeskyttelse>) = egenAnsattService.erEgenAnsatt(aktuellePersoner.map { it.personIdent }.toSet()).filter { it.value }.keys
 
     private fun utledPersonMedStrengestBehov(
         personIdent: String,

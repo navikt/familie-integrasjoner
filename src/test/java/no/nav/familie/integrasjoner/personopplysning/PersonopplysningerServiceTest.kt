@@ -80,6 +80,5 @@ class PersonopplysningerServiceTest {
         familierelasjoner: List<PdlForelderBarnRelasjon> = emptyList(),
         sivilstand: List<Sivilstand> = emptyList(),
         adressebeskyttelse: List<Adressebeskyttelse> = emptyList(),
-    ) =
-        PdlPersonMedRelasjonerOgAdressebeskyttelse(familierelasjoner, sivilstand, adressebeskyttelse)
+    ) = PdlPersonMedRelasjonerOgAdressebeskyttelse(familierelasjoner, sivilstand, adressebeskyttelse)
 }

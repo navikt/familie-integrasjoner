@@ -76,6 +76,5 @@ internal class TilgangskontrollUtilTest {
     private fun lagPersonMedBeskyttelse(
         sivilstand: ADRESSEBESKYTTELSEGRADERING?,
         personIdent: String,
-    ) =
-        sivilstand?.let { listOf(PersonMedAdresseBeskyttelse(personIdent, it)) } ?: emptyList()
+    ) = sivilstand?.let { listOf(PersonMedAdresseBeskyttelse(personIdent, it)) } ?: emptyList()
 }

@@ -99,8 +99,7 @@ class PersonopplysningerService(
     private fun mapPersonMedRelasjoner(
         sivilstandIdenter: List<String>,
         tilknyttedeIdenterData: Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>,
-    ) =
-        sivilstandIdenter.map { PersonMedAdresseBeskyttelse(it, tilknyttedeIdenterData.getOrThrow(it).gradering()) }
+    ) = sivilstandIdenter.map { PersonMedAdresseBeskyttelse(it, tilknyttedeIdenterData.getOrThrow(it).gradering()) }
 
     private fun PdlPersonMedRelasjonerOgAdressebeskyttelse.gradering() = this.adressebeskyttelse.firstOrNull()?.gradering
 
