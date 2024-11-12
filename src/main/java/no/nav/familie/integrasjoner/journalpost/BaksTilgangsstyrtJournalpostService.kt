@@ -9,6 +9,7 @@ import no.nav.familie.kontrakter.felles.søknad.MissingVersionException
 import no.nav.familie.kontrakter.felles.søknad.UnsupportedVersionException
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
 class BaksTilgangsstyrtJournalpostService(
@@ -24,10 +25,10 @@ class BaksTilgangsstyrtJournalpostService(
         }
 
     fun harTilgangTilJournalpost(journalpost: Journalpost): Boolean {
-        val tema = journalpost.tema?.let { tema -> Tema.valueOf(tema) }
-        if (tema == null) {
-            return true
-        }
+        val tema = journalpost.tema?.let { tema -> Tema.valueOf(tema) } ?: return true
+
+        if (!journalpost.støtterTilgangsstyringSjekk()) return true
+
         return if (journalpost.harDigitalSøknad(tema)) {
             try {
                 val baksSøknadBase = baksVersjonertSøknadService.hentBaksSøknadBase(journalpost, tema)
@@ -51,6 +52,20 @@ class BaksTilgangsstyrtJournalpostService(
         } else {
             // Vi har kun mulighet til å sjekke tilganger for digitale søknader, da innholdet i papirsøknader er ukjent.
             true
+        }
+    }
+
+    private fun Journalpost.støtterTilgangsstyringSjekk(): Boolean {
+        val tema = tema?.let { tema -> Tema.valueOf(tema) } ?: return false
+        val datoMottatt = datoMottatt ?: return false
+
+        val tidligsteStøtteForTilgangsstyrtDokumentForKontantstøtte = LocalDateTime.of(2022, 12, 13, 0, 0)
+        val tidligsteStøtteForTilgangsstyrtDokumentForBarnetrygd = LocalDateTime.of(2020, 7, 21, 0, 0)
+
+        return when {
+            tema == Tema.KON && tidligsteStøtteForTilgangsstyrtDokumentForKontantstøtte > datoMottatt -> false
+            tema == Tema.BAR && tidligsteStøtteForTilgangsstyrtDokumentForBarnetrygd > datoMottatt -> false
+            else -> true
         }
     }
 
