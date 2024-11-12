@@ -25,9 +25,12 @@ class BaksTilgangsstyrtJournalpostService(
         }
 
     fun harTilgangTilJournalpost(journalpost: Journalpost): Boolean {
-        val tema = journalpost.tema?.let { tema -> Tema.valueOf(tema) } ?: return true
+        val tema = journalpost.tema?.let { tema -> Tema.valueOf(tema) }
+        if (tema == null) {
+            return true
+        }
 
-        if (!journalpost.støtterTilgangsstyringSjekk()) return true
+        if (!støtterTilgangsstyringSjekk(journalpost)) return true
 
         return if (journalpost.harDigitalSøknad(tema)) {
             try {
@@ -55,12 +58,9 @@ class BaksTilgangsstyrtJournalpostService(
         }
     }
 
-    private fun Journalpost.støtterTilgangsstyringSjekk(): Boolean {
-        val tema = tema?.let { tema -> Tema.valueOf(tema) } ?: return false
-        val datoMottatt = datoMottatt ?: return false
-
-        val tidligsteStøtteForTilgangsstyrtDokumentForKontantstøtte = LocalDateTime.of(2022, 12, 13, 0, 0)
-        val tidligsteStøtteForTilgangsstyrtDokumentForBarnetrygd = LocalDateTime.of(2020, 7, 21, 0, 0)
+    private fun støtterTilgangsstyringSjekk(journalpost: Journalpost): Boolean {
+        val tema = journalpost.tema?.let { tema -> Tema.valueOf(tema) } ?: return false
+        val datoMottatt = journalpost.datoMottatt ?: return false
 
         return when {
             tema == Tema.KON && tidligsteStøtteForTilgangsstyrtDokumentForKontantstøtte > datoMottatt -> false
@@ -72,5 +72,7 @@ class BaksTilgangsstyrtJournalpostService(
     companion object {
         private val logger = LoggerFactory.getLogger(BaksTilgangsstyrtJournalpostService::class.java)
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
+        private val tidligsteStøtteForTilgangsstyrtDokumentForKontantstøtte = LocalDateTime.of(2022, 12, 13, 0, 0)
+        private val tidligsteStøtteForTilgangsstyrtDokumentForBarnetrygd = LocalDateTime.of(2020, 7, 21, 0, 0)
     }
 }
