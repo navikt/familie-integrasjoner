@@ -9,6 +9,7 @@ import no.nav.familie.kontrakter.felles.søknad.MissingVersionException
 import no.nav.familie.kontrakter.felles.søknad.UnsupportedVersionException
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
 class BaksTilgangsstyrtJournalpostService(
@@ -28,6 +29,9 @@ class BaksTilgangsstyrtJournalpostService(
         if (tema == null) {
             return true
         }
+
+        if (!støtterTilgangsstyringSjekk(journalpost)) return true
+
         return if (journalpost.harDigitalSøknad(tema)) {
             try {
                 val baksSøknadBase = baksVersjonertSøknadService.hentBaksSøknadBase(journalpost, tema)
@@ -54,8 +58,21 @@ class BaksTilgangsstyrtJournalpostService(
         }
     }
 
+    private fun støtterTilgangsstyringSjekk(journalpost: Journalpost): Boolean {
+        val tema = journalpost.tema?.let { tema -> Tema.valueOf(tema) } ?: return false
+        val datoMottatt = journalpost.datoMottatt ?: return false
+
+        return when {
+            tema == Tema.KON && tidligsteStøtteForTilgangsstyrtDokumentForKontantstøtte > datoMottatt -> false
+            tema == Tema.BAR && tidligsteStøtteForTilgangsstyrtDokumentForBarnetrygd > datoMottatt -> false
+            else -> true
+        }
+    }
+
     companion object {
         private val logger = LoggerFactory.getLogger(BaksTilgangsstyrtJournalpostService::class.java)
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
+        private val tidligsteStøtteForTilgangsstyrtDokumentForKontantstøtte = LocalDateTime.of(2022, 12, 13, 0, 0)
+        private val tidligsteStøtteForTilgangsstyrtDokumentForBarnetrygd = LocalDateTime.of(2020, 7, 21, 0, 0)
     }
 }
