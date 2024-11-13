@@ -148,5 +148,4 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata =
         Dokumenttype.VEDTAKSBREV_BARNETILSYN -> BarnetilsynVedtaksbrevMetadata
         Dokumenttype.VEDTAKSBREV_OVERGANGSSTØNAD -> OvergangsstønadVedtaksbrevMetadata
         Dokumenttype.VEDTAKSBREV_SKOLEPENGER -> SkolepengerVedtaksbrevMetadata
-        Dokumenttype.KONTANTSTØTTE_VEDTAK_ENDRET -> KontantstøtteVedtakMetadata
     }
