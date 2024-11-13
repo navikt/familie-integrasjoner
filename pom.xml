@@ -23,7 +23,7 @@
         <kotlin.version>2.0.21</kotlin.version>
         <springdoc.version>2.6.0</springdoc.version>
         <felles.version>3.20240913110742_adb42f8</felles.version>
-        <kontrakt.version>3.0_20241102131210_d65efd1</kontrakt.version>
+        <kontrakt.version>3.0_20241113143804_80bdd40</kontrakt.version>
         <token-validation-spring.version>5.0.10</token-validation-spring.version>
 
         <mock-server.version>5.15.0</mock-server.version>
