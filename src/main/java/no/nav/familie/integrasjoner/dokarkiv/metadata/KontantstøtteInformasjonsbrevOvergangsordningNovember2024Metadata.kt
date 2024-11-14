@@ -15,7 +15,7 @@ object KontantstøtteInformasjonsbrevOvergangsordningNovember2024Metadata : Doku
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.KONTANTSTØTTE_INFORMASJONSBREV_OVERGANGSORDNING_NOVEMBER_2024
-    override val tittel: String = "Kontantstøtte – overgangsordning november2024"
-    override val brevkode: String = "kontantstoette-overgangsordning-november-2024"
+    override val tittel: String = "Kontantstøtte – overgangsordning november"
+    override val brevkode: String = "kontantstoette-overgangsordning-november"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
