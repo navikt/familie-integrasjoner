@@ -20,22 +20,6 @@ class AktørController(
     private val aktørService: AktørService,
 ) {
     /**
-     * Dette endepunktet brukes av familie-ef-iverksett for å sende fattet vedtak til Arena.
-     * Kan fjernes hvis behovet for å sende med aktørID i vedtakshendelsen forsvinner.
-     */
-    @PostMapping("v2/{tema}")
-    fun finnAktørIdForPersonIdent(
-        @RequestBody(required = true) ident: Ident,
-        @PathVariable tema: Tema,
-    ): ResponseEntity<Ressurs<Map<String, String>>> =
-        ResponseEntity.ok(
-            success(
-                mapOf("aktørId" to aktørService.getAktørIdFraPdl(ident.ident, tema)),
-                "Hent aktør for personident OK",
-            ),
-        )
-
-    /**
      * Denne brukes av familie-ef-mottak for å finne behandlende enhet.
      * Kan fjernes når eller hvis det blir mulig å assosiere journalposter med kun personident.
      */
