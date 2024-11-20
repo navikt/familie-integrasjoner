@@ -8,7 +8,6 @@ import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSE
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.FORTROLIG
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG_UTLAND
-import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.tilgangskontroll.Tilgang
@@ -50,7 +49,7 @@ class CachedTilgangskontrollService(
         jwtToken: JwtToken,
         tema: Tema,
     ): Tilgang {
-        val personMedRelasjoner = personopplysningerService.hentRelasjonerFraPDLPip(personIdent, tema)
+        val personMedRelasjoner = personopplysningerService.hentRelasjonerFraPdlPip(personIdent, tema)
         secureLogger.info("Sjekker tilgang til {}", personMedRelasjoner)
         val høestegradering = personopplysningerService.hentHøyesteGraderingForPersonMedRelasjoner(personIdent, tema)
 

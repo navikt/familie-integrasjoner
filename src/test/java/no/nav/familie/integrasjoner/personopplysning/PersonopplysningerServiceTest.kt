@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import no.nav.familie.integrasjoner.client.rest.PdlClientCredentialRestClient
+import no.nav.familie.integrasjoner.client.rest.PdlPipRestClient
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.client.rest.RegoppslagRestClient
 import no.nav.familie.integrasjoner.personopplysning.internal.Adressebeskyttelse
@@ -21,6 +22,7 @@ class PersonopplysningerServiceTest {
     private lateinit var personopplysningerService: PersonopplysningerService
 
     private val pdlRestClient = mockk<PdlRestClient>()
+    private val pdlPipRestClient = mockk<PdlPipRestClient>()
     private val pdlClientCredentialRestClient = mockk<PdlClientCredentialRestClient>()
     private val regoppslagRestClient = mockk<RegoppslagRestClient>()
 
@@ -29,6 +31,7 @@ class PersonopplysningerServiceTest {
         personopplysningerService =
             PersonopplysningerService(
                 pdlRestClient,
+                pdlPipRestClient,
                 pdlClientCredentialRestClient,
                 regoppslagRestClient,
             )

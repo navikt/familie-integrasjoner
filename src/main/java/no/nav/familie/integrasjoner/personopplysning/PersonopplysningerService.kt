@@ -47,7 +47,7 @@ class PersonopplysningerService(
         tema: Tema,
     ): ADRESSEBESKYTTELSEGRADERING {
         val personMedRelasjoner = pdlPipRestClient.hentPersonMedAdressebeskyttelse(personIdent, tema)
-        val relasjoner =hentRelasjonerFraPDLPip(personIdent, tema)
+        val relasjoner =hentRelasjonerFraPdlPip(personIdent, tema)
 
         val høyesteGradering = pdlPipRestClient.hentPersonerMedAdressebeskyttelse(relasjoner, tema).personer.values.flatMap { it -> it.person?.adressebeskyttelse ?: emptyList() }
             .map { it.gradering }
@@ -56,7 +56,7 @@ class PersonopplysningerService(
         return høyesteGradering
     }
 
-    fun hentRelasjonerFraPDLPip(
+    fun hentRelasjonerFraPdlPip(
         personIdent: String,
         tema: Tema,
     ): List<String> {
