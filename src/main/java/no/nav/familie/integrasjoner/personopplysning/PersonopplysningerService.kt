@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.personopplysning
 
 import no.nav.familie.integrasjoner.client.rest.PdlClientCredentialRestClient
+import no.nav.familie.integrasjoner.client.rest.PdlPipRestClient
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.client.rest.RegoppslagRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
@@ -23,6 +24,7 @@ import org.springframework.web.context.annotation.ApplicationScope
 @ApplicationScope
 class PersonopplysningerService(
     private val pdlRestClient: PdlRestClient,
+    private val pdlPipRestClient: PdlPipRestClient,
     private val pdlClientCredentialRestClient: PdlClientCredentialRestClient,
     private val regoppslagRestClient: RegoppslagRestClient,
 ) {
@@ -38,6 +40,30 @@ class PersonopplysningerService(
     ): FinnPersonidenterResponse {
         val response = pdlRestClient.hentIdenter(personIdent, "FOLKEREGISTERIDENT", tema, medHistorikk)
         return FinnPersonidenterResponse(response.map { PersonIdentMedHistorikk(it.ident, it.historisk) })
+    }
+
+    fun hentHøyesteGraderingForPersonMedRelasjoner(
+        personIdent: String,
+        tema: Tema,
+    ): ADRESSEBESKYTTELSEGRADERING {
+        val personMedRelasjoner = pdlPipRestClient.hentPersonMedAdressebeskyttelse(personIdent, tema)
+        val relasjoner =hentRelasjonerFraPDLPip(personIdent, tema)
+
+        val høyesteGradering = pdlPipRestClient.hentPersonerMedAdressebeskyttelse(relasjoner, tema).personer.values.flatMap { it -> it.person?.adressebeskyttelse ?: emptyList() }
+            .map { it.gradering }
+            .maxBy { it.nivå } ?: ADRESSEBESKYTTELSEGRADERING.UGRADERT
+
+        return høyesteGradering
+    }
+
+    fun hentRelasjonerFraPDLPip(
+        personIdent: String,
+        tema: Tema,
+    ): List<String> {
+        val personMedRelasjoner = pdlPipRestClient.hentPersonMedAdressebeskyttelse(personIdent, tema)
+        val relasjoner = personMedRelasjoner.person?.familierelasjoner?.map { it.relatertPersonIdent } ?: emptyList()
+
+        return relasjoner
     }
 
     @Cacheable(cacheNames = ["PERSON_MED_RELASJONER"], key = "#personIdent + #tema", condition = "#personIdent != null")
@@ -71,8 +97,7 @@ class PersonopplysningerService(
         personIdent: String,
         tema: Tema,
     ): Adressebeskyttelse =
-        pdlRestClient.hentAdressebeskyttelse(personIdent, tema).adressebeskyttelse.firstOrNull()
-            ?: Adressebeskyttelse(gradering = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
+        Adressebeskyttelse(gradering = pdlPipRestClient.hentPersonMedAdressebeskyttelse(personIdent, tema).person?.adressebeskyttelse?.maxBy { it.gradering.nivå }?.gradering ?: ADRESSEBESKYTTELSEGRADERING.UGRADERT)
 
     fun hentPostadresse(
         personIdent: String,

@@ -67,5 +67,6 @@ AXSYS_SCOPE: "dummy-scope"
 STS_URL: http://security-token-service.default.svc.nais.local/rest/v1/sts/token
 KODEVERK_URL: http://kodeverk.default
 PDL_URL: http://pdl-api.pdl
+PDL_PIP_URL: http://pdl-pip-api.pdl
 DOKARKIV_V1_URL: http://dokarkiv.teamdokumenthandtering
 

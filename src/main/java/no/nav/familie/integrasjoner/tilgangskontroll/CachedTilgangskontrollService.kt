@@ -50,11 +50,11 @@ class CachedTilgangskontrollService(
         jwtToken: JwtToken,
         tema: Tema,
     ): Tilgang {
-        val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent, tema)
+        val personMedRelasjoner = personopplysningerService.hentRelasjonerFraPDLPip(personIdent, tema)
         secureLogger.info("Sjekker tilgang til {}", personMedRelasjoner)
+        val høestegradering = personopplysningerService.hentHøyesteGraderingForPersonMedRelasjoner(personIdent, tema)
 
-        val høyesteGraderingen = TilgangskontrollUtil.høyesteGraderingen(personMedRelasjoner)
-        return hentTilgang(høyesteGraderingen, jwtToken, personIdent) { erEgenAnsatt(personMedRelasjoner) }
+        return hentTilgang(høestegradering, jwtToken, personIdent) { egenAnsattService.erEgenAnsatt(personMedRelasjoner.toSet()).any { it.value } }
     }
 
     private fun hentTilgang(
@@ -80,20 +80,6 @@ class CachedTilgangskontrollService(
         return Tilgang(personIdent = personIdent, harTilgang = true)
     }
 
-    /**
-     * Vi ønsker å sjekke om person med relasjoner er egenAnsatt.
-     * Dette gjelder personen vi jobber med, barn (voksne barn er også med), personer relatert via sivilstand (gift med, separtert fra)
-     * og barnets andre foreldrer.
-     */
-    private fun erEgenAnsatt(personMedRelasjoner: PersonMedRelasjoner): Boolean {
-        val relevanteIdenter =
-            setOf(personMedRelasjoner.personIdent) +
-                personMedRelasjoner.sivilstand.map { it.personIdent } +
-                personMedRelasjoner.barn.map { it.personIdent } +
-                personMedRelasjoner.barnsForeldrer.map { it.personIdent }
-
-        return egenAnsattService.erEgenAnsatt(relevanteIdenter).any { it.value }
-    }
 
     private fun hentTilgangForRolle(
         adRolle: AdRolle?,
