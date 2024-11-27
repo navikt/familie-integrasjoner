@@ -128,13 +128,11 @@ class ApiExceptionHandler {
             feilmelding += "[${e.error.javaClass.name}]"
             sensitivFeilmelding += "[${e.error.javaClass.name}]"
         }
-        when (e.level) {
-            OppslagException.Level.KRITISK -> {
-                secureLogger.error("OppslagException : $sensitivFeilmelding", e.error)
-                logger.error("OppslagException : $feilmelding")
-            }
 
-            OppslagException.Level.MEDIUM -> {
+        when (e.level) {
+            OppslagException.Level.KRITISK,
+            OppslagException.Level.MEDIUM,
+            -> {
                 secureLogger.warn("OppslagException : $sensitivFeilmelding", e.error)
                 logger.warn("OppslagException : $feilmelding")
             }
