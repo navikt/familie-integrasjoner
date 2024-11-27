@@ -16,6 +16,7 @@ import org.springframework.web.bind.MissingRequestHeaderException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.context.request.async.AsyncRequestNotUsableException
 import java.nio.channels.ClosedChannelException
@@ -116,7 +117,7 @@ class ApiExceptionHandler {
 
     @ExceptionHandler(PdlUnauthorizedException::class)
     fun handleThrowable(feil: PdlUnauthorizedException): ResponseEntity<Ressurs<Nothing>> {
-        incrementLoggFeil("Pdl.Unauthorized")
+        incrementLoggFeil("pdl.unauthorized")
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(failure(frontendFeilmelding = "Har ikke tilgang til å slå opp personen i PDL"))
     }
 

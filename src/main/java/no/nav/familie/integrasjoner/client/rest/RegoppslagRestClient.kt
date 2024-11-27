@@ -46,7 +46,7 @@ class RegoppslagRestClient(
                 HttpStatus.GONE,
                 -> null // Person er død og har ukjent adresse
                 else -> {
-                    incrementLoggFeil("regoppslag")
+                    incrementLoggFeil("regoppslag.hentPostadresse")
                     throw e
                 }
             }

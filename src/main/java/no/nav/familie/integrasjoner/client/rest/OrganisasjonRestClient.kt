@@ -32,7 +32,7 @@ class OrganisasjonRestClient(
         try {
             getForEntity(nøkkelinfoUri(orgnr))
         } catch (e: Exception) {
-            incrementLoggFeil("organisasjon")
+            incrementLoggFeil("organisasjon.hent")
             throw e
         }
 }

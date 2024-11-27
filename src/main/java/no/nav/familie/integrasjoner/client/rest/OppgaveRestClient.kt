@@ -132,7 +132,7 @@ class OppgaveRestClient(
                         if (it.statusCode == HttpStatus.CONFLICT) {
                             throw OppslagException(
                                 feilmelding,
-                                "Oppgave.oppdaterOppgave",
+                                "oppgave.oppdaterOppgave",
                                 OppslagException.Level.LAV,
                                 HttpStatus.CONFLICT,
                                 it,
@@ -142,7 +142,7 @@ class OppgaveRestClient(
 
                     throw OppslagException(
                         feilmelding,
-                        "Oppgave.oppdaterOppgave",
+                        "oppgave.oppdaterOppgave",
                         OppslagException.Level.KRITISK,
                         HttpStatus.INTERNAL_SERVER_ERROR,
                         it,
@@ -168,7 +168,7 @@ class OppgaveRestClient(
 
                     throw OppslagException(
                         feilmelding,
-                        "Oppgave.byttEnhet",
+                        "oppgave.byttEnhet",
                         OppslagException.Level.MEDIUM,
                         HttpStatus.INTERNAL_SERVER_ERROR,
                         it,
@@ -194,7 +194,7 @@ class OppgaveRestClient(
 
                 throw OppslagException(
                     feilmelding,
-                    "Oppgave.opprettOppgave",
+                    "oppgave.opprettOppgave",
                     OppslagException.Level.MEDIUM,
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     it,
@@ -234,7 +234,7 @@ class OppgaveRestClient(
             returnerteIngenOppgaver.increment()
             throw OppslagException(
                 "Ingen oppgaver funnet for $requestUrl",
-                "oppgave",
+                "oppgave.finnAapenOppgave",
                 OppslagException.Level.MEDIUM,
                 HttpStatus.NOT_FOUND,
             )
