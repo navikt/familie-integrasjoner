@@ -39,7 +39,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         every { journalpost.harDigitalSøknad(any()) } returns true
         every { journalpost.dokumenter } returns listOf(dokumentInfo)
         every { dokumentInfo.dokumentInfoId } returns "1"
-        every { dokumentInfo.erDigitalSøknad(any()) } returns true
+        every { dokumentInfo.erSøknadForTema(any()) } returns true
 
         val søkerFnr = "12345678910"
         val barnFnr = "12345678911"
@@ -70,7 +70,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         every { journalpost.dokumenter } returns listOf(dokumentInfo)
         every { journalpost.datoMottatt } returns LocalDateTime.of(2024, 12, 12, 0, 0)
         every { dokumentInfo.dokumentInfoId } returns "1"
-        every { dokumentInfo.erDigitalSøknad(any()) } returns true
+        every { dokumentInfo.erSøknadForTema(any()) } returns true
 
         val søkerFnr = "12345678910"
         val barnFnr = "12345678911"
@@ -102,7 +102,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         every { journalpost.dokumenter } returns listOf(dokumentInfo)
         every { journalpost.datoMottatt } returns LocalDateTime.of(2000, 12, 12, 0, 0)
         every { dokumentInfo.dokumentInfoId } returns "1"
-        every { dokumentInfo.erDigitalSøknad(any()) } returns true
+        every { dokumentInfo.erSøknadForTema(any()) } returns true
 
         val søkerFnr = "12345678910"
         val barnFnr = "12345678911"

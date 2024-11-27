@@ -31,7 +31,7 @@ class BaksVersjonertSøknadServiceTest {
             every { journalpost.journalpostId } returns "1"
             every { journalpost.dokumenter } returns listOf(dokumentInfo)
             every { dokumentInfo.dokumentInfoId } returns "1"
-            every { dokumentInfo.erDigitalSøknad(any()) } returns true
+            every { dokumentInfo.erSøknadForTema(any()) } returns true
 
             val søkerFnr = "12345678910"
             val barnFnr = "12345678911"
@@ -58,7 +58,7 @@ class BaksVersjonertSøknadServiceTest {
             every { journalpost.journalpostId } returns "1"
             every { journalpost.dokumenter } returns listOf(dokumentInfo)
             every { dokumentInfo.dokumentInfoId } returns "1"
-            every { dokumentInfo.erDigitalSøknad(any()) } returns true
+            every { dokumentInfo.erSøknadForTema(any()) } returns true
 
             val søkerFnr = "12345678910"
             val barnFnr = "12345678911"
