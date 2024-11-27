@@ -16,6 +16,7 @@ import org.springframework.web.bind.MissingRequestHeaderException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.context.request.async.AsyncRequestNotUsableException
 import java.nio.channels.ClosedChannelException
@@ -30,6 +31,14 @@ class ApiExceptionHandler {
         return ResponseEntity
             .status(HttpStatus.UNAUTHORIZED)
             .body(failure(errorMessage = "Du er ikke logget inn.", frontendFeilmelding = "Du er ikke logget inn", error = e))
+    }
+
+    @ExceptionHandler(ResourceAccessException::class)
+    fun handleResourceAccessException(e: ResourceAccessException): ResponseEntity<Ressurs<Any>> {
+        logger.warn("ResourceAccess - feil ", e)
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(failure("""Det oppstod en feil. ${e.message}""", error = e))
     }
 
     @ExceptionHandler(RestClientResponseException::class)
