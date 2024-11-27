@@ -42,7 +42,7 @@ class ApiExceptionHandler {
     }
 
     @ExceptionHandler(RestClientResponseException::class)
-    fun handleRestClientResponseException(e: RestClientResponseException): ResponseEntity<Ressurs<Any>> {
+    fun handleOAuth2ClientException(e: RestClientResponseException): ResponseEntity<Ressurs<Any>> {
         secureLogger.error("RestClientResponseException : ${e.responseBodyAsString}", e)
         logger.error(
             "RestClientResponseException : {} {} {}",
@@ -97,7 +97,7 @@ class ApiExceptionHandler {
     }
 
     @ExceptionHandler(OAuth2ClientException::class)
-    fun handleRestClientResponseException(e: OAuth2ClientException): ResponseEntity<Ressurs<Any>> {
+    fun handleOAuth2ClientException(e: OAuth2ClientException): ResponseEntity<Ressurs<Any>> {
         logger.error("OAuth2ClientException : {} ", ExceptionUtils.getStackTrace(e))
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -107,11 +107,8 @@ class ApiExceptionHandler {
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception): ResponseEntity<Ressurs<Any>> {
         secureLogger.error("Exception : ", e)
-        if (e.cause is ClosedChannelException) {
-            logger.warn("Exception : {} - se securelog for detaljer", e.javaClass.name)
-        } else {
-            logger.error("Exception : {} - se securelog for detaljer", e.javaClass.name)
-        }
+        logger.warn("Exception : {} - se securelog for detaljer", e.javaClass.name)
+
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(failure("""Det oppstod en feil. ${e.message}""", error = e))
@@ -144,7 +141,7 @@ class ApiExceptionHandler {
         when (e.level) {
             OppslagException.Level.KRITISK,
             OppslagException.Level.MEDIUM,
-            -> {
+                -> {
                 secureLogger.warn("OppslagException : $sensitivFeilmelding", e.error)
                 logger.warn("OppslagException : $feilmelding")
 
