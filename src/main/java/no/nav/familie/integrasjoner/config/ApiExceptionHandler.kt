@@ -129,7 +129,10 @@ class ApiExceptionHandler {
     }
 
     @ExceptionHandler(PdlUnauthorizedException::class)
-    fun handleThrowable(feil: PdlUnauthorizedException): ResponseEntity<Ressurs<Nothing>> = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(failure(frontendFeilmelding = "Har ikke tilgang til å slå opp personen i PDL"))
+    fun handleThrowable(feil: PdlUnauthorizedException): ResponseEntity<Ressurs<Nothing>> {
+        incrementLoggFeil("Pdl.Unauthorized")
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(failure(frontendFeilmelding = "Har ikke tilgang til å slå opp personen i PDL"))
+    }
 
     @ExceptionHandler(OppslagException::class)
     fun handleOppslagException(e: OppslagException): ResponseEntity<Ressurs<Any>> {
@@ -146,7 +149,7 @@ class ApiExceptionHandler {
         when (e.level) {
             OppslagException.Level.KRITISK,
             OppslagException.Level.MEDIUM,
-            -> {
+                -> {
                 secureLogger.warn("OppslagException : $sensitivFeilmelding", e.error)
                 logger.warn("OppslagException : $feilmelding")
 
