@@ -33,13 +33,13 @@ class PersonopplysningerController(
     @ExceptionHandler(HttpClientErrorException.NotFound::class)
     fun handleRestClientResponseException(e: HttpClientErrorException.NotFound): ResponseEntity<Ressurs<Any>> =
         ResponseEntity
-            .status(e.rawStatusCode)
-            .body(failure("Feil mot personopplysning. ${e.rawStatusCode} Message=${e.message}", null))
+            .status(e.statusCode.value())
+            .body(failure("Feil mot personopplysning. ${e.statusCode.value()} Message=${e.message}", null))
 
     @ExceptionHandler(Forbidden::class)
     fun handleRestClientResponseException(e: Forbidden): ResponseEntity<Ressurs<Any>> =
         ResponseEntity
-            .status(e.rawStatusCode)
+            .status(e.statusCode.value())
             .body(ikkeTilgang("Ikke tilgang mot personopplysning ${e.message}"))
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], path = ["v1/identer/{tema}"])

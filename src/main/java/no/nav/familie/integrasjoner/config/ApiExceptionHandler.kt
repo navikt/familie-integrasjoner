@@ -51,7 +51,7 @@ class ApiExceptionHandler {
         secureLogger.error("RestClientResponseException : ${e.responseBodyAsString}", e)
         logger.error(
             "RestClientResponseException : {} {} {}",
-            e.rawStatusCode,
+            e.statusCode.value(),
             e.statusText,
             ExceptionUtils.getStackTrace(e),
         )
@@ -59,7 +59,7 @@ class ApiExceptionHandler {
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(
                 failure(
-                    errorMessage = "Feil mot ekstern tjeneste. ${e.rawStatusCode} ${e.responseBodyAsString} Message=${e.message}",
+                    errorMessage = "Feil mot ekstern tjeneste. ${e.statusCode.value()} ${e.responseBodyAsString} Message=${e.message}",
                     error = e,
                 ),
             )

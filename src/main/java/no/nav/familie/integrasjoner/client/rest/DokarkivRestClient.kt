@@ -127,7 +127,7 @@ class DokarkivRestClient(
             try {
                 patchForEntity<String>(uri, FerdigstillJournalPost(journalførendeEnhet), headers(navIdent))
             } catch (e: RestClientResponseException) {
-                if (e.rawStatusCode == HttpStatus.BAD_REQUEST.value()) { // TODO: kast oppslagexception eller logg metrikk på annen måte
+                if (e.statusCode.value() == HttpStatus.BAD_REQUEST.value()) { // TODO: kast oppslagexception eller logg metrikk på annen måte
                     throw KanIkkeFerdigstilleJournalpostException(
                         "Kan ikke ferdigstille journalpost " +
                             "$journalpostId body ${e.responseBodyAsString}",
