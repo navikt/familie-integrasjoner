@@ -122,7 +122,7 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata =
         Dokumenttype.KONTANTSTØTTE_EØS -> KontantstøtteSøknadEØSMetadata
         Dokumenttype.KONTANTSTØTTE_TILBAKEKREVING_BREV -> KontantstøtteTilbakebetalingBrevMetadata
         Dokumenttype.KONTANTSTØTTE_TILBAKEKREVING_VEDTAK -> KontantstøtteTilbakebetalingVedtakMetadata
-        Dokumenttype.KONTANTSTØTTE_UTBETALING_ETTER_KA_VEDTAK -> KontanstøtteUtbetalingEtterKAVedtakMetadata
+        Dokumenttype.KONTANTSTØTTE_UTBETALING_ETTER_KA_VEDTAK -> KontantstøtteUtbetalingEtterKAVedtakMetadata
         Dokumenttype.KONTANTSTØTTE_VARSEL_OM_REVURDERING_FRA_NASJONAL_TIL_EØS -> KontantstøtteVarselOmRevurderingFraNasjonalTilEøsMetadata
         Dokumenttype.KONTANTSTØTTE_VARSEL_OM_REVURDERING -> KontantstøtteVarselOmRevurderingMetadata
         Dokumenttype.KONTANTSTØTTE_VARSEL_OM_VEDTAK_ETTER_SØKNAD_I_SED -> KontantstøtteVarselOmVedtakEtterSøknadISedMetadata
