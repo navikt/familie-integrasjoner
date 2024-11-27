@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
+import no.nav.familie.integrasjoner.config.incrementLoggFeil
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -25,9 +26,21 @@ class EgenAnsattRestClient(
         val personidenter: Set<String>,
     )
 
-    fun erEgenAnsatt(personIdent: String): Boolean = postForEntity(egenAnsattUri, SkjermetDataRequestDTO(personIdent))
+    fun erEgenAnsatt(personIdent: String): Boolean =
+        try {
+            postForEntity(egenAnsattUri, SkjermetDataRequestDTO(personIdent))
+        } catch (e: Exception) {
+            incrementLoggFeil("egenAnsatt.ident")
+            throw e
+        }
 
-    fun erEgenAnsatt(personidenter: Set<String>): Map<String, Boolean> = postForEntity(egenAnsattBulkUri, SkjermetDataBolkRequestDTO(personidenter))
+    fun erEgenAnsatt(personidenter: Set<String>): Map<String, Boolean> =
+        try {
+            postForEntity(egenAnsattBulkUri, SkjermetDataBolkRequestDTO(personidenter))
+        } catch (e: Exception) {
+            incrementLoggFeil("egenAnsatt.identer")
+            throw e
+        }
 
     companion object {
         private const val PATH_PING = "internal/health/readiness"

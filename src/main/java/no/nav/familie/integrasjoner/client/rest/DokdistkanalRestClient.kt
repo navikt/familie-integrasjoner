@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.util.UriUtil
+import no.nav.familie.integrasjoner.config.incrementLoggFeil
 import no.nav.familie.integrasjoner.dokdistkanal.domene.BestemDistribusjonskanalRequest
 import no.nav.familie.integrasjoner.dokdistkanal.domene.BestemDistribusjonskanalResponse
 import no.nav.familie.log.mdc.MDCConstants
@@ -22,7 +23,13 @@ class DokdistkanalRestClient(
 
     val uri = UriUtil.uri(dokdistkanalUri, PATH_BESTEM_DISTRIBUSJONSKANAL)
 
-    fun bestemDistribusjonskanal(req: BestemDistribusjonskanalRequest): BestemDistribusjonskanalResponse = postForEntity(uri, req, httpHeaders())
+    fun bestemDistribusjonskanal(req: BestemDistribusjonskanalRequest): BestemDistribusjonskanalResponse =
+        try {
+            postForEntity(uri, req, httpHeaders())
+        } catch (e: Exception) {
+            incrementLoggFeil("dokdist.kanal")
+            throw e
+        }
 
     private fun httpHeaders(): HttpHeaders =
         HttpHeaders().apply {
