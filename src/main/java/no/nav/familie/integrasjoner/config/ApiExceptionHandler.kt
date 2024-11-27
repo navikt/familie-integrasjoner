@@ -26,18 +26,6 @@ import java.nio.channels.ClosedChannelException
 class ApiExceptionHandler {
     private val logger = LoggerFactory.getLogger(ApiExceptionHandler::class.java)
 
-    val loggFeilCounter = mutableMapOf<String, Counter>()
-
-    fun incrementLoggFeil(
-        kilde: String,
-    ) {
-        if (loggFeilCounter[kilde] == null) {
-            loggFeilCounter[kilde] = Metrics.counter("logg.feil", "kilde", kilde)
-        }
-
-        loggFeilCounter[kilde]?.increment()
-    }
-
     @ExceptionHandler(JwtTokenUnauthorizedException::class)
     fun handleUnauthorizedException(e: JwtTokenUnauthorizedException?): ResponseEntity<Ressurs<Any>> {
         logger.warn("Kan ikke logget inn.", e)

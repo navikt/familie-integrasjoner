@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.integrasjoner.axsys.TilgangV2DTO
+import no.nav.familie.integrasjoner.config.incrementLoggFeil
 import no.nav.familie.kontrakter.felles.NavIdent
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -22,6 +23,13 @@ class AxsysRestClient(
                 .pathSegment("v2/tilgang/${navIdent.ident}")
                 .build()
                 .toUri()
-        return getForEntity<TilgangV2DTO>(uri)
+
+        return try {
+            getForEntity<TilgangV2DTO>(uri)
+        } catch (e: Exception) {
+            incrementLoggFeil("axsys")
+            throw e
+        }
+
     }
 }
