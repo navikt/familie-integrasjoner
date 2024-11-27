@@ -42,7 +42,7 @@ class ApiExceptionHandler {
     }
 
     @ExceptionHandler(RestClientResponseException::class)
-    fun handleOAuth2ClientException(e: RestClientResponseException): ResponseEntity<Ressurs<Any>> {
+    fun handleRestClientResponseException(e: RestClientResponseException): ResponseEntity<Ressurs<Any>> {
         secureLogger.error("RestClientResponseException : ${e.responseBodyAsString}", e)
         logger.error(
             "RestClientResponseException : {} {} {}",
