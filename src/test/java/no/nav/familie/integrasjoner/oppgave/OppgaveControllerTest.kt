@@ -562,7 +562,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 HttpEntity(oppgave, headers),
             )
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-        assertThat(response.body?.melding).contains("[Oppgave.byttEnhet][Feil ved bytte av enhet for oppgave for $OPPGAVE_ID")
+        assertThat(response.body?.melding).contains("[oppgave.byttEnhet][Feil ved bytte av enhet for oppgave for $OPPGAVE_ID")
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
