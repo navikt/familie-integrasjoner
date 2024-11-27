@@ -76,6 +76,7 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata =
         Dokumenttype.BARNETRYGD_UTVIDET -> BarnetrygdSøknadUtvidetMetadata
         Dokumenttype.BARNETRYGD_TILBAKEKREVING_BREV -> BarnetrygdTilbakebetalingBrevMetadata
         Dokumenttype.BARNETRYGD_TILBAKEKREVING_VEDTAK -> BarnetrygdTilbakebetalingVedtakMetadata
+        Dokumenttype.BARNETRYGD_UTBETALING_ETTER_KA_VEDTAK -> BarnetrygdUtbetalingEtterKAVedtakMetadata
         Dokumenttype.BARNETRYGD_VARSEL_OM_REVURDERING_DELT_BOSTED_PARAGRAF_14 -> BarnetrygdVarselOmRevurderingDeltBostedParagraf14Metadata
         Dokumenttype.BARNETRYGD_VARSEL_OM_REVURDERING_FRA_NASJONAL_TIL_EØS -> BarnetrygdVarselOmRevurderingFraNasjonalTilEøsMetadata
         Dokumenttype.BARNETRYGD_VARSEL_OM_REVURDERING_INSTITUSJON -> BarnetrygdVarselOmRevurderingInstitusjonMetadata
@@ -121,6 +122,7 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata =
         Dokumenttype.KONTANTSTØTTE_EØS -> KontantstøtteSøknadEØSMetadata
         Dokumenttype.KONTANTSTØTTE_TILBAKEKREVING_BREV -> KontantstøtteTilbakebetalingBrevMetadata
         Dokumenttype.KONTANTSTØTTE_TILBAKEKREVING_VEDTAK -> KontantstøtteTilbakebetalingVedtakMetadata
+        Dokumenttype.KONTANTSTØTTE_UTBETALING_ETTER_KA_VEDTAK -> KontanstøtteUtbetalingEtterKAVedtakMetadata
         Dokumenttype.KONTANTSTØTTE_VARSEL_OM_REVURDERING_FRA_NASJONAL_TIL_EØS -> KontantstøtteVarselOmRevurderingFraNasjonalTilEøsMetadata
         Dokumenttype.KONTANTSTØTTE_VARSEL_OM_REVURDERING -> KontantstøtteVarselOmRevurderingMetadata
         Dokumenttype.KONTANTSTØTTE_VARSEL_OM_VEDTAK_ETTER_SØKNAD_I_SED -> KontantstøtteVarselOmVedtakEtterSøknadISedMetadata
