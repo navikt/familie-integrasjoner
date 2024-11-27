@@ -1,5 +1,7 @@
 package no.nav.familie.integrasjoner.config
 
+import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.Metrics
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.PdlUnauthorizedException
@@ -23,6 +25,18 @@ import java.nio.channels.ClosedChannelException
 @ControllerAdvice
 class ApiExceptionHandler {
     private val logger = LoggerFactory.getLogger(ApiExceptionHandler::class.java)
+
+    val loggFeilCounter = mutableMapOf<String, Counter>()
+
+    fun incrementLoggFeil(
+        kilde: String,
+    ) {
+        if (loggFeilCounter[kilde] == null) {
+            loggFeilCounter[kilde] = Metrics.counter("logg.feil", "kilde", kilde)
+        }
+
+        loggFeilCounter[kilde]?.increment()
+    }
 
     @ExceptionHandler(JwtTokenUnauthorizedException::class)
     fun handleUnauthorizedException(e: JwtTokenUnauthorizedException?): ResponseEntity<Ressurs<Any>> {
@@ -135,10 +149,13 @@ class ApiExceptionHandler {
             -> {
                 secureLogger.warn("OppslagException : $sensitivFeilmelding", e.error)
                 logger.warn("OppslagException : $feilmelding")
+
+                incrementLoggFeil(e.kilde)
             }
 
             else -> logger.info("OppslagException : $feilmelding")
         }
+
         return ResponseEntity
             .status(e.httpStatus)
             .body(failure(feilmelding, error = e))

@@ -171,7 +171,7 @@ class DokarkivControllerTest(
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.CONFLICT)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        assertThat(response.body?.melding).isEqualTo("[Dokarkiv][Feil ved opprettelse av journalpost ][org.springframework.web.client.HttpClientErrorException\$Conflict]")
+        assertThat(response.body?.melding).isEqualTo("[dokarkiv.opprettJournalpost][Feil ved opprettelse av journalpost ][org.springframework.web.client.HttpClientErrorException\$Conflict]")
     }
 
     @Test

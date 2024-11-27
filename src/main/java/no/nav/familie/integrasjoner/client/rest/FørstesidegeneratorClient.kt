@@ -41,7 +41,7 @@ class FørstesidegeneratorClient(
 
                 throw OppslagException(
                     feilmelding,
-                    "førstesidegenerator.genererFørsteside",
+                    "forstesidegenerator.genererForsteside",
                     OppslagException.Level.MEDIUM,
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     it,

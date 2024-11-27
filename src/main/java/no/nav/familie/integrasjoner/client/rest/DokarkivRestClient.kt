@@ -54,7 +54,7 @@ class DokarkivRestClient(
         try {
             return postForEntity(uri, jp, headers(navIdent))
         } catch (e: RuntimeException) {
-            throw oppslagExceptionVed("opprettelse", e, jp.bruker?.id)
+            throw oppslagExceptionVed("opprettelse", e, jp.bruker?.id, "dokarkiv.opprettJournalpost")
         }
     }
 
@@ -72,7 +72,7 @@ class DokarkivRestClient(
         try {
             return putForEntity(uri, jp, headers(navIdent))
         } catch (e: RuntimeException) {
-            throw oppslagExceptionVed("oppdatering", e, jp.bruker?.id)
+            throw oppslagExceptionVed("oppdatering", e, jp.bruker?.id, "dokarkiv.oppdaterJournalpost")
         }
     }
 
@@ -88,13 +88,14 @@ class DokarkivRestClient(
         requestType: String,
         e: RuntimeException,
         brukerId: String?,
+        kilde: String,
     ): Throwable {
         val message = "Feil ved $requestType av journalpost "
         val sensitiveInfo = if (e is HttpStatusCodeException) e.responseBodyAsString else "$message for bruker $brukerId "
         val httpStatus = if (e is HttpStatusCodeException) e.statusCode else null
         return OppslagException(
             message,
-            "Dokarkiv",
+            kilde,
             OppslagException.Level.MEDIUM,
             httpStatus,
             e,
@@ -126,7 +127,7 @@ class DokarkivRestClient(
             try {
                 patchForEntity<String>(uri, FerdigstillJournalPost(journalførendeEnhet), headers(navIdent))
             } catch (e: RestClientResponseException) {
-                if (e.rawStatusCode == HttpStatus.BAD_REQUEST.value()) {
+                if (e.rawStatusCode == HttpStatus.BAD_REQUEST.value()) { // TODO: kast oppslagexception eller logg metrikk på annen måte
                     throw KanIkkeFerdigstilleJournalpostException(
                         "Kan ikke ferdigstille journalpost " +
                             "$journalpostId body ${e.responseBodyAsString}",
