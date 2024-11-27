@@ -30,6 +30,5 @@ class AxsysRestClient(
             incrementLoggFeil("axsys")
             throw e
         }
-
     }
 }

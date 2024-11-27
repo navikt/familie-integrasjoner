@@ -1,7 +1,5 @@
 package no.nav.familie.integrasjoner.config
 
-import io.micrometer.core.instrument.Counter
-import io.micrometer.core.instrument.Metrics
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.PdlUnauthorizedException
@@ -137,7 +135,7 @@ class ApiExceptionHandler {
         when (e.level) {
             OppslagException.Level.KRITISK,
             OppslagException.Level.MEDIUM,
-                -> {
+            -> {
                 secureLogger.warn("OppslagException : $sensitivFeilmelding", e.error)
                 logger.warn("OppslagException : $feilmelding")
 
