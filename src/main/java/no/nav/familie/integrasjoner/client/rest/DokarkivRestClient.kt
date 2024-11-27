@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.client.AbstractRestClient
+import no.nav.familie.integrasjoner.config.incrementLoggFeil
 import no.nav.familie.integrasjoner.dokarkiv.client.KanIkkeFerdigstilleJournalpostException
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.FerdigstillJournalPost
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
@@ -127,7 +128,8 @@ class DokarkivRestClient(
             try {
                 patchForEntity<String>(uri, FerdigstillJournalPost(journalførendeEnhet), headers(navIdent))
             } catch (e: RestClientResponseException) {
-                if (e.statusCode.value() == HttpStatus.BAD_REQUEST.value()) { // TODO: kast oppslagexception eller logg metrikk på annen måte
+                incrementLoggFeil("dokarkiv.ferdigstill.feil")
+                if (e.statusCode.value() == HttpStatus.BAD_REQUEST.value()) {
                     throw KanIkkeFerdigstilleJournalpostException(
                         "Kan ikke ferdigstille journalpost " +
                             "$journalpostId body ${e.responseBodyAsString}",
