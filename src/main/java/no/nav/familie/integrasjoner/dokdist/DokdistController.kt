@@ -29,10 +29,10 @@ class DokdistController(
             Ressurs(
                 data = e.responseBodyAsString,
                 status = Ressurs.Status.FEILET,
-                melding = e.message ?: "Uventet feil status=${e.rawStatusCode}",
+                melding = e.message ?: "Uventet feil status=${e.statusCode.value()}",
                 stacktrace = e.stackTraceToString(),
             )
-        return ResponseEntity.status(e.rawStatusCode).body(ressurs)
+        return ResponseEntity.status(e.statusCode.value()).body(ressurs)
     }
 
     @PostMapping("v1")

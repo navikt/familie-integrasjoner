@@ -40,7 +40,7 @@ class DokarkivLogiskVedleggRestClient(
             val message = "Kan ikke opprette logisk vedlegg for dokumentinfo $dokumentInfoId $responsebody"
             throw OppslagException(
                 message,
-                "Dokarkiv.logiskVedlegg.opprett",
+                "dokarkiv.logiskVedlegg",
                 OppslagException.Level.MEDIUM,
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 e,
@@ -65,7 +65,7 @@ class DokarkivLogiskVedleggRestClient(
             val message = "Kan ikke bulk oppdatere logiske vedlegg for dokumentinfo $dokumentinfoId $responsebody"
             throw OppslagException(
                 message,
-                "Dokarkiv.logiskVedlegg.oppdater",
+                "dokarkiv.logiskVedlegg.oppdater",
                 OppslagException.Level.MEDIUM,
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 e,

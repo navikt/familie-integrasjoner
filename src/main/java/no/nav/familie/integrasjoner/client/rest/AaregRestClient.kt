@@ -51,7 +51,7 @@ class AaregRestClient(
             }
             throw OppslagException(
                 feilmelding,
-                "aareg",
+                "aareg.hentArbeidsforhold",
                 OppslagException.Level.MEDIUM,
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 e,

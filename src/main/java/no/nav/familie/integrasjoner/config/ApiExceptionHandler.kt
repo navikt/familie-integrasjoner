@@ -16,6 +16,7 @@ import org.springframework.web.bind.MissingRequestHeaderException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.context.request.async.AsyncRequestNotUsableException
 import java.nio.channels.ClosedChannelException
@@ -32,12 +33,20 @@ class ApiExceptionHandler {
             .body(failure(errorMessage = "Du er ikke logget inn.", frontendFeilmelding = "Du er ikke logget inn", error = e))
     }
 
+    @ExceptionHandler(ResourceAccessException::class)
+    fun handleResourceAccessException(e: ResourceAccessException): ResponseEntity<Ressurs<Any>> {
+        logger.warn("ResourceAccess - feil ", e)
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(failure("""Det oppstod en feil. ${e.message}""", error = e))
+    }
+
     @ExceptionHandler(RestClientResponseException::class)
     fun handleRestClientResponseException(e: RestClientResponseException): ResponseEntity<Ressurs<Any>> {
         secureLogger.error("RestClientResponseException : ${e.responseBodyAsString}", e)
         logger.error(
             "RestClientResponseException : {} {} {}",
-            e.rawStatusCode,
+            e.statusCode.value(),
             e.statusText,
             ExceptionUtils.getStackTrace(e),
         )
@@ -45,7 +54,7 @@ class ApiExceptionHandler {
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(
                 failure(
-                    errorMessage = "Feil mot ekstern tjeneste. ${e.rawStatusCode} ${e.responseBodyAsString} Message=${e.message}",
+                    errorMessage = "Feil mot ekstern tjeneste. ${e.statusCode.value()} ${e.responseBodyAsString} Message=${e.message}",
                     error = e,
                 ),
             )
@@ -88,7 +97,7 @@ class ApiExceptionHandler {
     }
 
     @ExceptionHandler(OAuth2ClientException::class)
-    fun handleRestClientResponseException(e: OAuth2ClientException): ResponseEntity<Ressurs<Any>> {
+    fun handleOAuth2ClientException(e: OAuth2ClientException): ResponseEntity<Ressurs<Any>> {
         logger.error("OAuth2ClientException : {} ", ExceptionUtils.getStackTrace(e))
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -98,11 +107,8 @@ class ApiExceptionHandler {
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception): ResponseEntity<Ressurs<Any>> {
         secureLogger.error("Exception : ", e)
-        if (e.cause is ClosedChannelException) {
-            logger.warn("Exception : {} - se securelog for detaljer", e.javaClass.name)
-        } else {
-            logger.error("Exception : {} - se securelog for detaljer", e.javaClass.name)
-        }
+        logger.warn("Exception : {} - se securelog for detaljer", e.javaClass.name)
+
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(failure("""Det oppstod en feil. ${e.message}""", error = e))
@@ -115,7 +121,10 @@ class ApiExceptionHandler {
     }
 
     @ExceptionHandler(PdlUnauthorizedException::class)
-    fun handleThrowable(feil: PdlUnauthorizedException): ResponseEntity<Ressurs<Nothing>> = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(failure(frontendFeilmelding = "Har ikke tilgang til å slå opp personen i PDL"))
+    fun handleThrowable(feil: PdlUnauthorizedException): ResponseEntity<Ressurs<Nothing>> {
+        incrementLoggFeil("pdl.unauthorized")
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(failure(frontendFeilmelding = "Har ikke tilgang til å slå opp personen i PDL"))
+    }
 
     @ExceptionHandler(OppslagException::class)
     fun handleOppslagException(e: OppslagException): ResponseEntity<Ressurs<Any>> {
@@ -128,19 +137,20 @@ class ApiExceptionHandler {
             feilmelding += "[${e.error.javaClass.name}]"
             sensitivFeilmelding += "[${e.error.javaClass.name}]"
         }
-        when (e.level) {
-            OppslagException.Level.KRITISK -> {
-                secureLogger.error("OppslagException : $sensitivFeilmelding", e.error)
-                logger.error("OppslagException : $feilmelding")
-            }
 
-            OppslagException.Level.MEDIUM -> {
+        when (e.level) {
+            OppslagException.Level.KRITISK,
+            OppslagException.Level.MEDIUM,
+                -> {
                 secureLogger.warn("OppslagException : $sensitivFeilmelding", e.error)
                 logger.warn("OppslagException : $feilmelding")
+
+                incrementLoggFeil(e.kilde)
             }
 
             else -> logger.info("OppslagException : $feilmelding")
         }
+
         return ResponseEntity
             .status(e.httpStatus)
             .body(failure(feilmelding, error = e))
