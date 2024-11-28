@@ -37,7 +37,7 @@ class BaksVersjonertSøknadService(
         journalpost: Journalpost,
         tema: Tema,
     ): String {
-        val dokumentInfoId = journalpost.dokumenter!!.single { it.erDigitalSøknad(tema) }.dokumentInfoId
+        val dokumentInfoId = journalpost.dokumenter!!.single { it.erSøknadForTema(tema) }.dokumentInfoId
         return safHentDokumentRestClient.hentDokument(journalpostId = journalpost.journalpostId, dokumentInfoId = dokumentInfoId, variantFormat = Dokumentvariantformat.ORIGINAL.name).decodeToString()
     }
 }
