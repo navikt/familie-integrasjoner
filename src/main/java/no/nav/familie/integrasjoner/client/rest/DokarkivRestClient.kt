@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.RestOperations
@@ -54,8 +55,16 @@ class DokarkivRestClient(
         val uri = lagJournalpostUri(ferdigstill)
         try {
             return postForEntity(uri, jp, headers(navIdent))
-        } catch (e: RuntimeException) {
-            throw oppslagExceptionVed("opprettelse", e, jp.bruker?.id, "dokarkiv.opprettJournalpost")
+        } catch (feilVedJournalføring: RuntimeException) {
+            if (feilVedJournalføring is HttpClientErrorException.Conflict) {
+                logger.warn("409 ved oppretting av journalpost med eksternReferanseId=${jp.eksternReferanseId}. Denne journalposten er allerede journalført. Returnerer body fra feilmelding som er en OpprettJournalpostResponse.")
+                return try {
+                    feilVedJournalføring.getResponseBodyAs(OpprettJournalpostResponse::class.java)
+                } catch (parsingFeil: RuntimeException) {
+                    throw oppslagExceptionVed("opprettelse", feilVedJournalføring, jp.bruker?.id, "dokarkiv.opprettJournalpost")
+                }
+            }
+            throw oppslagExceptionVed("opprettelse", feilVedJournalføring, jp.bruker?.id, "dokarkiv.opprettJournalpost")
         }
     }
 
