@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractPingableRestClient
+import no.nav.familie.integrasjoner.config.incrementLoggFeil
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -27,7 +28,13 @@ class OrganisasjonRestClient(
             .build()
             .toUri()
 
-    fun hentOrganisasjon(orgnr: String): HentOrganisasjonResponse = getForEntity(nøkkelinfoUri(orgnr))
+    fun hentOrganisasjon(orgnr: String): HentOrganisasjonResponse =
+        try {
+            getForEntity(nøkkelinfoUri(orgnr))
+        } catch (e: Exception) {
+            incrementLoggFeil("organisasjon.hent")
+            throw e
+        }
 }
 
 data class HentOrganisasjonResponse(

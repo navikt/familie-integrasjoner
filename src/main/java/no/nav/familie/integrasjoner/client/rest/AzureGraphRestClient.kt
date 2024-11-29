@@ -3,7 +3,7 @@ package no.nav.familie.integrasjoner.client.rest
 import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.integrasjoner.azure.domene.AzureAdBruker
 import no.nav.familie.integrasjoner.azure.domene.AzureAdBrukere
-import no.nav.familie.integrasjoner.azure.domene.Grupper
+import no.nav.familie.integrasjoner.config.incrementLoggFeil
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -17,14 +17,7 @@ class AzureGraphRestClient(
     @Qualifier("jwtBearer") restTemplate: RestOperations,
     @Value("\${AAD_GRAPH_API_URI}") private val aadGraphURI: URI,
 ) : AbstractRestClient(restTemplate, "AzureGraph") {
-    val saksbehandlerUri: URI =
-        UriComponentsBuilder
-            .fromUri(aadGraphURI)
-            .pathSegment(ME)
-            .build()
-            .toUri()
-
-    fun saksbehandlerUri(id: String): URI =
+    private fun saksbehandlerUri(id: String): URI =
         UriComponentsBuilder
             .fromUri(aadGraphURI)
             .pathSegment(USERS, id)
@@ -32,7 +25,7 @@ class AzureGraphRestClient(
             .build()
             .toUri()
 
-    fun saksbehandlersøkUri(navIdent: String): URI =
+    private fun saksbehandlersøkUri(navIdent: String): URI =
         UriComponentsBuilder
             .fromUri(aadGraphURI)
             .pathSegment(USERS)
@@ -41,26 +34,26 @@ class AzureGraphRestClient(
             .buildAndExpand(navIdent)
             .toUri()
 
-    val grupperUri: URI =
-        UriComponentsBuilder
-            .fromUri(aadGraphURI)
-            .pathSegment(ME, GRUPPER)
-            .build()
-            .toUri()
-
     fun finnSaksbehandler(navIdent: String): AzureAdBrukere =
-        getForEntity(
-            saksbehandlersøkUri(navIdent),
-            HttpHeaders().apply {
-                add("ConsistencyLevel", "eventual")
-            },
-        )
+        try {
+            getForEntity(
+                saksbehandlersøkUri(navIdent),
+                HttpHeaders().apply {
+                    add("ConsistencyLevel", "eventual")
+                },
+            )
+        } catch (e: Exception) {
+            incrementLoggFeil("azure.saksbehandler.navIdent")
+            throw e
+        }
 
-    fun hentSaksbehandler(): AzureAdBruker = getForEntity(saksbehandlerUri)
-
-    fun hentSaksbehandler(id: String): AzureAdBruker = getForEntity(saksbehandlerUri(id))
-
-    fun hentGrupper(): Grupper = getForEntity(grupperUri)
+    fun hentSaksbehandler(id: String): AzureAdBruker =
+        try {
+            getForEntity(saksbehandlerUri(id))
+        } catch (e: Exception) {
+            incrementLoggFeil("azure.saksbehandler.id")
+            throw e
+        }
 
     companion object {
         private const val ME = "me"

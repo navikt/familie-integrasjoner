@@ -55,7 +55,7 @@ class PdlRestClient(
                 pdlHttpHeaders(tema),
             )
 
-        return feilsjekkOgReturnerData(response, personIdent) { it.person }
+        return feilsjekkOgReturnerData(response, personIdent, kilde = "PdlRestClient.hentAdressebeskyttelse") { it.person }
     }
 
     fun hentPerson(
@@ -71,9 +71,9 @@ class PdlRestClient(
             try {
                 postForEntity<PdlResponse<PdlPerson>>(pdlUri, pdlPersonRequest, pdlHttpHeaders(tema))
             } catch (e: Exception) {
-                throw pdlOppslagException(personIdent, error = e)
+                throw pdlOppslagException(personIdent, error = e, kilde = "PdlRestClient.hentPerson")
             }
-        return feilsjekkOgReturnerData(response, personIdent) { it.person }.let {
+        return feilsjekkOgReturnerData(response, personIdent, kilde = "PdlRestClient.hentPerson") { it.person }.let {
             Person(
                 navn = it.navn.first().fulltNavn(),
                 adressebeskyttelseGradering = it.adressebeskyttelse.firstOrNull()?.gradering,
@@ -97,14 +97,15 @@ class PdlRestClient(
             try {
                 postForEntity<PdlResponse<PdlHentIdenter>>(pdlUri, pdlPersonRequest, pdlHttpHeaders(tema))
             } catch (e: Exception) {
-                throw pdlOppslagException(ident, error = e)
+                throw pdlOppslagException(ident, error = e, kilde = "PdlRestClient.hentIdenter")
             }
-        return feilsjekkOgReturnerData(response, ident) { it.hentIdenter }.identer
+        return feilsjekkOgReturnerData(response, ident, kilde = "PdlRestClient.hentIdenter") { it.hentIdenter }.identer
     }
 
     private inline fun <reified DATA : Any, reified RESPONSE : Any> feilsjekkOgReturnerData(
         pdlResponse: PdlResponse<DATA>,
         personIdent: String,
+        kilde: String,
         dataMapper: (DATA) -> RESPONSE?,
     ): RESPONSE {
         if (pdlResponse.harFeil()) {
@@ -119,6 +120,7 @@ class PdlRestClient(
             throw pdlOppslagException(
                 feilmelding = "Feil ved oppslag på person: ${pdlResponse.errorMessages()}. Se secureLogs for mer info.",
                 personIdent = personIdent,
+                kilde = kilde,
             )
         }
         if (pdlResponse.harAdvarsel()) {
@@ -130,6 +132,7 @@ class PdlRestClient(
                 ?: throw pdlOppslagException(
                     feilmelding = "Feil ved oppslag på person. Objekt mangler på responsen fra PDL. Se secureLogs for mer info.",
                     personIdent = personIdent,
+                    kilde = kilde,
                 )
         return data
     }
@@ -143,6 +146,7 @@ class PdlRestClient(
             ?: throw pdlOppslagException(
                 feilmelding = "Kunne ikke finne aktørId i PDL. Se secureLogs for mer info.",
                 personIdent = ident,
+                kilde = "PdlRestClient.hentAktorId",
             )
     }
 
@@ -155,6 +159,7 @@ class PdlRestClient(
             ?: throw pdlOppslagException(
                 feilmelding = "Kunne ikke finne personIdent i PDL. Se secureLogs for mer info. ",
                 personIdent = ident,
+                kilde = "PdlRestClient.hentGjeldendePersonident",
             )
     }
 
@@ -188,6 +193,7 @@ class PdlRestClient(
                 throw pdlOppslagException(
                     feilmelding = "Feil ved oppslag på geografisk tilknytning på person: ${response.errorMessages()}",
                     personIdent = personIdent,
+                    kilde = "PdlRestClient.hentGeografiskTilknytning",
                 )
             }
             if (response.data.hentGeografiskTilknytning == null) {
@@ -199,7 +205,7 @@ class PdlRestClient(
             when (e) {
                 is OppslagException -> throw e
                 is PdlNotFoundException -> throw e
-                else -> throw pdlOppslagException(personIdent, error = e)
+                else -> throw pdlOppslagException(personIdent, error = e, kilde = "PdlRestClient.hentGeografiskTilknytning")
             }
         }
     }
@@ -209,11 +215,12 @@ class PdlRestClient(
         httpStatus: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
         error: Throwable? = null,
         feilmelding: String = "Feil ved oppslag på person. Gav feil: ${error?.message}",
+        kilde: String,
     ): OppslagException {
         responsFailure.increment()
         return OppslagException(
             feilmelding,
-            "PdlRestClient",
+            kilde,
             OppslagException.Level.MEDIUM,
             httpStatus,
             error,

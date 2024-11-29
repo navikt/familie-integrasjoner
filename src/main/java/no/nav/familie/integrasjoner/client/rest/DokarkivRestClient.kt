@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.http.client.AbstractRestClient
+import no.nav.familie.integrasjoner.config.incrementLoggFeil
 import no.nav.familie.integrasjoner.dokarkiv.client.KanIkkeFerdigstilleJournalpostException
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.FerdigstillJournalPost
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.RestOperations
@@ -53,8 +55,16 @@ class DokarkivRestClient(
         val uri = lagJournalpostUri(ferdigstill)
         try {
             return postForEntity(uri, jp, headers(navIdent))
-        } catch (e: RuntimeException) {
-            throw oppslagExceptionVed("opprettelse", e, jp.bruker?.id)
+        } catch (feilVedJournalføring: RuntimeException) {
+            if (feilVedJournalføring is HttpClientErrorException.Conflict) {
+                logger.warn("409 ved oppretting av journalpost med eksternReferanseId=${jp.eksternReferanseId}. Denne journalposten er allerede journalført. Returnerer body fra feilmelding som er en OpprettJournalpostResponse.")
+                return try {
+                    feilVedJournalføring.getResponseBodyAs(OpprettJournalpostResponse::class.java)
+                } catch (parsingFeil: RuntimeException) {
+                    throw oppslagExceptionVed("opprettelse", feilVedJournalføring, jp.bruker?.id, "dokarkiv.opprettJournalpost")
+                }
+            }
+            throw oppslagExceptionVed("opprettelse", feilVedJournalføring, jp.bruker?.id, "dokarkiv.opprettJournalpost")
         }
     }
 
@@ -72,7 +82,7 @@ class DokarkivRestClient(
         try {
             return putForEntity(uri, jp, headers(navIdent))
         } catch (e: RuntimeException) {
-            throw oppslagExceptionVed("oppdatering", e, jp.bruker?.id)
+            throw oppslagExceptionVed("oppdatering", e, jp.bruker?.id, "dokarkiv.oppdaterJournalpost")
         }
     }
 
@@ -88,13 +98,14 @@ class DokarkivRestClient(
         requestType: String,
         e: RuntimeException,
         brukerId: String?,
+        kilde: String,
     ): Throwable {
         val message = "Feil ved $requestType av journalpost "
         val sensitiveInfo = if (e is HttpStatusCodeException) e.responseBodyAsString else "$message for bruker $brukerId "
         val httpStatus = if (e is HttpStatusCodeException) e.statusCode else null
         return OppslagException(
             message,
-            "Dokarkiv",
+            kilde,
             OppslagException.Level.MEDIUM,
             httpStatus,
             e,
@@ -126,7 +137,8 @@ class DokarkivRestClient(
             try {
                 patchForEntity<String>(uri, FerdigstillJournalPost(journalførendeEnhet), headers(navIdent))
             } catch (e: RestClientResponseException) {
-                if (e.rawStatusCode == HttpStatus.BAD_REQUEST.value()) {
+                incrementLoggFeil("dokarkiv.ferdigstill.feil")
+                if (e.statusCode.value() == HttpStatus.BAD_REQUEST.value()) {
                     throw KanIkkeFerdigstilleJournalpostException(
                         "Kan ikke ferdigstille journalpost " +
                             "$journalpostId body ${e.responseBodyAsString}",
