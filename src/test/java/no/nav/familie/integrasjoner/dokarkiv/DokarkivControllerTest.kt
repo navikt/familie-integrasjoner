@@ -187,7 +187,7 @@ class DokarkivControllerTest(
                 response()
                     .withStatusCode(409)
                     .withHeader("Content-Type", "application/json;charset=UTF-8")
-                    .withBody("Denne bodyen er ikk en OpprettJournalpostResponse"),
+                    .withBody("Denne bodyen er ikke en OpprettJournalpostResponse"),
             )
         val body =
             ArkiverDokumentRequest(
