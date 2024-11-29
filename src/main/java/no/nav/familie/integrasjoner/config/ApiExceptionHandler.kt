@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.context.request.async.AsyncRequestNotUsableException
-import java.nio.channels.ClosedChannelException
 
 @ControllerAdvice
 class ApiExceptionHandler {
@@ -141,7 +140,7 @@ class ApiExceptionHandler {
         when (e.level) {
             OppslagException.Level.KRITISK,
             OppslagException.Level.MEDIUM,
-                -> {
+            -> {
                 secureLogger.warn("OppslagException : $sensitivFeilmelding", e.error)
                 logger.warn("OppslagException : $feilmelding")
 

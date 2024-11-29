@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
 import no.nav.familie.kontrakter.felles.BrukerIdType
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Tema
@@ -142,7 +143,7 @@ class DokarkivControllerTest(
     }
 
     @Test
-    fun `skal returnere 409 ved 409 response fra dokarkiv`() {
+    fun `skal returnere 2xx hvis dokarkiv returnerer 409 med en response som lar seg parse til en OpprettJournalpostResponse`() {
         client
             .`when`(
                 request()
@@ -153,7 +154,40 @@ class DokarkivControllerTest(
                 response()
                     .withStatusCode(409)
                     .withHeader("Content-Type", "application/json;charset=UTF-8")
-                    .withBody("Tekst fra body"),
+                    .withBody(objectMapper.writeValueAsString(OpprettJournalpostResponse("12345678"))),
+            )
+        val body =
+            ArkiverDokumentRequest(
+                "FNR",
+                false,
+                listOf(HOVEDDOKUMENT),
+            )
+
+        val response: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
+            restTemplate.exchange(
+                localhost(DOKARKIV_URL_V4),
+                HttpMethod.POST,
+                HttpEntity(body, headersWithNavUserId()),
+            )
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
+    }
+
+    @Test
+    fun `skal returnere 409 hvis dokarkiv returnerer 409 med en response som ikke lar seg parse til en OpprettJournalpostResponse`() {
+        client
+            .`when`(
+                request()
+                    .withMethod("POST")
+                    .withPath("/rest/journalpostapi/v1/journalpost")
+                    .withQueryStringParameter("forsoekFerdigstill", "false"),
+            ).respond(
+                response()
+                    .withStatusCode(409)
+                    .withHeader("Content-Type", "application/json;charset=UTF-8")
+                    .withBody("Denne bodyen er ikk en OpprettJournalpostResponse"),
             )
         val body =
             ArkiverDokumentRequest(
