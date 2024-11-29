@@ -21,7 +21,7 @@ import java.net.URI
 class FørstesidegeneratorClient(
     @Value("\${FORSTESIDEGENERATOR_URL}") private val førstesidegeneratorURI: URI,
     @Qualifier("sts") private val restTemplate: RestOperations,
-) : AbstractPingableRestClient(restTemplate, "førstesidegenterator") {
+) : AbstractPingableRestClient(restTemplate, "forstesidegenterator") {
     override val pingUri: URI = UriUtil.uri(førstesidegeneratorURI, PATH_PING)
 
     fun genererFørsteside(dto: PostFørstesideRequest): PostFørstesideResponse {
@@ -41,7 +41,7 @@ class FørstesidegeneratorClient(
 
                 throw OppslagException(
                     feilmelding,
-                    "førstesidegenerator.genererFørsteside",
+                    "forstesidegenerator.genererForsteside",
                     OppslagException.Level.MEDIUM,
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     it,

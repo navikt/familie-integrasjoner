@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.http.util.UriUtil
+import no.nav.familie.integrasjoner.config.incrementLoggFeil
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
@@ -54,9 +55,11 @@ class SafRestClient(
             val tilgangFeil = response.errors?.firstOrNull { it.extensions.code == SafErrorCode.forbidden }
 
             if (tilgangFeil != null) {
+                incrementLoggFeil("saf.hentJournalpost.forbidden")
                 throw JournalpostForbiddenException(tilgangFeil.message)
             } else {
                 responsFailure.increment()
+                incrementLoggFeil("saf.hentJournalpost")
                 throw JournalpostRestClientException(
                     "Kan ikke hente journalpost " + response.errors?.toString(),
                     null,
@@ -98,11 +101,12 @@ class SafRestClient(
                     "Kan ikke hente journalposter",
                     null,
                     safJournalpostRequest,
-                )
+                ).also { incrementLoggFeil("saf.finnJournalposter") }
         } else {
             val tilgangFeil = response.errors?.firstOrNull { it.message?.contains("Tilgang til ressurs ble avvist") == true }
 
             if (tilgangFeil != null) {
+                incrementLoggFeil("saf.finnJournalposter.forbidden")
                 throw JournalpostForbiddenException(tilgangFeil.message)
             } else {
                 responsFailure.increment()
@@ -110,7 +114,7 @@ class SafRestClient(
                     "Kan ikke hente journalposter " + response.errors?.toString(),
                     null,
                     safJournalpostRequest,
-                )
+                ).also { incrementLoggFeil("saf.finnJournalposter") }
             }
         }
     }

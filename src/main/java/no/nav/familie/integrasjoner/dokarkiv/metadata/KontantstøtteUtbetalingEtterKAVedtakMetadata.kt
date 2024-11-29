@@ -8,14 +8,14 @@ import no.nav.familie.kontrakter.felles.dokarkiv.Dokumenttype
 import org.springframework.stereotype.Component
 
 @Component
-object KontantstøtteInformasjonsbrevOvergangsordningNovember2024Metadata : Dokumentmetadata {
+object KontantstøtteUtbetalingEtterKAVedtakMetadata : Dokumentmetadata {
     override val journalpostType: JournalpostType = JournalpostType.UTGAAENDE
     override val fagsakSystem: Fagsystem = Fagsystem.KONT
     override val tema: Tema = Tema.KON
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
-    override val dokumenttype: Dokumenttype = Dokumenttype.KONTANTSTØTTE_INFORMASJONSBREV_OVERGANGSORDNING_NOVEMBER_2024
-    override val tittel: String = "Informasjon om overgangsordning 2024"
-    override val brevkode: String = "informasjon-overgangsordning-2024"
+    override val dokumenttype: Dokumenttype = Dokumenttype.KONTANTSTØTTE_UTBETALING_ETTER_KA_VEDTAK
+    override val tittel: String = "Utbetaling etter KA-vedtak - kontantstøtte"
+    override val brevkode: String = "utbetaling-ka-vedtak-kontantstotte"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
