@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.RestOperations
@@ -55,6 +56,10 @@ class DokarkivRestClient(
         try {
             return postForEntity(uri, jp, headers(navIdent))
         } catch (e: RuntimeException) {
+            if (e is HttpClientErrorException) {
+                logger.info("Journalpost allerede journalført")
+                return e.getResponseBodyAs(OpprettJournalpostResponse::class.java)
+            }
             throw oppslagExceptionVed("opprettelse", e, jp.bruker?.id, "dokarkiv.opprettJournalpost")
         }
     }
