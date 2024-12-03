@@ -137,19 +137,6 @@ class PdlRestClient(
         return data
     }
 
-    fun hentGjeldendeAktørId(
-        ident: String,
-        tema: Tema,
-    ): String {
-        val pdlIdenter = hentIdenter(ident, "AKTORID", tema, false)
-        return pdlIdenter.firstOrNull()?.ident
-            ?: throw pdlOppslagException(
-                feilmelding = "Kunne ikke finne aktørId i PDL. Se secureLogs for mer info.",
-                personIdent = ident,
-                kilde = "PdlRestClient.hentAktorId",
-            )
-    }
-
     fun hentGjeldendePersonident(
         ident: String,
         tema: Tema,

@@ -20,14 +20,6 @@ public class AktørService {
         this.pdlRestClient = pdlRestClient;
     }
 
-    @Cacheable(value = "aktør_personIdent_pdl", unless = "#result == null")
-    public String getAktørIdFraPdl(String personIdent, Tema tema) {
-        requireNonNull(personIdent, "personIdent");
-        String responseFraRegister = pdlRestClient.hentGjeldendeAktørId(personIdent, tema);
-        secureLogger.info("Legger fnr {} med aktørid {} i aktør-cache", personIdent, responseFraRegister);
-        return responseFraRegister;
-    }
-
     @Cacheable(value = "aktør_aktørId_pdl", unless = "#result == null")
     public String getPersonIdentFraPdl(AktørId aktørId, Tema tema) {
         requireNonNull(aktørId, "aktørId");
