@@ -40,6 +40,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         every { journalpost.dokumenter } returns listOf(dokumentInfo)
         every { dokumentInfo.dokumentInfoId } returns "1"
         every { dokumentInfo.erSøknadForTema(any()) } returns true
+        every { dokumentInfo.harOriginalVariant() } returns true
 
         val søkerFnr = "12345678910"
         val barnFnr = "12345678911"
@@ -71,6 +72,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         every { journalpost.datoMottatt } returns LocalDateTime.of(2024, 12, 12, 0, 0)
         every { dokumentInfo.dokumentInfoId } returns "1"
         every { dokumentInfo.erSøknadForTema(any()) } returns true
+        every { dokumentInfo.harOriginalVariant() } returns true
 
         val søkerFnr = "12345678910"
         val barnFnr = "12345678911"
@@ -91,7 +93,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
 
     @ParameterizedTest
     @EnumSource(Tema::class, names = ["BAR", "KON"])
-    fun `skal mappe om liste av Journalpost til liste av TilgangsstyrtJournalpost med harTilgang satt til true uavhengig av tilgang dersom journalposten er opprettet før vi la inn støtte for json arkivering`(tema: Tema) {
+    fun `skal mappe om liste av Journalpost til liste av TilgangsstyrtJournalpost med harTilgang satt til true uavhengig av tilgang dersom journalposten ikke inneholder original variant av søknad`(tema: Tema) {
         // Arrange
         val journalpost = mockk<Journalpost>()
         val dokumentInfo = mockk<DokumentInfo>()
@@ -103,6 +105,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         every { journalpost.datoMottatt } returns LocalDateTime.of(2000, 12, 12, 0, 0)
         every { dokumentInfo.dokumentInfoId } returns "1"
         every { dokumentInfo.erSøknadForTema(any()) } returns true
+        every { dokumentInfo.harOriginalVariant() } returns false
 
         val søkerFnr = "12345678910"
         val barnFnr = "12345678911"
@@ -130,6 +133,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         every { journalpost.tema } returns Tema.BAR.name
         every { journalpost.datoMottatt } returns LocalDateTime.of(2024, 12, 12, 0, 0)
         every { journalpost.harDigitalSøknad(any()) } returns false
+        every { journalpost.dokumenter }
 
         // Act
         val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost))
@@ -168,7 +172,8 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         every { journalpost.harDigitalSøknad(any()) } returns true
         every { journalpost.datoMottatt } returns LocalDateTime.of(2024, 12, 12, 0, 0)
         every { journalpost.dokumenter } returns listOf(dokumentInfo)
-
+        every { dokumentInfo.erSøknadForTema(any()) } returns true
+        every { dokumentInfo.harOriginalVariant() } returns true
         every { baksVersjonertSøknadService.hentBaksSøknadBase(any(), any()) } throws MissingVersionException("JSON-String inneholder ikke feltet 'kontraktVersjon'")
         // Act
         val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost))
@@ -190,6 +195,8 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         every { journalpost.datoMottatt } returns LocalDateTime.of(2024, 12, 12, 0, 0)
         every { journalpost.harDigitalSøknad(any()) } returns true
         every { journalpost.dokumenter } returns listOf(dokumentInfo)
+        every { dokumentInfo.erSøknadForTema(any()) } returns true
+        every { dokumentInfo.harOriginalVariant() } returns true
 
         every { baksVersjonertSøknadService.hentBaksSøknadBase(any(), any()) } throws UnsupportedVersionException("Har ikke implementert støtte for deserialisering av søknadsversjonen")
         // Act
@@ -198,6 +205,30 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
         val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && !it.harTilgang }
+        assertThat(tilgangsstyrtJournalpost).isNotNull
+    }
+
+    @ParameterizedTest
+    @EnumSource(Tema::class, names = ["BAR", "KON"], mode = EnumSource.Mode.INCLUDE)
+    fun `skal mappe om liste av Journalpost til liste av TilgangsstyrtJournalpost med harTilgang satt til true dersom digital søknad og det ikke finnes noen ORIGINAL variant av søknaden`(tema: Tema) {
+        // Arrange
+        val journalpost = mockk<Journalpost>()
+        val dokumentInfo = mockk<DokumentInfo>()
+
+        every { journalpost.journalpostId } returns "1"
+        every { journalpost.tema } returns tema.name
+        every { journalpost.harDigitalSøknad(tema) } returns true
+        every { journalpost.datoMottatt } returns LocalDateTime.of(2024, 12, 12, 0, 0)
+        every { journalpost.dokumenter } returns listOf(dokumentInfo)
+        every { dokumentInfo.harOriginalVariant() } returns false
+        every { dokumentInfo.erSøknadForTema(tema = tema) } returns true
+
+        // Act
+        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost))
+
+        // Assert
+        assertThat(tilgangsstyrteJournalposter).hasSize(1)
+        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && it.harTilgang }
         assertThat(tilgangsstyrtJournalpost).isNotNull
     }
 }

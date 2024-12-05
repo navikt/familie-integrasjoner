@@ -30,43 +30,48 @@ class BaksTilgangsstyrtJournalpostService(
             return true
         }
 
-        if (!støtterTilgangsstyringSjekk(journalpost)) return true
+        if (!støtterTilgangsstyringSjekk(journalpost, tema)) return true
 
-        return if (journalpost.harDigitalSøknad(tema)) {
-            try {
-                val baksSøknadBase = baksVersjonertSøknadService.hentBaksSøknadBase(journalpost, tema)
-                tilgangskontrollService
-                    .sjekkTilgangTilBrukere(
-                        personIdenter = baksSøknadBase.personerISøknad(),
-                        tema = tema,
-                    ).all { tilgang -> tilgang.harTilgang }
-            } catch (e: MissingVersionException) {
-                logger.warn("Får ikke sjekket tilgang til digital søknad tilknyttet journalpost ${journalpost.journalpostId}.")
-                secureLogger.warn("Feil ved deserialisering av digital søknad.", e)
-                // For gamle søknader, før 'kontraktVersjon' ble innført, har vi ingen måte å bestemme konkret klasse å deserialisere til.
-                // Gir tilgang basert på antagelsen om at fagsak relatert til gamle søknader allerede er satt til Vikafossen dersom det finnes kode 6, 7 eller 19 personer i søknad.
-                true
-            } catch (e: UnsupportedVersionException) {
-                logger.error("Får ikke sjekket tilgang til digital søknad tilknyttet journalpost ${journalpost.journalpostId}, da vi mangler støtte for kontraktversjon.")
-                secureLogger.error("Feil ved deserialisering av digital søknad.", e)
-                // Hindrer tilgang og logger Error da vi burde kunne deserialisere alle baks-søknader med feltet `kontraktVersjon`.
-                false
-            }
-        } else {
-            // Vi har kun mulighet til å sjekke tilganger for digitale søknader, da innholdet i papirsøknader er ukjent.
+        return try {
+            val baksSøknadBase = baksVersjonertSøknadService.hentBaksSøknadBase(journalpost, tema)
+            tilgangskontrollService
+                .sjekkTilgangTilBrukere(
+                    personIdenter = baksSøknadBase.personerISøknad(),
+                    tema = tema,
+                ).all { tilgang -> tilgang.harTilgang }
+        } catch (e: MissingVersionException) {
+            logger.warn("Får ikke sjekket tilgang til digital søknad tilknyttet journalpost ${journalpost.journalpostId}.")
+            secureLogger.warn("Feil ved deserialisering av digital søknad.", e)
+            // For gamle søknader, før 'kontraktVersjon' ble innført, har vi ingen måte å bestemme konkret klasse å deserialisere til.
+            // Gir tilgang basert på antagelsen om at fagsak relatert til gamle søknader allerede er satt til Vikafossen dersom det finnes kode 6, 7 eller 19 personer i søknad.
             true
+        } catch (e: UnsupportedVersionException) {
+            logger.error("Får ikke sjekket tilgang til digital søknad tilknyttet journalpost ${journalpost.journalpostId}, da vi mangler støtte for kontraktversjon.")
+            secureLogger.error("Feil ved deserialisering av digital søknad.", e)
+            // Hindrer tilgang og logger Error da vi burde kunne deserialisere alle baks-søknader med feltet `kontraktVersjon`.
+            false
         }
     }
 
-    private fun støtterTilgangsstyringSjekk(journalpost: Journalpost): Boolean {
-        val tema = journalpost.tema?.let { tema -> Tema.valueOf(tema) } ?: return false
+    private fun støtterTilgangsstyringSjekk(
+        journalpost: Journalpost,
+        tema: Tema,
+    ): Boolean {
         val datoMottatt = journalpost.datoMottatt ?: return false
+        val harDigitalSøknadForTemaMedOriginalVariant = journalpost.harDigitalSøknad(tema) && journalpost.dokumenter!!.any { it.erSøknadForTema(tema) && it.harOriginalVariant() }
 
-        return when {
-            tema == Tema.KON && tidligsteStøtteForTilgangsstyrtDokumentForKontantstøtte > datoMottatt -> false
-            tema == Tema.BAR && tidligsteStøtteForTilgangsstyrtDokumentForBarnetrygd > datoMottatt -> false
-            else -> true
+        val tidligsteStøtteForTilgangsstyrtDokument =
+            when (tema) {
+                Tema.KON -> tidligsteStøtteForTilgangsstyrtDokumentForKontantstøtte
+                Tema.BAR -> tidligsteStøtteForTilgangsstyrtDokumentForBarnetrygd
+                else -> error("Støtter ikke tilgangsstyringssjekk for tema: $tema")
+            }
+
+        if (tidligsteStøtteForTilgangsstyrtDokument < datoMottatt && !harDigitalSøknadForTemaMedOriginalVariant) {
+            logger.warn("Journalpost ${journalpost.journalpostId} for digital søknad som burde hatt en original variant mangler dette. Kjører ingen tilgangssjekk.")
         }
+
+        return harDigitalSøknadForTemaMedOriginalVariant
     }
 
     companion object {
