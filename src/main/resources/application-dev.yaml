@@ -155,6 +155,7 @@ SFTP_PASSPHRASE: Palpatine
 
 # mock-server
 PDL_URL: http://localhost:1337/rest/api/pdl
+PDL_PIP_URL: http://localhost:1337/rest/api/pdl-pip
 
 AZURE_APP_WELL_KNOWN_URL: http://localhost:${mock-oauth2-server.port}/selvbetjening/.well-known/openid-configuration
 AZURE_OPENID_CONFIG_TOKEN_ENDPOINT: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
