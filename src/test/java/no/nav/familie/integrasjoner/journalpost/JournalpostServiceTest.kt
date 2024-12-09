@@ -35,7 +35,7 @@ class JournalpostServiceTest {
     @Nested
     inner class FinnTilgangsstyrteBaksJournalposter {
         @Test
-        fun `skal hente journalposter fra saf og deretter mappe om lista til tilgangsstyrte journalposter`() {
+        fun`skal hente journalposter fra saf og deretter mappe om lista til tilgangsstyrte journalposter`() {
             // Arrange
             val journalposterForBrukerRequest = JournalposterForBrukerRequest(brukerId = Bruker("1", BrukerIdType.FNR), antall = 100, tema = listOf(Tema.BAR))
             val journalposter = listOf(mockk<Journalpost>())
