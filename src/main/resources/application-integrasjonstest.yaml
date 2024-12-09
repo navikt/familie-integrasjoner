@@ -188,6 +188,7 @@ MEDL2_URL: http://localhost:18321
 SAF_URL: http://localhost:18321/rest/saf
 OPPGAVE_URL: http://localhost:18321
 PDL_URL: http://localhost:18321/rest/pdl
+PDL_PIP_URL: http://localhost:18321/rest/pdl-pip
 REGOPPSLAG_URL: http://localhost:18321
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw
