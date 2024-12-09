@@ -77,7 +77,7 @@ class BaksVersjonertSøknadServiceTest {
         }
 
         @Test
-        fun`skal kaste feil dersom tema ikke er BAR eller KON`() {
+        fun `skal kaste feil dersom tema ikke er BAR eller KON`() {
             // Act & Assert
             val exception = assertThrows<IllegalArgumentException> { baksVersjonertSøknadService.hentBaksSøknadBase(mockk(), Tema.ENF) }
             assertThat(exception.message).isEqualTo("Støtter ikke deserialisering av søknad for tema ${Tema.ENF.name}")
