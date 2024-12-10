@@ -58,6 +58,7 @@ class BaksTilgangsstyrtJournalpostService(
         tema: Tema,
     ): Boolean {
         val datoMottatt = journalpost.datoMottatt ?: return false
+        if (!journalpost.harDigitalSøknad(tema)) return false
         val harDigitalSøknadForTemaMedOriginalVariant = journalpost.harDigitalSøknad(tema) && journalpost.dokumenter!!.any { it.erSøknadForTema(tema) && it.harOriginalVariant() }
 
         val tidligsteStøtteForTilgangsstyrtDokument =
