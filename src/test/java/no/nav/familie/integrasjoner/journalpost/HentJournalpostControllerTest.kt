@@ -106,7 +106,7 @@ class HentJournalpostControllerTest(
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         assertThat(response.body?.data?.journalposttype).isEqualTo(Journalposttype.I)
         assertThat(response.body?.data?.journalstatus).isEqualTo(Journalstatus.JOURNALFOERT)
-        assertThat(response.body?.data?.datoMottatt).isEqualTo(LocalDateTime.of(2020, 3, 26, 1, 0))
+        assertThat(response.body?.data?.datoMottatt).isEqualTo(LocalDateTime.of(2024, 3, 26, 1, 0))
     }
 
     @Test
@@ -140,7 +140,7 @@ class HentJournalpostControllerTest(
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         assertThat(response.body?.data?.journalposttype).isEqualTo(Journalposttype.I)
         assertThat(response.body?.data?.journalstatus).isEqualTo(Journalstatus.JOURNALFOERT)
-        assertThat(response.body?.data?.datoMottatt).isEqualTo(LocalDateTime.of(2020, 3, 26, 1, 0))
+        assertThat(response.body?.data?.datoMottatt).isEqualTo(LocalDateTime.of(2024, 3, 26, 1, 0))
     }
 
     @Test
