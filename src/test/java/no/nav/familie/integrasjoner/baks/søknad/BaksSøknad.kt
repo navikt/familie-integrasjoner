@@ -6,6 +6,7 @@ import no.nav.familie.kontrakter.felles.søknad.Søknadsfelt
 import no.nav.familie.kontrakter.ks.søknad.v1.RegistrertBostedType
 import no.nav.familie.kontrakter.ks.søknad.v1.SIVILSTANDTYPE
 import no.nav.familie.kontrakter.ks.søknad.v1.SøknadAdresse
+import no.nav.familie.kontrakter.ks.søknad.v1.TekstPåSpråkMap
 import no.nav.familie.kontrakter.ks.søknad.v5.KontantstøtteSøknad
 import no.nav.familie.kontrakter.ba.søknad.v8.Barn as BarnetrygdBarn
 import no.nav.familie.kontrakter.ba.søknad.v8.Søker as BarnetrygdSøker
@@ -22,7 +23,7 @@ fun lagKontantstøtteSøknad(
         barn = listOf(lagKontantstøtteBarn(barnFnr)),
         antallEøsSteg = 0,
         dokumentasjon = emptyList(),
-        teksterTilPdf = emptyMap(),
+        teksterTilPdf = mapOf("testApiNavn" to TekstPåSpråkMap(mapOf("nb" to "Bokmål", "nn" to "Nynorsk", "en" to "Engelsk"))),
         originalSpråk = "NB",
         finnesPersonMedAdressebeskyttelse = false,
         erNoenAvBarnaFosterbarn = lagStringSøknadsfelt("Nei"),
