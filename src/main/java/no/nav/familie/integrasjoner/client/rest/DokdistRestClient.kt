@@ -8,6 +8,7 @@ import no.nav.familie.integrasjoner.dokdist.domene.DistribuerJournalpostResponse
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestOperations
 import java.net.URI
 
@@ -24,8 +25,12 @@ class DokdistRestClient(
         try {
             postForEntity(distribuerUri, req)
         } catch (e: Exception) {
-            incrementLoggFeil("dokdist.distribuer")
-            throw e
+            if (e is HttpClientErrorException.Gone) {
+                throw e
+            } else {
+                incrementLoggFeil("dokdist.distribuer")
+                throw e
+            }
         }
 
     companion object {
