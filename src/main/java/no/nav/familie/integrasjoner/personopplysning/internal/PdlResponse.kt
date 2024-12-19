@@ -136,9 +136,10 @@ enum class FORELDERBARNRELASJONROLLE {
 
 enum class ADRESSEBESKYTTELSEGRADERING(
     val diskresjonskode: String?,
+    val nivå: Int,
 ) {
-    STRENGT_FORTROLIG_UTLAND("SPSF"), // Kode 19
-    FORTROLIG("SPFO"), // Kode 7
-    STRENGT_FORTROLIG("SPSF"), // Kode 6
-    UGRADERT(null),
+    STRENGT_FORTROLIG("SPSF", 3), // Kode 6
+    STRENGT_FORTROLIG_UTLAND("SPSF", 2), // Kode 19
+    FORTROLIG("SPFO", 1), // Kode 7
+    UGRADERT(null, 0),
 }
