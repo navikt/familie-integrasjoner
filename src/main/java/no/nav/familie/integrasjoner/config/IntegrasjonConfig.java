@@ -14,7 +14,6 @@ import java.net.URI;
 public class IntegrasjonConfig {
 
     @Bean
-    @Autowired
     @Profile("!mock-sts")
     public StsRestClient stsRestClient(ObjectMapper objectMapper,
                                        @Value("${STS_URL}") URI stsUrl,
