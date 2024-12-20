@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.baks.søknad
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.familie.integrasjoner.client.rest.SafHentDokumentRestClient
+import no.nav.familie.integrasjoner.client.rest.SafRestClient
 import no.nav.familie.kontrakter.ba.søknad.VersjonertBarnetrygdSøknad
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.journalpost.Dokumentvariantformat
@@ -14,26 +15,39 @@ import org.springframework.stereotype.Service
 @Service
 class BaksVersjonertSøknadService(
     private val safHentDokumentRestClient: SafHentDokumentRestClient,
+    private val safRestClient: SafRestClient,
 ) {
     fun hentBaksSøknadBase(
         journalpost: Journalpost,
         tema: Tema,
     ): BaksSøknadBase =
         when (tema) {
-            Tema.KON -> hentVersjonertKontantstøtteSøknad(journalpost).kontantstøtteSøknad
-            Tema.BAR -> hentVersjonertBarnetrygdSøknad(journalpost).barnetrygdSøknad
+            Tema.KON -> hentKontantstøtteSøknadBase(journalpost)
+            Tema.BAR -> hentBarnetrygdSøknadBase(journalpost)
             else -> throw IllegalArgumentException("Støtter ikke deserialisering av søknad for tema $tema")
         }
 
+    fun hentBarnetrygdSøknadBase(journalpost: Journalpost): BaksSøknadBase = objectMapper.readValue<VersjonertBarnetrygdSøknad>(hentJsonSøknadFraJournalpost(journalpost, Tema.BAR)).barnetrygdSøknad
+
+    fun hentKontantstøtteSøknadBase(journalpost: Journalpost): BaksSøknadBase = objectMapper.readValue<VersjonertKontantstøtteSøknad>(hentJsonSøknadFraJournalpost(journalpost, Tema.KON)).kontantstøtteSøknad
+
     fun hentVersjonertBarnetrygdSøknad(
-        journalpost: Journalpost,
-    ): VersjonertBarnetrygdSøknad = objectMapper.readValue<VersjonertBarnetrygdSøknad>(hentSøknadJson(journalpost, Tema.BAR))
+        journalpostId: String,
+    ): VersjonertBarnetrygdSøknad = objectMapper.readValue<VersjonertBarnetrygdSøknad>(hentJsonSøknadFraJournalpostId(journalpostId, Tema.BAR))
 
     fun hentVersjonertKontantstøtteSøknad(
-        journalpost: Journalpost,
-    ): VersjonertKontantstøtteSøknad = objectMapper.readValue<VersjonertKontantstøtteSøknad>(hentSøknadJson(journalpost, Tema.KON))
+        journalpostId: String,
+    ): VersjonertKontantstøtteSøknad = objectMapper.readValue<VersjonertKontantstøtteSøknad>(hentJsonSøknadFraJournalpostId(journalpostId, Tema.KON))
 
-    private fun hentSøknadJson(
+    private fun hentJsonSøknadFraJournalpostId(
+        journalpostId: String,
+        tema: Tema,
+    ): String {
+        val journalpost = safRestClient.hentJournalpost(journalpostId)
+        return hentJsonSøknadFraJournalpost(journalpost, tema)
+    }
+
+    private fun hentJsonSøknadFraJournalpost(
         journalpost: Journalpost,
         tema: Tema,
     ): String {

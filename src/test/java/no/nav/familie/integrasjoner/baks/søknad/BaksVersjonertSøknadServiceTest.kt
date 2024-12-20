@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.baks.søknad
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.familie.integrasjoner.client.rest.SafHentDokumentRestClient
+import no.nav.familie.integrasjoner.client.rest.SafRestClient
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.journalpost.DokumentInfo
 import no.nav.familie.kontrakter.felles.journalpost.Dokumentvariantformat
@@ -15,9 +16,11 @@ import org.junit.jupiter.api.assertThrows
 
 class BaksVersjonertSøknadServiceTest {
     private val safHentDokumentRestClient: SafHentDokumentRestClient = mockk()
+    private val safRestClient: SafRestClient = mockk()
     private val baksVersjonertSøknadService: BaksVersjonertSøknadService =
         BaksVersjonertSøknadService(
             safHentDokumentRestClient = safHentDokumentRestClient,
+            safRestClient = safRestClient,
         )
 
     @Nested
