@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.journalpost
 
-import no.nav.familie.integrasjoner.baks.søknad.BaksVersjonertSøknadService
+import no.nav.familie.integrasjoner.journalpost.versjonertsøknad.BaksVersjonertSøknadService
 import no.nav.familie.integrasjoner.tilgangskontroll.TilgangskontrollService
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.journalpost.Journalpost
