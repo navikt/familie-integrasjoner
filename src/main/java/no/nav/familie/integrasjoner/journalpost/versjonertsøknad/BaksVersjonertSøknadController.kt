@@ -1,4 +1,4 @@
-package no.nav.familie.integrasjoner.baks.søknad
+package no.nav.familie.integrasjoner.journalpost.versjonertsøknad
 
 import no.nav.familie.kontrakter.ba.søknad.VersjonertBarnetrygdSøknad
 import no.nav.familie.kontrakter.felles.Ressurs
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
  * Tar imot journalpost ID.
  */
 @RestController
-@RequestMapping("/api/baks/soknad")
+@RequestMapping("/api/baks/versjonertsoknad")
 @ProtectedWithClaims(issuer = "azuread")
 class BaksVersjonertSøknadController(
     private val baksVersjonertSøknadService: BaksVersjonertSøknadService,

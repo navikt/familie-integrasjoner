@@ -1,4 +1,4 @@
-package no.nav.familie.integrasjoner.baks.søknad
+package no.nav.familie.integrasjoner.journalpost.versjonertsøknad
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.familie.integrasjoner.client.rest.SafHentDokumentRestClient
