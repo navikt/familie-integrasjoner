@@ -187,7 +187,7 @@ class OppgaveRestClient(
             .runCatching { postForEntity<Oppgave>(uri, dto, httpHeaders()) }
             .map { it.id ?: error("Kan ikke finne oppgaveId på oppgaven $it") }
             .onFailure {
-                var feilmelding = "Feil ved oppretting av oppgave for ${dto.aktoerId}."
+                var feilmelding = "Feil ved oppretting av oppgave for ${dto.aktoerId?.let { it } ?: dto.personident}."
                 if (it is HttpStatusCodeException) {
                     feilmelding += " Response fra oppgave = ${it.responseBodyAsString}"
                 }
