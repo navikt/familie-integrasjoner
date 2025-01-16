@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.journalpost.versjonertsøknad
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.familie.integrasjoner.client.rest.SafHentDokumentRestClient
 import no.nav.familie.integrasjoner.client.rest.SafRestClient
+import no.nav.familie.integrasjoner.journalpost.JournalpostNotFoundException
 import no.nav.familie.kontrakter.ba.søknad.VersjonertBarnetrygdSøknad
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.journalpost.Dokumentvariantformat
@@ -51,7 +52,9 @@ class BaksVersjonertSøknadService(
         journalpost: Journalpost,
         tema: Tema,
     ): String {
-        val dokumentInfoId = journalpost.dokumenter!!.single { it.erSøknadForTema(tema) }.dokumentInfoId
+        val dokumentInfoId = journalpost.dokumenter?.firstOrNull { it.erSøknadForTema(tema) }?.dokumentInfoId
+        dokumentInfoId ?: throw JournalpostNotFoundException("Fant ikke dokumenter for tema $tema i journalpost", journalpostId = journalpost.journalpostId)
+
         return safHentDokumentRestClient.hentDokument(journalpostId = journalpost.journalpostId, dokumentInfoId = dokumentInfoId, variantFormat = Dokumentvariantformat.ORIGINAL.name).decodeToString()
     }
 }
