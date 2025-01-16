@@ -41,6 +41,13 @@ class JournalpostExceptionHandler {
             .body(Ressurs.ikkeTilgang(e.message ?: "Bruker eller system har ikke tilgang til saf ressurs"))
     }
 
+    @ExceptionHandler(JournalpostNotFoundException::class)
+    fun handleJournalpostNotFoundException(e: JournalpostNotFoundException): ResponseEntity<Ressurs<Any>> {
+        LOG.warn("Mangler data for journalpost med id: ${e.journalpostId}. Feil: ${e.message}")
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(failure(errorMessage = e.message, frontendFeilmelding = "Finner ikke journalpost"))
+    }
+
     private fun byggFeilmelding(ex: RuntimeException): String =
         if (ex.cause is HttpStatusCodeException) {
             val cex = ex.cause as HttpStatusCodeException
