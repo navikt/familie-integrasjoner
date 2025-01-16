@@ -1,0 +1,11 @@
+{
+  "errors": [
+    {
+      "message": "Mangler tilgang til Journalpost",
+      "extensions": {
+        "code": "forbidden",
+        "classification": "ForbiddenException"
+      }
+    }
+  ]
+}

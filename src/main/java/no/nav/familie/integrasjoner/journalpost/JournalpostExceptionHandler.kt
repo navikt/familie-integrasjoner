@@ -4,12 +4,14 @@ import no.nav.familie.integrasjoner.journalpost.versjonertsøknad.BaksVersjonert
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import org.slf4j.LoggerFactory
+import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.client.HttpStatusCodeException
 
+@Order(1) // Sørger for at denne blir brukt fremfor en generisk Exception:class handler.
 @ControllerAdvice(basePackageClasses = [HentJournalpostController::class, BaksVersjonertSøknadController::class])
 class JournalpostExceptionHandler {
     @ExceptionHandler(JournalpostRestClientException::class)
