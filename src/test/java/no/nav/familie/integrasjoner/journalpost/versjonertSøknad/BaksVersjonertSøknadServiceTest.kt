@@ -1,7 +1,9 @@
-package no.nav.familie.integrasjoner.baks.søknad
+package no.nav.familie.integrasjoner.journalpost.versjonertSøknad
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.familie.integrasjoner.baks.søknad.lagBarnetrygdSøknad
+import no.nav.familie.integrasjoner.baks.søknad.lagKontantstøtteSøknad
 import no.nav.familie.integrasjoner.client.rest.SafHentDokumentRestClient
 import no.nav.familie.integrasjoner.client.rest.SafRestClient
 import no.nav.familie.integrasjoner.journalpost.versjonertsøknad.BaksVersjonertSøknadService
