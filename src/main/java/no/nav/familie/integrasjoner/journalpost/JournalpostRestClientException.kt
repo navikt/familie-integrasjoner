@@ -18,3 +18,8 @@ class JournalpostForbiddenException(
     message: String?,
     cause: Throwable? = null,
 ) : RuntimeException(message, cause)
+
+class JournalpostNotFoundException(
+    message: String?,
+    val journalpostId: String,
+) : RuntimeException(message)
