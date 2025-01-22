@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.time.LocalDate
 
-@ActiveProfiles("integrasjonstest", "mock-sts")
+@ActiveProfiles("integrasjonstest", "mock-oauth")
 @TestPropertySource(properties = ["AAREG_URL=http://localhost:28085"])
 @AutoConfigureWireMock(port = 28085)
 class AaregControllerTest : OppslagSpringRunnerTest() {

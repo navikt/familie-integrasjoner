@@ -19,8 +19,7 @@ import java.time.LocalDate
 
 @Component
 class AaregRestClient(
-    @Value("\${AAREG_URL}")
-    private val aaregUrl: URI,
+    @Value("\${AAREG_URL}") private val aaregUrl: URI,
     @Qualifier("jwtBearer") private val restTemplate: RestOperations,
 ) : AbstractPingableRestClient(restTemplate, "aareg") {
     override val pingUri: URI = URI.create("$aaregUrl/$PATH_PING")
