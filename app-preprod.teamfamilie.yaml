@@ -57,6 +57,9 @@ spec:
           cluster: dev-gcp
         - application: familie-tilbake-lokal
           cluster: dev-gcp
+        - application: tilbakekreving-backend
+          namespace: tilbake
+          cluster: dev-gcp
         - application: familie-ks-mottak
         - application: familie-baks-mottak
           cluster: dev-gcp

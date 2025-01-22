@@ -60,6 +60,9 @@ spec:
           cluster: prod-gcp
         - application: familie-tilbake
           cluster: prod-gcp
+        - application: tilbakekreving-backend
+          namespace: tilbake
+          cluster: prod-gcp
         - application: familie-ks-mottak
         - application: familie-baks-mottak
           cluster: prod-gcp
