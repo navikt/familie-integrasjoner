@@ -114,13 +114,13 @@ class ApiExceptionHandler {
     }
 
     @ExceptionHandler(PdlNotFoundException::class)
-    fun handleThrowable(feil: PdlNotFoundException): ResponseEntity<Ressurs<Nothing>> {
+    fun handlePdlNotFoundException(feil: PdlNotFoundException): ResponseEntity<Ressurs<Nothing>> {
         logger.info("Finner ikke personen i PDL")
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(failure(frontendFeilmelding = "Finner ikke personen"))
     }
 
     @ExceptionHandler(PdlUnauthorizedException::class)
-    fun handleThrowable(feil: PdlUnauthorizedException): ResponseEntity<Ressurs<Nothing>> {
+    fun handlePdlUnauthorizedException(feil: PdlUnauthorizedException): ResponseEntity<Ressurs<Nothing>> {
         incrementLoggFeil("pdl.unauthorized")
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(failure(frontendFeilmelding = "Har ikke tilgang til å slå opp personen i PDL"))
     }
