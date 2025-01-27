@@ -2,8 +2,8 @@ package no.nav.familie.integrasjoner.journalpost
 
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.familie.integrasjoner.baks.søknad.BaksVersjonertSøknadService
 import no.nav.familie.integrasjoner.baks.søknad.lagKontantstøtteSøknad
+import no.nav.familie.integrasjoner.journalpost.versjonertsøknad.BaksVersjonertSøknadService
 import no.nav.familie.integrasjoner.tilgangskontroll.TilgangskontrollService
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.journalpost.DokumentInfo

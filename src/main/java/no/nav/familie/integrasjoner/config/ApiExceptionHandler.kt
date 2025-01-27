@@ -1,6 +1,10 @@
 package no.nav.familie.integrasjoner.config
 
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
+import no.nav.familie.integrasjoner.journalpost.JournalpostNotFoundException
+import no.nav.familie.integrasjoner.journalpost.JournalpostRequestException
+import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
 import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.PdlUnauthorizedException
 import no.nav.familie.kontrakter.felles.Ressurs
@@ -16,6 +20,7 @@ import org.springframework.web.bind.MissingRequestHeaderException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.context.request.async.AsyncRequestNotUsableException
@@ -114,13 +119,13 @@ class ApiExceptionHandler {
     }
 
     @ExceptionHandler(PdlNotFoundException::class)
-    fun handleThrowable(feil: PdlNotFoundException): ResponseEntity<Ressurs<Nothing>> {
+    fun handlePdlNotFoundException(feil: PdlNotFoundException): ResponseEntity<Ressurs<Nothing>> {
         logger.info("Finner ikke personen i PDL")
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(failure(frontendFeilmelding = "Finner ikke personen"))
     }
 
     @ExceptionHandler(PdlUnauthorizedException::class)
-    fun handleThrowable(feil: PdlUnauthorizedException): ResponseEntity<Ressurs<Nothing>> {
+    fun handlePdlUnauthorizedException(feil: PdlUnauthorizedException): ResponseEntity<Ressurs<Nothing>> {
         incrementLoggFeil("pdl.unauthorized")
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(failure(frontendFeilmelding = "Har ikke tilgang til å slå opp personen i PDL"))
     }
@@ -154,6 +159,50 @@ class ApiExceptionHandler {
             .status(e.httpStatus)
             .body(failure(feilmelding, error = e))
     }
+
+    @ExceptionHandler(JournalpostRestClientException::class)
+    fun handleJournalpostRestClientException(ex: JournalpostRestClientException): ResponseEntity<Ressurs<Any>> {
+        val errorBaseMessage = "Feil ved henting av journalpost=${ex.journalpostId}"
+        val errorExtMessage = byggFeilmelding(ex)
+        logger.warn(errorBaseMessage, ex)
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(failure(errorBaseMessage + errorExtMessage, error = ex))
+    }
+
+    @ExceptionHandler(JournalpostRequestException::class)
+    fun handleJournalpostRequestException(ex: JournalpostRequestException): ResponseEntity<Ressurs<Any>> {
+        val errorBaseMessage = "Feil ved henting av journalpost for ${ex.safJournalpostRequest}"
+        val errorExtMessage = byggFeilmelding(ex)
+        secureLogger.warn(errorBaseMessage, ex)
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(failure(errorBaseMessage + errorExtMessage, error = ex))
+    }
+
+    @ExceptionHandler(JournalpostForbiddenException::class)
+    fun handleJournalpostForbiddenException(e: JournalpostForbiddenException): ResponseEntity<Ressurs<Any>> {
+        logger.warn("Bruker eller system har ikke tilgang til saf ressurs: ${e.message}")
+
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(Ressurs.ikkeTilgang(e.message ?: "Bruker eller system har ikke tilgang til saf ressurs"))
+    }
+
+    @ExceptionHandler(JournalpostNotFoundException::class)
+    fun handleJournalpostNotFoundException(e: JournalpostNotFoundException): ResponseEntity<Ressurs<Any>> {
+        logger.warn("Mangler data for journalpost med id: ${e.journalpostId}. Feil: ${e.message}")
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(failure(errorMessage = e.message, frontendFeilmelding = "Finner ikke journalpost"))
+    }
+
+    private fun byggFeilmelding(ex: RuntimeException): String =
+        if (ex.cause is HttpStatusCodeException) {
+            val cex = ex.cause as HttpStatusCodeException
+            " statuscode=${cex.statusCode} body=${cex.responseBodyAsString}"
+        } else {
+            " klientfeilmelding=${ex.message}"
+        }
 
     companion object {
         private val secureLogger = LoggerFactory.getLogger("secureLogger")

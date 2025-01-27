@@ -1,0 +1,11 @@
+{
+  "errors": [
+    {
+      "message": "Finner ikke Journalpost",
+      "extensions": {
+        "code": "not_found",
+        "classification": "NotFoundException"
+      }
+    }
+  ]
+}

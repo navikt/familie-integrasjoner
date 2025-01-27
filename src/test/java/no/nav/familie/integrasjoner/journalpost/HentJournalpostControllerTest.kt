@@ -336,6 +336,58 @@ class HentJournalpostControllerTest(
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
     }
 
+    @Test
+    fun `skal returnere 403 FORBIDDEN med status IKKE_TILGANG hvis man ikke har tilgang til SAF ressurs`() {
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("POST")
+                    .withPath("/rest/saf/graphql")
+                    .withBody(gyldigJournalPostIdRequest()),
+            ).respond(
+                response()
+                    .withBody(json(lesFil("saf/forbidden.json")))
+                    .withHeaders(Header("Content-Type", "application/json")),
+            )
+
+        val response: ResponseEntity<Ressurs<Journalpost>> =
+            restTemplate.exchange(
+                uriHentJournalpost,
+                HttpMethod.GET,
+                HttpEntity<String>(headers),
+            )
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.FORBIDDEN)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.IKKE_TILGANG)
+    }
+
+    @Test
+    fun `skal returnere 404 NOT FOUND med status FEILET hvis man ikke finner SAF ressurs`() {
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("POST")
+                    .withPath("/rest/saf/graphql")
+                    .withBody(gyldigJournalPostIdRequest()),
+            ).respond(
+                response()
+                    .withBody(json(lesFil("saf/not_found.json")))
+                    .withHeaders(Header("Content-Type", "application/json")),
+            )
+
+        val response: ResponseEntity<Ressurs<Journalpost>> =
+            restTemplate.exchange(
+                uriHentJournalpost,
+                HttpMethod.GET,
+                HttpEntity<String>(headers),
+            )
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+    }
+
     private fun gyldigJournalPostIdRequest(): String =
         lesFil("saf/gyldigJournalpostIdRequest.json")
             .replace(

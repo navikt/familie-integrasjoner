@@ -6,6 +6,7 @@ import no.nav.familie.integrasjoner.config.incrementLoggFeil
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
+import no.nav.familie.integrasjoner.journalpost.JournalpostNotFoundException
 import no.nav.familie.integrasjoner.journalpost.JournalpostRequestException
 import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
 import no.nav.familie.integrasjoner.journalpost.internal.JournalposterForVedleggRequest
@@ -52,19 +53,25 @@ class SafRestClient(
                 journalpostId,
             )
         } else {
-            val tilgangFeil = response.errors?.firstOrNull { it.extensions.code == SafErrorCode.forbidden }
-
-            if (tilgangFeil != null) {
-                incrementLoggFeil("saf.hentJournalpost.forbidden")
-                throw JournalpostForbiddenException(tilgangFeil.message)
-            } else {
-                responsFailure.increment()
-                incrementLoggFeil("saf.hentJournalpost")
-                throw JournalpostRestClientException(
-                    "Kan ikke hente journalpost " + response.errors?.toString(),
-                    null,
-                    journalpostId,
-                )
+            val error = response.errors?.firstOrNull()
+            when (error?.extensions?.code) {
+                SafErrorCode.forbidden -> {
+                    incrementLoggFeil("saf.hentJournalpost.forbidden")
+                    throw JournalpostForbiddenException(error.message)
+                }
+                SafErrorCode.not_found -> {
+                    incrementLoggFeil("saf.hentJournalpost.notFound")
+                    throw JournalpostNotFoundException(error.message, journalpostId)
+                }
+                else -> {
+                    responsFailure.increment()
+                    incrementLoggFeil("saf.hentJournalpost")
+                    throw JournalpostRestClientException(
+                        "Kan ikke hente journalpost " + response.errors?.toString(),
+                        null,
+                        journalpostId,
+                    )
+                }
             }
         }
     }
