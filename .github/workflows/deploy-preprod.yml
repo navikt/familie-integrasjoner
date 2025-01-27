@@ -59,6 +59,9 @@ jobs:
           username: "oauth2accesstoken"
           password: "${{ steps.tilbake-auth.outputs.access_token }}"
 
+      - name: Debug log
+        run: docker image ls
+
       # Push additional image. Should use build cache, which should be pretty fast
       - name: Create additional tag and push to team tilbake Google Artifact Repository
         uses: docker/build-push-action@v6
