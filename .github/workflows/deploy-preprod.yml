@@ -43,6 +43,28 @@ jobs:
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
           byosbom: target/classes/META-INF/sbom/application.cdx.json
+
+      - id: tilbake-auth
+        name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: gar-tilbake-acb1@${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}.iam.gserviceaccount.com
+          token_format: "access_token"
+
+      - name: Login to registry
+        uses: docker/login-action@v3
+        with:
+          registry: europe-north1-docker.pkg.dev/${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}/tilbake/familie-tilbake:latest
+          username: "oauth2accesstoken"
+          password: "${{ steps.tilbake-auth.outputs.access_token }}"
+
+      # Push additional image. Should use build cache, which should be pretty fast
+      - name: Create additional tag and push to team tilbake Google Artifact Repository
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: europe-north1-docker.pkg.dev/${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}/tilbake/familie-tilbake:latest
     outputs:
       image: ${{ steps.docker-push.outputs.image }}
 
