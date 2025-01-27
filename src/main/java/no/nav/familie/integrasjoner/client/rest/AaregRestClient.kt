@@ -1,7 +1,6 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractPingableRestClient
-import no.nav.familie.http.sts.StsRestClient
 import no.nav.familie.integrasjoner.aareg.domene.Arbeidsforhold
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.log.NavHttpHeaders
@@ -20,12 +19,9 @@ import java.time.LocalDate
 
 @Component
 class AaregRestClient(
-    @Value("\${AAREG_URL}")
-    private val aaregUrl: URI,
-    @Qualifier("sts") restOperations: RestOperations,
-    private val stsRestClient: StsRestClient,
-) : AbstractPingableRestClient(restOperations, "aareg") {
-    // NAV_CALLID og NAV_CONSUMER_ID trengs for kall til ping
+    @Value("\${AAREG_URL}") private val aaregUrl: URI,
+    @Qualifier("jwtBearer") private val restTemplate: RestOperations,
+) : AbstractPingableRestClient(restTemplate, "aareg") {
     override val pingUri: URI = URI.create("$aaregUrl/$PATH_PING")
 
     fun hentArbeidsforhold(
@@ -64,7 +60,6 @@ class AaregRestClient(
         HttpHeaders().apply {
             add(NavHttpHeaders.NAV_PERSONIDENT.asString(), personIdent)
             add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            add("Nav-Consumer-Token", "Bearer ${stsRestClient.systemOIDCToken}")
         }
 
     companion object {
