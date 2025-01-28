@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.config
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.familie.http.client.RetryOAuth2HttpClient
 import no.nav.familie.http.config.NaisProxyCustomizer
+import no.nav.familie.log.NavSystemtype
 import no.nav.familie.log.filter.LogFilter
 import no.nav.familie.log.filter.RequestTimeFilter
 import no.nav.security.token.support.client.core.http.OAuth2HttpClient
@@ -39,7 +40,7 @@ class ApplicationConfig {
     fun logFilter(): FilterRegistrationBean<LogFilter> {
         logger.info("Registering LogFilter filter")
         val filterRegistration = FilterRegistrationBean<LogFilter>()
-        filterRegistration.filter = LogFilter()
+        filterRegistration.filter = LogFilter(systemtype = NavSystemtype.NAV_INTEGRASJON)
         filterRegistration.order = 1
         return filterRegistration
     }
