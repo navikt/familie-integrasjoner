@@ -24,7 +24,7 @@
         <springdoc.version>2.8.4</springdoc.version>
         <felles.version>3.20250122103549_5bcb4dc</felles.version>
         <kontrakt.version>3.0_20250121154645_1b256a5</kontrakt.version>
-        <token-validation-spring.version>5.0.14</token-validation-spring.version>
+        <token-validation-spring.version>5.0.16</token-validation-spring.version>
 
         <mock-server.version>5.15.0</mock-server.version>
 
