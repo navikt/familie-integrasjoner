@@ -42,8 +42,6 @@ jobs:
         with:
           team: teamfamilie
           tag: latest
-          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
-          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
           byosbom: target/classes/META-INF/sbom/application.cdx.json
 
       - name: Skriv ut docker-taggen
