@@ -16,6 +16,6 @@ object KontantstøtteInformasjonsbrevKanHaRettTilPengestøtteFraNavMetadata : Do
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.KONTANTSTØTTE_INFORMASJONSBREV_KAN_HA_RETT_TIL_PENGESTØTTE_FRA_NAV
     override val tittel: String = "Informasjonsbrev om kontantstøtte"
-    override val brevkode: String = "informasjonsbrev-kontantstøtte-pengestøtte-fra-nav"
+    override val brevkode: String = "informasjonsbrev-ks-pengestøtte-fra-nav"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
