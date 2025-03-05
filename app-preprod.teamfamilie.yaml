@@ -104,3 +104,5 @@ spec:
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: preprod
+  envFrom:
+    - secret: familie-integrasjoner-sftp
