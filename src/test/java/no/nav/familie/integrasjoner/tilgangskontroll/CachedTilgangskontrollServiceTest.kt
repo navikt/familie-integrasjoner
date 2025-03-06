@@ -45,6 +45,7 @@ internal class CachedTilgangskontrollServiceTest {
         every { jwtToken.jwtTokenClaims } returns jwtTokenClaims
         every { jwtTokenClaims.get("preferred_username") }.returns(listOf("bob"))
         every { jwtTokenClaims.getAsList(any()) }.returns(emptyList())
+        every { personopplysningerService.hentRelasjonerFraPdlPip(any(), any()) } returns lagPersonMedRelasjoner()
         every { egenAnsattService.erEgenAnsatt(any<String>()) } returns false
         every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } answers
             { firstArg<Set<String>>().associateWith { false } }
@@ -82,58 +83,67 @@ internal class CachedTilgangskontrollServiceTest {
 
     @Test
     internal fun `har tilgang når det ikke finnes noen adressebeskyttelser`() {
-        every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns lagPersonMedRelasjoner()
+        every { personopplysningerService.hentHøyesteGraderingForPersonMedRelasjoner(any(), Tema.ENF) } returns ADRESSEBESKYTTELSEGRADERING.UGRADERT
+        every { personopplysningerService.hentRelasjonerFraPdlPip(any(), any()) } returns lagPersonMedRelasjoner()
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isTrue
     }
 
     @Test
     internal fun `har ikke tilgang når søkeren er STRENGT_FORTROLIG og saksbehandler har kode7`() {
         mockHarKode7()
-        every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-            lagPersonMedRelasjoner(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG)
+        every { personopplysningerService.hentHøyesteGraderingForPersonMedRelasjoner(any(), Tema.ENF) } returns
+                lagHøyesteGradering()
+        every { personopplysningerService.hentRelasjonerFraPdlPip(any(), any()) } returns lagPersonMedRelasjoner()
+
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
     @Test
     internal fun `har tilgang når søkeren er STRENGT_FORTROLIG og saksbehandler har kode6`() {
         mockHarKode6()
-        every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-            lagPersonMedRelasjoner(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG)
+        every { personopplysningerService.hentHøyesteGraderingForPersonMedRelasjoner(any(), Tema.ENF) } returns
+                lagHøyesteGradering()
+        every { personopplysningerService.hentRelasjonerFraPdlPip(any(), any()) } returns lagPersonMedRelasjoner()
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isTrue
     }
 
     @Test
     internal fun `har ikke tilgang når det finnes adressebeskyttelse for søkeren`() {
-        every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-            lagPersonMedRelasjoner(adressebeskyttelse = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
+        every { personopplysningerService.hentHøyesteGraderingForPersonMedRelasjoner(any(), Tema.ENF) } returns
+                ADRESSEBESKYTTELSEGRADERING.FORTROLIG
+        every { personopplysningerService.hentRelasjonerFraPdlPip(any(), any()) } returns lagPersonMedRelasjoner()
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
     @Test
     internal fun `har ikke tilgang når sivilstand inneholder FORTROLIG`() {
-        every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-            lagPersonMedRelasjoner(sivilstand = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
+        every { personopplysningerService.hentHøyesteGraderingForPersonMedRelasjoner(any(), Tema.ENF) } returns
+                ADRESSEBESKYTTELSEGRADERING.FORTROLIG
+        every { personopplysningerService.hentRelasjonerFraPdlPip(any(), any()) } returns lagPersonMedRelasjoner()
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
     @Test
     internal fun `har ikke tilgang når barn inneholder FORTROLIG`() {
-        every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-            lagPersonMedRelasjoner(barn = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
+        every { personopplysningerService.hentHøyesteGraderingForPersonMedRelasjoner(any(), Tema.ENF) } returns
+                ADRESSEBESKYTTELSEGRADERING.FORTROLIG
+        every { personopplysningerService.hentRelasjonerFraPdlPip(any(), any()) } returns lagPersonMedRelasjoner()
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
     @Test
     internal fun `har ikke tilgang når barnsForeldrer inneholder FORTROLIG`() {
-        every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-            lagPersonMedRelasjoner(barnsForeldrer = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
+        every { personopplysningerService.hentHøyesteGraderingForPersonMedRelasjoner(any(), Tema.ENF) } returns
+                ADRESSEBESKYTTELSEGRADERING.FORTROLIG
+        every { personopplysningerService.hentRelasjonerFraPdlPip(any(), any()) } returns lagPersonMedRelasjoner()
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
     @Test
     internal fun `har ikke tilgang når sivilstand er egenansatt`() {
-        every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-            lagPersonMedRelasjoner(sivilstand = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
+        every { personopplysningerService.hentHøyesteGraderingForPersonMedRelasjoner(any(), Tema.ENF) } returns
+                ADRESSEBESKYTTELSEGRADERING.FORTROLIG
+        every { personopplysningerService.hentRelasjonerFraPdlPip(any(), any()) } returns lagPersonMedRelasjoner()
         every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } answers {
             firstArg<Set<String>>().associateWith { it == "sivilstand" }
         }
@@ -142,18 +152,19 @@ internal class CachedTilgangskontrollServiceTest {
 
     @Test
     internal fun `har ikke tilgang når barn er egenansatt`() {
-        every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-            lagPersonMedRelasjoner(barn = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
-        every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } answers {
-            firstArg<Set<String>>().associateWith { it == "barn" }
-        }
+        every { personopplysningerService.hentHøyesteGraderingForPersonMedRelasjoner(any(), Tema.ENF) } returns
+                ADRESSEBESKYTTELSEGRADERING.UGRADERT
+        every { personopplysningerService.hentRelasjonerFraPdlPip(any(), any()) } returns lagPersonMedRelasjoner()
+        every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) }  returns mapOf("barn" to true)
+
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
     }
 
     @Test
     fun `skal returnere ident til etterspurt person når relasjon er fortrolig`() {
-        every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-            lagPersonMedRelasjoner(barnsForeldrer = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
+        every { personopplysningerService.hentHøyesteGraderingForPersonMedRelasjoner(any(), Tema.ENF) } returns
+                ADRESSEBESKYTTELSEGRADERING.FORTROLIG
+        every { personopplysningerService.hentRelasjonerFraPdlPip(any(), any()) } returns lagPersonMedRelasjoner()
         val tilgang = cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner("søker", jwtToken, Tema.ENF)
         assertThat(tilgang.harTilgang).isFalse
         assertThat(tilgang.personIdent).isEqualTo("søker")
@@ -161,8 +172,9 @@ internal class CachedTilgangskontrollServiceTest {
 
     @Test
     internal fun `skal returnere ident til etterspurt person når relasjon er er egen ansatt`() {
-        every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
-            lagPersonMedRelasjoner(sivilstand = ADRESSEBESKYTTELSEGRADERING.UGRADERT)
+        every { personopplysningerService.hentHøyesteGraderingForPersonMedRelasjoner(any(), Tema.ENF) } returns
+                ADRESSEBESKYTTELSEGRADERING.FORTROLIG
+        every { personopplysningerService.hentRelasjonerFraPdlPip(any(), any()) } returns lagPersonMedRelasjoner()
         every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } answers {
             firstArg<Set<String>>().associateWith { it == "sivilstand" }
         }
@@ -175,19 +187,17 @@ internal class CachedTilgangskontrollServiceTest {
 
     private fun sjekkTilgangTilPerson() = cachedTilgangskontrollService.sjekkTilgang("", jwtToken, Tema.ENF).harTilgang
 
-    private fun lagPersonMedRelasjoner(
+
+
+    private fun lagHøyesteGradering(
         adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING? = null,
         sivilstand: ADRESSEBESKYTTELSEGRADERING? = null,
         barn: ADRESSEBESKYTTELSEGRADERING? = null,
         barnsForeldrer: ADRESSEBESKYTTELSEGRADERING? = null,
-    ): PersonMedRelasjoner =
-        PersonMedRelasjoner(
-            personIdent = "",
-            adressebeskyttelse = adressebeskyttelse,
-            sivilstand = lagPersonMedBeskyttelse(sivilstand, "sivilstand"),
-            barn = lagPersonMedBeskyttelse(barn, "barn"),
-            barnsForeldrer = lagPersonMedBeskyttelse(barnsForeldrer, "barnsForeldrer"),
-        )
+    ): ADRESSEBESKYTTELSEGRADERING =
+        ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG
+
+    private fun lagPersonMedRelasjoner() = listOf("012345662","32343242323")
 
     private fun lagPersonMedBeskyttelse(
         sivilstand: ADRESSEBESKYTTELSEGRADERING?,
