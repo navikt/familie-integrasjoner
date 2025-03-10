@@ -222,4 +222,4 @@ NORG2_URL: https://norg2.dev.adeo.no/norg2/
 REGOPPSLAG_URL: https://regoppslag.dev.intern.nav.no
 SFTP_HOST: b27apvl00364.preprod.local
 AXSYS_URL: https://axsys.dev.intern.nav.no/api
-MODIA_CONTEXT_HOLDER_API_URL: http://modiacontextholder.personoversikt
+MODIA_CONTEXT_HOLDER_API_URL: https://modiacontextholder.intern.dev.nav.no

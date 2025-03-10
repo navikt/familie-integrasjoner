@@ -214,4 +214,4 @@ NORG2_URL: https://norg2.nais.adeo.no/norg2/
 REGOPPSLAG_URL: https://regoppslag.intern.nav.no
 SFTP_HOST: a01drvl099.adeo.no
 AXSYS_URL: https://axsys.intern.nav.no/api
-MODIA_CONTEXT_HOLDER_API_URL: http://modiacontextholder.personoversikt
+MODIA_CONTEXT_HOLDER_API_URL: https://modiacontextholder.intern.nav.no
