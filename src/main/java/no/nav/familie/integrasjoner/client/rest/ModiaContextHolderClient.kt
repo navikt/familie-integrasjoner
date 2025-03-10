@@ -1,7 +1,6 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractRestClient
-import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.config.incrementLoggFeil
 import no.nav.familie.integrasjoner.modiacontextholder.domene.ModiaContextHolderRequest
 import no.nav.familie.integrasjoner.modiacontextholder.domene.ModiaContextHolderResponse
@@ -16,7 +15,7 @@ class ModiaContextHolderClient(
     @Value("\${MODIA_CONTEXT_HOLDER_API_URL}") private val baseURI: URI,
     @Qualifier("jwtBearer") restTemplate: RestOperations,
 ) : AbstractRestClient(restTemplate, "modia-context-holder") {
-    private val contextUri = UriUtil.uri(baseURI, "api/context")
+    private val contextUri = URI("$baseURI/api/context")
 
     fun hentContext(): ModiaContextHolderResponse =
         try {
