@@ -78,6 +78,11 @@ spec:
         - application: familie-ef-personhendelse
           cluster: prod-gcp
         - application: familie-ef-proxy
+    outbound:
+      rules:
+        - application: modiacontextholder
+          namespace: personoversikt
+          cluster: prod-gcp
   replicas:
     min: 2
     max: 2
