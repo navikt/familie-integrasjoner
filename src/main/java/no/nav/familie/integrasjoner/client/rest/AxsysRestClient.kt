@@ -29,7 +29,6 @@ class AxsysRestClient(
         return try {
             getForEntity<TilgangV2DTO>(uri)
         } catch (e: Exception) {
-            incrementLoggFeil("axsys")
             throw OppslagException(
                 "Feil ved henting av enheter Nav identer har tilgang til",
                 "axsys.hentEnheterNavIdentHarTilgangTil",
