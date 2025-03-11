@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
+import no.nav.familie.integrasjoner.felles.OppslagException
+import org.springframework.http.HttpStatus
 
 @Service
 class AzureGraphRestClient(
@@ -43,16 +45,26 @@ class AzureGraphRestClient(
                 },
             )
         } catch (e: Exception) {
-            incrementLoggFeil("azure.saksbehandler.navIdent")
-            throw e
+            throw OppslagException(
+                "Feil ved henting av saksbehandler med nav ident",
+                "azure.saksbehandler.navIdent",
+                OppslagException.Level.MEDIUM,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                e
+            )
         }
 
     fun hentSaksbehandler(id: String): AzureAdBruker =
         try {
             getForEntity(saksbehandlerUri(id))
         } catch (e: Exception) {
-            incrementLoggFeil("azure.saksbehandler.id")
-            throw e
+            throw throw OppslagException(
+                "Feil ved henting av saksbehandler med id",
+                "azure.saksbehandler.id",
+                OppslagException.Level.MEDIUM,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                e
+            )
         }
 
     companion object {
