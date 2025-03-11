@@ -24,7 +24,7 @@ class ArbeidsfordelingRestClientTest {
         @Test
         fun `skal kaste OppslagException ved feil mot Norg2`() {
             // Arrange
-            every { restOperations.exchange<NavKontorEnhet>(any<URI>(), eq(HttpMethod.GET)) } throws RuntimeException("Noe gikk galt")
+            every { restOperations.exchange<NavKontorEnhet>(any<URI>(), eq(HttpMethod.GET), any<HttpEntity<Void>>()) } throws RuntimeException("Noe gikk galt")
 
             // Act & Assert
             val oppslagException = assertThrows<OppslagException> { arbeidsfordelingRestClient.hentEnhet("oslo") }
@@ -41,7 +41,7 @@ class ArbeidsfordelingRestClientTest {
         @Test
         fun `skal kaste OppslagException ved feil mot Norg2`() {
             // Arrange
-            every { restOperations.exchange<NavKontorEnhet>(any<URI>(), eq(HttpMethod.GET)) } throws RuntimeException("Noe gikk galt")
+            every { restOperations.exchange<NavKontorEnhet>(any<URI>(), eq(HttpMethod.GET), any<HttpEntity<Void>>()) } throws RuntimeException("Noe gikk galt")
 
             // Act & Assert
             val oppslagException = assertThrows<OppslagException> { arbeidsfordelingRestClient.hentNavkontor("1234") }
