@@ -90,7 +90,7 @@ class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
             )
 
         assertThat(response?.status).isEqualTo(Ressurs.Status.FEILET)
-        assertThat(response?.melding).contains("Noe gikk galt")
+        assertThat(response?.melding).contains("Feil ved henting av distribusjonskanal")
     }
 
     @Test
