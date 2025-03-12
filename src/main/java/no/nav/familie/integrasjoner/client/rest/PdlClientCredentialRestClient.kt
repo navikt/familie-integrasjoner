@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.http.util.UriUtil
+import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.personopplysning.PdlRequestException
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlBolkResponse
@@ -11,6 +12,7 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedRelasj
 import no.nav.familie.kontrakter.felles.Tema
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestOperations
 import java.net.URI
@@ -36,11 +38,22 @@ class PdlClientCredentialRestClient(
                 query = HENT_PERSON_RELASJONER_ADRESSEBESKYTTELSE,
             )
         val response =
-            postForEntity<PdlBolkResponse<PdlPersonMedRelasjonerOgAdressebeskyttelse>>(
-                pdlUri,
-                request,
-                pdlHttpHeaders(tema),
-            )
+            try {
+                postForEntity<PdlBolkResponse<PdlPersonMedRelasjonerOgAdressebeskyttelse>>(
+                    pdlUri,
+                    request,
+                    pdlHttpHeaders(tema),
+                )
+            } catch (e: Exception) {
+                throw OppslagException(
+                    "Feil ved henting av person med relasjoner og adressebeskyttelse",
+                    "pdl.cc.hentPersonMedRelasjonerOgAdressebeskyttelse",
+                    OppslagException.Level.MEDIUM,
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    e,
+                )
+            }
+
         return feilsjekkOgReturnerData(response)
     }
 

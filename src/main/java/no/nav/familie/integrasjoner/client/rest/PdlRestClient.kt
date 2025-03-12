@@ -49,11 +49,21 @@ class PdlRestClient(
             )
 
         val response: PdlResponse<PdlPersonMedAdressebeskyttelse> =
-            postForEntity(
-                pdlUri,
-                pdlAdressebeskyttelseRequest,
-                pdlHttpHeaders(tema),
-            )
+            try {
+                postForEntity(
+                    pdlUri,
+                    pdlAdressebeskyttelseRequest,
+                    pdlHttpHeaders(tema),
+                )
+            } catch (e: Exception) {
+                throw pdlOppslagException(
+                    personIdent = personIdent,
+                    httpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
+                    error = e,
+                    feilmelding = "Feil ved henting av adressebeskyttelse",
+                    kilde = "PdlRestClient.hentAdressebeskyttelse",
+                )
+            }
 
         return feilsjekkOgReturnerData(response, personIdent, kilde = "PdlRestClient.hentAdressebeskyttelse") { it.person }
     }
