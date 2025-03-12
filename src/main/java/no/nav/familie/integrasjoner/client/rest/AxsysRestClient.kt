@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
+import no.nav.familie.integrasjoner.felles.OppslagException
+import org.springframework.http.HttpStatus
 
 @Service
 class AxsysRestClient(
@@ -27,8 +29,13 @@ class AxsysRestClient(
         return try {
             getForEntity<TilgangV2DTO>(uri)
         } catch (e: Exception) {
-            incrementLoggFeil("axsys")
-            throw e
+            throw OppslagException(
+                "Feil ved henting av enheter Nav identer har tilgang til",
+                "axsys.hentEnheterNavIdentHarTilgangTil",
+                OppslagException.Level.MEDIUM,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                e
+            )
         }
     }
 }

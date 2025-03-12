@@ -137,14 +137,19 @@ class DokarkivRestClient(
             try {
                 patchForEntity<String>(uri, FerdigstillJournalPost(journalførendeEnhet), headers(navIdent))
             } catch (e: RestClientResponseException) {
-                incrementLoggFeil("dokarkiv.ferdigstill.feil")
                 if (e.statusCode.value() == HttpStatus.BAD_REQUEST.value()) {
                     throw KanIkkeFerdigstilleJournalpostException(
                         "Kan ikke ferdigstille journalpost " +
                             "$journalpostId body ${e.responseBodyAsString}",
                     )
                 }
-                throw e
+                throw OppslagException(
+                    "Feil ved ferdigstilling av journalpost",
+                    "dokarkiv.ferdigstill.feil",
+                    OppslagException.Level.MEDIUM,
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    e
+                )
             }
         }
     }
