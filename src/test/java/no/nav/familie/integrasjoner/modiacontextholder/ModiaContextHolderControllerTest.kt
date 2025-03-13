@@ -93,7 +93,7 @@ class ModiaContextHolderControllerTest : OppslagSpringRunnerTest() {
                 requestEntity = HttpEntity<String>(headers),
             )
 
-        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
         assertThat(response.body?.melding).isEqualTo("[modia.context.holder.hent][Feil ved henting av Modia context: 500 Server Error on GET request for \"http://localhost:28085/api/context\": \"Noe feilet\"]")
     }
@@ -109,9 +109,24 @@ class ModiaContextHolderControllerTest : OppslagSpringRunnerTest() {
                 requestEntity = HttpEntity(dto(), headers),
             )
 
-        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
         assertThat(response.body?.melding).isEqualTo("[modia.context.holder.sett][Feil ved oppdatering av Modia context: 500 Server Error on POST request for \"http://localhost:28085/api/context\": \"Noe feilet\"]")
+    }
+
+    @Test
+    fun `skal kaste feil ved ugyldig fødselsnummer`() {
+        val ugyldigDto = "{\"personIdent\":\"12345678910\"}"
+
+        val response =
+            restTemplate.exchange<Ressurs<ModiaContextHolderResponse>>(
+                url = localhost("/api/modia-context-holder/sett-aktiv-bruker"),
+                method = HttpMethod.POST,
+                requestEntity = HttpEntity(ugyldigDto, headers),
+            )
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
     private fun modiaResponse(): String =
