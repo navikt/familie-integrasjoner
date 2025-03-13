@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractRestClient
-import no.nav.familie.integrasjoner.config.incrementLoggFeil
+import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.modiacontextholder.domene.ModiaContextHolderRequest
 import no.nav.familie.integrasjoner.modiacontextholder.domene.ModiaContextHolderResponse
 import org.springframework.beans.factory.annotation.Qualifier
@@ -21,15 +21,21 @@ class ModiaContextHolderClient(
         try {
             getForEntity(contextUri)
         } catch (e: Exception) {
-            incrementLoggFeil("modia-context-holder")
-            throw e
+            throw OppslagException(
+                "Feil ved henting av Modia context: ${e.message}",
+                "modia.context.holder.hent",
+                OppslagException.Level.MEDIUM,
+            )
         }
 
     fun settContext(request: ModiaContextHolderRequest): ModiaContextHolderResponse =
         try {
             postForEntity(contextUri, request)
         } catch (e: Exception) {
-            incrementLoggFeil("modia-context-holder")
-            throw e
+            throw OppslagException(
+                "Feil ved oppdatering av Modia context: ${e.message}",
+                "modia.context.holder.sett",
+                OppslagException.Level.MEDIUM,
+            )
         }
 }

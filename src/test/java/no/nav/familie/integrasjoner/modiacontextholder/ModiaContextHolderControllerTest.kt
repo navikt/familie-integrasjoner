@@ -84,7 +84,7 @@ class ModiaContextHolderControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal håndtere feil korrekt for GET`() {
-        stubFor(get("/api/context").willReturn(status(500)))
+        stubFor(get("/api/context").willReturn(status(500).withBody("Noe feilet")))
 
         val response =
             restTemplate.exchange<Ressurs<ModiaContextHolderResponse>>(
@@ -95,11 +95,12 @@ class ModiaContextHolderControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.body?.melding).isEqualTo("[modia.context.holder.hent][Feil ved henting av Modia context: 500 Server Error on GET request for \"http://localhost:28085/api/context\": \"Noe feilet\"]")
     }
 
     @Test
     fun `skal håndtere feil korrekt for POST`() {
-        stubFor(post("/api/context").willReturn(status(500)))
+        stubFor(post("/api/context").willReturn(status(500).withBody("Noe feilet")))
 
         val response =
             restTemplate.exchange<Ressurs<ModiaContextHolderResponse>>(
@@ -110,6 +111,7 @@ class ModiaContextHolderControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.body?.melding).isEqualTo("[modia.context.holder.sett][Feil ved oppdatering av Modia context: 500 Server Error on POST request for \"http://localhost:28085/api/context\": \"Noe feilet\"]")
     }
 
     private fun modiaResponse(): String =

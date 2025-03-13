@@ -30,7 +30,7 @@ class ModiaContextHolderController(
                 modiaContextHolderClient.hentContext()
             }.fold(
                 onSuccess = { response -> success(response) },
-                onFailure = { exception -> failure(exception.cause?.message) },
+                onFailure = { exception -> failure(exception.message) },
             ),
         )
 
