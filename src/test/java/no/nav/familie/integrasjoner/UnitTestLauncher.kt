@@ -29,6 +29,7 @@ fun main(args: Array<String>) {
                 "mock-sts",
                 "mock-pdl",
                 "mock-regoppslag",
+                "mock-modia-context-holder",
             ).build()
     app.run(*args)
 }

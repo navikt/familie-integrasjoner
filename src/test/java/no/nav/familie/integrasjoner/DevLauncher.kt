@@ -30,6 +30,7 @@ fun main(args: Array<String>) {
                 "mock-aareg",
                 "mock-sak",
                 "mock-regoppslag",
+                "mock-modia-context-holder",
             ).build()
     app.run(*args)
 }
