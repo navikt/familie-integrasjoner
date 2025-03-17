@@ -8,13 +8,13 @@ import no.nav.familie.kontrakter.felles.dokarkiv.Dokumenttype
 import org.springframework.stereotype.Component
 
 @Component
-object BarnetrygdForenkletTilbakekrevingsvedtak : Dokumentmetadata {
+object KontantstøtteForenkletTilbakekrevingsvedtakMetadata : Dokumentmetadata {
     override val journalpostType: JournalpostType = JournalpostType.UTGAAENDE
-    override val fagsakSystem: Fagsystem = Fagsystem.BA
-    override val tema: Tema = Tema.BAR
-    override val behandlingstema: Behandlingstema = Behandlingstema.Barnetrygd
+    override val fagsakSystem: Fagsystem = Fagsystem.KONT
+    override val tema: Tema = Tema.KON
+    override val behandlingstema: Behandlingstema = Behandlingstema.Kontantstøtte
     override val kanal: String? = null
-    override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_FORENKLET_TILBAKEKREVINGSVEDTAK
+    override val dokumenttype: Dokumenttype = Dokumenttype.KONTANTSTØTTE_FORENKLET_TILBAKEKREVINGSVEDTAK
     override val tittel: String = "Vedtak om forenklet tilbakekreving"
     override val brevkode: String = "Vedtak om forenklet tilbakekreving"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.VB
