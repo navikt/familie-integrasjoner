@@ -153,6 +153,6 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata =
         Dokumenttype.VEDTAKSBREV_OVERGANGSSTØNAD -> OvergangsstønadVedtaksbrevMetadata
         Dokumenttype.VEDTAKSBREV_SKOLEPENGER -> SkolepengerVedtaksbrevMetadata
         Dokumenttype.BEREGNET_SAMVÆR_NOTAT -> BeregnetSamværNotatMetadata
-        Dokumenttype.BARNETRYGD_FORENKLET_TILBAKEKREVINGSVEDTAK -> BarnetrygdForenkletTilbakekrevingsvedtak
-        Dokumenttype.KONTANTSTØTTE_FORENKLET_TILBAKEKREVINGSVEDTAK -> KontantstøtteForenkletTilbakekrevingsvedtak
+        Dokumenttype.BARNETRYGD_FORENKLET_TILBAKEKREVINGSVEDTAK -> BarnetrygdForenkletTilbakekrevingsvedtakMetadata
+        Dokumenttype.KONTANTSTØTTE_FORENKLET_TILBAKEKREVINGSVEDTAK -> KontantstøtteForenkletTilbakekrevingsvedtakMetadata
     }
