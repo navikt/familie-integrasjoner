@@ -81,6 +81,11 @@ spec:
         - application: familie-ef-personhendelse
           cluster: dev-gcp
         - application: familie-ef-proxy
+    outbound:
+      rules:
+        - application: modiacontextholder
+          namespace: personoversikt
+          cluster: dev-gcp
   prometheus:
     enabled: true
     path: /internal/prometheus

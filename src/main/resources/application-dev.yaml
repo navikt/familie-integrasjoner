@@ -139,6 +139,15 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      modia-context-holder-onbehalf-of:
+        resource-url: ${MODIA_CONTEXT_HOLDER_URL}
+        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: ${MODIA_CONTEXT_HOLDER_SCOPE}
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
 
 tilgang:
   kode6:
@@ -160,6 +169,7 @@ SKYGGE_SAK_URL: #Mocker lokalt
 NORG2_URL: #Mockes lokalt
 DOKDISTKANAL_URL: #Mockes lokalt
 REGOPPSLAG_URL: #Mockes lokalt
+MODIA_CONTEXT_HOLDER_URL: #Mockes lokalt
 
 MEDL2_URL: http://localhost:18321
 SAF_URL: http://localhost:18321/rest/saf
