@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component
 @Component
 object BeregnetSamværNotatMetadata : Dokumentmetadata {
     override val journalpostType: JournalpostType = JournalpostType.NOTAT
-    override val fagsakSystem: Fagsystem = Fagsystem.EF
+    override val fagsakSystem: Fagsystem = Fagsystem.IT01
     override val tema: Tema = Tema.ENF
     override val behandlingstema: Behandlingstema = Behandlingstema.Overgangsstønad
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BEREGNET_SAMVÆR_NOTAT
-    override val tittel: String = "Beregnet samvær"
+    override val tittel: String = "Samværsberegning"
     override val brevkode: String? = null
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.IS
 }
