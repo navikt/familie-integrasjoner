@@ -17,6 +17,9 @@ data class PdlResponse<T>(
     fun harNotFoundFeil(): Boolean = errors?.any { it.extensions?.notFound() == true } ?: false
 
     fun harUnauthorizedFeil(): Boolean = errors?.any { it.extensions?.unauthorized() == true } ?: false
+
+    fun tilPdlUnauthorizedDetails(): List<PdlUnauthorizedDetails> =
+        errors?.filter { it.extensions?.unauthorized() == true }?.map { it.extensions?.details as PdlUnauthorizedDetails } ?: emptyList()
 }
 
 data class PersonDataBolk<T>(
@@ -79,6 +82,12 @@ data class PdlErrorExtensions(
 
     fun unauthorized() = code == "unauthorized"
 }
+
+data class PdlUnauthorizedDetails(
+    val type: String?,
+    val cause: String?,
+    val policy: String,
+)
 
 data class PdlExtensions(
     val warnings: List<PdlWarning>?,

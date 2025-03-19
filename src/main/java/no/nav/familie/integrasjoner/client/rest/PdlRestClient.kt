@@ -125,7 +125,8 @@ class PdlRestClient(
             }
             if (pdlResponse.harUnauthorizedFeil()) {
                 secureLogger.info("Har ikke tilgang til person med ident=$personIdent i PDL")
-                throw PdlUnauthorizedException()
+                val pdlUnauthorizedDetails = pdlResponse.tilPdlUnauthorizedDetails().first()
+                throw PdlUnauthorizedException(melding = pdlUnauthorizedDetails.cause ?: pdlUnauthorizedDetails.policy)
             }
             throw pdlOppslagException(
                 feilmelding = "Feil ved oppslag på person: ${pdlResponse.errorMessages()}. Se secureLogs for mer info.",
@@ -185,7 +186,8 @@ class PdlRestClient(
                 if (response.harUnauthorizedFeil()) {
                     secureLogger.info("Har ikke tilgang til å hente geografisk tilknytning for ident=$personIdent i PDL. Ekstra info: ${response.errors?.joinToString { it.extensions.toString() } ?: "Ingen detaljer"}")
                     secureLogger.error("Ikke tilgang til oppslag på geografisk tilknytning på person. Feilmelding fra PDL: ${response.errorMessages()}")
-                    throw PdlUnauthorizedException()
+                    val pdlUnauthorizedDetails = response.tilPdlUnauthorizedDetails().first()
+                    throw PdlUnauthorizedException(melding = pdlUnauthorizedDetails.cause ?: pdlUnauthorizedDetails.policy)
                 }
                 throw pdlOppslagException(
                     feilmelding = "Feil ved oppslag på geografisk tilknytning på person: ${response.errorMessages()}",

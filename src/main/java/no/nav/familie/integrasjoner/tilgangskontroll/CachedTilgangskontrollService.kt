@@ -23,6 +23,10 @@ class CachedTilgangskontrollService(
     private val personopplysningerService: PersonopplysningerService,
     private val tilgangConfig: TilgangConfig,
 ) {
+    init {
+        logger.info(tilgangConfig.kode6.beskrivelse)
+    }
+
     @Cacheable(
         cacheNames = [TILGANG_TIL_BRUKER],
         key = "#jwtToken.subject.concat(#personIdent)",
@@ -37,7 +41,7 @@ class CachedTilgangskontrollService(
             val adressebeskyttelse = personopplysningerService.hentAdressebeskyttelse(personIdent, tema).gradering
             hentTilgang(adressebeskyttelse, jwtToken, personIdent) { egenAnsattService.erEgenAnsatt(personIdent) }
         } catch (pdlUnauthorizedException: PdlUnauthorizedException) {
-            Tilgang(personIdent = personIdent, harTilgang = false)
+            Tilgang(personIdent = personIdent, harTilgang = false, begrunnelse = pdlUnauthorizedException.message)
         }
 
     @Cacheable(
@@ -113,6 +117,7 @@ class CachedTilgangskontrollService(
 
     companion object {
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
+        private val logger = LoggerFactory.getLogger(CachedTilgangskontrollService::class.java)
 
         const val TILGANG_TIL_BRUKER = "tilgangTilBruker"
     }
