@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.personopplysning.internal
 
 import io.mockk.mockk
+import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Nested
@@ -12,11 +13,12 @@ class PdlResponseTest {
         @Test
         fun `skal hente ut PdlUnauthorizedDetails fra PdlResponse`() {
             // Arrange
-            val forventetUnauthorizedDetails: Any =
-                PdlUnauthorizedDetails(
-                    type = "pdl-tilgangsstyring",
-                    cause = "Bruker mangler rollen '0000-GA-Strengt_Fortrolig_Adresse'",
-                    policy = "adressebeskyttelse_strengt_fortrolig_adresse",
+            // Details blir deserialisert til `LinkedHashMap` når verdien er Any.
+            val unauthorizedDetailsSomLinkedHashMap: Any =
+                linkedMapOf(
+                    "type" to "pdl-tilgangsstyring",
+                    "cause" to "Bruker mangler rollen '0000-GA-Strengt_Fortrolig_Adresse'",
+                    "policy" to "adressebeskyttelse_strengt_fortrolig_adresse",
                 )
 
             val pdlResponse =
@@ -29,7 +31,7 @@ class PdlResponseTest {
                                 extensions =
                                     PdlErrorExtensions(
                                         code = "unauthorized",
-                                        details = forventetUnauthorizedDetails,
+                                        details = unauthorizedDetailsSomLinkedHashMap,
                                     ),
                             ),
                         ),
@@ -41,7 +43,7 @@ class PdlResponseTest {
 
             // Assert
             assertNotNull(pdlUnauthorizedDetails)
-            assertThat(pdlUnauthorizedDetails).isEqualTo(listOf(forventetUnauthorizedDetails))
+            assertThat(pdlUnauthorizedDetails).isEqualTo(listOf(objectMapper.convertValue(unauthorizedDetailsSomLinkedHashMap, PdlUnauthorizedDetails::class.java)))
         }
     }
 }
