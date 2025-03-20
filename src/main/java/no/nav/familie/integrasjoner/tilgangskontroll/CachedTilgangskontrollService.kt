@@ -23,10 +23,6 @@ class CachedTilgangskontrollService(
     private val personopplysningerService: PersonopplysningerService,
     private val tilgangConfig: TilgangConfig,
 ) {
-    init {
-        logger.info(tilgangConfig.kode6.beskrivelse)
-    }
-
     @Cacheable(
         cacheNames = [TILGANG_TIL_BRUKER],
         key = "#jwtToken.subject.concat(#personIdent)",
