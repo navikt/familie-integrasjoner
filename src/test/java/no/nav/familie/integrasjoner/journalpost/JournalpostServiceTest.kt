@@ -10,6 +10,7 @@ import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.journalpost.Bruker
 import no.nav.familie.kontrakter.felles.journalpost.Dokumentvariantformat
 import no.nav.familie.kontrakter.felles.journalpost.Journalpost
+import no.nav.familie.kontrakter.felles.journalpost.JournalpostTilgang
 import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
 import no.nav.familie.kontrakter.felles.journalpost.TilgangsstyrtJournalpost
 import org.assertj.core.api.Assertions.assertThat
@@ -63,7 +64,7 @@ class JournalpostServiceTest {
             val testDokument = dokumentString.toByteArray()
 
             every { safRestClient.hentJournalpost(journalpostId) } returns mockk()
-            every { baksTilgangsstyrtJournalpostService.harTilgangTilJournalpost(any()) } returns true
+            every { baksTilgangsstyrtJournalpostService.sjekkTilgangTilJournalpost(any()) } returns JournalpostTilgang(harTilgang = true)
             every { safHentDokumentRestClient.hentDokument(journalpostId, dokumentId, variantFormat.name) } returns testDokument
 
             // Act
@@ -73,7 +74,7 @@ class JournalpostServiceTest {
             assertNotNull(dokument)
             assertThat(dokument.decodeToString()).isEqualTo(dokumentString)
             verify(exactly = 1) { safRestClient.hentJournalpost(journalpostId) }
-            verify(exactly = 1) { baksTilgangsstyrtJournalpostService.harTilgangTilJournalpost(any()) }
+            verify(exactly = 1) { baksTilgangsstyrtJournalpostService.sjekkTilgangTilJournalpost(any()) }
             verify(exactly = 1) { safHentDokumentRestClient.hentDokument(journalpostId, dokumentId, variantFormat.name) }
         }
 
@@ -85,7 +86,7 @@ class JournalpostServiceTest {
             val variantFormat = Dokumentvariantformat.ARKIV
 
             every { safRestClient.hentJournalpost(journalpostId) } returns mockk()
-            every { baksTilgangsstyrtJournalpostService.harTilgangTilJournalpost(any()) } returns false
+            every { baksTilgangsstyrtJournalpostService.sjekkTilgangTilJournalpost(any()) } returns JournalpostTilgang(harTilgang = false)
 
             // Act & Assert
             val dokument = assertThrows<JournalpostForbiddenException> { journalpostService.hentTilgangsstyrtBaksDokument(journalpostId, dokumentId, variantFormat.name) }
@@ -93,7 +94,7 @@ class JournalpostServiceTest {
             assertNotNull(dokument)
             assertThat(dokument.message).isEqualTo("Kan ikke hente dokument. Krever ekstra tilganger.")
             verify(exactly = 1) { safRestClient.hentJournalpost(journalpostId) }
-            verify(exactly = 1) { baksTilgangsstyrtJournalpostService.harTilgangTilJournalpost(any()) }
+            verify(exactly = 1) { baksTilgangsstyrtJournalpostService.sjekkTilgangTilJournalpost(any()) }
             verify(exactly = 0) { safHentDokumentRestClient.hentDokument(journalpostId, dokumentId, variantFormat.name) }
         }
     }
@@ -106,7 +107,7 @@ class JournalpostServiceTest {
             val journalpostId = "1234"
 
             every { safRestClient.hentJournalpost(journalpostId) } returns mockk()
-            every { baksTilgangsstyrtJournalpostService.harTilgangTilJournalpost(any()) } returns true
+            every { baksTilgangsstyrtJournalpostService.sjekkTilgangTilJournalpost(any()) } returns JournalpostTilgang(harTilgang = true)
 
             // Act
             val journalpost = journalpostService.hentTilgangsstyrtBaksJournalpost(journalpostId)
@@ -114,7 +115,7 @@ class JournalpostServiceTest {
             // Assert
             assertNotNull(journalpost)
             verify(exactly = 1) { safRestClient.hentJournalpost(journalpostId) }
-            verify(exactly = 1) { baksTilgangsstyrtJournalpostService.harTilgangTilJournalpost(any()) }
+            verify(exactly = 1) { baksTilgangsstyrtJournalpostService.sjekkTilgangTilJournalpost(any()) }
         }
 
         @Test
@@ -123,7 +124,7 @@ class JournalpostServiceTest {
             val journalpostId = "1234"
 
             every { safRestClient.hentJournalpost(journalpostId) } returns mockk()
-            every { baksTilgangsstyrtJournalpostService.harTilgangTilJournalpost(any()) } returns false
+            every { baksTilgangsstyrtJournalpostService.sjekkTilgangTilJournalpost(any()) } returns JournalpostTilgang(harTilgang = false)
 
             // Act & Assert
             val journalpostForbiddenException = assertThrows<JournalpostForbiddenException> { journalpostService.hentTilgangsstyrtBaksJournalpost(journalpostId) }
@@ -131,7 +132,7 @@ class JournalpostServiceTest {
             assertNotNull(journalpostForbiddenException)
             assertThat(journalpostForbiddenException.message).isEqualTo("Kan ikke hente journalpost. Krever ekstra tilganger.")
             verify(exactly = 1) { safRestClient.hentJournalpost(journalpostId) }
-            verify(exactly = 1) { baksTilgangsstyrtJournalpostService.harTilgangTilJournalpost(any()) }
+            verify(exactly = 1) { baksTilgangsstyrtJournalpostService.sjekkTilgangTilJournalpost(any()) }
         }
     }
 }
