@@ -1,4 +1,4 @@
-name: Build-Deploy-Preprod
+name: Build & push tilbake
 on:
   push:
     branches:
