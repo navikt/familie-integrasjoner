@@ -277,6 +277,7 @@ class HentJournalpostControllerTest(
             response.body
                 ?.data
                 ?.first()
+                ?.journalpostTilgang
                 ?.harTilgang,
         ).isEqualTo(true)
     }

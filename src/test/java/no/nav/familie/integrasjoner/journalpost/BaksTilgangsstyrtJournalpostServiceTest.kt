@@ -55,7 +55,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
 
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
-        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && it.harTilgang }
+        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && it.journalpostTilgang.harTilgang }
         assertThat(tilgangsstyrtJournalpost).isNotNull
     }
 
@@ -80,15 +80,16 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         val kontantstøtteSøknad = lagKontantstøtteSøknad(søkerFnr, barnFnr)
 
         every { baksVersjonertSøknadService.hentBaksSøknadBase(any(), any()) } returns kontantstøtteSøknad
-        every { tilgangskontrollService.sjekkTilgangTilBrukere(any(), any()) } returns listOf(Tilgang(søkerFnr, false), Tilgang(barnFnr, false))
+        every { tilgangskontrollService.sjekkTilgangTilBrukere(any(), any()) } returns listOf(Tilgang(søkerFnr, false, "Bruker mangler rolle 'STRENGT_FORTROLIG_ADRESSE'"), Tilgang(barnFnr, false, "Bruker mangler rolle 'FORTROLIG_ADRESSE'"))
 
         // Act
         val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost))
 
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
-        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && !it.harTilgang }
+        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && !it.journalpostTilgang.harTilgang }
         assertThat(tilgangsstyrtJournalpost).isNotNull
+        assertThat(tilgangsstyrtJournalpost!!.journalpostTilgang.begrunnelse).isEqualTo("(Bruker mangler rolle 'STRENGT_FORTROLIG_ADRESSE', Bruker mangler rolle 'FORTROLIG_ADRESSE')")
     }
 
     @ParameterizedTest
@@ -120,7 +121,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
 
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
-        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && it.harTilgang }
+        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && it.journalpostTilgang.harTilgang }
         assertThat(tilgangsstyrtJournalpost).isNotNull
     }
 
@@ -140,7 +141,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
 
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
-        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && it.harTilgang }
+        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && it.journalpostTilgang.harTilgang }
         assertThat(tilgangsstyrtJournalpost).isNotNull
     }
 
@@ -157,7 +158,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
 
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
-        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && it.harTilgang }
+        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && it.journalpostTilgang.harTilgang }
         assertThat(tilgangsstyrtJournalpost).isNotNull
     }
 
@@ -180,7 +181,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
 
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
-        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && it.harTilgang }
+        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && it.journalpostTilgang.harTilgang }
         assertThat(tilgangsstyrtJournalpost).isNotNull
     }
 
@@ -204,7 +205,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
 
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
-        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && !it.harTilgang }
+        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && !it.journalpostTilgang.harTilgang }
         assertThat(tilgangsstyrtJournalpost).isNotNull
     }
 
@@ -228,7 +229,7 @@ class BaksTilgangsstyrtJournalpostServiceTest {
 
         // Assert
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
-        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && it.harTilgang }
+        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && it.journalpostTilgang.harTilgang }
         assertThat(tilgangsstyrtJournalpost).isNotNull
     }
 }

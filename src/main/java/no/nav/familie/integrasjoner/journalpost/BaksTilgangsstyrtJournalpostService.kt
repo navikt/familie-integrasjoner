@@ -4,6 +4,7 @@ import no.nav.familie.integrasjoner.journalpost.versjonertsøknad.BaksVersjonert
 import no.nav.familie.integrasjoner.tilgangskontroll.TilgangskontrollService
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.journalpost.Journalpost
+import no.nav.familie.kontrakter.felles.journalpost.JournalpostTilgang
 import no.nav.familie.kontrakter.felles.journalpost.TilgangsstyrtJournalpost
 import no.nav.familie.kontrakter.felles.søknad.MissingVersionException
 import no.nav.familie.kontrakter.felles.søknad.UnsupportedVersionException
@@ -20,36 +21,43 @@ class BaksTilgangsstyrtJournalpostService(
         journalposter.map { journalpost ->
             TilgangsstyrtJournalpost(
                 journalpost = journalpost,
-                harTilgang = harTilgangTilJournalpost(journalpost = journalpost),
+                journalpostTilgang = sjekkTilgangTilJournalpost(journalpost = journalpost),
             )
         }
 
-    fun harTilgangTilJournalpost(journalpost: Journalpost): Boolean {
+    fun sjekkTilgangTilJournalpost(journalpost: Journalpost): JournalpostTilgang {
         val tema = journalpost.tema?.let { tema -> Tema.valueOf(tema) }
         if (tema == null) {
-            return true
+            return JournalpostTilgang(harTilgang = true)
         }
 
-        if (!støtterTilgangsstyringSjekk(journalpost, tema)) return true
+        if (!støtterTilgangsstyringSjekk(journalpost, tema)) return JournalpostTilgang(harTilgang = true)
 
         return try {
             val baksSøknadBase = baksVersjonertSøknadService.hentBaksSøknadBase(journalpost, tema)
-            tilgangskontrollService
-                .sjekkTilgangTilBrukere(
-                    personIdenter = baksSøknadBase.personerISøknad(),
-                    tema = tema,
-                ).all { tilgang -> tilgang.harTilgang }
+            val personerSaksbehandlerIkkeHarTilgangTil =
+                tilgangskontrollService
+                    .sjekkTilgangTilBrukere(
+                        personIdenter = baksSøknadBase.personerISøknad(),
+                        tema = tema,
+                    ).filter { !it.harTilgang }
+
+            if (personerSaksbehandlerIkkeHarTilgangTil.isEmpty()) {
+                return JournalpostTilgang(harTilgang = true)
+            } else {
+                return JournalpostTilgang(harTilgang = false, begrunnelse = personerSaksbehandlerIkkeHarTilgangTil.filter { it.begrunnelse != null }.toSet().joinToString(prefix = "(", postfix = ")", separator = ", ") { it.begrunnelse!! })
+            }
         } catch (e: MissingVersionException) {
             logger.warn("Får ikke sjekket tilgang til digital søknad tilknyttet journalpost ${journalpost.journalpostId}.")
             secureLogger.warn("Feil ved deserialisering av digital søknad.", e)
             // For gamle søknader, før 'kontraktVersjon' ble innført, har vi ingen måte å bestemme konkret klasse å deserialisere til.
             // Gir tilgang basert på antagelsen om at fagsak relatert til gamle søknader allerede er satt til Vikafossen dersom det finnes kode 6, 7 eller 19 personer i søknad.
-            true
+            JournalpostTilgang(harTilgang = true)
         } catch (e: UnsupportedVersionException) {
             logger.error("Får ikke sjekket tilgang til digital søknad tilknyttet journalpost ${journalpost.journalpostId}, da vi mangler støtte for kontraktversjon.")
             secureLogger.error("Feil ved deserialisering av digital søknad.", e)
             // Hindrer tilgang og logger Error da vi burde kunne deserialisere alle baks-søknader med feltet `kontraktVersjon`.
-            false
+            JournalpostTilgang(harTilgang = false)
         }
     }
 
