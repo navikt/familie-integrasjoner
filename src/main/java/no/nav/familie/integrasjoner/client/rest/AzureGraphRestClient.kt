@@ -3,16 +3,15 @@ package no.nav.familie.integrasjoner.client.rest
 import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.integrasjoner.azure.domene.AzureAdBruker
 import no.nav.familie.integrasjoner.azure.domene.AzureAdBrukere
-import no.nav.familie.integrasjoner.config.incrementLoggFeil
+import no.nav.familie.integrasjoner.felles.OppslagException
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
-import no.nav.familie.integrasjoner.felles.OppslagException
-import org.springframework.http.HttpStatus
 
 @Service
 class AzureGraphRestClient(
@@ -50,7 +49,7 @@ class AzureGraphRestClient(
                 "azure.saksbehandler.navIdent",
                 OppslagException.Level.MEDIUM,
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                e
+                e,
             )
         }
 
@@ -63,7 +62,7 @@ class AzureGraphRestClient(
                 "azure.saksbehandler.id",
                 OppslagException.Level.MEDIUM,
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                e
+                e,
             )
         }
 

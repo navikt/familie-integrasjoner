@@ -21,7 +21,8 @@ class JournalpostService
 
         fun hentTilgangsstyrtBaksJournalpost(journalpostId: String): Journalpost {
             val journalpost = hentJournalpost(journalpostId)
-            if (baksTilgangsstyrtJournalpostService.harTilgangTilJournalpost(journalpost)) {
+            val journalpostTilgang = baksTilgangsstyrtJournalpostService.sjekkTilgangTilJournalpost(journalpost)
+            if (journalpostTilgang.harTilgang) {
                 return journalpost
             } else {
                 throw JournalpostForbiddenException("Kan ikke hente journalpost. Krever ekstra tilganger.")
@@ -49,7 +50,8 @@ class JournalpostService
             variantFormat: String,
         ): ByteArray {
             val journalpost = hentJournalpost(journalpostId)
-            if (baksTilgangsstyrtJournalpostService.harTilgangTilJournalpost(journalpost)) {
+            val journalpostTilgang = baksTilgangsstyrtJournalpostService.sjekkTilgangTilJournalpost(journalpost)
+            if (journalpostTilgang.harTilgang) {
                 return hentDokument(journalpostId, dokumentInfoId, variantFormat)
             } else {
                 throw JournalpostForbiddenException("Kan ikke hente dokument. Krever ekstra tilganger.")
