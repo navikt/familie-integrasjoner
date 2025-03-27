@@ -15,7 +15,7 @@ object BarnetrygdInformasjonsbrevInnhenteOpplysningerKlageMetadata : Dokumentmet
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.BARNETRYGD_INFORMASJONSBREV_INNHENTE_OPPLYSNINGER_KLAGE
-    override val tittel: String = "Innhente opplysnigner klage - barnetrygd"
-    override val brevkode: String = "innhente-opplysnigner-klage-ba"
+    override val tittel: String = "Innhente opplysninger klage - barnetrygd"
+    override val brevkode: String = "innhente-opplysninger-klage-ba"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }

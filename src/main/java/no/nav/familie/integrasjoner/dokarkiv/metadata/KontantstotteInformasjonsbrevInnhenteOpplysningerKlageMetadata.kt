@@ -15,7 +15,7 @@ object KontantstotteInformasjonsbrevInnhenteOpplysningerKlageMetadata : Dokument
     override val behandlingstema: Behandlingstema? = null
     override val kanal: String? = null
     override val dokumenttype: Dokumenttype = Dokumenttype.KONTANTSTØTTE_INFORMASJONSBREV_INNHENTE_OPPLYSNINGER_KLAGE
-    override val tittel: String = "Innhente opplysnigner klage - kontantstøtte"
-    override val brevkode: String = "innhente-opplysnigner-klage-ks"
+    override val tittel: String = "Innhente opplysninger klage - kontantstøtte"
+    override val brevkode: String = "innhente-opplysninger-klage-ks"
     override val dokumentKategori: Dokumentkategori = Dokumentkategori.B
 }
