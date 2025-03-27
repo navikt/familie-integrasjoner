@@ -1,4 +1,4 @@
-name: Build-Deploy-Preprod
+name: Deploy preprod
 on:
   workflow_dispatch:
   pull_request:

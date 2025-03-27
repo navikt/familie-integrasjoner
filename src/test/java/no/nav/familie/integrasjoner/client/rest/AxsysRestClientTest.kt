@@ -2,11 +2,9 @@ package no.nav.familie.integrasjoner.client.rest
 
 import io.mockk.every
 import io.mockk.mockk
-import java.net.URI
 import no.nav.familie.integrasjoner.axsys.TilgangV2DTO
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.NavIdent
-import no.nav.familie.kontrakter.felles.navkontor.NavKontorEnhet
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -16,13 +14,15 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.web.client.RestOperations
 import org.springframework.web.client.exchange
+import java.net.URI
 
 class AxsysRestClientTest {
     private val restOperations: RestOperations = mockk()
-    private val axsysRestClient: AxsysRestClient = AxsysRestClient(
-        enhetBaseUrl = URI("http://localhost:8080"),
-        restTemplate = restOperations
-    )
+    private val axsysRestClient: AxsysRestClient =
+        AxsysRestClient(
+            enhetBaseUrl = URI("http://localhost:8080"),
+            restTemplate = restOperations,
+        )
 
     @Nested
     inner class HentEnheterNavIdentHarTilgangTil {

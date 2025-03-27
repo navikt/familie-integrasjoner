@@ -4,10 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
-import java.net.URI
-import no.nav.familie.integrasjoner.azure.domene.AzureAdBrukere
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.FerdigstillJournalPost
-import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.log.mdc.MDCConstants.MDC_CALL_ID
 import org.assertj.core.api.Assertions.assertThat
@@ -18,19 +15,20 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.slf4j.MDC
 import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.RestOperations
 import org.springframework.web.client.exchange
+import java.net.URI
 
 class DokarkivRestClientTest {
     private val restOperations: RestOperations = mockk()
-    private val dokarkivRestClient: DokarkivRestClient = DokarkivRestClient(
-        dokarkivUrl = URI("http://localhost:8080/dokarkiv"),
-        restOperations = restOperations,
-    )
+    private val dokarkivRestClient: DokarkivRestClient =
+        DokarkivRestClient(
+            dokarkivUrl = URI("http://localhost:8080/dokarkiv"),
+            restOperations = restOperations,
+        )
 
     @BeforeEach
     fun setUp() {
@@ -48,14 +46,15 @@ class DokarkivRestClientTest {
         @Test
         fun `skal kaste OppslagException ved feil mot dokarkiv`() {
             // Arrange
-            every { restOperations.exchange<String>(any<URI>(), eq(HttpMethod.PATCH), any<HttpEntity<FerdigstillJournalPost>>()) } throws RestClientResponseException(
-                "Noe gikk galt",
-                HttpStatus.NOT_FOUND,
-                "bad request",
-                null,
-                null,
-                null
-            )
+            every { restOperations.exchange<String>(any<URI>(), eq(HttpMethod.PATCH), any<HttpEntity<FerdigstillJournalPost>>()) } throws
+                RestClientResponseException(
+                    "Noe gikk galt",
+                    HttpStatus.NOT_FOUND,
+                    "bad request",
+                    null,
+                    null,
+                    null,
+                )
 
             // Act & Assert
             val oppslagException = assertThrows<OppslagException> { dokarkivRestClient.ferdigstillJournalpost("1234", "oslo", "4321") }
