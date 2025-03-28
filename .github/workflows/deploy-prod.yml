@@ -63,7 +63,6 @@ jobs:
       - name: Deploy til prod-fss team namespace
         uses: nais/deploy/actions/deploy@v2
         env:
-          APIKEY: ${{ secrets.DEPLOY_APIKEY }}
           CLUSTER: prod-fss
           RESOURCE: app-prod.teamfamilie.yaml
           VAR: image=${{ needs.build.outputs.image }}
@@ -81,7 +80,6 @@ jobs:
       - name: Deploy til dev-fss team namespace
         uses: nais/deploy/actions/deploy@v2
         env:
-          APIKEY: ${{ secrets.DEPLOY_APIKEY }}
           CLUSTER: dev-fss
           RESOURCE: app-preprod.teamfamilie.yaml
           VAR: image=${{ needs.build.outputs.image }}
