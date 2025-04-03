@@ -66,6 +66,7 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata =
         Dokumenttype.BARNETRYGD_INFORMASJONSBREV_TIL_FORELDER_OMFATTET_NORSK_LOVGIVNING_HENTER_IKKE_REGISTEROPPLYSNINGER -> BarnetrygdInformasjonsbrevTilForelderOmfattetNorskLovgivningHenterIkkeRegisteropplysningerMetadata
         Dokumenttype.BARNETRYGD_INFORMASJONSBREV_KAN_HA_RETT_TIL_PENGESTØTTE_FRA_NAV -> BarnetrygdInformasjonsbrevKanHaRettTilPengestøtteFraNavMetadata
         Dokumenttype.BARNETRYGD_INFORMASJONSBREV_INNHENTE_OPPLYSNINGER_KLAGE -> BarnetrygdInformasjonsbrevInnhenteOpplysningerKlageMetadata
+        Dokumenttype.BARNETRYGD_INFORMASJONSBREV_INNHENTE_OPPLYSNINGER_KLAGE_INSTITUSJON -> BarnetrygdInformasjonsbrevInnhenteOpplysningerKlageInstitusjonMetadata
         Dokumenttype.BARNETRYGD_INNHENTE_OPPLYSNINGER_ETTER_SØKNAD_I_SED -> BarnetrygdInnhenteOpplysningerEtterSøknadISedMetadata
         Dokumenttype.BARNETRYGD_INNHENTE_OPPLYSNINGER_INSTITUSJON -> BarnetrygdInnhenteOpplysningerInstitusjonMetadata
         Dokumenttype.BARNETRYGD_INNHENTE_OPPLYSNINGER -> BarnetrygdInnhenteOpplysningerMetadata
