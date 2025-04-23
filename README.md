@@ -23,3 +23,9 @@ Når en ny tag pushes, trigges github action workflowen som heter Deploy-Prod.
 
 ### Swagger
 http://localhost:8093/swagger-ui.html
+
+
+#### Test token i q2
+I q2 er det mulig å hente ut azure test tokens fra azure-token-generator:
+client credential: https://azure-token-generator.intern.dev.nav.no/api/m2m?aud=dev-fss.teamfamilie.familie-integrasjoner
+on-behalf-of: https://azure-token-generator.intern.dev.nav.no/api/obo?aud=dev-fss.teamfamilie.familie-integrasjoner

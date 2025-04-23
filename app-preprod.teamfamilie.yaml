@@ -81,6 +81,9 @@ spec:
         - application: familie-ef-personhendelse
           cluster: dev-gcp
         - application: familie-ef-proxy
+        - application: azure-token-generator
+          namespace: nais
+          cluster: dev-gcp
     outbound:
       rules:
         - application: modiacontextholder
