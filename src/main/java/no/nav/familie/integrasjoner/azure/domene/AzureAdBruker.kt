@@ -9,4 +9,14 @@ data class AzureAdBruker(
     val givenName: String,
     val surname: String,
     val streetAddress: String,
+    val city: String,
+)
+
+data class AzureAdSaksbehandler(
+    val azureId: UUID,
+    val navIdent: String,
+    val fornavn: String,
+    val etternavn: String,
+    val enhet: String,
+    val geografiskEnhet: String
 )

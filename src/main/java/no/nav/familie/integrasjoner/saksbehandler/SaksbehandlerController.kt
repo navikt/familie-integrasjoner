@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.saksbehandler
 
+import no.nav.familie.integrasjoner.azure.domene.AzureAdSaksbehandler
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.familie.kontrakter.felles.saksbehandler.Saksbehandler
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.context.annotation.Profile
 import org.springframework.web.bind.annotation.GetMapping
@@ -19,7 +19,7 @@ class SaksbehandlerController(
     @ProtectedWithClaims(issuer = "azuread")
     fun hentSaksbehandler(
         @PathVariable id: String,
-    ): Ressurs<Saksbehandler> { // id kan være azure-id, e-post eller nav-ident
+    ): Ressurs<AzureAdSaksbehandler> { // id kan være azure-id, e-post eller nav-ident
         return Ressurs.success(saksbehandlerService.hentSaksbehandler(id), "Hent saksbehandler OK")
     }
 }

@@ -1,8 +1,8 @@
 package no.nav.familie.integrasjoner.saksbehandler
 
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.integrasjoner.azure.domene.AzureAdSaksbehandler
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.familie.kontrakter.felles.saksbehandler.Saksbehandler
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -53,7 +53,8 @@ class SaksbehandlerControllerTest(
                                            "id": "$id",
                                            "userPrincipalName": "Bob.Burger@nav.no",
                                            "onPremisesSamAccountName": "B857496",
-                                           "streetAddress": "4415"
+                                           "streetAddress": "4415",
+                                           "city": "Skien"
                                            }""",
                     ),
             )
@@ -63,7 +64,7 @@ class SaksbehandlerControllerTest(
                 .pathSegment(id.toString())
                 .toUriString()
 
-        val response: ResponseEntity<Ressurs<Saksbehandler>> =
+        val response: ResponseEntity<Ressurs<AzureAdSaksbehandler>> =
             restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
@@ -94,7 +95,7 @@ class SaksbehandlerControllerTest(
                         Parameter(
                             "\$select",
                             "givenName,surname,onPremisesSamAccountName,id," +
-                                "userPrincipalName,streetAddress",
+                                "userPrincipalName,streetAddress,city",
                         ),
                     ),
             ).respond(
@@ -110,7 +111,8 @@ class SaksbehandlerControllerTest(
                                                  "id": "$id",
                                                  "userPrincipalName": "Bob.Burger@nav.no",
                                                  "onPremisesSamAccountName": "$navIdent",
-                                                 "streetAddress": "4415"
+                                                 "streetAddress": "4415",
+                                                 "city": "Skien"
                                                }
                                            ]
                                            }""",
@@ -122,7 +124,7 @@ class SaksbehandlerControllerTest(
                 .pathSegment(navIdent)
                 .toUriString()
 
-        val response: ResponseEntity<Ressurs<Saksbehandler>> =
+        val response: ResponseEntity<Ressurs<AzureAdSaksbehandler>> =
             restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
