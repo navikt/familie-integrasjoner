@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.saksbehandler
 
-import no.nav.familie.integrasjoner.azure.domene.AzureAdSaksbehandler
 import no.nav.familie.integrasjoner.client.rest.AzureGraphRestClient
+import no.nav.familie.kontrakter.felles.saksbehandler.Saksbehandler
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -13,27 +13,27 @@ class SaksbehandlerService(
 ) {
     private val lengdeNavIdent = 7
 
-    fun hentSaksbehandler(id: String): AzureAdSaksbehandler {
+    fun hentSaksbehandler(id: String): Saksbehandler {
         // TODO: Midlertidig for å få ut funksjonalitet. Fjern når ba-sak-e2e fases ut.
         if (environment.activeProfiles.any { it == "e2e" }) {
-            return AzureAdSaksbehandler(
+            return Saksbehandler(
                 azureId = UUID.randomUUID(),
                 navIdent = id,
                 fornavn = "Mocka",
                 etternavn = "Saksbehandler",
                 enhet = "4408",
-                geografiskEnhet = "Skien"
+                enhetsnavn = "NAV ARBEID OG YTELSER SKIEN"
             )
         }
 
         if (id == ID_VEDTAKSLØSNINGEN) {
-            return AzureAdSaksbehandler(
-                UUID.randomUUID(),
-                ID_VEDTAKSLØSNINGEN,
-                "Vedtaksløsning",
-                "Nav",
-                "9999",
-                "Skien"
+            return Saksbehandler(
+                azureId = UUID.randomUUID(),
+                navIdent = ID_VEDTAKSLØSNINGEN,
+                fornavn = "Vedtaksløsning",
+                etternavn = "Nav",
+                enhet = "9999",
+                enhetsnavn = null
             )
         }
 
@@ -49,13 +49,13 @@ class SaksbehandlerService(
                 azureGraphRestClient.hentSaksbehandler(id)
             }
 
-        return AzureAdSaksbehandler(
-            azureAdBruker.id,
-            azureAdBruker.onPremisesSamAccountName,
-            azureAdBruker.givenName,
-            azureAdBruker.surname,
-            azureAdBruker.streetAddress,
-            azureAdBruker.city,
+        return Saksbehandler(
+            azureId = azureAdBruker.id,
+            navIdent = azureAdBruker.onPremisesSamAccountName,
+            fornavn = azureAdBruker.givenName,
+            etternavn = azureAdBruker.surname,
+            enhet = azureAdBruker.streetAddress,
+            enhetsnavn = azureAdBruker.city,
         )
     }
 

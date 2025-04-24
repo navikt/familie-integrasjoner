@@ -1,8 +1,8 @@
 package no.nav.familie.integrasjoner.saksbehandler
 
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
-import no.nav.familie.integrasjoner.azure.domene.AzureAdSaksbehandler
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.saksbehandler.Saksbehandler
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -64,7 +64,7 @@ class SaksbehandlerControllerTest(
                 .pathSegment(id.toString())
                 .toUriString()
 
-        val response: ResponseEntity<Ressurs<AzureAdSaksbehandler>> =
+        val response: ResponseEntity<Ressurs<Saksbehandler>> =
             restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
@@ -124,7 +124,7 @@ class SaksbehandlerControllerTest(
                 .pathSegment(navIdent)
                 .toUriString()
 
-        val response: ResponseEntity<Ressurs<AzureAdSaksbehandler>> =
+        val response: ResponseEntity<Ressurs<Saksbehandler>> =
             restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
