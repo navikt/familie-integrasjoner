@@ -33,7 +33,6 @@ class SaksbehandlerService(
                 fornavn = "Vedtaksløsning",
                 etternavn = "Nav",
                 enhet = "9999",
-                enhetsnavn = null
             )
         }
 

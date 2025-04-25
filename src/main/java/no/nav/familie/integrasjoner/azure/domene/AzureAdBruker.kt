@@ -9,5 +9,5 @@ data class AzureAdBruker(
     val givenName: String,
     val surname: String,
     val streetAddress: String,
-    val city: String?,
+    val city: String,
 )
