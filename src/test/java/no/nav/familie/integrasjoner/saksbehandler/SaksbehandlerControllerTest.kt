@@ -53,7 +53,8 @@ class SaksbehandlerControllerTest(
                                            "id": "$id",
                                            "userPrincipalName": "Bob.Burger@nav.no",
                                            "onPremisesSamAccountName": "B857496",
-                                           "streetAddress": "4415"
+                                           "streetAddress": "4415",
+                                           "city": "Skien"
                                            }""",
                     ),
             )
@@ -94,7 +95,7 @@ class SaksbehandlerControllerTest(
                         Parameter(
                             "\$select",
                             "givenName,surname,onPremisesSamAccountName,id," +
-                                "userPrincipalName,streetAddress",
+                                "userPrincipalName,streetAddress,city",
                         ),
                     ),
             ).respond(
@@ -110,7 +111,8 @@ class SaksbehandlerControllerTest(
                                                  "id": "$id",
                                                  "userPrincipalName": "Bob.Burger@nav.no",
                                                  "onPremisesSamAccountName": "$navIdent",
-                                                 "streetAddress": "4415"
+                                                 "streetAddress": "4415",
+                                                 "city": "Skien"
                                                }
                                            ]
                                            }""",

@@ -22,16 +22,17 @@ class SaksbehandlerService(
                 fornavn = "Mocka",
                 etternavn = "Saksbehandler",
                 enhet = "4408",
+                enhetsnavn = "NAV ARBEID OG YTELSER SKIEN"
             )
         }
 
         if (id == ID_VEDTAKSLØSNINGEN) {
             return Saksbehandler(
-                UUID.randomUUID(),
-                ID_VEDTAKSLØSNINGEN,
-                "Vedtaksløsning",
-                "Nav",
-                "9999",
+                azureId = UUID.randomUUID(),
+                navIdent = ID_VEDTAKSLØSNINGEN,
+                fornavn = "Vedtaksløsning",
+                etternavn = "Nav",
+                enhet = "9999",
             )
         }
 
@@ -48,11 +49,12 @@ class SaksbehandlerService(
             }
 
         return Saksbehandler(
-            azureAdBruker.id,
-            azureAdBruker.onPremisesSamAccountName,
-            azureAdBruker.givenName,
-            azureAdBruker.surname,
-            azureAdBruker.streetAddress,
+            azureId = azureAdBruker.id,
+            navIdent = azureAdBruker.onPremisesSamAccountName,
+            fornavn = azureAdBruker.givenName,
+            etternavn = azureAdBruker.surname,
+            enhet = azureAdBruker.streetAddress,
+            enhetsnavn = azureAdBruker.city,
         )
     }
 
