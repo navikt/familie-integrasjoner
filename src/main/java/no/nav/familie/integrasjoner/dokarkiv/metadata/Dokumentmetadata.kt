@@ -79,6 +79,7 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata =
         Dokumenttype.BARNETRYGD_UTVIDET -> BarnetrygdSøknadUtvidetMetadata
         Dokumenttype.BARNETRYGD_TILBAKEKREVING_BREV -> BarnetrygdTilbakebetalingBrevMetadata
         Dokumenttype.BARNETRYGD_TILBAKEKREVING_VEDTAK -> BarnetrygdTilbakebetalingVedtakMetadata
+        Dokumenttype.BARNETRYGD_TILBAKEKREVINGSVEDTAK_MOTREGNING -> BarnetrygdTilbakekrevingsvedtakMotregningMetadata
         Dokumenttype.BARNETRYGD_UTBETALING_ETTER_KA_VEDTAK -> BarnetrygdUtbetalingEtterKAVedtakMetadata
         Dokumenttype.BARNETRYGD_VARSEL_OM_REVURDERING_DELT_BOSTED_PARAGRAF_14 -> BarnetrygdVarselOmRevurderingDeltBostedParagraf14Metadata
         Dokumenttype.BARNETRYGD_VARSEL_OM_REVURDERING_FRA_NASJONAL_TIL_EØS -> BarnetrygdVarselOmRevurderingFraNasjonalTilEøsMetadata
@@ -127,6 +128,7 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata =
         Dokumenttype.KONTANTSTØTTE_EØS -> KontantstøtteSøknadEØSMetadata
         Dokumenttype.KONTANTSTØTTE_TILBAKEKREVING_BREV -> KontantstøtteTilbakebetalingBrevMetadata
         Dokumenttype.KONTANTSTØTTE_TILBAKEKREVING_VEDTAK -> KontantstøtteTilbakebetalingVedtakMetadata
+        Dokumenttype.KONTANTSTØTTE_TILBAKEKREVINGSVEDTAK_MOTREGNING -> KontantstøtteTilbakekrevingsvedtakMotregningMetadata
         Dokumenttype.KONTANTSTØTTE_UTBETALING_ETTER_KA_VEDTAK -> KontantstøtteUtbetalingEtterKAVedtakMetadata
         Dokumenttype.KONTANTSTØTTE_VARSEL_OM_REVURDERING_FRA_NASJONAL_TIL_EØS -> KontantstøtteVarselOmRevurderingFraNasjonalTilEøsMetadata
         Dokumenttype.KONTANTSTØTTE_VARSEL_OM_REVURDERING -> KontantstøtteVarselOmRevurderingMetadata
@@ -156,6 +158,4 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata =
         Dokumenttype.VEDTAKSBREV_OVERGANGSSTØNAD -> OvergangsstønadVedtaksbrevMetadata
         Dokumenttype.VEDTAKSBREV_SKOLEPENGER -> SkolepengerVedtaksbrevMetadata
         Dokumenttype.BEREGNET_SAMVÆR_NOTAT -> BeregnetSamværNotatMetadata
-        Dokumenttype.BARNETRYGD_FORENKLET_TILBAKEKREVINGSVEDTAK -> BarnetrygdForenkletTilbakekrevingsvedtakMetadata
-        Dokumenttype.KONTANTSTØTTE_FORENKLET_TILBAKEKREVINGSVEDTAK -> KontantstøtteForenkletTilbakekrevingsvedtakMetadata
     }
