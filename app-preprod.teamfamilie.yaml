@@ -53,6 +53,8 @@ spec:
           cluster: dev-fss
         - application: familie-ba-sak
           cluster: dev-gcp
+        - application: familie-ba-minside-frontend
+          cluster: dev-gcp
         - application: familie-tilbake
           cluster: dev-gcp
         - application: familie-tilbake-lokal
