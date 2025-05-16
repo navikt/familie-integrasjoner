@@ -98,6 +98,10 @@ spec:
     - https://familie-integrasjoner.intern.nav.no
 
   observability:
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
     autoInstrumentation:
       enabled: true
       runtime: java
