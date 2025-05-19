@@ -58,6 +58,8 @@ spec:
           cluster: prod-fss
         - application: familie-ba-sak
           cluster: prod-gcp
+        - application: familie-ba-minside-frontend
+          cluster: prod-gcp
         - application: familie-tilbake
           cluster: prod-gcp
         - application: tilbakekreving-backend
