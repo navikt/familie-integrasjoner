@@ -1,7 +1,8 @@
 package no.nav.familie.integrasjoner.saksbehandler
 
-import no.nav.familie.kontrakter.felles.saksbehandler.Saksbehandler
+import no.nav.familie.integrasjoner.azure.domene.AzureAdGrupper
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.saksbehandler.Saksbehandler
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.context.annotation.Profile
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,5 +22,13 @@ class SaksbehandlerController(
         @PathVariable id: String,
     ): Ressurs<Saksbehandler> { // id kan være azure-id, e-post eller nav-ident
         return Ressurs.success(saksbehandlerService.hentSaksbehandler(id), "Hent saksbehandler OK")
+    }
+
+    @GetMapping(path = ["/{id}/grupper"])
+    @ProtectedWithClaims(issuer = "azuread")
+    fun hentSaksbehandlerGrupper(
+        @PathVariable id: String,
+    ): Ressurs<AzureAdGrupper> { // id kan være azure-id, e-post eller nav-ident
+        return Ressurs.success(saksbehandlerService.hentGruppeneTilSaksbehandler(id), "Hent saksbehandler grupper OK")
     }
 }
