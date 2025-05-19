@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.saksbehandler
 
+import no.nav.familie.integrasjoner.azure.domene.AzureAdGrupper
 import no.nav.familie.integrasjoner.client.rest.AzureGraphRestClient
 import no.nav.familie.kontrakter.felles.saksbehandler.Saksbehandler
 import org.springframework.core.env.Environment
@@ -22,7 +23,7 @@ class SaksbehandlerService(
                 fornavn = "Mocka",
                 etternavn = "Saksbehandler",
                 enhet = "4408",
-                enhetsnavn = "NAV ARBEID OG YTELSER SKIEN"
+                enhetsnavn = "NAV ARBEID OG YTELSER SKIEN",
             )
         }
 
@@ -56,6 +57,23 @@ class SaksbehandlerService(
             enhet = azureAdBruker.streetAddress,
             enhetsnavn = azureAdBruker.city,
         )
+    }
+
+    fun hentGruppeneTilSaksbehandler(id: String): AzureAdGrupper {
+        val azureIdPåBruker =
+            if (id.length == lengdeNavIdent) {
+                val azureAdBrukere = azureGraphRestClient.finnSaksbehandler(id)
+                azureAdBrukere.value
+                    .first()
+                    .id
+                    .toString()
+            } else {
+                id
+            }
+
+        val gruppeneTilSaksbehandler = azureGraphRestClient.hentGruppeneTilSaksbehandler(azureIdPåBruker)
+
+        return gruppeneTilSaksbehandler
     }
 
     fun hentNavIdent(saksbehandlerId: String): String = saksbehandlerId.takeIf { it.length == lengdeNavIdent } ?: hentSaksbehandler(saksbehandlerId).navIdent
