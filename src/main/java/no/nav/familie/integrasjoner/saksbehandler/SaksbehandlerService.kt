@@ -1,8 +1,8 @@
 package no.nav.familie.integrasjoner.saksbehandler
 
-import no.nav.familie.integrasjoner.azure.domene.AzureAdGrupper
 import no.nav.familie.integrasjoner.client.rest.AzureGraphRestClient
 import no.nav.familie.kontrakter.felles.saksbehandler.Saksbehandler
+import no.nav.familie.kontrakter.felles.saksbehandler.SaksbehandlerGrupper
 import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -59,7 +59,7 @@ class SaksbehandlerService(
         )
     }
 
-    fun hentGruppeneTilSaksbehandler(id: String): AzureAdGrupper {
+    fun hentGruppeneTilSaksbehandler(id: String): SaksbehandlerGrupper {
         val azureIdPåBruker =
             if (id.length == lengdeNavIdent) {
                 val azureAdBrukere = azureGraphRestClient.finnSaksbehandler(id)

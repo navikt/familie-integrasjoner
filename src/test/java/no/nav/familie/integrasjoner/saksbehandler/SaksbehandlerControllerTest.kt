@@ -1,9 +1,9 @@
 package no.nav.familie.integrasjoner.saksbehandler
 
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
-import no.nav.familie.integrasjoner.azure.domene.AzureAdGrupper
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.saksbehandler.Saksbehandler
+import no.nav.familie.kontrakter.felles.saksbehandler.SaksbehandlerGrupper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -210,7 +210,7 @@ class SaksbehandlerControllerTest(
                 .pathSegment("grupper")
                 .toUriString()
 
-        val response: ResponseEntity<Ressurs<AzureAdGrupper>> =
+        val response: ResponseEntity<Ressurs<SaksbehandlerGrupper>> =
             restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
