@@ -3,8 +3,8 @@ package no.nav.familie.integrasjoner.client.rest
 import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.integrasjoner.azure.domene.AzureAdBruker
 import no.nav.familie.integrasjoner.azure.domene.AzureAdBrukere
-import no.nav.familie.integrasjoner.azure.domene.AzureAdGrupper
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.kontrakter.felles.saksbehandler.SaksbehandlerGrupper
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -63,7 +63,7 @@ class AzureGraphRestClient(
             )
         }
 
-    fun hentGruppeneTilSaksbehandler(azureId: String): AzureAdGrupper =
+    fun hentGruppeneTilSaksbehandler(azureId: String): SaksbehandlerGrupper =
         try {
             getForEntity(
                 hentGruppeneTilSaksbehandlerUri(azureId),
