@@ -188,5 +188,3 @@ AZURE_APP_WELL_KNOWN_URL: http://localhost:${mock-oauth2-server.port}/selvbetjen
 AZURE_OPENID_CONFIG_TOKEN_ENDPOINT: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
 
 NAIS_APP_NAME: familie-integrasjoner
-
-AXSYS_URL: dummy
