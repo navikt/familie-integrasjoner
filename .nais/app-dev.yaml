@@ -44,6 +44,8 @@ spec:
           - id: "19dcbfde-4cdb-4c64-a1ea-ac9802b03339"  # 0000-GA-Enslig-Forsorger-Veileder
         extra:
           - "NAVident"
+  tokenx:
+    enabled: true
   accessPolicy:
     inbound:
       rules:
@@ -84,6 +86,9 @@ spec:
           cluster: dev-gcp
         - application: familie-ef-proxy
         - application: azure-token-generator
+          namespace: nais
+          cluster: dev-gcp
+        - application: tokenx-token-generator
           namespace: nais
           cluster: dev-gcp
     outbound:
