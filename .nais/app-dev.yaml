@@ -96,6 +96,8 @@ spec:
         - application: modiacontextholder
           namespace: personoversikt
           cluster: dev-gcp
+        - application: logging
+          namespace: nais-system
   prometheus:
     enabled: true
     path: /internal/prometheus
