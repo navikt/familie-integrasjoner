@@ -85,6 +85,8 @@ spec:
         - application: modiacontextholder
           namespace: personoversikt
           cluster: prod-gcp
+        - application: logging
+          namespace: nais-system
   replicas:
     min: 2
     max: 2
