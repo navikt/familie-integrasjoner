@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.saksbehandler
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.saksbehandler.Saksbehandler
+import no.nav.familie.kontrakter.felles.saksbehandler.SaksbehandlerGrupper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -136,6 +137,90 @@ class SaksbehandlerControllerTest(
         assertThat(saksbehandler.azureId).isEqualTo(id)
         assertThat(saksbehandler.navIdent).isEqualTo(navIdent)
         assertThat(saksbehandler.enhet).isEqualTo("4415")
+    }
+
+    @Test
+    fun `skal kalle korrekt tjeneste for henting av grupper på navident`() {
+        val navIdent = "B857496"
+        val azureId = UUID.randomUUID()
+
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("GET")
+                    .withPath("/users")
+                    .withQueryStringParameters(
+                        Parameter("\$search", "\"onPremisesSamAccountName:B857496\""),
+                        Parameter(
+                            "\$select",
+                            "givenName,surname,onPremisesSamAccountName,id," +
+                                "userPrincipalName,streetAddress,city",
+                        ),
+                    ),
+            ).respond(
+                HttpResponse
+                    .response()
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(
+                        """{
+                                           "value": [
+                                               {
+                                                 "givenName": "Bob",
+                                                 "surname": "Burger",
+                                                 "id": "$azureId",
+                                                 "userPrincipalName": "Bob.Burger@nav.no",
+                                                 "onPremisesSamAccountName": "$navIdent",
+                                                 "streetAddress": "4415",
+                                                 "city": "Skien"
+                                               }
+                                           ]
+                                           }""",
+                    ),
+            )
+
+        client
+            .`when`(
+                HttpRequest
+                    .request()
+                    .withMethod("GET")
+                    .withPath("/users/$azureId/memberOf")
+                    .withQueryStringParameters(),
+            ).respond(
+                HttpResponse
+                    .response()
+                    .withHeader("Content-Type", "application/json")
+                    .withBody(
+                        """{
+                                  "value": [
+                                    {
+                                      "id": "4c1de7e3-2aa2-41a9-8896-cc39c8f5d1c0",
+                                      "displayName": "ENHET_2103"
+                                    }
+                                  ]
+                                }
+                                """,
+                    ),
+            )
+
+        val uri =
+            UriComponentsBuilder
+                .fromHttpUrl(localhost(BASE_URL))
+                .pathSegment(navIdent)
+                .pathSegment("grupper")
+                .toUriString()
+
+        val response: ResponseEntity<Ressurs<SaksbehandlerGrupper>> =
+            restTemplate.exchange(
+                uri,
+                HttpMethod.GET,
+                HttpEntity<String>(headers),
+            )
+
+        val azureAdMemberOfResponse = response.body!!.data!!
+
+        assertThat(azureAdMemberOfResponse.value.size).isEqualTo(1)
+        assertThat(azureAdMemberOfResponse.value[0].displayName).isEqualTo("ENHET_2103")
     }
 
     companion object {

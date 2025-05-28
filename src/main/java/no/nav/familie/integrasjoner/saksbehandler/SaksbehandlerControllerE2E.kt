@@ -26,7 +26,7 @@ class SaksbehandlerControllerE2E {
                 fornavn = "Mocka",
                 etternavn = "Saksbehandler",
                 enhet = "4408",
-                enhetsnavn = "Nav arbeid og ytelser Skien"
+                enhetsnavn = "Nav arbeid og ytelser Skien",
             ),
             "Hent saksbehandler OK",
         )

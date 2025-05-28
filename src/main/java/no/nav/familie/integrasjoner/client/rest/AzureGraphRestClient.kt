@@ -4,6 +4,7 @@ import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.integrasjoner.azure.domene.AzureAdBruker
 import no.nav.familie.integrasjoner.azure.domene.AzureAdBrukere
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.kontrakter.felles.saksbehandler.SaksbehandlerGrupper
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -35,6 +36,15 @@ class AzureGraphRestClient(
             .buildAndExpand(navIdent)
             .toUri()
 
+    private fun hentGruppeneTilSaksbehandlerUri(azureUUID: String): URI =
+        UriComponentsBuilder
+            .fromUri(aadGraphURI)
+            .pathSegment(USERS)
+            .pathSegment(azureUUID)
+            .pathSegment(GRUPPER)
+            .build()
+            .toUri()
+
     fun finnSaksbehandler(navIdent: String): AzureAdBrukere =
         try {
             getForEntity(
@@ -47,6 +57,24 @@ class AzureGraphRestClient(
             throw OppslagException(
                 "Feil ved henting av saksbehandler med nav ident",
                 "azure.saksbehandler.navIdent",
+                OppslagException.Level.MEDIUM,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                e,
+            )
+        }
+
+    fun hentGruppeneTilSaksbehandler(azureId: String): SaksbehandlerGrupper =
+        try {
+            getForEntity(
+                hentGruppeneTilSaksbehandlerUri(azureId),
+                HttpHeaders().apply {
+                    add("ConsistencyLevel", "eventual")
+                },
+            )
+        } catch (e: Exception) {
+            throw OppslagException(
+                "Feil ved henting av saksbehandlers grupper med azure id",
+                "azure.saksbehandler.id",
                 OppslagException.Level.MEDIUM,
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 e,
@@ -67,7 +95,6 @@ class AzureGraphRestClient(
         }
 
     companion object {
-        private const val ME = "me"
         private const val USERS = "users"
         private const val GRUPPER = "memberOf"
         private const val FELTER = "givenName,surname,onPremisesSamAccountName,id,userPrincipalName,streetAddress,city"

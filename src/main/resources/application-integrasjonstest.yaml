@@ -139,24 +139,6 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
-      axsys:
-        resource-url: ${AXSYS_URL}
-        token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
-        grant-type: client_credentials
-        scope: ${AXSYS_SCOPE}
-        authentication:
-          client-id: ${AZURE_APP_CLIENT_ID}
-          client-secret: ${AZURE_APP_CLIENT_SECRET}
-          client-auth-method: client_secret_basic
-      axsys-onbehalf-of:
-        resource-url: ${AXSYS_URL}
-        token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
-        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
-        scope: ${AXSYS_SCOPE}
-        authentication:
-          client-id: ${AZURE_APP_CLIENT_ID}
-          client-secret: ${AZURE_APP_CLIENT_SECRET}
-          client-auth-method: client_secret_basic
       aareg:
         resource-url: ${AAREG_URL}
         token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
@@ -209,7 +191,6 @@ FORSTESIDEGENERATOR_URL: #Mockes lokalt
 AAREG_URL: http://localhost:18321
 SKYGGE_SAK_URL: #Mocker lokalt
 NORG2_URL: #Mockes lokalt
-AXSYS_URL: http://localhost:18321
 MODIA_CONTEXT_HOLDER_URL: #Mockes lokalt
 
 MEDL2_URL: http://localhost:18321

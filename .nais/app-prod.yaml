@@ -58,6 +58,8 @@ spec:
           cluster: prod-fss
         - application: familie-ba-sak
           cluster: prod-gcp
+        - application: familie-ba-minside-frontend
+          cluster: prod-gcp
         - application: familie-tilbake
           cluster: prod-gcp
         - application: tilbakekreving-backend
@@ -83,6 +85,8 @@ spec:
         - application: modiacontextholder
           namespace: personoversikt
           cluster: prod-gcp
+        - application: logging
+          namespace: nais-system
   replicas:
     min: 2
     max: 2
