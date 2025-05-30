@@ -162,6 +162,13 @@
         </dependency>
 
 
+        <!-- GraphQL Kotlin Client -->
+        <dependency>
+            <groupId>com.expediagroup</groupId>
+            <artifactId>graphql-kotlin-spring-client</artifactId>
+            <version>7.0.0</version>
+        </dependency>
+
         <!-- div -->
         <dependency>
             <groupId>io.micrometer</groupId>
@@ -404,6 +411,26 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <!-- GraphQL Kotlin Codegen Plugin -->
+            <plugin>
+                <groupId>com.expediagroup</groupId>
+                <artifactId>graphql-kotlin-maven-plugin</artifactId>
+                <version>7.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate-client</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <packageName>no.nav.familie.integrasjoner.journalpost.graphql</packageName>
+                    <schemaFile>${project.basedir}/src/main/resources/safselvbetjening/schema.graphql</schemaFile>
+                    <queryFiles>
+                        <param>src/main/resources/safselvbetjening/HentJournalposter.graphql</param>
+                    </queryFiles>
+                </configuration>
             </plugin>
         </plugins>
     </build>
