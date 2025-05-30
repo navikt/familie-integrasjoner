@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.journalpost.selvbetjening
 
+import kotlinx.coroutines.runBlocking
 import no.nav.familie.integrasjoner.journalpost.graphql.hentjournalposter.Dokumentoversikt
 import no.nav.familie.sikkerhet.EksternBrukerUtils
 import no.nav.security.token.support.core.api.ProtectedWithClaims
@@ -21,5 +22,5 @@ class JournalpostSelvbetjeningController(
     fun hello(): ResponseEntity<String> = ResponseEntity.ok("Hello")
 
     @GetMapping()
-    suspend fun hentDokumentoversiktForIdent(): ResponseEntity<Dokumentoversikt> = ResponseEntity.ok(safSelvbetjeningService.hentDokumentoversiktForIdent(EksternBrukerUtils.hentFnrFraToken()))
+    fun hentDokumentoversiktForIdent(): ResponseEntity<Dokumentoversikt> = ResponseEntity.ok(runBlocking { safSelvbetjeningService.hentDokumentoversiktForIdent(EksternBrukerUtils.hentFnrFraToken()) })
 }
