@@ -171,6 +171,7 @@ no.nav.security.jwt:
 
 AZURE_APP_CLIENT_ID: ${INTEGRASJONER_CLIENT_ID}
 AZURE_APP_CLIENT_SECRET: ${INTEGRASJONER_CLIENT_SECRET}
+
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 STS_URL: http://nav-auth-mock:8200/nais-sts/token
 EGEN_ANSATT_URL: #Mockes ut lokalt
