@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.journalpost.selvbetjening
 
-import kotlinx.coroutines.runBlocking
-import no.nav.familie.integrasjoner.journalpost.graphql.hentjournalposter.Dokumentoversikt
+import no.nav.familie.integrasjoner.journalpost.graphql.enums.Tema
+import no.nav.familie.integrasjoner.journalpost.graphql.hentdokumentoversikt.Dokumentoversikt
 import no.nav.familie.sikkerhet.EksternBrukerUtils
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.api.RequiredIssuers
@@ -18,9 +18,6 @@ import org.springframework.web.bind.annotation.RestController
 class JournalpostSelvbetjeningController(
     private val safSelvbetjeningService: SafSelvbetjeningService,
 ) {
-    @GetMapping("/hello")
-    fun hello(): ResponseEntity<String> = ResponseEntity.ok("Hello")
-
-    @GetMapping()
-    fun hentDokumentoversiktForIdent(): ResponseEntity<Dokumentoversikt> = ResponseEntity.ok(runBlocking { safSelvbetjeningService.hentDokumentoversiktForIdent(EksternBrukerUtils.hentFnrFraToken()) })
+    @GetMapping("/{tema}")
+    fun hentDokumentoversiktForIdent(tema: Tema): ResponseEntity<Dokumentoversikt> = ResponseEntity.ok(safSelvbetjeningService.hentDokumentoversiktForIdent(EksternBrukerUtils.hentFnrFraToken(), tema = tema))
 }

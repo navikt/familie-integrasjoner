@@ -428,7 +428,7 @@
                     <packageName>no.nav.familie.integrasjoner.journalpost.graphql</packageName>
                     <schemaFile>${project.basedir}/src/main/resources/safselvbetjening/schema.graphql</schemaFile>
                     <queryFiles>
-                        <param>src/main/resources/safselvbetjening/HentJournalposter.graphql</param>
+                        <param>src/main/resources/safselvbetjening/HentDokumentoversikt.graphql</param>
                     </queryFiles>
                 </configuration>
             </plugin>
