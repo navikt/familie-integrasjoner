@@ -7,6 +7,7 @@ import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.api.RequiredIssuers
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -19,5 +20,7 @@ class JournalpostSelvbetjeningController(
     private val safSelvbetjeningService: SafSelvbetjeningService,
 ) {
     @GetMapping("/{tema}")
-    fun hentDokumentoversiktForIdent(tema: Tema): ResponseEntity<Dokumentoversikt> = ResponseEntity.ok(safSelvbetjeningService.hentDokumentoversiktForIdent(EksternBrukerUtils.hentFnrFraToken(), tema = tema))
+    fun hentDokumentoversiktForIdent(
+        @PathVariable tema: Tema,
+    ): ResponseEntity<Dokumentoversikt> = ResponseEntity.ok(safSelvbetjeningService.hentDokumentoversiktForIdent(EksternBrukerUtils.hentFnrFraToken(), tema = tema))
 }
