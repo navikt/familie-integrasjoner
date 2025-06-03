@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.journalpost.selvbetjening
 
+import kotlinx.coroutines.runBlocking
 import no.nav.familie.integrasjoner.journalpost.graphql.enums.Tema
 import no.nav.familie.integrasjoner.journalpost.graphql.hentdokumentoversikt.Dokumentoversikt
 import no.nav.familie.sikkerhet.EksternBrukerUtils
@@ -22,5 +23,5 @@ class JournalpostSelvbetjeningController(
     @GetMapping("/{tema}")
     fun hentDokumentoversiktForIdent(
         @PathVariable tema: Tema,
-    ): ResponseEntity<Dokumentoversikt> = ResponseEntity.ok(safSelvbetjeningService.hentDokumentoversiktForIdent(EksternBrukerUtils.hentFnrFraToken(), tema = tema))
+    ): ResponseEntity<Dokumentoversikt> = ResponseEntity.ok(runBlocking { safSelvbetjeningService.hentDokumentoversiktForIdent(EksternBrukerUtils.hentFnrFraToken(), tema = tema) })
 }

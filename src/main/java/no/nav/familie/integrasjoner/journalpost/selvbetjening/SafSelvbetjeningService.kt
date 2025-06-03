@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 class SafSelvbetjeningService(
     private val safSelvbetjeningClient: SafSelvbetjeningClient,
 ) {
-    fun hentDokumentoversiktForIdent(
+    suspend fun hentDokumentoversiktForIdent(
         ident: String,
         tema: Tema,
     ): Dokumentoversikt = safSelvbetjeningClient.hentDokumentoversiktForIdent(ident, tema = tema)
