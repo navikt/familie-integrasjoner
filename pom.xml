@@ -25,6 +25,7 @@
         <felles.version>3.20250330150138_0502cea</felles.version>
         <kontrakt.version>3.0_20250520105353_6584047</kontrakt.version>
         <token-validation-spring.version>5.0.24</token-validation-spring.version>
+        <graphql-kotlin.version>8.8.0</graphql-kotlin.version>
 
         <mock-server.version>5.15.0</mock-server.version>
 
@@ -166,7 +167,7 @@
         <dependency>
             <groupId>com.expediagroup</groupId>
             <artifactId>graphql-kotlin-spring-client</artifactId>
-            <version>7.0.0</version>
+            <version>${graphql-kotlin.version}</version>
         </dependency>
 
         <!-- div -->
@@ -416,21 +417,21 @@
             <plugin>
                 <groupId>com.expediagroup</groupId>
                 <artifactId>graphql-kotlin-maven-plugin</artifactId>
-                <version>7.0.0</version>
+                <version>${graphql-kotlin.version}</version>
                 <executions>
                     <execution>
+                        <id>Generate-saf-selvbetjening-client</id>
                         <goals>
+                            <goal>download-sdl</goal>
                             <goal>generate-client</goal>
                         </goals>
+                        <configuration>
+                            <endpoint>https://navikt.github.io/safselvbetjening/schema.graphqls</endpoint>
+                            <packageName>no.nav.familie.integrasjoner.safselvbetjening.generated</packageName>
+                            <queryFileDirectory>src/main/resources/safselvbetjening</queryFileDirectory>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <packageName>no.nav.familie.integrasjoner.journalpost.graphql</packageName>
-                    <schemaFile>${project.basedir}/src/main/resources/safselvbetjening/schema.graphql</schemaFile>
-                    <queryFiles>
-                        <param>src/main/resources/safselvbetjening/HentDokumentoversikt.graphql</param>
-                    </queryFiles>
-                </configuration>
             </plugin>
         </plugins>
     </build>

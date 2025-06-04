@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.journalpost.selvbetjening
 
-import no.nav.familie.integrasjoner.journalpost.graphql.enums.Tema
-import no.nav.familie.integrasjoner.journalpost.graphql.hentdokumentoversikt.Dokumentoversikt
+import no.nav.familie.integrasjoner.safselvbetjening.generated.enums.Tema
+import no.nav.familie.integrasjoner.safselvbetjening.generated.hentdokumentoversikt.Dokumentoversikt
 import org.springframework.stereotype.Service
 
 @Service

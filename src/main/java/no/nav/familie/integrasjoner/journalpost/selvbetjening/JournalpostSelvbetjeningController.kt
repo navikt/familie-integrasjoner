@@ -1,8 +1,8 @@
 package no.nav.familie.integrasjoner.journalpost.selvbetjening
 
 import kotlinx.coroutines.runBlocking
-import no.nav.familie.integrasjoner.journalpost.graphql.enums.Tema
-import no.nav.familie.integrasjoner.journalpost.graphql.hentdokumentoversikt.Dokumentoversikt
+import no.nav.familie.integrasjoner.safselvbetjening.generated.enums.Tema
+import no.nav.familie.integrasjoner.safselvbetjening.generated.hentdokumentoversikt.Dokumentoversikt
 import no.nav.familie.sikkerhet.EksternBrukerUtils
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import no.nav.security.token.support.core.api.RequiredIssuers

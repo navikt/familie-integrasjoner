@@ -1,12 +1,13 @@
 package no.nav.familie.integrasjoner.journalpost.selvbetjening
 
 import com.expediagroup.graphql.client.spring.GraphQLWebClient
+import com.expediagroup.graphql.client.types.GraphQLClientResponse
 import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.OppslagException.Level
-import no.nav.familie.integrasjoner.journalpost.graphql.HentDokumentoversikt
-import no.nav.familie.integrasjoner.journalpost.graphql.enums.Tema
-import no.nav.familie.integrasjoner.journalpost.graphql.hentdokumentoversikt.Dokumentoversikt
+import no.nav.familie.integrasjoner.safselvbetjening.generated.HentDokumentoversikt
+import no.nav.familie.integrasjoner.safselvbetjening.generated.enums.Tema
+import no.nav.familie.integrasjoner.safselvbetjening.generated.hentdokumentoversikt.Dokumentoversikt
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -18,7 +19,7 @@ import java.net.URI
 
 @Service
 class SafSelvbetjeningClient(
-    @Qualifier("SafSelvbetjening") private val graphQLWebClient: GraphQLWebClient,
+    @Qualifier("SafSelvbetjening") private val safSelvbetjeningGraphQLClient: GraphQLWebClient,
     @Qualifier("jwtBearer") private val restTemplate: RestOperations,
     @Value("\${SAF_SELVBETJENING_URL}") private val safSelvbetjeningURI: URI,
 ) : AbstractRestClient(restTemplate, "saf.selvbetjening") {
@@ -26,8 +27,8 @@ class SafSelvbetjeningClient(
         ident: String,
         tema: Tema,
     ): Dokumentoversikt {
-        val response =
-            graphQLWebClient.execute(
+        val response: GraphQLClientResponse<HentDokumentoversikt.Result> =
+            safSelvbetjeningGraphQLClient.execute(
                 HentDokumentoversikt(variables = HentDokumentoversikt.Variables(ident = ident, tema = tema)),
             )
         if (response.errors.isNullOrEmpty()) {
