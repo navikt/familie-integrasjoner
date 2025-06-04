@@ -12,4 +12,9 @@ class SafSelvbetjeningService(
         ident: String,
         tema: Tema,
     ): Dokumentoversikt = safSelvbetjeningClient.hentDokumentoversiktForIdent(ident, tema = tema)
+
+    fun hentDokument(
+        journalpostId: String,
+        dokumentInfoId: String,
+    ): ByteArray = safSelvbetjeningClient.hentDokument(journalpostId, dokumentInfoId)
 }

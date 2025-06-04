@@ -20,8 +20,14 @@ import org.springframework.web.bind.annotation.RestController
 class JournalpostSelvbetjeningController(
     private val safSelvbetjeningService: SafSelvbetjeningService,
 ) {
-    @GetMapping("/{tema}")
-    fun hentDokumentoversiktForIdent(
+    @GetMapping("/dokumentoversikt/{tema}")
+    fun hentDokumentoversikt(
         @PathVariable tema: Tema,
     ): ResponseEntity<Dokumentoversikt> = ResponseEntity.ok(runBlocking { safSelvbetjeningService.hentDokumentoversiktForIdent(EksternBrukerUtils.hentFnrFraToken(), tema = tema) })
+
+    @GetMapping("/dokument/{journalpostId}/{dokumentInfoId}")
+    fun hentDokument(
+        @PathVariable journalpostId: String,
+        @PathVariable dokumentInfoId: String,
+    ): ResponseEntity<ByteArray> = ResponseEntity.ok(safSelvbetjeningService.hentDokument(journalpostId, dokumentInfoId))
 }
