@@ -170,7 +170,7 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
-      arbeidoginntekt-onbehalf-of:
+      arbeid-og-inntekt-onbehalf-of:
         resource-url: ${ARBEID_INNTEKT_URL}
         token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
@@ -201,7 +201,6 @@ REGOPPSLAG_SCOPE: api://dev-fss.teamdokumenthandtering.regoppslag/.default
 AAREG_SCOPE: api://dev-fss.arbeidsforhold.aareg-services-nais-q1/.default
 MODIA_CONTEXT_HOLDER_SCOPE: api://dev-gcp.personoversikt.modiacontextholder/.default
 ARBEID_INNTEKT_SCOPE: api://dev-fss.team-inntekt.arbeid-og-inntekt-q1/.default
-
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 ORGANISASJON_URL: https://ereg-services-q1.dev.intern.nav.no
