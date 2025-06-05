@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.kontrakter.felles.PersonIdent
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -24,13 +25,13 @@ class ArbeidOgInntektClient(
             .build()
             .toUri()
 
-    fun hentUrlTilArbeidOgInntekt(personIdent: String): String =
+    fun hentUrlTilArbeidOgInntekt(personIdent: PersonIdent): String =
         try {
             getForEntity(
                 redirectUri,
                 HttpHeaders().apply {
                     accept = listOf(MediaType.TEXT_PLAIN)
-                    set("Nav-Personident", personIdent)
+                    set("Nav-Personident", personIdent.ident)
                 },
             )
         } catch (e: Exception) {

@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.arbeidoginntekt
 
+import no.nav.familie.kontrakter.felles.PersonIdent
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.web.bind.annotation.PostMapping
@@ -15,11 +16,6 @@ class ArbeidOgInntektController(
 ) {
     @PostMapping("hent-url")
     fun hentUrl(
-        @RequestBody(required = true) personIdentRequest: PersonIdentRequest,
-    ): Ressurs<String> =
-        Ressurs.success(arbeidOgInntektService.hentArbeidOgInntektUrl(personIdentRequest.personIdent))
+        @RequestBody(required = true) personIdentRequest: PersonIdent,
+    ): Ressurs<String> = Ressurs.success(arbeidOgInntektService.hentArbeidOgInntektUrl(personIdentRequest))
 }
-
-data class PersonIdentRequest(
-    val personIdent: String,
-)

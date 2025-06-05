@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.status
 import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.kontrakter.felles.PersonIdent
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Status.FEILET
 import no.nav.familie.kontrakter.felles.Ressurs.Status.SUKSESS
@@ -36,7 +37,7 @@ class ArbeidOgInntektControllerTest : OppslagSpringRunnerTest() {
             restTemplate.postForObject<Ressurs<String>>(
                 localhost(ARBEID_INNTEKT_HENT_URL),
                 HttpEntity(
-                    PersonIdentRequest(IDENT),
+                    PersonIdent(IDENT),
                     headers,
                 ),
             )
@@ -53,7 +54,7 @@ class ArbeidOgInntektControllerTest : OppslagSpringRunnerTest() {
             restTemplate.postForObject<Ressurs<String>>(
                 localhost(ARBEID_INNTEKT_HENT_URL),
                 HttpEntity(
-                    PersonIdentRequest(IDENT),
+                    PersonIdent(IDENT),
                     headers,
                 ),
             )
