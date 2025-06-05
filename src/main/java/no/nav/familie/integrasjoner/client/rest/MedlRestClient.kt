@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.client.rest
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.medlemskap.MedlemskapsunntakResponse
+import no.nav.familie.integrasjoner.medlemskap.PeriodeSoekRequest
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
+import java.time.LocalDate
 
 @Component
 class MedlRestClient(
@@ -23,10 +25,10 @@ class MedlRestClient(
             .build()
             .toUri()
 
-    val medlemskapsunntakUri: URI =
+    val medlemskapPeriodeSOekUri: URI =
         UriComponentsBuilder
             .fromUri(medl2BaseUrl)
-            .pathSegment(PATH_MEDLEMSKAPSUNNTAK)
+            .pathSegment(PATH_PERIODE_SOEK)
             .build()
             .toUri()
 
@@ -35,8 +37,8 @@ class MedlRestClient(
         type: String? = null,
         statuser: List<String>? = null,
         ekskluderKilder: List<String>? = null,
-        fraOgMed: String? = null,
-        tilOgMed: String? = null,
+        fraOgMed: LocalDate? = null,
+        tilOgMed: LocalDate? = null,
         inkluderSporingsinfo: Boolean? = null
     ): List<MedlemskapsunntakResponse> {
         val requestBody = PeriodeSoekRequest(
@@ -51,7 +53,7 @@ class MedlRestClient(
 
         try {
             return restTemplate.postForObject(
-                medlemskapsunntakUri,
+                medlemskapPeriodeSOekUri,
                 requestBody,
                 Array<MedlemskapsunntakResponse>::class.java
             )?.toList() ?: emptyList()
@@ -68,16 +70,6 @@ class MedlRestClient(
 
     companion object {
         private const val PATH_PING = "api/ping"
-        private const val PATH_MEDLEMSKAPSUNNTAK = "rest/v1/periode/soek"
+        private const val PATH_PERIODE_SOEK = "rest/v1/periode/soek"
     }
 }
-
-data class PeriodeSoekRequest(
-    val personident: String,
-    val type: String? = null,
-    val statuser: List<String>? = null,
-    val ekskluderKilder: List<String>? = null,
-    val fraOgMed: String? = null,
-    val tilOgMed: String? = null,
-    val inkluderSporingsinfo: Boolean? = null,
-)
