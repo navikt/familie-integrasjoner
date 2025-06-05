@@ -57,8 +57,8 @@ class MedlRestClient(
             )?.toList() ?: emptyList()
         } catch (e: Exception) {
             throw OppslagException(
-                "Feil ved henting av medlemskapsperioder",
-                "medl.periode.sok",
+                "Feil ved henting av medlemskapsunntak",
+                "medl.unntak",
                 OppslagException.Level.MEDIUM,
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 e,

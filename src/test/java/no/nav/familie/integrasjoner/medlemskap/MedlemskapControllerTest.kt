@@ -33,7 +33,7 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
     fun `skal korrekt behandle returobjekt`() {
         WireMock.stubFor(
             WireMock
-                .get(WireMock.urlEqualTo("/api/v1/medlemskapsunntak"))
+                .post(WireMock.urlEqualTo("/rest/v1/periode/soek"))
                 .willReturn(
                     WireMock
                         .aResponse()
@@ -59,7 +59,7 @@ class MedlemskapControllerTest : OppslagSpringRunnerTest() {
     fun `skal kaste feil for ikke funnet`() {
         WireMock.stubFor(
             WireMock
-                .get(WireMock.urlEqualTo("/api/v1/medlemskapsunntak"))
+                .post(WireMock.urlEqualTo("/rest/v1/periode/soek"))
                 .willReturn(
                     WireMock
                         .aResponse()
