@@ -1,6 +1,5 @@
 package no.nav.familie.integrasjoner.arbeidoginntekt
 
-import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.status
@@ -30,18 +29,14 @@ class ArbeidOgInntektControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal returnere url for a-inntekt`() {
-        val urlResponse = "http://gyldig-url-her"
-        stubFor(get(anyUrl()).willReturn(ok(urlResponse)))
+        val urlResponse = "https://www.gyldig-url.no"
+        stubFor(get("/api/v2/redirect/sok/a-inntekt").willReturn(ok(urlResponse)))
 
         val response =
-            restTemplate.postForObject<
-                Ressurs<String>,
-            >(
-                localhost(ARBEID_INNTEKT_URL),
+            restTemplate.postForObject<Ressurs<String>>(
+                localhost(ARBEID_INNTEKT_HENT_URL),
                 HttpEntity(
-                    PersonIdentRequest(
-                        IDENT,
-                    ),
+                    PersonIdentRequest(IDENT),
                     headers,
                 ),
             )
@@ -52,27 +47,23 @@ class ArbeidOgInntektControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal returnere feilmelding hvis noe går galt mot ekstern kilde`() {
-        stubFor(get(anyUrl()).willReturn(status(404)))
+        stubFor(get("/api/v2/redirect/sok/a-inntekt").willReturn(status(404)))
 
         val response =
-            restTemplate.postForObject<
-                Ressurs<String>,
-            >(
-                localhost(ARBEID_INNTEKT_URL),
+            restTemplate.postForObject<Ressurs<String>>(
+                localhost(ARBEID_INNTEKT_HENT_URL),
                 HttpEntity(
-                    PersonIdentRequest(
-                        IDENT,
-                    ),
+                    PersonIdentRequest(IDENT),
                     headers,
                 ),
             )
 
         assertThat(response?.status).isEqualTo(FEILET)
-        assertThat(response?.melding).contains("[Feil ved oppslag av arbeidsforhold.][org.springframework.web.client.HttpClientErrorException")
+        assertThat(response?.melding).contains("[ainntekt.hentUrlTilArbeidOgInntekt][Feil ved oppslag av url for a-inntekt.][org.springframework.web.client.HttpClientErrorException\$NotFound]")
     }
 
     companion object {
-        private const val ARBEID_INNTEKT_URL = "/api/arbeid-og-inntekt/hent-url"
+        private const val ARBEID_INNTEKT_HENT_URL = "/api/arbeid-og-inntekt/hent-url"
         private const val IDENT = "01012012345"
     }
 }

@@ -1,9 +1,11 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractRestClient
+import no.nav.familie.integrasjoner.felles.OppslagException
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestOperations
@@ -23,11 +25,22 @@ class ArbeidOgInntektClient(
             .toUri()
 
     fun hentUrlTilArbeidOgInntekt(personIdent: String): String =
-        getForEntity(
-            redirectUri,
-            HttpHeaders().apply {
-                accept = listOf(MediaType.TEXT_PLAIN)
-                set("Nav-Personident", personIdent)
-            },
-        )
+        try {
+            getForEntity(
+                redirectUri,
+                HttpHeaders().apply {
+                    accept = listOf(MediaType.TEXT_PLAIN)
+                    set("Nav-Personident", personIdent)
+                },
+            )
+        } catch (e: Exception) {
+            throw OppslagException(
+                "Feil ved oppslag av url for a-inntekt.",
+                "ainntekt.hentUrlTilArbeidOgInntekt",
+                OppslagException.Level.MEDIUM,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                e,
+                "Kan ikke hente url for a-inntekt for $personIdent",
+            )
+        }
 }
