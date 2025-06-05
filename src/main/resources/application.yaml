@@ -57,18 +57,19 @@ familie:
 AZURE_APP_CLIENT_ID: "dummy-klient-id"
 AZURE_APP_CLIENT_SECRET: "dummy-klient-secret"
 TOKEN_X_WELL_KNOWN_URL: "dummy-token-x-well-known-url"
+#Dummy private jwk
 TOKEN_X_PRIVATE_JWK: '{
  "use": "sig",
  "kty": "RSA",
- "kid": "4c8ad38a-a9ef-46bc-883f-50677f0a257a",
- "n": "pZ1CeQ5gqINv_FMM2y3cUpLR6LClAgCZ1HEQrSBAT9ivdyZ-V9k-3hVzd-6Pwxrhmoxk9ivGgLF94_2Ebyf0hiwJKRNnRYB6ilIKZxynCIDxYiboRoxHsMClFkVqX4-4JuEvHOb3vIm5rOfmAud3Z6RGGu74KutPiuo5u7-hpxyJ1p1xJPIuncUV8AaZIntfpi6DqD60McAre0MBsjcgnU97-rBklBN6si7lDCOCD0HVl24Aw1YjqxjSqc5A4MuAvRTHXYHzVLg6merDoC4AGx82VoqjKN-d7Jp49px5bTKqDwz6TyAY-qjJzv7GRgKEwwoD-IqsuP6MYcVPe2186Q",
- "e": "AQAB",
- "d": "dpLTZuzeU4hXg2bKy5pYJl6sH1dprLdVa_7Pm8R9hy1y43IR_z-xfTwKghGxqFT0tbxTBNVut_FcWwHF8fe_YNjibiBQTjigg6wdepnPFY2MRWPp5ajGI0yqZfmpIWY6yMts-dp8AObyo1MdIXMr0G6TKvFxiPkU6Dauwzd-u6_SP7tmg9wmnnMwkJSg3KZCS_7aDLXy4dU1tzagc5EeNrStUui7ycwAA-vszBWVSpcvJq6pw6ZxheBAM-ArngVtOG-5p6IE0g3baRNg2qbPVf6PUCllEKFXSvVm351LCWekjqrYkKCyEQnuY7SB_yNFh8KmcYEBpDulfp-OMBXzqQ",
- "p": "zjl8KI64ytGctHuGLMQ_kXNMX2LKuqEQk1HN4S_DyoRnB7d09FYm3iBE9V9nuc-zfc173ydwjujU4NjoWzyUG2SGV9I5IJi4VkdgZfyc82EsRa9dADr3f2rm8K4NlXcQ48IxGLtyoqByfH21qasp3gPjL-CNg4drRaYLp8c_PjM",
- "q": "zZZ8l22V1NQrAT9mEEm5cBsGKTpEvX9QXsZdxE3vS3LLQRP2V3KTEi1O2tgd0QrLlLh88qSoZIQwmQE5WklqCpU7OO80dZ0BrzAqDGEPvCONoOJnO5WQK8ulcjx3kY1i9iKzApDdzCcaAtM9Ri4zxYMafHjB0RMf4uO4zK-FRHM",
- "dp": "N1M4ufDAJrlhXxIchvoHS9Aw1w478SGwvrUdlKIp1rT6pxlSqRJLzx-9IE7-Ft1f_Aoah12fVtej9MZ8X6261jZ7zCe758DRA2SWugWxXaHeLLvFKYCoUWiumDc5sbWFtHSuk0IGmRaOYFOhXulqjANi-b82d-jmoILRcauEjf0",
- "dq": "U9q8qNsm0O9VNyYP0Dbx7xrmsWw124ERXAbW-hm7r-97neixgsuV10Ups7OQvdIEZX22YRXuJUmRtOa96Oim2vgxdrCCmjJXHIitreztCRULUILoDnKbonFm4yhssK6VncVbdIF4JiwQvPRCOtzfewFVjU2H6Go_iEDQAJTa66c",
- "qi": "xjuRb0uidaayF7YXF6DIKFmkXI8445KoFFGR_xCzBaM6BAtNWhhmGL6xQwblzbHnPqlNeestVPX2Eq7EQ0bkDQOG97-zl--nzO97FkRIGl2wfQstbrQxGVuHCTWjOxcf0NDZZ3oO4jnEdmnwwQofkPLRipxrybLIIlw4fBaB0f4"
+ "kid": "",
+ "n": "",
+ "e": "",
+ "d": "",
+ "p": "",
+ "q": "",
+ "dp": "",
+ "dq": "",
+ "qi": ""
 }'
 TOKEN_X_CLIENT_ID: "dummy-token-x-client-id"
 KODEVERK_SCOPE: "dummy-scope"
