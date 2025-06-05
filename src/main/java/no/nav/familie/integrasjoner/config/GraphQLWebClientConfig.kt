@@ -35,18 +35,18 @@ class GraphQLWebClientConfig {
 
     @Bean("TokenXWebClient")
     fun tokenXWebClientBuilder(
-        exchangeBearerTokenFilter: ExchangeBearerTokenFilter,
+        exchangeTokenXBearerTokenFilter: ExchangeTokenXBearerTokenFilter,
         consumerIdFilter: ConsumerIdFilter,
         callIdFilter: CallIdFilter,
     ): WebClient.Builder =
         WebClient
             .builder()
-            .filter(exchangeBearerTokenFilter)
+            .filter(exchangeTokenXBearerTokenFilter)
             .filter(consumerIdFilter)
             .filter(callIdFilter)
 
     @Component
-    class ExchangeBearerTokenFilter(
+    class ExchangeTokenXBearerTokenFilter(
         private val clientConfigurationProperties: ClientConfigurationProperties,
         private val oAuth2AccessTokenService: OAuth2AccessTokenService,
     ) : ExchangeFilterFunction {
