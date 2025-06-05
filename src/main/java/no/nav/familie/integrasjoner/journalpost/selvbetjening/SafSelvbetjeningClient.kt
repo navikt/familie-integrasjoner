@@ -3,11 +3,9 @@ package no.nav.familie.integrasjoner.journalpost.selvbetjening
 import com.expediagroup.graphql.client.spring.GraphQLWebClient
 import com.expediagroup.graphql.client.types.GraphQLClientResponse
 import no.nav.familie.http.client.AbstractRestClient
-import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.familie.integrasjoner.felles.OppslagException.Level
 import no.nav.familie.integrasjoner.safselvbetjening.generated.HentDokumentoversikt
 import no.nav.familie.integrasjoner.safselvbetjening.generated.enums.Tema
-import no.nav.familie.integrasjoner.safselvbetjening.generated.hentdokumentoversikt.Dokumentoversikt
+import no.nav.familie.integrasjoner.safselvbetjening.generated.enums.Variantformat
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -26,20 +24,17 @@ class SafSelvbetjeningClient(
     suspend fun hentDokumentoversiktForIdent(
         ident: String,
         tema: Tema,
-    ): Dokumentoversikt {
+    ): HentDokumentoversikt.Result {
         val response: GraphQLClientResponse<HentDokumentoversikt.Result> =
             safSelvbetjeningGraphQLClient.execute(
                 HentDokumentoversikt(variables = HentDokumentoversikt.Variables(ident = ident, tema = tema)),
             )
         if (response.errors.isNullOrEmpty()) {
-            return response.data!!.dokumentoversiktSelvbetjening
+            return response.data ?: throw SafSelvbetjeningException("Ingen data mottatt fra SAF for ident")
         } else {
-            throw OppslagException(
-                "Feil ved henting av dokumentoversikt for bruker: ${
-                    response.errors!!.joinToString(", ") { it.message }
-                }",
-                "saf.selvbetjening.hentDokumentoversiktForIdent",
-                Level.MEDIUM,
+            val feilmeldinger = response.errors!!.joinToString("; ") { it.message }
+            throw SafSelvbetjeningException(
+                "Feil ved henting av dokumentoversikt for bruker: $feilmeldinger",
             )
         }
     }
@@ -51,7 +46,7 @@ class SafSelvbetjeningClient(
         val safHentdokumentUri =
             UriComponentsBuilder
                 .fromUri(safSelvbetjeningURI)
-                .path("/rest/hentdokument/$journalpostId/$dokumentInfoId/ARKIV")
+                .path("/rest/hentdokument/$journalpostId/$dokumentInfoId/${Variantformat.ARKIV}")
                 .build()
                 .toUri()
 

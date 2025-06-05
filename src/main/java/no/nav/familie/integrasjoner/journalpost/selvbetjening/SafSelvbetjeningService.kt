@@ -11,10 +11,10 @@ class SafSelvbetjeningService(
     suspend fun hentDokumentoversiktForIdent(
         ident: String,
         tema: Tema,
-    ): Dokumentoversikt = safSelvbetjeningClient.hentDokumentoversiktForIdent(ident, tema = tema)
+    ): Dokumentoversikt = safSelvbetjeningClient.hentDokumentoversiktForIdent(ident = ident, tema = tema).dokumentoversiktSelvbetjening
 
     fun hentDokument(
         journalpostId: String,
         dokumentInfoId: String,
-    ): ByteArray = safSelvbetjeningClient.hentDokument(journalpostId, dokumentInfoId)
+    ): ByteArray = safSelvbetjeningClient.hentDokument(journalpostId = journalpostId, dokumentInfoId = dokumentInfoId)
 }
