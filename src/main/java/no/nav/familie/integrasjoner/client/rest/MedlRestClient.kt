@@ -3,7 +3,6 @@ package no.nav.familie.integrasjoner.client.rest
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.medlemskap.MedlemskapsunntakResponse
-import no.nav.familie.log.NavHttpHeaders
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -31,18 +30,35 @@ class MedlRestClient(
             .build()
             .toUri()
 
-    fun hentMedlemskapsUnntakResponse(aktørId: String?): List<MedlemskapsunntakResponse> {
-        val httpHeaders =
-            org.springframework.http.HttpHeaders().apply {
-                add(NavHttpHeaders.NAV_PERSONIDENT.asString(), aktørId)
-            }
+    fun hentMedlemskapsUnntakResponse(
+        personident: String,
+        type: String? = null,
+        statuser: List<String>? = null,
+        ekskluderKilder: List<String>? = null,
+        fraOgMed: String? = null,
+        tilOgMed: String? = null,
+        inkluderSporingsinfo: Boolean? = null
+    ): List<MedlemskapsunntakResponse> {
+        val requestBody = PeriodeSoekRequest(
+            personident = personident,
+            type = type,
+            statuser = statuser,
+            ekskluderKilder = ekskluderKilder,
+            fraOgMed = fraOgMed,
+            tilOgMed = tilOgMed,
+            inkluderSporingsinfo = inkluderSporingsinfo
+        )
 
         try {
-            return getForEntity(medlemskapsunntakUri, httpHeaders)
+            return restTemplate.postForObject(
+                medlemskapsunntakUri,
+                requestBody,
+                Array<MedlemskapsunntakResponse>::class.java
+            )?.toList() ?: emptyList()
         } catch (e: Exception) {
             throw OppslagException(
-                "Feil ved henting av medlemskapsunntak",
-                "medl.unntak",
+                "Feil ved henting av medlemskapsperioder",
+                "medl.periode.sok",
                 OppslagException.Level.MEDIUM,
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 e,
@@ -52,6 +68,16 @@ class MedlRestClient(
 
     companion object {
         private const val PATH_PING = "api/ping"
-        private const val PATH_MEDLEMSKAPSUNNTAK = "api/v1/medlemskapsunntak"
+        private const val PATH_MEDLEMSKAPSUNNTAK = "rest/v1/periode/soek"
     }
 }
+
+data class PeriodeSoekRequest(
+    val personident: String,
+    val type: String? = null,
+    val statuser: List<String>? = null,
+    val ekskluderKilder: List<String>? = null,
+    val fraOgMed: String? = null,
+    val tilOgMed: String? = null,
+    val inkluderSporingsinfo: Boolean? = null,
+)
