@@ -50,6 +50,13 @@ class SafSelvbetjeningClient(
                 .build()
                 .toUri()
 
-        return getForEntity<ByteArray>(safHentdokumentUri, HttpHeaders().apply { accept = listOf(MediaType.APPLICATION_PDF) })
+        try {
+            return getForEntity<ByteArray>(safHentdokumentUri, HttpHeaders().apply { accept = listOf(MediaType.APPLICATION_PDF) })
+        } catch (e: Exception) {
+            throw SafSelvbetjeningException(
+                "Ukjent feil ved henting av dokument. ${e.message}",
+                e,
+            )
+        }
     }
 }
