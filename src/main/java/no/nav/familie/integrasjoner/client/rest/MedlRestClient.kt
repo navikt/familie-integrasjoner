@@ -25,7 +25,7 @@ class MedlRestClient(
             .build()
             .toUri()
 
-    val medlemskapPeriodeSOekUri: URI =
+    val medlemskapPeriodeSoekUri: URI =
         UriComponentsBuilder
             .fromUri(medl2BaseUrl)
             .pathSegment(PATH_PERIODE_SOEK)
@@ -53,7 +53,7 @@ class MedlRestClient(
 
         try {
             return restTemplate.postForObject(
-                medlemskapPeriodeSOekUri,
+                medlemskapPeriodeSoekUri,
                 requestBody,
                 Array<MedlemskapsunntakResponse>::class.java
             )?.toList() ?: emptyList()
