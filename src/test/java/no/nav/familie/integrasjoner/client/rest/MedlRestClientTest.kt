@@ -29,7 +29,7 @@ class MedlRestClientTest {
             // Act & Assert
             val oppslagException =
                 assertThrows<OppslagException> {
-                    medlRestClient.hentMedlemskapsUnntakResponse(aktørId = "1234")
+                    medlRestClient.hentMedlemskapsUnntakResponse(personident = "1234")
                 }
 
             assertThat(oppslagException.message).isEqualTo("Feil ved henting av medlemskapsunntak")
