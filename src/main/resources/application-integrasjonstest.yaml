@@ -31,6 +31,17 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      saf-selvbetjening-onbehalf-of:
+        resource-url: ${SAF_SELVBETJENING_URL}
+        token-endpoint-url: ${TOKEN_X_WELL_KNOWN_URL}
+        grant-type: urn:ietf:params:oauth:grant-type:token-exchange
+        scope: ${SAF_SCOPE}
+        token-exchange:
+          audience: ${SAF_AUDIENCE}
+        authentication:
+          client-id: ${TOKEN_X_CLIENT_ID}
+          client-auth-method: private_key_jwt
+          client-jwk: ${TOKEN_X_PRIVATE_JWK}
       saf-onbehalf-of:
         resource-url: ${SAF_URL}
         token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
@@ -192,6 +203,7 @@ AAREG_URL: http://localhost:18321
 SKYGGE_SAK_URL: #Mocker lokalt
 NORG2_URL: #Mockes lokalt
 MODIA_CONTEXT_HOLDER_URL: #Mockes lokalt
+SAF_SELVBETJENING_URL:
 
 MEDL2_URL: http://localhost:18321
 SAF_URL: http://localhost:18321/rest/saf

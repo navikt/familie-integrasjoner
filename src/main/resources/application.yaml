@@ -56,6 +56,22 @@ familie:
 
 AZURE_APP_CLIENT_ID: "dummy-klient-id"
 AZURE_APP_CLIENT_SECRET: "dummy-klient-secret"
+TOKEN_X_WELL_KNOWN_URL: "dummy-token-x-well-known-url"
+#Dummy private jwk
+TOKEN_X_PRIVATE_JWK: '{
+ "use": "sig",
+ "kty": "RSA",
+ "kid": "",
+ "n": "",
+ "e": "",
+ "d": "",
+ "p": "",
+ "q": "",
+ "dp": "",
+ "dq": "",
+ "qi": ""
+}'
+TOKEN_X_CLIENT_ID: "dummy-token-x-client-id"
 KODEVERK_SCOPE: "dummy-scope"
 SAF_SCOPE: "dummy-scope"
 AAREG_SCOPE: "dummy-scope"
