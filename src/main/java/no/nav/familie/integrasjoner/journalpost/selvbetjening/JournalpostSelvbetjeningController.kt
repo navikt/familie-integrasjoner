@@ -25,7 +25,7 @@ class JournalpostSelvbetjeningController(
         @PathVariable tema: Tema,
     ): ResponseEntity<Dokumentoversikt> = ResponseEntity.ok(runBlocking { safSelvbetjeningService.hentDokumentoversiktForIdent(EksternBrukerUtils.hentFnrFraToken(), tema = tema) })
 
-    @GetMapping("/dokument/{journalpostId}/{dokumentInfoId}")
+    @GetMapping("/{journalpostId}/dokument/{dokumentInfoId}")
     fun hentDokument(
         @PathVariable journalpostId: String,
         @PathVariable dokumentInfoId: String,
