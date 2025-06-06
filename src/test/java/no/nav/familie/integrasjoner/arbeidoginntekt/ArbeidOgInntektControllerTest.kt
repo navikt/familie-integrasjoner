@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.arbeidoginntekt
 
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.status
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.postForObject
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.http.HttpEntity
+import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 
@@ -31,7 +33,12 @@ class ArbeidOgInntektControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `skal returnere url for a-inntekt`() {
         val urlResponse = "https://www.gyldig-url.no"
-        stubFor(get("/api/v2/redirect/sok/a-inntekt").willReturn(ok(urlResponse)))
+        stubFor(
+            get("/api/v2/redirect/sok/a-inntekt")
+                .withHeader("Nav-Personident", equalTo(IDENT))
+                .withHeader("Accept", equalTo(MediaType.TEXT_PLAIN.toString()))
+                .willReturn(ok(urlResponse)),
+        )
 
         val response =
             restTemplate.postForObject<Ressurs<String>>(
@@ -48,7 +55,12 @@ class ArbeidOgInntektControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal returnere feilmelding hvis noe går galt mot ekstern kilde`() {
-        stubFor(get("/api/v2/redirect/sok/a-inntekt").willReturn(status(404)))
+        stubFor(
+            get("/api/v2/redirect/sok/a-inntekt")
+                .withHeader("Nav-Personident", equalTo(IDENT))
+                .withHeader("Accept", equalTo(MediaType.TEXT_PLAIN.toString()))
+                .willReturn(status(404)),
+        )
 
         val response =
             restTemplate.postForObject<Ressurs<String>>(
