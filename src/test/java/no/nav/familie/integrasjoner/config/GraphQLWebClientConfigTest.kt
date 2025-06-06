@@ -103,7 +103,6 @@ class GraphQLWebClientConfigTest {
             every { mockedOAuth2AccessTokenService.getAccessToken(mockedClientProperties) } returns accessTokenResponse
 
             // Act & Assert
-
             val exception =
                 assertThrows<JwtTokenValidatorException> {
                     exchangeTokenXBearerTokenFilter.filter(request, mockedExchangeFunction).block()
@@ -115,7 +114,8 @@ class GraphQLWebClientConfigTest {
     @Nested
     inner class ConsumerIdFilter {
         @Test
-        fun `adds consumer ID to request headers when service user is provided`() {
+        fun `skal legge til servicebruker som NAV_CONSUMER_ID i request headers når service bruker er satt`() {
+            // Arrange
             val serviceUser = "test-service-user"
             val appName = "test-app"
             val consumerIdFilter = GraphQLWebClientConfig.ConsumerIdFilter(serviceUser, appName)
@@ -126,8 +126,10 @@ class GraphQLWebClientConfigTest {
 
             every { mockedExchangeFunction.exchange(capture(filteredRequestSlot)) } returns Mono.just(response)
 
+            // Act
             consumerIdFilter.filter(request, mockedExchangeFunction).block()
 
+            // Assert
             val capturedFilteredRequest = filteredRequestSlot.captured
             assertThat(capturedFilteredRequest.headers())
                 .containsKey(NavHttpHeaders.NAV_CONSUMER_ID.asString())
@@ -135,7 +137,8 @@ class GraphQLWebClientConfigTest {
         }
 
         @Test
-        fun `adds app name to request headers when service user is blank`() {
+        fun `skal bruke appnavn som NAV_CONSUMER_ID i request headers når service bruker ikke er satt`() {
+            // Arrange
             val serviceUser = ""
             val appName = "test-app"
             val consumerIdFilter = GraphQLWebClientConfig.ConsumerIdFilter(serviceUser, appName)
@@ -146,8 +149,10 @@ class GraphQLWebClientConfigTest {
 
             every { mockedExchangeFunction.exchange(capture(filteredRequestSlot)) } returns Mono.just(response)
 
+            // Act
             consumerIdFilter.filter(request, mockedExchangeFunction).block()
 
+            // Assert
             val capturedFilteredRequest = filteredRequestSlot.captured
             assertThat(capturedFilteredRequest.headers())
                 .containsKey(NavHttpHeaders.NAV_CONSUMER_ID.asString())
