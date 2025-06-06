@@ -3,7 +3,7 @@ package no.nav.familie.integrasjoner.client.rest
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.medlemskap.MedlemskapsunntakResponse
-import no.nav.familie.log.NavHttpHeaders
+import no.nav.familie.integrasjoner.medlemskap.PeriodeSoekRequest
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
+import java.time.LocalDate
 
 @Component
 class MedlRestClient(
@@ -24,21 +25,38 @@ class MedlRestClient(
             .build()
             .toUri()
 
-    val medlemskapsunntakUri: URI =
+    val medlemskapPeriodeSoekUri: URI =
         UriComponentsBuilder
             .fromUri(medl2BaseUrl)
-            .pathSegment(PATH_MEDLEMSKAPSUNNTAK)
+            .pathSegment(PATH_PERIODE_SOEK)
             .build()
             .toUri()
 
-    fun hentMedlemskapsUnntakResponse(aktørId: String?): List<MedlemskapsunntakResponse> {
-        val httpHeaders =
-            org.springframework.http.HttpHeaders().apply {
-                add(NavHttpHeaders.NAV_PERSONIDENT.asString(), aktørId)
-            }
+    fun hentMedlemskapsUnntakResponse(
+        personident: String,
+        type: String? = null,
+        statuser: List<String>? = null,
+        ekskluderKilder: List<String>? = null,
+        fraOgMed: LocalDate? = null,
+        tilOgMed: LocalDate? = null,
+        inkluderSporingsinfo: Boolean? = null
+    ): List<MedlemskapsunntakResponse> {
+        val requestBody = PeriodeSoekRequest(
+            personident = personident,
+            type = type,
+            statuser = statuser,
+            ekskluderKilder = ekskluderKilder,
+            fraOgMed = fraOgMed,
+            tilOgMed = tilOgMed,
+            inkluderSporingsinfo = inkluderSporingsinfo
+        )
 
         try {
-            return getForEntity(medlemskapsunntakUri, httpHeaders)
+            return restTemplate.postForObject(
+                medlemskapPeriodeSoekUri,
+                requestBody,
+                Array<MedlemskapsunntakResponse>::class.java
+            )?.toList() ?: emptyList()
         } catch (e: Exception) {
             throw OppslagException(
                 "Feil ved henting av medlemskapsunntak",
@@ -52,6 +70,6 @@ class MedlRestClient(
 
     companion object {
         private const val PATH_PING = "api/ping"
-        private const val PATH_MEDLEMSKAPSUNNTAK = "api/v1/medlemskapsunntak"
+        private const val PATH_PERIODE_SOEK = "rest/v1/periode/soek"
     }
 }
