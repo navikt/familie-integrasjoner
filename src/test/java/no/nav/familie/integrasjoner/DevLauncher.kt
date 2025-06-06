@@ -31,7 +31,6 @@ fun main(args: Array<String>) {
                 "mock-sak",
                 "mock-regoppslag",
                 "mock-modia-context-holder",
-                "mock-arbeid-og-inntekt",
             ).build()
     app.run(*args)
 }
