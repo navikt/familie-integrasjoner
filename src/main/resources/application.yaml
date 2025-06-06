@@ -18,6 +18,19 @@ springdoc:
   swagger-ui:
     disable-swagger-default-url: true
 
+no.nav.security.jwt:
+  client:
+    registration:
+      arbeid-og-inntekt-onbehalf-of:
+        resource-url: ${ARBEID_INNTEKT_URL}
+        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: ${ARBEID_INNTEKT_SCOPE}
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
+
 
 tilgang:
   kode6:
