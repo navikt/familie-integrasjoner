@@ -25,6 +25,7 @@
         <felles.version>3.20250505101905_835431d</felles.version>
         <kontrakt.version>3.0_20250530161722_14f12e3</kontrakt.version>
         <token-validation-spring.version>5.0.29</token-validation-spring.version>
+        <graphql-kotlin.version>8.8.0</graphql-kotlin.version>
 
         <mock-server.version>5.15.0</mock-server.version>
 
@@ -161,6 +162,13 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
 
+
+        <!-- GraphQL Kotlin Client -->
+        <dependency>
+            <groupId>com.expediagroup</groupId>
+            <artifactId>graphql-kotlin-spring-client</artifactId>
+            <version>${graphql-kotlin.version}</version>
+        </dependency>
 
         <!-- div -->
         <dependency>
@@ -402,6 +410,26 @@
                         <goals>
                             <goal>makeAggregateBom</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- GraphQL Kotlin Codegen Plugin -->
+            <plugin>
+                <groupId>com.expediagroup</groupId>
+                <artifactId>graphql-kotlin-maven-plugin</artifactId>
+                <version>${graphql-kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>Generate-saf-selvbetjening-client</id>
+                        <goals>
+                            <goal>download-sdl</goal>
+                            <goal>generate-client</goal>
+                        </goals>
+                        <configuration>
+                            <endpoint>https://navikt.github.io/safselvbetjening/schema.graphqls</endpoint>
+                            <packageName>no.nav.familie.integrasjoner.safselvbetjening.generated</packageName>
+                            <queryFileDirectory>src/main/resources/safselvbetjening</queryFileDirectory>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
