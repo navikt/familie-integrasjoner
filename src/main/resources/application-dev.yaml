@@ -181,6 +181,7 @@ NORG2_URL: #Mockes lokalt
 DOKDISTKANAL_URL: #Mockes lokalt
 REGOPPSLAG_URL: #Mockes lokalt
 MODIA_CONTEXT_HOLDER_URL: #Mockes lokalt
+ARBEID_INNTEKT_URL: #Mockes lokalt
 SAF_SELVBETJENING_URL:
 
 MEDL2_URL: http://localhost:18321
