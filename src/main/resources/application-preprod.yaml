@@ -202,7 +202,6 @@ DOKDISTKANAL_SCOPE: api://dev-fss.teamdokumenthandtering.dokdistkanal/.default
 REGOPPSLAG_SCOPE: api://dev-fss.teamdokumenthandtering.regoppslag/.default
 AAREG_SCOPE: api://dev-fss.arbeidsforhold.aareg-services-nais-q1/.default
 MODIA_CONTEXT_HOLDER_SCOPE: api://dev-gcp.personoversikt.modiacontextholder/.default
-ARBEID_INNTEKT_SCOPE: api://dev-fss.team-inntekt.arbeid-og-inntekt-q1/.default
 
 SAF_AUDIENCE: dev-fss:teamdokumenthandtering:safselvbetjening
 

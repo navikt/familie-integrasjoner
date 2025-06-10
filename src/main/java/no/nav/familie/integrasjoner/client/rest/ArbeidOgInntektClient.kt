@@ -16,7 +16,7 @@ import java.net.URI
 @Component
 class ArbeidOgInntektClient(
     @Value("\${ARBEID_INNTEKT_URL}") private val uri: URI,
-    @Qualifier("jwtBearer") private val restOperations: RestOperations,
+    @Qualifier("noAuthorize") private val restOperations: RestOperations,
 ) : AbstractRestClient(restOperations, "ainntekt") {
     private val redirectUri =
         UriComponentsBuilder
@@ -35,7 +35,6 @@ class ArbeidOgInntektClient(
                 },
             )
         } catch (e: Exception) {
-            secureLogger.warn("Feil med henting av a-inntekt url. Feilmelding: ${e.message}", e)
             throw OppslagException(
                 "Feil ved oppslag av url for a-inntekt.",
                 "ainntekt.hentUrlTilArbeidOgInntekt",
