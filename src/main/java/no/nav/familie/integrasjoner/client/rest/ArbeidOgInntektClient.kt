@@ -35,6 +35,7 @@ class ArbeidOgInntektClient(
                 },
             )
         } catch (e: Exception) {
+            secureLogger.warn("Feil med henting av a-inntekt url. Feilmelding: ${e.message}", e)
             throw OppslagException(
                 "Feil ved oppslag av url for a-inntekt.",
                 "ainntekt.hentUrlTilArbeidOgInntekt",
