@@ -16,7 +16,7 @@ import java.net.URI
 @Component
 class ArbeidOgInntektClient(
     @Value("\${ARBEID_INNTEKT_URL}") private val uri: URI,
-    @Qualifier("jwtBearer") private val restOperations: RestOperations,
+    @Qualifier("noAuthorize") private val restOperations: RestOperations,
 ) : AbstractRestClient(restOperations, "ainntekt") {
     private val redirectUri =
         UriComponentsBuilder
