@@ -31,6 +31,17 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      saf-selvbetjening-onbehalf-of:
+        resource-url: ${SAF_SELVBETJENING_URL}
+        token-endpoint-url: ${TOKEN_X_WELL_KNOWN_URL}
+        grant-type: urn:ietf:params:oauth:grant-type:token-exchange
+        scope: ${SAF_SCOPE}
+        token-exchange:
+          audience: ${SAF_AUDIENCE}
+        authentication:
+          client-id: ${TOKEN_X_CLIENT_ID}
+          client-auth-method: private_key_jwt
+          client-jwk: ${TOKEN_X_PRIVATE_JWK}
       saf-onbehalf-of:
         resource-url: ${SAF_URL}
         token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
@@ -160,6 +171,7 @@ no.nav.security.jwt:
 
 AZURE_APP_CLIENT_ID: ${INTEGRASJONER_CLIENT_ID}
 AZURE_APP_CLIENT_SECRET: ${INTEGRASJONER_CLIENT_SECRET}
+
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 STS_URL: http://nav-auth-mock:8200/nais-sts/token
 EGEN_ANSATT_URL: #Mockes ut lokalt
@@ -179,6 +191,8 @@ ORGANISASJON_URL:
 DOKDISTKANAL_URL:
 REGOPPSLAG_URL:
 MODIA_CONTEXT_HOLDER_URL:
+ARBEID_INNTEKT_URL:
+SAF_SELVBETJENING_URL:
 
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw

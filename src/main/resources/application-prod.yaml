@@ -32,15 +32,6 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
-      saf-onbehalf-of:
-        resource-url: ${SAF_URL}
-        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
-        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
-        scope: ${SAF_SCOPE}
-        authentication:
-          client-id: ${AZURE_APP_CLIENT_ID}
-          client-secret: ${AZURE_APP_CLIENT_SECRET}
-          client-auth-method: client_secret_basic
       saf:
         resource-url: ${SAF_URL}
         token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
@@ -50,6 +41,26 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      saf-onbehalf-of:
+        resource-url: ${SAF_URL}
+        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: ${SAF_SCOPE}
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
+      saf-selvbetjening-onbehalf-of:
+        resource-url: ${SAF_SELVBETJENING_URL}
+        well-known-url: ${TOKEN_X_WELL_KNOWN_URL}
+        grant-type: urn:ietf:params:oauth:grant-type:token-exchange
+        scope: ${SAF_SCOPE}
+        token-exchange:
+          audience: ${SAF_AUDIENCE}
+        authentication:
+          client-id: ${TOKEN_X_CLIENT_ID}
+          client-auth-method: private_key_jwt
+          client-jwk: ${TOKEN_X_PRIVATE_JWK}
       oppgave-onbehalf-of:
         resource-url: ${OPPGAVE_URL}
         token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
@@ -178,11 +189,14 @@ REGOPPSLAG_SCOPE: api://prod-fss.teamdokumenthandtering.regoppslag/.default
 AAREG_SCOPE: api://prod-fss.arbeidsforhold.aareg-services-nais/.default
 MODIA_CONTEXT_HOLDER_SCOPE: api://prod-gcp.personoversikt.modiacontextholder/.default
 
+SAF_AUDIENCE: prod-fss:teamdokumenthandtering:safselvbetjening
+
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 ORGANISASJON_URL: https://ereg-services.intern.nav.no
 MEDL2_URL: https://medlemskap-medl-api.intern.nav.no
 DOKARKIV_V1_URL: https://dokarkiv.intern.nav.no
 SAF_URL: https://saf.intern.nav.no
+SAF_SELVBETJENING_URL: https://safselvbetjening.intern.nav.no
 FORSTESIDEGENERATOR_URL: https://foerstesidegenerator.intern.nav.no
 EGEN_ANSATT_URL: https://skjermede-personer-pip.nais.adeo.no
 KODEVERK_URL: https://kodeverk-api.nav.no
@@ -195,3 +209,4 @@ NORG2_URL: https://norg2.nais.adeo.no/norg2/
 REGOPPSLAG_URL: https://regoppslag.intern.nav.no
 SFTP_HOST: a01drvl099.adeo.no
 MODIA_CONTEXT_HOLDER_URL: https://modiacontextholder.intern.nav.no
+ARBEID_INNTEKT_URL: https://arbeid-og-inntekt.nais.adeo.no

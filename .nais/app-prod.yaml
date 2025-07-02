@@ -48,7 +48,8 @@ spec:
           - id: "54cd86b8-2e23-48b2-8852-b05b5827bb0f"  # 0000-GA-Kontantstotte-Veileder
         extra:
           - "NAVident"
-
+  tokenx:
+    enabled: true
   accessPolicy:
     inbound:
       rules:
@@ -85,6 +86,8 @@ spec:
         - application: modiacontextholder
           namespace: personoversikt
           cluster: prod-gcp
+        - application: logging
+          namespace: nais-system
   replicas:
     min: 2
     max: 2

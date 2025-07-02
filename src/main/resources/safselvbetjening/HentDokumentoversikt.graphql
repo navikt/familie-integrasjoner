@@ -1,0 +1,36 @@
+query($ident : String!, $tema: Tema) {
+    dokumentoversiktSelvbetjening(ident: $ident, tema: [$tema]) {
+        tema {
+            navn
+            kode
+            journalposter{
+                tittel
+                journalpostId
+                journalposttype
+                journalstatus
+                avsender {
+                    id
+                    type
+                }
+                mottaker {
+                    id
+                    type
+                }
+                relevanteDatoer {
+                    dato
+                    datotype
+                }
+                dokumenter {
+                    tittel
+                    dokumentInfoId
+                    dokumentvarianter{
+                        variantformat
+                        brukerHarTilgang
+                        code
+                        filtype
+                    }
+                }
+            }
+        }
+    }
+}
