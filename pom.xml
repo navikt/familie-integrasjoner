@@ -23,7 +23,7 @@
         <kotlin.version>2.1.21</kotlin.version>
         <springdoc.version>2.8.8</springdoc.version>
         <felles.version>3.20250505101905_835431d</felles.version>
-        <kontrakt.version>3.0_20250530161722_14f12e3</kontrakt.version>
+        <kontrakter.version>3.0_20250702093525_2b3e463</kontrakter.version>
         <token-validation-spring.version>5.0.29</token-validation-spring.version>
         <graphql-kotlin.version>8.8.0</graphql-kotlin.version>
 
@@ -143,17 +143,17 @@
         <dependency>
             <groupId>no.nav.familie.kontrakter</groupId>
             <artifactId>felles</artifactId>
-            <version>${kontrakt.version}</version>
+            <version>${kontrakter.version}</version>
         </dependency>
         <dependency>
             <groupId>no.nav.familie.kontrakter</groupId>
             <artifactId>kontantstotte</artifactId>
-            <version>${kontrakt.version}</version>
+            <version>${kontrakter.version}</version>
         </dependency>
         <dependency>
             <groupId>no.nav.familie.kontrakter</groupId>
             <artifactId>barnetrygd</artifactId>
-            <version>${kontrakt.version}</version>
+            <version>${kontrakter.version}</version>
         </dependency>
 
         <!-- Logging -->
