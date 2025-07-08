@@ -34,8 +34,8 @@ class TilgangskontrollService(
         personIdent: String,
         tema: Tema,
     ): Tilgang {
-        if (tema != Tema.ENF && tema != Tema.BAR) {
-            throw IllegalArgumentException("Har ikke lagt inn støtte for andre enn ENF eller BAR")
+        if (tema != Tema.ENF && tema != Tema.BAR && tema != Tema.TSO) {
+            throw IllegalArgumentException("Har ikke lagt inn støtte for andre enn ENF, BAR eller TSO")
         }
         val jwtToken = SpringTokenValidationContextHolder().getTokenValidationContext().getJwtToken("azuread") ?: throw JwtTokenValidatorException("Klarte ikke hente token fra issuer azuread")
         return cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner(personIdent, jwtToken, tema)
