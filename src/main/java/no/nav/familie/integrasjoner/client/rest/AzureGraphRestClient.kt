@@ -36,14 +36,16 @@ class AzureGraphRestClient(
             .buildAndExpand(navIdent)
             .toUri()
 
-    private fun hentGruppeneTilSaksbehandlerUri(azureUUID: String): URI =
-        UriComponentsBuilder
+    private fun hentGruppeneTilSaksbehandlerUri(azureUUID: String): URI {
+        return UriComponentsBuilder
             .fromUri(aadGraphURI)
             .pathSegment(USERS)
             .pathSegment(azureUUID)
             .pathSegment(GRUPPER)
+            .queryParam("\$top", MAX_ANTALL_GRUPPER)
             .build()
             .toUri()
+    }
 
     fun finnSaksbehandler(navIdent: String): AzureAdBrukere =
         try {
@@ -98,5 +100,6 @@ class AzureGraphRestClient(
         private const val USERS = "users"
         private const val GRUPPER = "memberOf"
         private const val FELTER = "givenName,surname,onPremisesSamAccountName,id,userPrincipalName,streetAddress,city"
+        private const val MAX_ANTALL_GRUPPER = 250
     }
 }
