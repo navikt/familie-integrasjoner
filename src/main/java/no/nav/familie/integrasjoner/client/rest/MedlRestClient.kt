@@ -39,24 +39,26 @@ class MedlRestClient(
         ekskluderKilder: List<String>? = null,
         fraOgMed: LocalDate? = null,
         tilOgMed: LocalDate? = null,
-        inkluderSporingsinfo: Boolean? = null
+        inkluderSporingsinfo: Boolean? = null,
     ): List<MedlemskapsunntakResponse> {
-        val requestBody = PeriodeSoekRequest(
-            personident = personident,
-            type = type,
-            statuser = statuser,
-            ekskluderKilder = ekskluderKilder,
-            fraOgMed = fraOgMed,
-            tilOgMed = tilOgMed,
-            inkluderSporingsinfo = inkluderSporingsinfo
-        )
+        val requestBody =
+            PeriodeSoekRequest(
+                personident = personident,
+                type = type,
+                statuser = statuser,
+                ekskluderKilder = ekskluderKilder,
+                fraOgMed = fraOgMed,
+                tilOgMed = tilOgMed,
+                inkluderSporingsinfo = inkluderSporingsinfo,
+            )
 
         try {
-            return restTemplate.postForObject(
-                medlemskapPeriodeSoekUri,
-                requestBody,
-                Array<MedlemskapsunntakResponse>::class.java
-            )?.toList() ?: emptyList()
+            return restTemplate
+                .postForObject(
+                    medlemskapPeriodeSoekUri,
+                    requestBody,
+                    Array<MedlemskapsunntakResponse>::class.java,
+                )?.toList() ?: emptyList()
         } catch (e: Exception) {
             throw OppslagException(
                 "Feil ved henting av medlemskapsunntak",
