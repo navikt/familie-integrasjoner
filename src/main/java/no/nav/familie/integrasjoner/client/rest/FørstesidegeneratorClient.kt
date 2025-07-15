@@ -20,7 +20,7 @@ import java.net.URI
 @Component
 class FørstesidegeneratorClient(
     @Value("\${FORSTESIDEGENERATOR_URL}") private val førstesidegeneratorURI: URI,
-    @Qualifier("sts") private val restTemplate: RestOperations,
+    @Qualifier("jwtBearer") private val restTemplate: RestOperations,
 ) : AbstractPingableRestClient(restTemplate, "forstesidegenterator") {
     override val pingUri: URI = UriUtil.uri(førstesidegeneratorURI, PATH_PING)
 
