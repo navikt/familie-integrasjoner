@@ -16,7 +16,7 @@ import java.net.URI
 @Component
 class DokdistRestClient(
     @Value("\${DOKDIST_URL}") private val dokdistUri: URI,
-    @Qualifier("sts") private val restTemplate: RestOperations,
+    @Qualifier("jwtBearer") private val restTemplate: RestOperations,
 ) : AbstractPingableRestClient(restTemplate, "dokdist") {
     override val pingUri: URI = UriUtil.uri(dokdistUri, PATH_PING)
 

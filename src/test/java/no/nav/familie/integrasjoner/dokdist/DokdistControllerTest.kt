@@ -26,7 +26,7 @@ import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
-@ActiveProfiles(profiles = ["integrasjonstest", "mock-sts"])
+@ActiveProfiles(profiles = ["integrasjonstest", "mock-oauth"])
 @ExtendWith(MockServerExtension::class)
 @MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
 class DokdistControllerTest(
