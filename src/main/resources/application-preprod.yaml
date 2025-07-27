@@ -238,7 +238,7 @@ PDL_SCOPE: api://dev-fss.pdl.pdl-api/.default
 DOKDISTKANAL_SCOPE: api://dev-fss.teamdokumenthandtering.dokdistkanal/.default
 REGOPPSLAG_SCOPE: api://dev-fss.teamdokumenthandtering.regoppslag/.default
 AAREG_SCOPE: api://dev-fss.arbeidsforhold.aareg-services-nais-q1/.default
-FORSTESIDEGENERATOR_SCOPE": api://dev-fss.teamdokumenthandtering.foerstesidegenerator/.default
+FORSTESIDEGENERATOR_SCOPE: api://dev-fss.teamdokumenthandtering.foerstesidegenerator/.default
 MODIA_CONTEXT_HOLDER_SCOPE: api://dev-gcp.personoversikt.modiacontextholder/.default
 
 SAF_AUDIENCE: dev-fss:teamdokumenthandtering:safselvbetjening
