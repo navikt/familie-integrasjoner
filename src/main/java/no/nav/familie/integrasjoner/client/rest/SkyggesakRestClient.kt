@@ -19,7 +19,7 @@ import java.net.URI
 
 @Component
 class SkyggesakRestClient(
-    @Value("\${SKYGGE_SAK_URL}") private val skyggesakUrl: String,
+    @Value("\${SKYGGESAK_URL}") private val skyggesakUrl: String,
     @Qualifier("jwtBearer") private val restTemplate: RestOperations,
 ) : AbstractPingableRestClient(restTemplate, "skyggesak") {
     override val pingUri: URI = URI.create("$skyggesakUrl/internal/alive")

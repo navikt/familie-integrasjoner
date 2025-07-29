@@ -205,7 +205,7 @@ no.nav.security.jwt:
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       skyggesak:
-        resource-url: ${SKYGGE_SAK_URL}
+        resource-url: ${SKYGGESAK_URL}
         token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
         grant-type: client_credentials
         scope: ${SKYGGESAK_SCOPE}
@@ -214,7 +214,7 @@ no.nav.security.jwt:
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       skyggesak-onbehalf-of:
-        resource-url: ${SKYGGE_SAK_URL}
+        resource-url: ${SKYGGESAK_URL}
         token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${SKYGGESAK_SCOPE}
@@ -240,7 +240,7 @@ PDL_URL: http://familie-mock-server:1337/rest/api/pdl
 SAF_URL: http://familie-mock-server:1337/rest/api/saf
 KODEVERK_URL: http://familie-mock-server:1337/rest/api/kodeverk
 AAREG_URL: http://familie-mock-server:1337/rest/api/aareg
-SKYGGE_SAK_URL: http://familie-mock-server:1337/rest/api/skyggesak
+SKYGGESAK_URL: http://familie-mock-server:1337/rest/api/skyggesak
 ORGANISASJON_URL:
 DOKDISTKANAL_URL:
 REGOPPSLAG_URL:

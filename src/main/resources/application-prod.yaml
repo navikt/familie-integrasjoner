@@ -215,7 +215,7 @@ no.nav.security.jwt:
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       skyggesak:
-        resource-url: ${SKYGGE_SAK_URL}
+        resource-url: ${SKYGGESAK_URL}
         token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
         grant-type: client_credentials
         scope: ${SKYGGESAK_SCOPE}
@@ -224,7 +224,7 @@ no.nav.security.jwt:
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       skyggesak-onbehalf-of:
-        resource-url: ${SKYGGE_SAK_URL}
+        resource-url: ${SKYGGESAK_URL}
         token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
         grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         scope: ${SKYGGESAK_SCOPE}
@@ -261,7 +261,7 @@ KODEVERK_URL: https://kodeverk-api.nav.no
 DOKDIST_URL: https://dokdistfordeling.intern.nav.no
 DOKDISTKANAL_URL: https://dokdistkanal.intern.nav.no
 AAREG_URL: https://aareg-services.intern.nav.no/api
-SKYGGE_SAK_URL: https://sak.intern.nav.no
+SKYGGESAK_URL: https://sak.intern.nav.no
 OPPGAVE_URL: https://oppgave.nais.adeo.no
 NORG2_URL: https://norg2.nais.adeo.no/norg2/
 REGOPPSLAG_URL: https://regoppslag.intern.nav.no

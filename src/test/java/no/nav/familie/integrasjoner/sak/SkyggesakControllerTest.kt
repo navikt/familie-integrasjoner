@@ -25,7 +25,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 
 @ActiveProfiles("integrasjonstest", "mock-oauth")
-@TestPropertySource(properties = ["SKYGGE_SAK_URL=http://localhost:28085"])
+@TestPropertySource(properties = ["SKYGGESAK_URL=http://localhost:28085"])
 @AutoConfigureWireMock(port = 28085)
 class SkyggesakControllerTest : OppslagSpringRunnerTest() {
     @BeforeEach
