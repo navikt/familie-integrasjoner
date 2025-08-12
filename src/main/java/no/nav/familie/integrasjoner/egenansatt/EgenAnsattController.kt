@@ -22,4 +22,9 @@ class EgenAnsattController(
     fun erEgenAnsatt(
         @RequestBody(required = true) ident: Ident,
     ): ResponseEntity<Ressurs<EgenAnsattResponse>> = ResponseEntity.ok().body(success(data = EgenAnsattResponse(egenAnsattService.erEgenAnsatt(ident.ident))))
+
+    @PostMapping(path = ["/bulk"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun erEgenAnsattBulk(
+        @RequestBody(required = true) personIdenter: Set<String>,
+    ): ResponseEntity<Ressurs<Map<String, Boolean>>> = ResponseEntity.ok().body(success(data = egenAnsattService.erEgenAnsatt(personIdenter)))
 }
