@@ -233,7 +233,7 @@ INTEGRASJONER_CLIENT_ID: ${AZURE_APP_CLIENT_ID}
 CLIENT_SECRET: ${AZURE_APP_CLIENT_SECRET}
 KODEVERK_SCOPE: api://dev-gcp.team-rocket.kodeverk-api/.default
 DOKARKIV_SCOPE: api://dev-fss.teamdokumenthandtering.dokarkiv/.default
-DOKDIST_SCOPE: api://dev-fss.teamdokumenthandtering.saf/.default
+DOKDIST_SCOPE: api://dev-fss.teamdokumenthandtering.dokdistfordeling/.default
 PDL_SCOPE: api://dev-fss.pdl.pdl-api/.default
 DOKDISTKANAL_SCOPE: api://dev-fss.teamdokumenthandtering.dokdistkanal/.default
 REGOPPSLAG_SCOPE: api://dev-fss.teamdokumenthandtering.regoppslag/.default
