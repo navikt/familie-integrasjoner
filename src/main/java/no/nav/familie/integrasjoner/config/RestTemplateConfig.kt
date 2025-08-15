@@ -92,20 +92,6 @@ class RestTemplateConfig(
             .setReadTimeout(Duration.ofSeconds(20))
             .build()
 
-    @Bean("sts")
-    fun restTemplateSts(
-        stsBearerTokenClientInterceptor: StsBearerTokenClientInterceptor,
-        consumerIdClientInterceptor: ConsumerIdClientInterceptor,
-    ): RestOperations =
-        RestTemplateBuilder()
-            .interceptors(
-                consumerIdClientInterceptor,
-                stsBearerTokenClientInterceptor,
-                MdcValuesPropagatingClientInterceptor(),
-            ).setConnectTimeout(Duration.ofSeconds(20))
-            .setReadTimeout(Duration.ofSeconds(20))
-            .build()
-
     @Bean("noAuthorize")
     fun restTemplateNoAuthorize(consumerIdClientInterceptor: ConsumerIdClientInterceptor): RestOperations =
         RestTemplateBuilder()
