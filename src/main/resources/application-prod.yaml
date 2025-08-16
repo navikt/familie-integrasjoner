@@ -3,6 +3,9 @@ no.nav.security.jwt:
     discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
     accepted_audience: ${AZURE_APP_CLIENT_ID}
     proxyurl: http://webproxy-nais.nav.no:8088
+  issuer.tokenx:
+    discoveryurl: ${TOKEN_X_WELL_KNOWN_URL}
+    accepted_audience: ${TOKEN_X_CLIENT_ID}
   client:
     registration:
       aad-graph-onbehalfof:
@@ -221,7 +224,7 @@ KODEVERK_SCOPE: api://prod-gcp.team-rocket.kodeverk-api/.default
 DOKARKIV_SCOPE: api://prod-fss.teamdokumenthandtering.dokarkiv/.default
 PDL_SCOPE: api://prod-fss.pdl.pdl-api/.default
 DOKDISTKANAL_SCOPE: api://prod-fss.teamdokumenthandtering.dokdistkanal/.default
-DOKDIST_SCOPE: api://prod-fss.teamdokumenthandtering.saf/.default
+DOKDIST_SCOPE: api://prod-fss.teamdokumenthandtering.dokdistfordeling/.default
 REGOPPSLAG_SCOPE: api://prod-fss.teamdokumenthandtering.regoppslag/.default
 AAREG_SCOPE: api://prod-fss.arbeidsforhold.aareg-services-nais/.default
 FORSTESIDEGENERATOR_SCOPE: api://prod-fss.teamdokumenthandtering.foerstesidegenerator/.default
