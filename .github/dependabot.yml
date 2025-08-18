@@ -27,3 +27,7 @@ updates:
       interval: weekly
       day: "sunday"
       time: "04:00"
+    groups:
+      workflows:
+        patterns:
+          - "*"
