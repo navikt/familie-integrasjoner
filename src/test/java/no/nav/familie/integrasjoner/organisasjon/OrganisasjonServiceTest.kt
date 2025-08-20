@@ -7,6 +7,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.kontrakter.felles.organisasjon.Organisasjon
+import no.nav.familie.kontrakter.felles.organisasjon.OrganisasjonAdresse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -31,6 +32,7 @@ internal class OrganisasjonServiceTest : OppslagSpringRunnerTest() {
             Organisasjon(
                 organisasjonsnummer = "1",
                 navn = "NAV AS",
+                adresse = OrganisasjonAdresse(type = "Forretningsadresse", kommunenummer = "0301"),
             ),
         )
     }
@@ -58,6 +60,17 @@ internal class OrganisasjonServiceTest : OppslagSpringRunnerTest() {
         {
           "navn": {
            "sammensattnavn": "NAV AS"
+          },
+          "adresse":{
+            "type":"Forretningsadresse",
+            "adresselinje1":"Sannergata 2",
+            "postnummer":"0557",
+            "landkode":"NO",
+            "kommunenummer":"0301",
+            "gyldighetsperiode":
+              {
+                "fom":"2007-08-23"
+              }
           }
         }
         """.trimIndent()

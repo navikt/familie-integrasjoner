@@ -13,7 +13,7 @@ class OrganisasjonService(
     @Cacheable("hentOrganisasjon")
     fun hentOrganisasjon(orgnr: String): Organisasjon {
         val organisasjonResponse = organisasjonRestClient.hentOrganisasjon(orgnr)
-        return Organisasjon(orgnr, organisasjonResponse.navn.sammensattnavn)
+        return Organisasjon(orgnr, organisasjonResponse.navn.sammensattnavn, organisasjonResponse.adresse)
     }
 
     @Cacheable("validerOrganisasjon")

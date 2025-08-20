@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.integrasjoner.config.incrementLoggFeil
+import no.nav.familie.kontrakter.felles.organisasjon.OrganisasjonAdresse
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -39,6 +40,7 @@ class OrganisasjonRestClient(
 
 data class HentOrganisasjonResponse(
     val navn: Navn,
+    val adresse: OrganisasjonAdresse?,
 )
 
 data class Navn(
