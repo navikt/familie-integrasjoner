@@ -32,7 +32,7 @@ internal class OrganisasjonServiceTest : OppslagSpringRunnerTest() {
             Organisasjon(
                 organisasjonsnummer = "1",
                 navn = "NAV AS",
-                OrganisasjonAdresse(type = "Forretningsadresse", kommunenummer = "0301"),
+                adresse = OrganisasjonAdresse(type = "Forretningsadresse", kommunenummer = "0301"),
             ),
         )
     }
