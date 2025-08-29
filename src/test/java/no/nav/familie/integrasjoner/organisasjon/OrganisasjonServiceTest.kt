@@ -6,6 +6,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.okJson
 import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.kontrakter.felles.organisasjon.Gyldighetsperiode
 import no.nav.familie.kontrakter.felles.organisasjon.Organisasjon
 import no.nav.familie.kontrakter.felles.organisasjon.OrganisasjonAdresse
 import org.assertj.core.api.Assertions.assertThat
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
+import java.time.LocalDate
 
 @ActiveProfiles("integrasjonstest")
 @TestPropertySource(properties = ["ORGANISASJON_URL=http://localhost:28085"])
@@ -32,7 +34,16 @@ internal class OrganisasjonServiceTest : OppslagSpringRunnerTest() {
             Organisasjon(
                 organisasjonsnummer = "1",
                 navn = "NAV AS",
-                adresse = OrganisasjonAdresse(type = "Forretningsadresse", kommunenummer = "0301"),
+                adresse =
+                    OrganisasjonAdresse(
+                        type = "Forretningsadresse",
+                        kommunenummer = "0301",
+                        adresselinje1 = "Sannergata 2",
+                        adresselinje2 = null,
+                        adresselinje3 = null,
+                        postnummer = "0557",
+                        gyldighetsperiode = Gyldighetsperiode(fom = LocalDate.of(2007, 8, 23), tom = null),
+                    ),
             ),
         )
     }
