@@ -28,6 +28,8 @@ class KodeverkClient(
 
     fun hentKodeverk(kodeverksnavn: String): KodeverkDto = getForEntity(kodeverkUri(kodeverksnavn))
 
+    fun hentKommuner(): KodeverkDto = getForEntity(kodeverkUri("Geografi"))
+
     private fun kodeverkUri(
         kodeverksnavn: String,
         medHistorikk: Boolean = false,

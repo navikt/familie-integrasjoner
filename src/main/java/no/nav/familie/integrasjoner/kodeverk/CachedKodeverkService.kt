@@ -26,6 +26,9 @@ class CachedKodeverkService(
     @Cacheable("kodeverk_eeafregMedHistorikk")
     fun hentEEALandkoder(): KodeverkDto = kodeverkClient.hentEEALandkoder()
 
+    @Cacheable("kodeverk_kommuner")
+    fun hentKommuner(): KodeverkDto = kodeverkClient.hentKommuner()
+
     @Cacheable("inntekt")
     fun hentInntekt(): InntektKodeverkDto =
         InntektKodeverkType.values().associateWith {
