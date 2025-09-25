@@ -44,7 +44,7 @@ class KodeverkControllerTest : OppslagSpringRunnerTest() {
 
         val response: ResponseEntity<Ressurs<KodeverkDto>> =
             restTemplate.exchange(
-                localhost(KODEVERL_EEARG_URL),
+                localhost(KODEVERK_EEARG_URL),
                 HttpMethod.GET,
                 null,
             )
@@ -67,7 +67,7 @@ class KodeverkControllerTest : OppslagSpringRunnerTest() {
 
     companion object {
         private const val KODEVERK_URL = "/api/kodeverk/"
-        private const val KODEVERL_EEARG_URL = "$KODEVERK_URL/landkoder/eea"
+        private const val KODEVERK_EEARG_URL = "$KODEVERK_URL/landkoder/eea"
         private const val GET_KODEVERK_EEAFREG_URL =
             "/api/v1/kodeverk/EEAFreg/koder/betydninger?ekskluderUgyldige=false&spraak=nb"
     }
