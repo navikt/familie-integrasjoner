@@ -42,6 +42,6 @@ class KodeverkController(
     @GetMapping("inntekt")
     fun hentKodeverkForInntekt(): Ressurs<InntektKodeverkDto> = Ressurs.success(kodeverkService.hentInntekt())
 
-    @GetMapping("/kommuner")
+    @GetMapping("/fylkerOgKommuner")
     fun hentKommunerOgFylker(): ResponseEntity<Ressurs<LandDto>> = ResponseEntity.ok(Ressurs.success(kodeverkService.hentKommunerOgFylker()))
 }
