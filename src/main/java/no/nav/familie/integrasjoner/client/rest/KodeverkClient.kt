@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.http.util.UriUtil
+import no.nav.familie.kontrakter.felles.kodeverk.HierarkiGeografiInnlandDto
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -28,12 +29,22 @@ class KodeverkClient(
 
     fun hentKodeverk(kodeverksnavn: String): KodeverkDto = getForEntity(kodeverkUri(kodeverksnavn))
 
+    fun hentGeografiInnland(): HierarkiGeografiInnlandDto = getForEntity(hierarkiUri("Geografi"))
+
     private fun kodeverkUri(
         kodeverksnavn: String,
         medHistorikk: Boolean = false,
     ): URI {
         val query = if (medHistorikk) QUERY_MED_HISTORIKK else QUERY
         return UriUtil.uri(kodeverkUri, "api/v1/kodeverk/$kodeverksnavn/koder/betydninger", query)
+    }
+
+    private fun hierarkiUri(
+        hierakinavn: String,
+        medHistorikk: Boolean = false,
+    ): URI {
+        val query = if (medHistorikk) QUERY_MED_HISTORIKK else QUERY
+        return UriUtil.uri(kodeverkUri, "api/v1/hierarki/$hierakinavn/koder/noder", query)
     }
 
     companion object {
