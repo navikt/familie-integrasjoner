@@ -25,13 +25,6 @@ class FørstesideGeneratorService(
         val postFørstesideRequest =
             PostFørstesideRequest(
                 språkkode = førsteside.språkkode,
-                adresse =
-                    Adresse(
-                        adresselinje1 = "Nav skanning",
-                        adresselinje2 = "Postboks 1400",
-                        postnummer = "0109",
-                        poststed = "OSLO",
-                    ),
                 bruker =
                     Bruker(
                         brukerId = brukerId,
@@ -45,6 +38,7 @@ class FørstesideGeneratorService(
                 overskriftstittel = førsteside.overskriftstittel,
                 dokumentlisteFørsteside = arrayListOf(vedleggstekst(førsteside.språkkode)),
                 vedleggsliste = arrayListOf(vedleggstekst(førsteside.språkkode)),
+                netsPostboks = "1400",
             )
         return førstesidegeneratorClient.genererFørsteside(postFørstesideRequest).førsteside
     }
