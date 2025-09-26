@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.kodeverk
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.kodeverk.InntektKodeverkDto
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
+import no.nav.familie.kontrakter.felles.kodeverk.LandDto
 import no.nav.security.token.support.core.api.Unprotected
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -41,6 +42,6 @@ class KodeverkController(
     @GetMapping("inntekt")
     fun hentKodeverkForInntekt(): Ressurs<InntektKodeverkDto> = Ressurs.success(kodeverkService.hentInntekt())
 
-    @GetMapping("/geografi")
-    fun hentKommuner(): ResponseEntity<Ressurs<KodeverkDto>> = ResponseEntity.ok(Ressurs.success(kodeverkService.hentKommuner()))
+    @GetMapping("/kommuner")
+    fun hentKommunerOgFylker(): ResponseEntity<Ressurs<LandDto>> = ResponseEntity.ok(Ressurs.success(kodeverkService.hentKommunerOgFylker()))
 }
