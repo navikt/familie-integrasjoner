@@ -44,7 +44,7 @@ class KodeverkClient(
         medHistorikk: Boolean = false,
     ): URI {
         val query = if (medHistorikk) QUERY_MED_HISTORIKK else QUERY
-        return UriUtil.uri(kodeverkUri, "api/v1/hierarki/$hierakinavn/koder/noder", query)
+        return UriUtil.uri(kodeverkUri, "api/v1/hierarki/$hierakinavn/noder", query)
     }
 
     companion object {
