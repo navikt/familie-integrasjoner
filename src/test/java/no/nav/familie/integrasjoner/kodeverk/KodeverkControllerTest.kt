@@ -107,6 +107,6 @@ class KodeverkControllerTest : OppslagSpringRunnerTest() {
         private const val GET_KODEVERK_EEAFREG_URL =
             "/api/v1/kodeverk/EEAFreg/koder/betydninger?ekskluderUgyldige=false&spraak=nb"
         private const val KODEVERK_FYLKER_KOMMUNER_URL = "$KODEVERK_URL/fylkerOgKommuner"
-        private const val GET_KODEVERK_GEOGRAFIHIERARKI_URL = "/api/v1/hierarki/Geografi/koder/noder?ekskluderUgyldige=true&spraak=nb"
+        private const val GET_KODEVERK_GEOGRAFIHIERARKI_URL = "/api/v1/hierarki/Geografi/noder?ekskluderUgyldige=true&spraak=nb"
     }
 }
