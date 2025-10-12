@@ -23,7 +23,7 @@
         <kotlin.version>2.2.20</kotlin.version>
         <springdoc.version>2.8.13</springdoc.version>
         <felles.version>3.20250915092837_153983f</felles.version>
-        <kontrakter.version>3.0_20250929124430_91dd0fd</kontrakter.version>
+        <kontrakter.version>3.0_20251010090545_ece0054</kontrakter.version>
         <token-validation-spring.version>5.0.37</token-validation-spring.version>
         <graphql-kotlin.version>8.8.1</graphql-kotlin.version>
 
@@ -232,7 +232,7 @@
         <dependency>
             <groupId>io.mockk</groupId>
             <artifactId>mockk-jvm</artifactId>
-            <version>1.14.5</version>
+            <version>1.14.6</version>
             <scope>test</scope>
         </dependency>
 
