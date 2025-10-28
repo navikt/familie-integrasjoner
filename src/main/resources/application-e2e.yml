@@ -78,15 +78,6 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
-      medl2:
-        resource-url: ${MEDL2_URL}
-        token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
-        grant-type: client_credentials
-        scope: api://dev-fss.team-rocket.medlemskap-medl-api/.default
-        authentication:
-          client-id: ${AZURE_APP_CLIENT_ID}
-          client-secret: ${AZURE_APP_CLIENT_SECRET}
-          client-auth-method: client_secret_basic
       pdl:
         resource-url: ${PDL_URL}
         token-endpoint-url: ${AZURE_OPENID_CONFIG_TOKEN_ENDPOINT}
@@ -212,7 +203,6 @@ AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 STS_URL: http://nav-auth-mock:8200/nais-sts/token
 EGEN_ANSATT_URL: #Mockes ut lokalt
 FORSTESIDEGENERATOR_URL:
-MEDL2_URL: http://vtp:8060/rest/medl2
 NORG2_URL: #Mockes lokalt
 
 DOKDIST_URL: http://familie-mock-server:1337/rest/api/dokdist/
