@@ -44,6 +44,7 @@ class OppgaveService constructor(
         oppgaveId: Long,
         saksbehandler: String,
         versjon: Int?,
+        innloggetSaksbehandler: String?,
     ): Long {
         val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
@@ -64,14 +65,24 @@ class OppgaveService constructor(
                 HttpStatus.CONFLICT,
             )
         }
-
         val oppdatertOppgaveDto =
-            oppgave.copy(
-                id = oppgave.id,
-                versjon = versjon ?: oppgave.versjon,
-                tilordnetRessurs = saksbehandler,
-                beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave, nySaksbehandlerIdent = saksbehandler),
-            )
+            if (innloggetSaksbehandler != null) {
+                oppgave.copy(
+                    id = oppgave.id,
+                    versjon = versjon ?: oppgave.versjon,
+                    tilordnetRessurs = saksbehandler,
+                    beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave, nySaksbehandlerIdent = saksbehandler),
+                    endretAvEnhetsnr = saksbehandlerService.hentSaksbehandler(innloggetSaksbehandler).enhet,
+                )
+            } else {
+                oppgave.copy(
+                    id = oppgave.id,
+                    versjon = versjon ?: oppgave.versjon,
+                    tilordnetRessurs = saksbehandler,
+                    beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave, nySaksbehandlerIdent = saksbehandler),
+                )
+            }
+
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
 
         return oppgaveId
