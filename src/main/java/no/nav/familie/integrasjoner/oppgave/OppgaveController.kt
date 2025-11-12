@@ -57,12 +57,12 @@ class OppgaveController(
         @PathVariable(name = "oppgaveId") oppgaveId: Long,
         @RequestParam("saksbehandler") saksbehandler: String?,
         @RequestParam("versjon") versjon: Int?,
-        @RequestParam("innloggetSaksbehandler") innloggetSaksbehandler: String?,
+        @RequestParam("endretAvSaksbehandler") endretAvSaksbehandler: String?,
     ): ResponseEntity<Ressurs<OppgaveResponse>> {
         if (saksbehandler == null) {
             oppgaveService.tilbakestillFordelingPåOppgave(oppgaveId, versjon)
         } else {
-            oppgaveService.fordelOppgave(oppgaveId, saksbehandler, versjon, innloggetSaksbehandler)
+            oppgaveService.fordelOppgave(oppgaveId, saksbehandler, versjon, endretAvSaksbehandler)
         }
 
         return ResponseEntity.ok(
