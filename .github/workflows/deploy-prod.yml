@@ -61,7 +61,7 @@ jobs:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # ratchet:actions/checkout@v4
 
       - name: Deploy til prod-fss team namespace
-        uses: nais/deploy/actions/deploy@961addd1e4d4211f1a7333ada5fde85f7c9aa5b7 # ratchet:nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@21af204a4d63d1c10d149916d96669d5c2fa6f76 # ratchet:nais/deploy/actions/deploy@v2
         env:
           CLUSTER: prod-fss
           RESOURCE: .nais/app-prod.yaml
@@ -78,7 +78,7 @@ jobs:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # ratchet:actions/checkout@v4
 
       - name: Deploy til dev-fss team namespace
-        uses: nais/deploy/actions/deploy@961addd1e4d4211f1a7333ada5fde85f7c9aa5b7 # ratchet:nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@21af204a4d63d1c10d149916d96669d5c2fa6f76 # ratchet:nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-fss
           RESOURCE: .nais/app-dev.yaml
