@@ -135,6 +135,7 @@ internal class OppgaveServiceTest {
                 fjernMappeFraOppgave = true,
                 nullstillTilordnetRessurs = false,
                 versjon = 0,
+                nyMappeId = null,
             )
 
             // Assert
@@ -165,6 +166,7 @@ internal class OppgaveServiceTest {
                 fjernMappeFraOppgave = false,
                 nullstillTilordnetRessurs = false,
                 versjon = 0,
+                nyMappeId = null,
             )
 
             // Assert
@@ -195,6 +197,7 @@ internal class OppgaveServiceTest {
                 fjernMappeFraOppgave = false,
                 nullstillTilordnetRessurs = true,
                 versjon = 0,
+                nyMappeId = null,
             )
 
             // Assert
@@ -202,6 +205,37 @@ internal class OppgaveServiceTest {
 
             assertThat(oppgaveByttEnhetOgTilordnetRessurs.id).isEqualTo(1L)
             assertThat(oppgaveByttEnhetOgTilordnetRessurs.tilordnetRessurs).isNull()
+
+            verify(exactly = 1) { oppgaveRestClient.finnOppgaveMedId(oppgaveId) }
+            verify(exactly = 1) { oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(oppgaveByttEnhetOgTilordnetRessurs) }
+        }
+
+        @Test
+        fun `skal flytte oppgave og sette ny mappeId hvis det er sendt inn`() {
+            // Arrange
+            val oppgaveId = 1L
+            val oppgaveByttEnhetOgTilordnetRessursRessursSlot = slot<OppgaveByttEnhetOgTilordnetRessurs>()
+            val oppgaveMedMappe = Oppgave(id = oppgaveId, mappeId = 50, tilordnetRessurs = "tilordnetRessurs")
+
+            every { oppgaveRestClient.finnOppgaveMedId(oppgaveId) } returns oppgaveMedMappe
+            every { oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(capture(oppgaveByttEnhetOgTilordnetRessursRessursSlot)) } returns oppgaveMedMappe
+
+            // Act
+            oppgaveService.tilordneEnhetOgNullstillTilordnetRessurs(
+                oppgaveId = 1L,
+                enhet = "nyEnhet",
+                fjernMappeFraOppgave = false,
+                nullstillTilordnetRessurs = true,
+                versjon = 0,
+                nyMappeId = 4500,
+            )
+
+            // Assert
+            val oppgaveByttEnhetOgTilordnetRessurs = oppgaveByttEnhetOgTilordnetRessursRessursSlot.captured
+
+            assertThat(oppgaveByttEnhetOgTilordnetRessurs.id).isEqualTo(1L)
+            assertThat(oppgaveByttEnhetOgTilordnetRessurs.tilordnetRessurs).isNull()
+            assertThat(oppgaveByttEnhetOgTilordnetRessurs.mappeId).isEqualTo(4500)
 
             verify(exactly = 1) { oppgaveRestClient.finnOppgaveMedId(oppgaveId) }
             verify(exactly = 1) { oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(oppgaveByttEnhetOgTilordnetRessurs) }
