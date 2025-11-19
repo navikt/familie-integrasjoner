@@ -251,9 +251,17 @@ class OppgaveService constructor(
         fjernMappeFraOppgave: Boolean,
         nullstillTilordnetRessurs: Boolean,
         versjon: Int?,
+        nyMappeId: Long?,
     ) {
         val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
-        val mappeId = if (fjernMappeFraOppgave) null else oppgave.mappeId
+
+        val mappeId =
+            when {
+                nyMappeId != null -> nyMappeId
+                fjernMappeFraOppgave -> null
+                else -> oppgave.mappeId
+            }
+
         val tilordnetRessurs = if (nullstillTilordnetRessurs) null else oppgave.tilordnetRessurs
         oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(
             OppgaveByttEnhetOgTilordnetRessurs(
