@@ -12,5 +12,6 @@ class AaregService(
     fun hentArbeidsforhold(
         personIdent: String,
         ansettelsesperiodeFom: LocalDate,
-    ): List<Arbeidsforhold> = aaregRestClient.hentArbeidsforhold(personIdent, ansettelsesperiodeFom)
+        ansettelsesperiodeTom: LocalDate?,
+    ): List<Arbeidsforhold> = aaregRestClient.hentArbeidsforhold(personIdent, ansettelsesperiodeFom, ansettelsesperiodeTom)
 }
