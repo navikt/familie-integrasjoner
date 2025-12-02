@@ -2,12 +2,12 @@ package no.nav.familie.integrasjoner.oppgave
 
 import DatoFormat
 import com.fasterxml.jackson.annotation.JsonInclude
-import no.nav.familie.integrasjoner.aktør.AktørService
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.OppslagException.Level
 import no.nav.familie.integrasjoner.saksbehandler.SaksbehandlerService
 import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext.SYSTEM_FORKORTELSE
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
@@ -29,7 +29,6 @@ import java.time.format.DateTimeFormatter
 @ApplicationScope
 class OppgaveService constructor(
     private val oppgaveRestClient: OppgaveRestClient,
-    private val aktørService: AktørService,
     private val saksbehandlerService: SaksbehandlerService,
 ) {
     private val logger = LoggerFactory.getLogger(OppgaveService::class.java)
@@ -80,6 +79,7 @@ class OppgaveService constructor(
                     versjon = versjon ?: oppgave.versjon,
                     tilordnetRessurs = saksbehandler,
                     beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave, nySaksbehandlerIdent = saksbehandler),
+                    endretAvEnhetsnr = oppgave.tildeltEnhetsnr,
                 )
             }
 
@@ -112,12 +112,20 @@ class OppgaveService constructor(
             )
         }
 
+        val innloggetSaksbehandlerIdent = SikkerhetsContext.hentSaksbehandlerEllerSystembruker()
+
+        val endretAvEnhetsnr =
+            innloggetSaksbehandlerIdent.takeIf { it != SYSTEM_FORKORTELSE }?.let {
+                saksbehandlerService.hentSaksbehandler(it).enhet
+            }
+
         val oppdatertOppgaveDto =
             oppgave.copy(
                 id = oppgave.id,
                 versjon = versjon ?: oppgave.versjon,
                 tilordnetRessurs = "",
                 beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave),
+                endretAvEnhetsnr = endretAvEnhetsnr ?: oppgave.tildeltEnhetsnr,
             )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
 
@@ -182,11 +190,19 @@ class OppgaveService constructor(
 
         when (oppgave.status) {
             StatusEnum.OPPRETTET, StatusEnum.AAPNET, StatusEnum.UNDER_BEHANDLING -> {
+                val innloggetSaksbehandlerIdent = SikkerhetsContext.hentSaksbehandlerEllerSystembruker()
+
+                val endretAvEnhetsnr =
+                    innloggetSaksbehandlerIdent.takeIf { it != SYSTEM_FORKORTELSE }?.let {
+                        saksbehandlerService.hentSaksbehandler(it).enhet
+                    }
+
                 val patchOppgaveDto =
                     oppgave.copy(
                         id = oppgave.id,
                         versjon = versjon ?: oppgave.versjon,
                         status = StatusEnum.FERDIGSTILT,
+                        endretAvEnhetsnr = endretAvEnhetsnr ?: oppgave.tildeltEnhetsnr,
                     )
                 oppgaveRestClient.oppdaterOppgave(patchOppgaveDto)
             }
