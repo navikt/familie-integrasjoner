@@ -14,6 +14,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.status
 import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
+import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.verify
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.config.ApiExceptionHandler
@@ -45,9 +46,10 @@ import org.springframework.test.context.TestPropertySource
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.time.LocalDate
+import java.util.UUID
 
 @ActiveProfiles("integrasjonstest", "mock-oauth")
-@TestPropertySource(properties = ["OPPGAVE_URL=http://localhost:28085"])
+@TestPropertySource(properties = ["OPPGAVE_URL=http://localhost:28085", "AAD_GRAPH_API_URI=http://localhost:28085"])
 @AutoConfigureWireMock(port = 28085)
 class OppgaveControllerTest : OppslagSpringRunnerTest() {
     @BeforeEach
@@ -303,6 +305,26 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         )
 
         stubFor(
+            get(urlPathEqualTo("/users/testbruker"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(
+                            """{
+                                           "givenName": "Bob",
+                                           "surname": "Burger",
+                                           "id": "${UUID.randomUUID()}",
+                                           "userPrincipalName": "Bob.Burger@nav.no",
+                                           "onPremisesSamAccountName": "B857496",
+                                           "streetAddress": "4415",
+                                           "city": "Skien"
+                                           }""",
+                        ),
+                ),
+        )
+
+        stubFor(
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
                 .withRequestBody(matchingJsonPath("$.[?(@.status == 'FERDIGSTILT')]"))
                 .willReturn(
@@ -345,6 +367,26 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 ),
         )
 
+        stubFor(
+            get(urlPathEqualTo("/users/testbruker"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(
+                            """{
+                                           "givenName": "Bob",
+                                           "surname": "Burger",
+                                           "id": "${UUID.randomUUID()}",
+                                           "userPrincipalName": "Bob.Burger@nav.no",
+                                           "onPremisesSamAccountName": "B857496",
+                                           "streetAddress": "4415",
+                                           "city": "Skien"
+                                           }""",
+                        ),
+                ),
+        )
+
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
                 localhost("/api/oppgave/$OPPGAVE_ID/fordel?saksbehandler=$saksbehandlerId"),
@@ -367,6 +409,26 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                         .withStatus(201)
                         .withHeader("Content-Type", "application/json")
                         .withBody(gyldigOppgaveResponse("oppgave.json")),
+                ),
+        )
+
+        stubFor(
+            get(urlPathEqualTo("/users/testbruker"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(
+                            """{
+                                           "givenName": "Bob",
+                                           "surname": "Burger",
+                                           "id": "${UUID.randomUUID()}",
+                                           "userPrincipalName": "Bob.Burger@nav.no",
+                                           "onPremisesSamAccountName": "B857496",
+                                           "streetAddress": "4415",
+                                           "city": "Skien"
+                                           }""",
+                        ),
                 ),
         )
 
