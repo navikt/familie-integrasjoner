@@ -33,5 +33,4 @@ class ArbeidsforholdRequest(
     val ansettelsesperiodeFom: LocalDate,
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     val ansettelsesperiodeTom: LocalDate? = null,
-
 )
