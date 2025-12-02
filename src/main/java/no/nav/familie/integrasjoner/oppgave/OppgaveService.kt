@@ -125,7 +125,7 @@ class OppgaveService constructor(
                 versjon = versjon ?: oppgave.versjon,
                 tilordnetRessurs = "",
                 beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave),
-                endretAvEnhetsnr = endretAvEnhetsnr ?: oppgave.tildeltEnhetsnr,
+                endretAvEnhetsnr = endretAvEnhetsnr ?: oppgave.endretAvEnhetsnr,
             )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
 
@@ -202,7 +202,7 @@ class OppgaveService constructor(
                         id = oppgave.id,
                         versjon = versjon ?: oppgave.versjon,
                         status = StatusEnum.FERDIGSTILT,
-                        endretAvEnhetsnr = endretAvEnhetsnr ?: oppgave.tildeltEnhetsnr,
+                        endretAvEnhetsnr = endretAvEnhetsnr ?: oppgave.endretAvEnhetsnr,
                     )
                 oppgaveRestClient.oppdaterOppgave(patchOppgaveDto)
             }
