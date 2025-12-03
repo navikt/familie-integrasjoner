@@ -55,7 +55,7 @@ class BaksVersjonertSøknadServiceTest {
 
             // Assert
             assertThat(baksSøknadBase).isNotNull
-            assertThat(baksSøknadBase.kontraktVersjon).isEqualTo(5)
+            assertThat(baksSøknadBase.kontraktVersjon).isEqualTo(6)
             assertThat(baksSøknadBase.personerISøknad()).isEqualTo(listOf(søkerFnr, barnFnr))
         }
 
