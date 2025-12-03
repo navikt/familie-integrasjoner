@@ -7,10 +7,10 @@ import no.nav.familie.kontrakter.ks.søknad.v1.RegistrertBostedType
 import no.nav.familie.kontrakter.ks.søknad.v1.SIVILSTANDTYPE
 import no.nav.familie.kontrakter.ks.søknad.v1.SøknadAdresse
 import no.nav.familie.kontrakter.ks.søknad.v1.TekstPåSpråkMap
-import no.nav.familie.kontrakter.ks.søknad.v5.KontantstøtteSøknad
+import no.nav.familie.kontrakter.ks.søknad.v6.KontantstøtteSøknad
 import no.nav.familie.kontrakter.ba.søknad.v8.Barn as BarnetrygdBarn
 import no.nav.familie.kontrakter.ba.søknad.v8.Søker as BarnetrygdSøker
-import no.nav.familie.kontrakter.ks.søknad.v4.Barn as KontantstøtteBarn
+import no.nav.familie.kontrakter.ks.søknad.v6.Barn as KontantstøtteBarn
 import no.nav.familie.kontrakter.ks.søknad.v4.Søker as KontantstøtteSøker
 
 fun lagKontantstøtteSøknad(
@@ -18,7 +18,7 @@ fun lagKontantstøtteSøknad(
     barnFnr: String,
 ): KontantstøtteSøknad =
     KontantstøtteSøknad(
-        kontraktVersjon = 5,
+        kontraktVersjon = 6,
         søker = lagKontantstøtteSøker(søkerFnr),
         barn = listOf(lagKontantstøtteBarn(barnFnr)),
         antallEøsSteg = 0,
