@@ -18,7 +18,7 @@ fun lagKontantstøtteSøknad(
     barnFnr: String,
 ): KontantstøtteSøknad =
     KontantstøtteSøknad(
-        kontraktVersjon = 5,
+        kontraktVersjon = 6,
         søker = lagKontantstøtteSøker(søkerFnr),
         barn = listOf(lagKontantstøtteBarn(barnFnr)),
         antallEøsSteg = 0,
