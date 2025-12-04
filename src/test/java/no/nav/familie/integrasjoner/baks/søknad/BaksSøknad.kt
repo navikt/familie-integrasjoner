@@ -10,8 +10,8 @@ import no.nav.familie.kontrakter.ks.søknad.v1.TekstPåSpråkMap
 import no.nav.familie.kontrakter.ks.søknad.v6.KontantstøtteSøknad
 import no.nav.familie.kontrakter.ba.søknad.v8.Barn as BarnetrygdBarn
 import no.nav.familie.kontrakter.ba.søknad.v8.Søker as BarnetrygdSøker
-import no.nav.familie.kontrakter.ks.søknad.v6.Barn as KontantstøtteBarn
 import no.nav.familie.kontrakter.ks.søknad.v4.Søker as KontantstøtteSøker
+import no.nav.familie.kontrakter.ks.søknad.v6.Barn as KontantstøtteBarn
 
 fun lagKontantstøtteSøknad(
     søkerFnr: String,
