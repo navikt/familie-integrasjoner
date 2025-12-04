@@ -494,12 +494,32 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
                 .withRequestBody(
-                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":null,"tilordnetRessurs" : "NAV_1"}"""),
+                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":null,"tilordnetRessurs" : "NAV_1", "endretAvEnhetsnr": "4415"}"""),
                 ).willReturn(
                     aResponse()
                         .withStatus(201)
                         .withHeader("Content-Type", "application/json")
                         .withBody(gyldigOppgaveResponse("ferdigstilt_oppgave.json")),
+                ),
+        )
+
+        stubFor(
+            get(urlPathEqualTo("/users/testbruker"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(
+                            """{
+                                           "givenName": "Bob",
+                                           "surname": "Burger",
+                                           "id": "${UUID.randomUUID()}",
+                                           "userPrincipalName": "Bob.Burger@nav.no",
+                                           "onPremisesSamAccountName": "B857496",
+                                           "streetAddress": "4415",
+                                           "city": "Skien"
+                                           }""",
+                        ),
                 ),
         )
 
@@ -528,12 +548,32 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
                 .withRequestBody(
-                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":1234, "tilordnetRessurs": "NAV_1"}"""),
+                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":1234, "tilordnetRessurs": "NAV_1", "endretAvEnhetsnr": "4415"}"""),
                 ).willReturn(
                     aResponse()
                         .withStatus(201)
                         .withHeader("Content-Type", "application/json")
                         .withBody(gyldigOppgaveResponse("ferdigstilt_oppgave.json")),
+                ),
+        )
+
+        stubFor(
+            get(urlPathEqualTo("/users/testbruker"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(
+                            """{
+                                           "givenName": "Bob",
+                                           "surname": "Burger",
+                                           "id": "${UUID.randomUUID()}",
+                                           "userPrincipalName": "Bob.Burger@nav.no",
+                                           "onPremisesSamAccountName": "B857496",
+                                           "streetAddress": "4415",
+                                           "city": "Skien"
+                                           }""",
+                        ),
                 ),
         )
 
@@ -563,12 +603,32 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
                 .withRequestBody(
-                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":1234, "tilordnetRessurs": null}"""),
+                    WireMock.equalToJson("""{"id":315488374,"tildeltEnhetsnr": "4833","versjon":1,"mappeId":1234, "tilordnetRessurs": null, "endretAvEnhetsnr": "4415"}"""),
                 ).willReturn(
                     aResponse()
                         .withStatus(201)
                         .withHeader("Content-Type", "application/json")
                         .withBody(gyldigOppgaveResponse("ferdigstilt_oppgave.json")),
+                ),
+        )
+
+        stubFor(
+            get(urlPathEqualTo("/users/testbruker"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(
+                            """{
+                                           "givenName": "Bob",
+                                           "surname": "Burger",
+                                           "id": "${UUID.randomUUID()}",
+                                           "userPrincipalName": "Bob.Burger@nav.no",
+                                           "onPremisesSamAccountName": "B857496",
+                                           "streetAddress": "4415",
+                                           "city": "Skien"
+                                           }""",
+                        ),
                 ),
         )
 
@@ -606,6 +666,26 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                         .withStatus(400)
                         .withHeader("Content-Type", "application/json")
                         .withBody(""""{uuid":"123","feilmelding":"Mappe finnes ikke for enhet"} """),
+                ),
+        )
+
+        stubFor(
+            get(urlPathEqualTo("/users/testbruker"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(
+                            """{
+                                           "givenName": "Bob",
+                                           "surname": "Burger",
+                                           "id": "${UUID.randomUUID()}",
+                                           "userPrincipalName": "Bob.Burger@nav.no",
+                                           "onPremisesSamAccountName": "B857496",
+                                           "streetAddress": "4415",
+                                           "city": "Skien"
+                                           }""",
+                        ),
                 ),
         )
 

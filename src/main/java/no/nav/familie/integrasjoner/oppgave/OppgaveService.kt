@@ -112,12 +112,7 @@ class OppgaveService constructor(
             )
         }
 
-        val innloggetSaksbehandlerIdent = SikkerhetsContext.hentSaksbehandlerEllerSystembruker()
-
-        val endretAvEnhetsnr =
-            innloggetSaksbehandlerIdent.takeIf { it != SYSTEM_FORKORTELSE }?.let {
-                saksbehandlerService.hentSaksbehandler(it).enhet
-            }
+        val endretAvEnhetsnr = hentEnhetSomHarEndretOppgave()
 
         val oppdatertOppgaveDto =
             oppgave.copy(
@@ -190,12 +185,7 @@ class OppgaveService constructor(
 
         when (oppgave.status) {
             StatusEnum.OPPRETTET, StatusEnum.AAPNET, StatusEnum.UNDER_BEHANDLING -> {
-                val innloggetSaksbehandlerIdent = SikkerhetsContext.hentSaksbehandlerEllerSystembruker()
-
-                val endretAvEnhetsnr =
-                    innloggetSaksbehandlerIdent.takeIf { it != SYSTEM_FORKORTELSE }?.let {
-                        saksbehandlerService.hentSaksbehandler(it).enhet
-                    }
+                val endretAvEnhetsnr = hentEnhetSomHarEndretOppgave()
 
                 val patchOppgaveDto =
                     oppgave.copy(
@@ -278,6 +268,8 @@ class OppgaveService constructor(
                 else -> oppgave.mappeId
             }
 
+        val endretAvEnhetsnr = hentEnhetSomHarEndretOppgave()
+
         val tilordnetRessurs = if (nullstillTilordnetRessurs) null else oppgave.tilordnetRessurs
         oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(
             OppgaveByttEnhetOgTilordnetRessurs(
@@ -286,9 +278,15 @@ class OppgaveService constructor(
                 versjon = versjon ?: oppgave.versjon!!,
                 mappeId = mappeId,
                 tilordnetRessurs = tilordnetRessurs,
+                endretAvEnhetsnr = endretAvEnhetsnr ?: oppgave.endretAvEnhetsnr,
             ),
         )
     }
+
+    private fun hentEnhetSomHarEndretOppgave() =
+        SikkerhetsContext.hentSaksbehandlerEllerSystembruker().takeIf { it != SYSTEM_FORKORTELSE }?.let {
+            saksbehandlerService.hentSaksbehandler(it).enhet
+        }
 }
 
 data class OppgaveByttEnhetOgTilordnetRessurs(
@@ -297,6 +295,7 @@ data class OppgaveByttEnhetOgTilordnetRessurs(
     val versjon: Int,
     @JsonInclude(JsonInclude.Include.ALWAYS) val mappeId: Long? = null,
     @JsonInclude(JsonInclude.Include.ALWAYS) val tilordnetRessurs: String? = null,
+    val endretAvEnhetsnr: String?,
 )
 
 /**

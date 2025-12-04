@@ -136,10 +136,22 @@ internal class OppgaveServiceTest {
         @Test
         fun `skal fjerne mappe fra oppgave dersom det settes til true`() {
             // Arrange
+            mockkObject(SikkerhetsContext)
+
             val oppgaveId = 1L
             val oppgaveByttEnhetOgTilordnetRessursRessursSlot = slot<OppgaveByttEnhetOgTilordnetRessurs>()
             val oppgaveMedMappe = Oppgave(id = oppgaveId, mappeId = 50)
 
+            every { SikkerhetsContext.hentSaksbehandlerEllerSystembruker() } returns "Z444444"
+
+            every { saksbehandlerService.hentSaksbehandler("Z444444") } returns
+                Saksbehandler(
+                    enhet = "4321",
+                    azureId = UUID.randomUUID(),
+                    navIdent = "testIdent",
+                    fornavn = "testNavn",
+                    etternavn = "testEtternavn",
+                )
             every { oppgaveRestClient.finnOppgaveMedId(oppgaveId) } returns oppgaveMedMappe
             every { oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(capture(oppgaveByttEnhetOgTilordnetRessursRessursSlot)) } returns oppgaveMedMappe
 
@@ -167,10 +179,22 @@ internal class OppgaveServiceTest {
         @Test
         fun `skal ikke fjerne mappe fra oppgave dersom det settes til false`() {
             // Arrange
+            mockkObject(SikkerhetsContext)
+
             val oppgaveId = 1L
             val oppgaveByttEnhetOgTilordnetRessursRessursSlot = slot<OppgaveByttEnhetOgTilordnetRessurs>()
             val oppgaveMedMappe = Oppgave(id = oppgaveId, mappeId = 50)
 
+            every { SikkerhetsContext.hentSaksbehandlerEllerSystembruker() } returns "Z444444"
+
+            every { saksbehandlerService.hentSaksbehandler("Z444444") } returns
+                Saksbehandler(
+                    enhet = "4321",
+                    azureId = UUID.randomUUID(),
+                    navIdent = "testIdent",
+                    fornavn = "testNavn",
+                    etternavn = "testEtternavn",
+                )
             every { oppgaveRestClient.finnOppgaveMedId(oppgaveId) } returns oppgaveMedMappe
             every { oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(capture(oppgaveByttEnhetOgTilordnetRessursRessursSlot)) } returns oppgaveMedMappe
 
@@ -198,10 +222,22 @@ internal class OppgaveServiceTest {
         @Test
         fun `skal nullstille tilordnet ressurs hvis det settes til true`() {
             // Arrange
+            mockkObject(SikkerhetsContext)
+
             val oppgaveId = 1L
             val oppgaveByttEnhetOgTilordnetRessursRessursSlot = slot<OppgaveByttEnhetOgTilordnetRessurs>()
             val oppgaveMedMappe = Oppgave(id = oppgaveId, mappeId = 50, tilordnetRessurs = "tilordnetRessurs")
 
+            every { SikkerhetsContext.hentSaksbehandlerEllerSystembruker() } returns "Z444444"
+
+            every { saksbehandlerService.hentSaksbehandler("Z444444") } returns
+                Saksbehandler(
+                    enhet = "4321",
+                    azureId = UUID.randomUUID(),
+                    navIdent = "testIdent",
+                    fornavn = "testNavn",
+                    etternavn = "testEtternavn",
+                )
             every { oppgaveRestClient.finnOppgaveMedId(oppgaveId) } returns oppgaveMedMappe
             every { oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(capture(oppgaveByttEnhetOgTilordnetRessursRessursSlot)) } returns oppgaveMedMappe
 
@@ -228,9 +264,21 @@ internal class OppgaveServiceTest {
         @Test
         fun `skal flytte oppgave og sette ny mappeId hvis det er sendt inn`() {
             // Arrange
+            mockkObject(SikkerhetsContext)
+
+            every { SikkerhetsContext.hentSaksbehandlerEllerSystembruker() } returns "Z444444"
             val oppgaveId = 1L
             val oppgaveByttEnhetOgTilordnetRessursRessursSlot = slot<OppgaveByttEnhetOgTilordnetRessurs>()
             val oppgaveMedMappe = Oppgave(id = oppgaveId, mappeId = 50, tilordnetRessurs = "tilordnetRessurs")
+
+            every { saksbehandlerService.hentSaksbehandler("Z444444") } returns
+                Saksbehandler(
+                    enhet = "4321",
+                    azureId = UUID.randomUUID(),
+                    navIdent = "testIdent",
+                    fornavn = "testNavn",
+                    etternavn = "testEtternavn",
+                )
 
             every { oppgaveRestClient.finnOppgaveMedId(oppgaveId) } returns oppgaveMedMappe
             every { oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(capture(oppgaveByttEnhetOgTilordnetRessursRessursSlot)) } returns oppgaveMedMappe
@@ -251,6 +299,50 @@ internal class OppgaveServiceTest {
             assertThat(oppgaveByttEnhetOgTilordnetRessurs.id).isEqualTo(1L)
             assertThat(oppgaveByttEnhetOgTilordnetRessurs.tilordnetRessurs).isNull()
             assertThat(oppgaveByttEnhetOgTilordnetRessurs.mappeId).isEqualTo(4500)
+
+            verify(exactly = 1) { oppgaveRestClient.finnOppgaveMedId(oppgaveId) }
+            verify(exactly = 1) { oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(oppgaveByttEnhetOgTilordnetRessurs) }
+        }
+
+        @Test
+        fun `skal sette endretAvEnhetsnr til saksbehandler sin enhet hvis det er SB som gjør endringen`() {
+            // Arrange
+            mockkObject(SikkerhetsContext)
+
+            val oppgaveId = 1L
+            val oppgaveByttEnhetOgTilordnetRessursRessursSlot = slot<OppgaveByttEnhetOgTilordnetRessurs>()
+            val oppgaveMedMappe = Oppgave(id = oppgaveId, mappeId = 50, tilordnetRessurs = "tilordnetRessurs")
+
+            every { SikkerhetsContext.hentSaksbehandlerEllerSystembruker() } returns "Z444444"
+
+            every { saksbehandlerService.hentSaksbehandler("Z444444") } returns
+                Saksbehandler(
+                    enhet = "4321",
+                    azureId = UUID.randomUUID(),
+                    navIdent = "testIdent",
+                    fornavn = "testNavn",
+                    etternavn = "testEtternavn",
+                )
+            every { oppgaveRestClient.finnOppgaveMedId(oppgaveId) } returns oppgaveMedMappe
+            every { oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(capture(oppgaveByttEnhetOgTilordnetRessursRessursSlot)) } returns oppgaveMedMappe
+
+            // Act
+            oppgaveService.tilordneEnhetOgNullstillTilordnetRessurs(
+                oppgaveId = 1L,
+                enhet = "nyEnhet",
+                fjernMappeFraOppgave = false,
+                nullstillTilordnetRessurs = true,
+                versjon = 0,
+                nyMappeId = 4500,
+            )
+
+            // Assert
+            val oppgaveByttEnhetOgTilordnetRessurs = oppgaveByttEnhetOgTilordnetRessursRessursSlot.captured
+
+            assertThat(oppgaveByttEnhetOgTilordnetRessurs.id).isEqualTo(1L)
+            assertThat(oppgaveByttEnhetOgTilordnetRessurs.tilordnetRessurs).isNull()
+            assertThat(oppgaveByttEnhetOgTilordnetRessurs.mappeId).isEqualTo(4500)
+            assertThat(oppgaveByttEnhetOgTilordnetRessurs.endretAvEnhetsnr).isEqualTo("4321")
 
             verify(exactly = 1) { oppgaveRestClient.finnOppgaveMedId(oppgaveId) }
             verify(exactly = 1) { oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(oppgaveByttEnhetOgTilordnetRessurs) }
