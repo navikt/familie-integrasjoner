@@ -27,6 +27,7 @@ class AaregRestClient(
     fun hentArbeidsforhold(
         personIdent: String,
         ansettelsesperiodeFom: LocalDate,
+        ansettelsesperiodeTom: LocalDate? = null,
     ): List<Arbeidsforhold> {
         val uri =
             UriComponentsBuilder
@@ -34,6 +35,7 @@ class AaregRestClient(
                 .path(PATH_ARBEIDSFORHOLD)
                 .queryParam("sporingsinformasjon", "false")
                 .queryParam("ansettelsesperiodeFom", ansettelsesperiodeFom.toString())
+                .queryParam("ansettelsesperiodeTom", ansettelsesperiodeTom?.toString() ?: "")
                 .queryParam("historikk", "true")
                 .build()
                 .toUri()

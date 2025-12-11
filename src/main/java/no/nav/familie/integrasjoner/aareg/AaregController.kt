@@ -22,7 +22,7 @@ class AaregController(
     fun hentArbeidsforhold(
         @RequestBody(required = true) arbeidsforholdRequest: ArbeidsforholdRequest,
     ): Ressurs<List<Arbeidsforhold>> {
-        val arbeidsforhold = aaregService.hentArbeidsforhold(arbeidsforholdRequest.personIdent, arbeidsforholdRequest.ansettelsesperiodeFom)
+        val arbeidsforhold = aaregService.hentArbeidsforhold(arbeidsforholdRequest.personIdent, arbeidsforholdRequest.ansettelsesperiodeFom, arbeidsforholdRequest.ansettelsesperiodeTom)
         return success(arbeidsforhold)
     }
 }
@@ -31,4 +31,6 @@ class ArbeidsforholdRequest(
     val personIdent: String,
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     val ansettelsesperiodeFom: LocalDate,
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    val ansettelsesperiodeTom: LocalDate? = null,
 )

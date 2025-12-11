@@ -122,8 +122,11 @@ class OppgaveController(
         @Parameter(description = "Vil feile med 409 Conflict dersom versjonen ikke stemmer overens med oppgavesystemets versjon")
         @RequestParam(name = "versjon")
         versjon: Int?,
+        @Parameter(description = "Settes til en spesifikk mappe hvis man ønsker å flytte en oppgave til en annen mappe samtidig som man flytter på enheten. Overstyrer fjernMappeFraOppgave hvis det også settes til true.")
+        @RequestParam(name = "mappeId")
+        mappeId: Long?,
     ): ResponseEntity<Ressurs<OppgaveResponse>> {
-        oppgaveService.tilordneEnhetOgNullstillTilordnetRessurs(oppgaveId, enhet, fjernMappeFraOppgave, nullstillTilordnetRessurs, versjon)
+        oppgaveService.tilordneEnhetOgNullstillTilordnetRessurs(oppgaveId, enhet, fjernMappeFraOppgave, nullstillTilordnetRessurs, versjon, mappeId)
         return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
     }
 }

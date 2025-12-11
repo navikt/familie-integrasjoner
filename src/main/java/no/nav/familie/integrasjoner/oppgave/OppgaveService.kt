@@ -2,12 +2,12 @@ package no.nav.familie.integrasjoner.oppgave
 
 import DatoFormat
 import com.fasterxml.jackson.annotation.JsonInclude
-import no.nav.familie.integrasjoner.aktør.AktørService
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.OppslagException.Level
 import no.nav.familie.integrasjoner.saksbehandler.SaksbehandlerService
 import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext.SYSTEM_FORKORTELSE
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
@@ -29,7 +29,6 @@ import java.time.format.DateTimeFormatter
 @ApplicationScope
 class OppgaveService constructor(
     private val oppgaveRestClient: OppgaveRestClient,
-    private val aktørService: AktørService,
     private val saksbehandlerService: SaksbehandlerService,
 ) {
     private val logger = LoggerFactory.getLogger(OppgaveService::class.java)
@@ -80,6 +79,7 @@ class OppgaveService constructor(
                     versjon = versjon ?: oppgave.versjon,
                     tilordnetRessurs = saksbehandler,
                     beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave, nySaksbehandlerIdent = saksbehandler),
+                    endretAvEnhetsnr = oppgave.tildeltEnhetsnr,
                 )
             }
 
@@ -112,12 +112,15 @@ class OppgaveService constructor(
             )
         }
 
+        val endretAvEnhetsnr = hentEnhetSomHarEndretOppgave()
+
         val oppdatertOppgaveDto =
             oppgave.copy(
                 id = oppgave.id,
                 versjon = versjon ?: oppgave.versjon,
                 tilordnetRessurs = "",
                 beskrivelse = lagOppgaveBeskrivelseFordeling(oppgave = oppgave),
+                endretAvEnhetsnr = endretAvEnhetsnr ?: oppgave.endretAvEnhetsnr,
             )
         oppgaveRestClient.oppdaterOppgave(oppdatertOppgaveDto)
 
@@ -182,11 +185,14 @@ class OppgaveService constructor(
 
         when (oppgave.status) {
             StatusEnum.OPPRETTET, StatusEnum.AAPNET, StatusEnum.UNDER_BEHANDLING -> {
+                val endretAvEnhetsnr = hentEnhetSomHarEndretOppgave()
+
                 val patchOppgaveDto =
                     oppgave.copy(
                         id = oppgave.id,
                         versjon = versjon ?: oppgave.versjon,
                         status = StatusEnum.FERDIGSTILT,
+                        endretAvEnhetsnr = endretAvEnhetsnr ?: oppgave.endretAvEnhetsnr,
                     )
                 oppgaveRestClient.oppdaterOppgave(patchOppgaveDto)
             }
@@ -251,9 +257,19 @@ class OppgaveService constructor(
         fjernMappeFraOppgave: Boolean,
         nullstillTilordnetRessurs: Boolean,
         versjon: Int?,
+        nyMappeId: Long?,
     ) {
         val oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
-        val mappeId = if (fjernMappeFraOppgave) null else oppgave.mappeId
+
+        val mappeId =
+            when {
+                nyMappeId != null -> nyMappeId
+                fjernMappeFraOppgave -> null
+                else -> oppgave.mappeId
+            }
+
+        val endretAvEnhetsnr = hentEnhetSomHarEndretOppgave()
+
         val tilordnetRessurs = if (nullstillTilordnetRessurs) null else oppgave.tilordnetRessurs
         oppgaveRestClient.oppdaterEnhetOgTilordnetRessurs(
             OppgaveByttEnhetOgTilordnetRessurs(
@@ -262,9 +278,15 @@ class OppgaveService constructor(
                 versjon = versjon ?: oppgave.versjon!!,
                 mappeId = mappeId,
                 tilordnetRessurs = tilordnetRessurs,
+                endretAvEnhetsnr = endretAvEnhetsnr ?: oppgave.endretAvEnhetsnr,
             ),
         )
     }
+
+    private fun hentEnhetSomHarEndretOppgave() =
+        SikkerhetsContext.hentSaksbehandlerEllerSystembruker().takeIf { it != SYSTEM_FORKORTELSE }?.let {
+            saksbehandlerService.hentSaksbehandler(it).enhet
+        }
 }
 
 data class OppgaveByttEnhetOgTilordnetRessurs(
@@ -273,6 +295,7 @@ data class OppgaveByttEnhetOgTilordnetRessurs(
     val versjon: Int,
     @JsonInclude(JsonInclude.Include.ALWAYS) val mappeId: Long? = null,
     @JsonInclude(JsonInclude.Include.ALWAYS) val tilordnetRessurs: String? = null,
+    val endretAvEnhetsnr: String?,
 )
 
 /**
