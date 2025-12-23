@@ -19,8 +19,8 @@
         <revision>1</revision>
         <sha1></sha1>
         <changelist>-SNAPSHOT</changelist>
-        <java.version>21</java.version>
-        <kotlin.version>2.2.21</kotlin.version>
+        <java.version>25</java.version>
+        <kotlin.version>2.3.0</kotlin.version>
         <springdoc.version>3.0.1</springdoc.version>
         <felles.version>4.20260205101028_6754677</felles.version>
         <kontrakter.version>4.0_20260204122732_558ee1d</kontrakter.version>
