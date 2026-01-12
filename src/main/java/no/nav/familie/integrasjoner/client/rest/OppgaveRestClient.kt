@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
@@ -56,7 +57,23 @@ class OppgaveRestClient(
         return requestOppgaveJson(requestUrl)
     }
 
-    fun finnOppgaveMedId(oppgaveId: Long): Oppgave = getForEntity(requestUrl(oppgaveId), httpHeaders())
+    fun finnOppgaveMedId(oppgaveId: Long): Oppgave {
+        return try {
+            getForEntity(requestUrl(oppgaveId), httpHeaders())
+        } catch (e: HttpClientErrorException) {
+            if (e.statusCode == HttpStatus.FORBIDDEN) {
+                throw OppslagException(
+                    "Ikke tilgang til oppgave med id $oppgaveId",
+                    "oppgave.finnOppgaveMedId",
+                    OppslagException.Level.LAV,
+                    HttpStatus.FORBIDDEN,
+                    e,
+                )
+            } else {
+                throw e
+            }
+        }
+    }
 
     fun buildOppgaveRequestUri(oppgaveRequest: OppgaveRequest): URI =
         UriComponentsBuilder
