@@ -13,6 +13,7 @@ import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.annotasjoner.Improvement
 import no.nav.familie.kontrakter.felles.arbeidsfordeling.Enhet
 import no.nav.familie.kontrakter.felles.navkontor.NavKontorEnhet
+import no.nav.familie.kontrakter.felles.oppgave.Behandlingstype
 import org.slf4j.LoggerFactory
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.Cacheable
@@ -31,8 +32,9 @@ class ArbeidsfordelingService(
     fun finnBehandlendeEnhetForPerson(
         personIdent: String,
         tema: Tema,
+        behandlingstype: Behandlingstype? = null,
     ): List<Enhet> {
-        val kriterie = lagArbeidsfordelingKritierieForPerson(personIdent, tema, tema)
+        val kriterie = lagArbeidsfordelingKritierieForPerson(personIdent, tema, tema, behandlingstype)
         return restClient.finnBehandlendeEnhetMedBesteMatch(kriterie)
     }
 
@@ -49,6 +51,7 @@ class ArbeidsfordelingService(
         personIdent: String,
         pdlTema: Tema,
         arbeidsfordelingstema: Tema,
+        behandlingstype: Behandlingstype? = null,
     ): ArbeidsfordelingKriterie {
         val personinfo = personopplysningerService.hentPersoninfo(personIdent, pdlTema)
         val geografiskTilknytning = utledGeografiskTilknytningKode(pdlRestClient.hentGeografiskTilknytning(personIdent, pdlTema))
@@ -59,6 +62,7 @@ class ArbeidsfordelingService(
             diskresjonskode = diskresjonskode,
             geografiskOmraade = geografiskTilknytning,
             skjermet = egenAnsattService.erEgenAnsatt(personIdent),
+            behandlingstype = behandlingstype?.value,
         )
     }
 

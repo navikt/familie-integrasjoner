@@ -5,4 +5,5 @@ data class ArbeidsfordelingKriterie(
     val geografiskOmraade: String? = null,
     val diskresjonskode: String? = null,
     val skjermet: Boolean,
+    val behandlingstype: String? = null,
 )

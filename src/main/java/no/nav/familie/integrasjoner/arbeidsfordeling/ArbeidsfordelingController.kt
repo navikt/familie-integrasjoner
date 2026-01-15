@@ -6,6 +6,7 @@ import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.arbeidsfordeling.Enhet
 import no.nav.familie.kontrakter.felles.navkontor.NavKontorEnhet
+import no.nav.familie.kontrakter.felles.oppgave.Behandlingstype
 import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -25,7 +27,8 @@ class ArbeidsfordelingController(
     fun hentBehandlendeEnhetForPersonIdentV2(
         @PathVariable(name = "tema") tema: Tema,
         @RequestBody personIdent: PersonIdent,
-    ): ResponseEntity<Ressurs<List<Enhet>>> = ResponseEntity.ok(success(service.finnBehandlendeEnhetForPerson(personIdent.ident, tema)))
+        @RequestParam(required = false) behandlingstype: Behandlingstype?,
+    ): ResponseEntity<Ressurs<List<Enhet>>> = ResponseEntity.ok(success(service.finnBehandlendeEnhetForPerson(personIdent.ident, tema, behandlingstype)))
 
     @PostMapping("/oppfolging/{tema}")
     fun hentOppfølgingsenhetForPerson(
