@@ -24,8 +24,6 @@ spec:
     failureThreshold: 10
   vault:
     enabled: true
-  secureLogs:
-    enabled: true
   prometheus:
     enabled: true
     path: /internal/prometheus
