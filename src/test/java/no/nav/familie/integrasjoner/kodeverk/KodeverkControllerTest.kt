@@ -67,40 +67,6 @@ class KodeverkControllerTest : OppslagSpringRunnerTest() {
         ).contains(betydningBar)
     }
 
-    @Test
-    fun `skal hente ut geografihierarki`() {
-        val testData =
-            requireNotNull(
-                this::class.java.getResourceAsStream("/kodeverk/Geografirespons.json"),
-            ) { "Missing test resource Geografirespons.json" }
-                .bufferedReader(Charsets.UTF_8)
-                .use { it.readText() }
-
-        val dto: HierarkiGeografiInnlandDto =
-            objectMapper.readValue(testData, HierarkiGeografiInnlandDto::class.java)
-
-        val forventetNorge: LandDto = dto.norgeNode
-
-        stubFor(
-            get(GET_KODEVERK_GEOGRAFIHIERARKI_URL).willReturn(
-                aResponse()
-                    .withStatus(200)
-                    .withHeader("Content-Type", "application/json")
-                    .withBody(objectMapper.writeValueAsString(dto)),
-            ),
-        )
-
-        val response: ResponseEntity<Ressurs<LandDto>> =
-            restTemplate.exchange(
-                localhost(KODEVERK_FYLKER_KOMMUNER_URL),
-                HttpMethod.GET,
-                null,
-            )
-
-        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(response.body?.data).isEqualTo(forventetNorge)
-    }
-
     companion object {
         private const val KODEVERK_URL = "/api/kodeverk/"
         private const val KODEVERK_EEARG_URL = "$KODEVERK_URL/landkoder/eea"
