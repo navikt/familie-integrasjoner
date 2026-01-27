@@ -32,6 +32,7 @@ class OppgaveService constructor(
     private val saksbehandlerService: SaksbehandlerService,
 ) {
     private val logger = LoggerFactory.getLogger(OppgaveService::class.java)
+    private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
     fun finnOppgaver(finnOppgaveRequest: FinnOppgaveRequest): FinnOppgaveResponseDto = oppgaveRestClient.finnOppgaver(finnOppgaveRequest)
 
@@ -66,6 +67,8 @@ class OppgaveService constructor(
         }
         val oppdatertOppgaveDto =
             if (endretAvSaksbehandler != null) {
+                secureLogger.info("Fordeler oppgave med id $oppgaveId til saksbehandler $saksbehandler på vegne av $endretAvSaksbehandler enhet: ${saksbehandlerService.hentSaksbehandler(endretAvSaksbehandler).enhet}")
+                secureLogger.info("Oppgave.endretAv ${oppgave.endretAv}")
                 oppgave.copy(
                     id = oppgave.id,
                     versjon = versjon ?: oppgave.versjon,
