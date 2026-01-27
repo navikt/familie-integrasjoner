@@ -112,9 +112,10 @@ class SafRestClient(
                     safJournalpostRequest,
                 ).also { incrementLoggFeil("saf.finnJournalposter") }
         } else {
-            val tilgangFeil = response.errors?.firstOrNull {
-                it.message.contains("Tilgang til ressurs ble avvist") || it.extensions.code == SafErrorCode.forbidden
-            }
+            val tilgangFeil =
+                response.errors?.firstOrNull {
+                    it.message.contains("Tilgang til ressurs ble avvist") || it.extensions.code == SafErrorCode.forbidden
+                }
 
             if (tilgangFeil != null) {
                 incrementLoggFeil("saf.finnJournalposter.forbidden")
