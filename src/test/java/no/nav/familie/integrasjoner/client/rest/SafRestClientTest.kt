@@ -24,12 +24,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.slf4j.MDC
 import org.springframework.http.HttpEntity
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestOperations
-import java.net.URI
-import org.springframework.http.HttpMethod
 import org.springframework.web.client.exchange
+import java.net.URI
 
 class SafRestClientTest {
     private val restOperations: RestOperations = mockk()
@@ -44,36 +44,39 @@ class SafRestClientTest {
     @Test
     fun finnJournalposter() {
         // Arrange
-        val safJournalpostRequest = SafJournalpostRequest(
-            SafRequestForBruker(
-                brukerId = Bruker("12345678901", BrukerIdType.FNR),
-                antall = 10,
-                tema = listOf(Tema.BAR),
-                journalposttype = listOf(Journalposttype.I),
-                journalstatus = emptyList(),
-            ),
-            graphqlQuery("/saf/journalposterForBruker.graphql"),
-        )
+        val safJournalpostRequest =
+            SafJournalpostRequest(
+                SafRequestForBruker(
+                    brukerId = Bruker("12345678901", BrukerIdType.FNR),
+                    antall = 10,
+                    tema = listOf(Tema.BAR),
+                    journalposttype = listOf(Journalposttype.I),
+                    journalstatus = emptyList(),
+                ),
+                graphqlQuery("/saf/journalposterForBruker.graphql"),
+            )
 
-        val response = SafJournalpostResponse<SafJournalpostBrukerData>(
-            data = null,
-            errors = listOf(SafError(message = "Feilmelding", extensions = SafExtension(code = SafErrorCode.forbidden, classification = "Mangler tilgang")))
-        )
+        val response =
+            SafJournalpostResponse<SafJournalpostBrukerData>(
+                data = null,
+                errors = listOf(SafError(message = "Feilmelding", extensions = SafExtension(code = SafErrorCode.forbidden, classification = "Mangler tilgang"))),
+            )
 
         every {
             restOperations.exchange<SafJournalpostResponse<SafJournalpostBrukerData>>(
                 url = URI("pdl/graphql"),
                 method = eq(HttpMethod.POST),
-                requestEntity = any<HttpEntity<SafJournalpostRequest>>()
+                requestEntity = any<HttpEntity<SafJournalpostRequest>>(),
             )
         } answers {
             ResponseEntity(response, HttpStatus.OK)
         }
 
         // Act
-        val journalpostForbiddenException = assertThrows<JournalpostForbiddenException> {
-            safRestClient.finnJournalposter(safJournalpostRequest)
-        }
+        val journalpostForbiddenException =
+            assertThrows<JournalpostForbiddenException> {
+                safRestClient.finnJournalposter(safJournalpostRequest)
+            }
 
         // Assert
         assertThat(journalpostForbiddenException.message).isEqualTo("Feilmelding")

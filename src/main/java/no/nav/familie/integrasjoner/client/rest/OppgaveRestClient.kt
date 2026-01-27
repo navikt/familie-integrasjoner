@@ -57,8 +57,8 @@ class OppgaveRestClient(
         return requestOppgaveJson(requestUrl)
     }
 
-    fun finnOppgaveMedId(oppgaveId: Long): Oppgave {
-        return try {
+    fun finnOppgaveMedId(oppgaveId: Long): Oppgave =
+        try {
             getForEntity(requestUrl(oppgaveId), httpHeaders())
         } catch (e: HttpClientErrorException) {
             if (e.statusCode == HttpStatus.FORBIDDEN) {
@@ -73,7 +73,6 @@ class OppgaveRestClient(
                 throw e
             }
         }
-    }
 
     fun buildOppgaveRequestUri(oppgaveRequest: OppgaveRequest): URI =
         UriComponentsBuilder

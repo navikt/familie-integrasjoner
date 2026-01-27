@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/ping")
 class PingController {
-    @GetMapping
+    @GetMapping(produces = ["text/plain"])
     fun ping(): ResponseEntity<String> = ResponseEntity.ok("pong")
 }
