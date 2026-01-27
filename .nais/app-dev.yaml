@@ -12,6 +12,8 @@ metadata:
 spec:
   image: {{ image }}
   port: 8085
+  envFrom:
+    - secret: familie-integrasjoner-sftp
   liveness:
     path: /internal/status/isAlive
     initialDelay: 30
