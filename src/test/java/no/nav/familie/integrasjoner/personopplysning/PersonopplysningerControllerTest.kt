@@ -18,7 +18,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
-import org.springframework.boot.test.web.client.exchange
+import org.springframework.boot.resttestclient.exchange
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -48,11 +48,11 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
             .apply {
                 add("Nav-Personident", "12345678901")
             }.setBearerAuth(lagToken("testbruker"))
-        uriHentIdenter = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}v1/identer/$TEMA").toUriString()
-        uriHentAktørId = UriComponentsBuilder.fromHttpUrl("${localhost(PDL_BASE_URL)}aktorId/$TEMA").toUriString()
+        uriHentIdenter = UriComponentsBuilder.fromUriString("${localhost(PDL_BASE_URL)}v1/identer/$TEMA").toUriString()
+        uriHentAktørId = UriComponentsBuilder.fromUriString("${localhost(PDL_BASE_URL)}aktorId/$TEMA").toUriString()
         uriHentStrengesteGradering =
             UriComponentsBuilder
-                .fromHttpUrl("${localhost(PDL_BASE_URL)}strengeste-adressebeskyttelse-for-person-med-relasjoner")
+                .fromUriString("${localhost(PDL_BASE_URL)}strengeste-adressebeskyttelse-for-person-med-relasjoner")
                 .toUriString()
     }
 

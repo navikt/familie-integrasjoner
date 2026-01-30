@@ -34,7 +34,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.slf4j.LoggerFactory
-import org.springframework.boot.test.web.client.exchange
+import org.springframework.boot.resttestclient.exchange
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -48,7 +48,7 @@ import org.wiremock.spring.EnableWireMock
 import java.time.LocalDateTime
 
 @EnableWireMock(
-    ConfigureWireMock(name = "integrasjonstest", port = 28085),
+    ConfigureWireMock(name = "HentJournalpostControllerTest", port = 28085),
 )
 @TestPropertySource(properties = ["SAF_URL=http://localhost:28085"])
 @ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth", "mock-egenansatt-false")
@@ -67,17 +67,17 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
         headers.setBearerAuth(lagToken("testbruker"))
         uriHentSaksnummer =
             UriComponentsBuilder
-                .fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/sak")
+                .fromUriString(localhost(JOURNALPOST_BASE_URL) + "/sak")
                 .queryParam("journalpostId", JOURNALPOST_ID)
                 .toUriString()
         uriHentJournalpost =
             UriComponentsBuilder
-                .fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
+                .fromUriString(localhost(JOURNALPOST_BASE_URL))
                 .queryParam("journalpostId", JOURNALPOST_ID)
                 .toUriString()
         uriHentTilgangsstyrtJournalpost =
             UriComponentsBuilder
-                .fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/tilgangsstyrt/baks")
+                .fromUriString(localhost(JOURNALPOST_BASE_URL) + "/tilgangsstyrt/baks")
                 .queryParam("journalpostId", JOURNALPOST_ID)
                 .toUriString()
         uriHentDokument = localhost(JOURNALPOST_BASE_URL) + "/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID"
@@ -109,7 +109,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
     fun `hent tilgangsstyrt baks journalpost skal returnere journalpost og status ok`() {
         val uriHentTilgangsstyrtBaksJournalpost =
             UriComponentsBuilder
-                .fromHttpUrl(localhost("$JOURNALPOST_BASE_URL/tilgangsstyrt/baks"))
+                .fromUriString(localhost("$JOURNALPOST_BASE_URL/tilgangsstyrt/baks"))
                 .queryParam("journalpostId", JOURNALPOST_ID)
                 .toUriString()
         stubFor(
