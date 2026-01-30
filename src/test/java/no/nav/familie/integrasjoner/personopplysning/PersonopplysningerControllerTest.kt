@@ -1,6 +1,10 @@
 package no.nav.familie.integrasjoner.personopplysning
 
 import ch.qos.logback.classic.Logger
+import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.stubFor
+import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING
@@ -11,27 +15,24 @@ import no.nav.familie.kontrakter.felles.personopplysning.Ident
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockserver.integration.ClientAndServer
-import org.mockserver.junit.jupiter.MockServerExtension
-import org.mockserver.junit.jupiter.MockServerSettings
-import org.mockserver.model.Header
-import org.mockserver.model.HttpRequest
-import org.mockserver.model.HttpResponse
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestPropertySource
 import org.springframework.web.util.UriComponentsBuilder
+import org.wiremock.spring.ConfigureWireMock
+import org.wiremock.spring.EnableWireMock
 
 @ActiveProfiles("integrasjonstest", "mock-personopplysninger", "mock-oauth")
-@ExtendWith(MockServerExtension::class)
-@MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
-class PersonopplysningerControllerTest(
-    val client: ClientAndServer,
-) : OppslagSpringRunnerTest() {
+@TestPropertySource(properties = ["PDL_URL=http://localhost:28085"])
+@EnableWireMock(
+    ConfigureWireMock(name = "personopplysning", port = 28085),
+)
+class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
     private val testLogger = LoggerFactory.getLogger(PersonopplysningerControllerTest::class.java) as Logger
 
     private lateinit var uriHentIdenter: String
@@ -40,7 +41,6 @@ class PersonopplysningerControllerTest(
 
     @BeforeEach
     fun setUp() {
-        client.reset()
         testLogger.addAppender(listAppender)
         headers
             .apply {
@@ -57,19 +57,18 @@ class PersonopplysningerControllerTest(
     @Test
     fun `hent identer til en person`() {
         val ident = "12345678901"
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("POST")
-                    .withPath("/rest/pdl/graphql")
-                    .withHeader("Tema", TEMA),
-            ).respond(
-                HttpResponse
-                    .response()
-                    .withBody(readfile("pdlIdenterResponse.json"))
-                    .withHeaders(Header("Content-Type", "application/json")),
-            )
+        stubFor(
+            post(urlEqualTo("/graphql"))
+                .withHeader(
+                    "Tema",
+                    com.github.tomakehurst.wiremock.client.WireMock
+                        .equalTo(TEMA),
+                ).willReturn(
+                    aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(readfile("pdlIdenterResponse.json")),
+                ),
+        )
         val response =
             restTemplate.exchange<Ressurs<FinnPersonidenterResponse>>(
                 uriHentIdenter,
@@ -108,45 +107,54 @@ class PersonopplysningerControllerTest(
         persongradering: String,
         barngradering: String,
     ) {
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("POST")
-                    .withPath("/rest/pdl/graphql")
-                    .withBody(gyldigRequestIdentListe("hentpersoner-relasjoner-adressebeskyttelse.graphql"))
-                    .withHeader("Tema", "ENF"),
-            ).respond(
-                HttpResponse
-                    .response()
-                    .withBody(
-                        readfile("pdlPersonMedRelasjonerOkResponse.json")
-                            .replace("IDENT-PLACEHOLDER", ident)
-                            .replace("GRADERING-PLACEHOLDER", persongradering),
-                    ).withHeaders(Header("Content-Type", "application/json")),
-            )
-
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("POST")
-                    .withPath("/rest/pdl/graphql")
-                    .withBody(
-                        gyldigRequestIdentListe(
-                            "hentpersoner-relasjoner-adressebeskyttelse.graphql",
-                            ident = barnsIdent,
+        stubFor(
+            post(urlEqualTo("/graphql"))
+                .withHeader(
+                    "Tema",
+                    com.github.tomakehurst.wiremock.client.WireMock
+                        .equalTo("ENF"),
+                ).withRequestBody(
+                    com.github.tomakehurst.wiremock.client.WireMock
+                        .matchingJsonPath(
+                            "$.variables.identer[0]",
+                            com.github.tomakehurst.wiremock.client.WireMock
+                                .equalTo(ident),
                         ),
-                    ).withHeader("Tema", "ENF"),
-            ).respond(
-                HttpResponse
-                    .response()
-                    .withBody(
-                        readfile("pdlPersonMedRelasjonerOkResponse.json")
-                            .replace("IDENT-PLACEHOLDER", barnsIdent)
-                            .replace("GRADERING-PLACEHOLDER", barngradering),
-                    ).withHeaders(Header("Content-Type", "application/json")),
-            )
+                ).willReturn(
+                    aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(
+                            readfile("pdlPersonMedRelasjonerOkResponse.json")
+                                .replace("IDENT-PLACEHOLDER", ident)
+                                .replace("GRADERING-PLACEHOLDER", persongradering),
+                        ),
+                ),
+        )
+
+        println(gyldigRequestIdentListe("hentpersoner-relasjoner-adressebeskyttelse.graphql"))
+        stubFor(
+            post(urlEqualTo("/graphql"))
+                .withHeader(
+                    "Tema",
+                    com.github.tomakehurst.wiremock.client.WireMock
+                        .equalTo("ENF"),
+                ).withRequestBody(
+                    com.github.tomakehurst.wiremock.client.WireMock
+                        .matchingJsonPath(
+                            "$.variables.identer[0]",
+                            com.github.tomakehurst.wiremock.client.WireMock
+                                .equalTo(barnsIdent),
+                        ),
+                ).willReturn(
+                    aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(
+                            readfile("pdlPersonMedRelasjonerOkResponse.json")
+                                .replace("IDENT-PLACEHOLDER", barnsIdent)
+                                .replace("GRADERING-PLACEHOLDER", barngradering),
+                        ),
+                ),
+        )
     }
 
     private fun gyldigRequestIdentListe(
