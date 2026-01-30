@@ -12,7 +12,7 @@ import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import org.slf4j.LoggerFactory
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
-import org.springframework.boot.web.client.RestTemplateBuilder
+import org.springframework.boot.restclient.RestTemplateBuilder
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
@@ -40,7 +40,7 @@ class ApplicationConfig {
     fun logFilter(): FilterRegistrationBean<LogFilter> {
         logger.info("Registering LogFilter filter")
         val filterRegistration = FilterRegistrationBean<LogFilter>()
-        filterRegistration.filter = LogFilter(systemtype = NavSystemtype.NAV_INTEGRASJON)
+        filterRegistration.setFilter(LogFilter(systemtype = NavSystemtype.NAV_INTEGRASJON))
         filterRegistration.order = 1
         return filterRegistration
     }
@@ -49,7 +49,7 @@ class ApplicationConfig {
     fun requestTimeFilter(): FilterRegistrationBean<RequestTimeFilter> {
         logger.info("Registering RequestTimeFilter filter")
         val filterRegistration = FilterRegistrationBean<RequestTimeFilter>()
-        filterRegistration.filter = RequestTimeFilter()
+        filterRegistration.setFilter(RequestTimeFilter())
         filterRegistration.order = 2
         return filterRegistration
     }

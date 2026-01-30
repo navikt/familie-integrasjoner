@@ -13,7 +13,7 @@ import no.nav.familie.kontrakter.felles.dokdist.Distribusjonstype
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.web.client.exchange
+import org.springframework.boot.resttestclient.exchange
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -30,7 +30,7 @@ import java.nio.file.Files
 @ActiveProfiles("integrasjonstest", "mock-oauth")
 @TestPropertySource(properties = ["DOKDIST_URL=http://localhost:28085"])
 @EnableWireMock(
-    ConfigureWireMock(name = "dokdist", port = 28085),
+    ConfigureWireMock(name = "DokdistControllerTest", port = 28085),
 )
 class DokdistControllerTest : OppslagSpringRunnerTest() {
     @BeforeEach

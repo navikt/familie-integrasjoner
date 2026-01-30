@@ -8,7 +8,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.springframework.boot.test.web.client.exchange
+import org.springframework.boot.resttestclient.exchange
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
@@ -28,7 +28,7 @@ class FiloverføringAdraMatchControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `skal koble opp og laste opp fil`() {
         sftpServer.createDirectory("/inbound")
-        val uri = UriComponentsBuilder.fromHttpUrl(localhost(BASE_URL)).toUriString()
+        val uri = UriComponentsBuilder.fromUriString(localhost(BASE_URL)).toUriString()
         val payload = Fil("file.txt", "Filinnhold".toByteArray())
         val response: ResponseEntity<Ressurs<String>> =
             restTemplate.exchange(

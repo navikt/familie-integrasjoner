@@ -18,7 +18,7 @@ import no.nav.familie.log.NavHttpHeaders
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.web.client.postForObject
+import org.springframework.boot.resttestclient.postForObject
 import org.springframework.http.HttpEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
@@ -57,7 +57,7 @@ class SkyggesakControllerTest : OppslagSpringRunnerTest() {
                 .withHeader("X-Correlation-ID", equalTo("callIdTest")),
         )
 
-        assertThat(response?.status).isEqualTo(SUKSESS)
+        assertThat(response?.status.toString()).isEqualTo(SUKSESS.toString())
     }
 
     @Test

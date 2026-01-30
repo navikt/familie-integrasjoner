@@ -58,7 +58,7 @@ class DokarkivRestClient(
             if (feilVedJournalføring is HttpClientErrorException.Conflict) {
                 logger.warn("409 ved oppretting av journalpost med eksternReferanseId=${jp.eksternReferanseId}. Denne journalposten er allerede journalført. Returnerer body fra feilmelding som er en OpprettJournalpostResponse.")
                 return try {
-                    feilVedJournalføring.getResponseBodyAs(OpprettJournalpostResponse::class.java)
+                    feilVedJournalføring.getResponseBodyAs(OpprettJournalpostResponse::class.java) ?: throw feilVedJournalføring
                 } catch (parsingFeil: RuntimeException) {
                     throw oppslagExceptionVed("opprettelse", feilVedJournalføring, jp.bruker?.id, "dokarkiv.opprettJournalpost")
                 }

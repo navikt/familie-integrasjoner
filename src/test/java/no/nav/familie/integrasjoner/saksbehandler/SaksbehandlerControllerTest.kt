@@ -14,7 +14,7 @@ import no.nav.familie.kontrakter.felles.saksbehandler.SaksbehandlerGrupper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.web.client.exchange
+import org.springframework.boot.resttestclient.exchange
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
@@ -59,7 +59,7 @@ class SaksbehandlerControllerTest : OppslagSpringRunnerTest() {
         )
         val uri =
             UriComponentsBuilder
-                .fromHttpUrl(localhost(BASE_URL))
+                .fromUriString(localhost(BASE_URL))
                 .pathSegment(id.toString())
                 .toUriString()
 
@@ -111,7 +111,7 @@ class SaksbehandlerControllerTest : OppslagSpringRunnerTest() {
         )
         val uri =
             UriComponentsBuilder
-                .fromHttpUrl(localhost(BASE_URL))
+                .fromUriString(localhost(BASE_URL))
                 .pathSegment(navIdent)
                 .toUriString()
 
@@ -180,7 +180,7 @@ class SaksbehandlerControllerTest : OppslagSpringRunnerTest() {
         )
         val uri =
             UriComponentsBuilder
-                .fromHttpUrl(localhost(BASE_URL))
+                .fromUriString(localhost(BASE_URL))
                 .pathSegment(navIdent)
                 .pathSegment("grupper")
                 .toUriString()

@@ -16,7 +16,8 @@
               "dokumentstatus": null,
               "dokumentvarianter": [
                 {
-                  "variantformat": "ARKIV"
+                  "variantformat": "ARKIV",
+                  "saksbehandlerHarTilgang":true
                 }
               ],
               "logiskeVedlegg": []
