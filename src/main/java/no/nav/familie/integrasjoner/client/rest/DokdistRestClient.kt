@@ -1,9 +1,11 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.integrasjoner.dokdist.NullResponseException
 import no.nav.familie.integrasjoner.dokdist.domene.DistribuerJournalpostRequestTo
 import no.nav.familie.integrasjoner.dokdist.domene.DistribuerJournalpostResponseTo
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.restklient.client.AbstractPingableRestClient
+import no.nav.familie.restklient.client.ResponseBodyNullException
 import no.nav.familie.restklient.util.UriUtil
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -28,6 +30,8 @@ class DokdistRestClient(
         } catch (e: Exception) {
             if (e is HttpClientErrorException.Gone) {
                 throw e
+            } else if (e is ResponseBodyNullException) {
+                throw NullResponseException()
             } else {
                 throw OppslagException(
                     "Feil ved distribuering av journalpost",

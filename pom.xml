@@ -22,7 +22,7 @@
         <java.version>21</java.version>
         <kotlin.version>2.2.21</kotlin.version>
         <springdoc.version>3.0.1</springdoc.version>
-        <felles.version>4.20260128165036_0708695</felles.version>
+        <felles.version>4.20260202144132_4f8f070</felles.version>
         <kontrakter.version>4.0_20260202125108_bec1903</kontrakter.version>
         <token-validation-spring.version>6.0.1</token-validation-spring.version>
         <graphql-kotlin.version>8.8.1</graphql-kotlin.version>
@@ -61,6 +61,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jackson</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
