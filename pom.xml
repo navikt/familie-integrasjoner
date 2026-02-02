@@ -26,11 +26,7 @@
         <kontrakter.version>3.0_20251128100735_eaf6aa1</kontrakter.version>
         <token-validation-spring.version>5.0.37</token-validation-spring.version>
         <graphql-kotlin.version>8.8.1</graphql-kotlin.version>
-
         <mock-server.version>5.15.0</mock-server.version>
-
-        <spring.cloud>4.3.0</spring.cloud>
-
     </properties>
 
     <dependencies>
@@ -73,9 +69,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-contract-wiremock</artifactId>
-            <version>${spring.cloud}</version>
+            <groupId>org.wiremock.integrations</groupId>
+            <artifactId>wiremock-spring-boot-standalone</artifactId>
+            <version>4.0.9</version>
             <scope>test</scope>
         </dependency>
 
@@ -206,12 +202,7 @@
             <version>2.0.1</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock-jre8-standalone</artifactId>
-            <version>2.35.2</version>
-            <scope>test</scope>
-        </dependency>
+
 
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>

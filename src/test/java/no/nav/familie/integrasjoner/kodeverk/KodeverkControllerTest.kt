@@ -15,17 +15,20 @@ import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.exchange
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
+import org.wiremock.spring.ConfigureWireMock
+import org.wiremock.spring.EnableWireMock
 import java.time.LocalDate
 
 @ActiveProfiles("integrasjonstest", "mock-oauth")
 @TestPropertySource(properties = ["KODEVERK_URL=http://localhost:28085"])
-@AutoConfigureWireMock(port = 28085)
+@EnableWireMock(
+    ConfigureWireMock(name = "KodeverkControllerTest", port = 28085),
+)
 class KodeverkControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `skal hente landkoder for EØS`() {
