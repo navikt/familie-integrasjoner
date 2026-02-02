@@ -1,6 +1,5 @@
 package no.nav.familie.integrasjoner.client
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.familie.kontrakter.felles.jsonMapper
 import org.springframework.util.LinkedMultiValueMap
 import tools.jackson.module.kotlin.readValue

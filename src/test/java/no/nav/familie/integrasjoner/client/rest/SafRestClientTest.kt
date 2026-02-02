@@ -1,6 +1,5 @@
 package no.nav.familie.integrasjoner.client.rest
 
-import com.expediagroup.graphql.client.types.AutomaticPersistedQueriesSettings
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic

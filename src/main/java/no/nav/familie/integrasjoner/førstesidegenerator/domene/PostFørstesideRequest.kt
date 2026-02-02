@@ -2,7 +2,6 @@ package no.nav.familie.integrasjoner.førstesidegenerator.domene
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import no.nav.familie.kontrakter.felles.Språkkode
-import java.util.ArrayList
 
 data class PostFørstesideRequest(
     @JsonProperty("spraakkode")

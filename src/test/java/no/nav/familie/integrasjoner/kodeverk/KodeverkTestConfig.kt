@@ -1,6 +1,5 @@
 package no.nav.familie.integrasjoner.kodeverk
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.familie.integrasjoner.client.rest.KodeverkClient
