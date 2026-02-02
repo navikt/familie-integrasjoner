@@ -1,5 +1,9 @@
 package no.nav.familie.integrasjoner.dokdist
 
+import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.stubFor
+import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.kontrakter.felles.Fagsystem
 import no.nav.familie.kontrakter.felles.Ressurs
@@ -9,12 +13,6 @@ import no.nav.familie.kontrakter.felles.dokdist.Distribusjonstype
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockserver.integration.ClientAndServer
-import org.mockserver.junit.jupiter.MockServerExtension
-import org.mockserver.junit.jupiter.MockServerSettings
-import org.mockserver.model.HttpRequest
-import org.mockserver.model.HttpResponse
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpEntity
@@ -22,19 +20,21 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestPropertySource
+import org.wiremock.spring.ConfigureWireMock
+import org.wiremock.spring.EnableWireMock
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
-@ActiveProfiles(profiles = ["integrasjonstest", "mock-oauth"])
-@ExtendWith(MockServerExtension::class)
-@MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
-class DokdistControllerTest(
-    val client: ClientAndServer,
-) : OppslagSpringRunnerTest() {
+@ActiveProfiles("integrasjonstest", "mock-oauth")
+@TestPropertySource(properties = ["DOKDIST_URL=http://localhost:28085"])
+@EnableWireMock(
+    ConfigureWireMock(name = "dokdist", port = 28085),
+)
+class DokdistControllerTest : OppslagSpringRunnerTest() {
     @BeforeEach
     fun setUp() {
-        client.reset()
         headers.setBearerAuth(lokalTestToken)
     }
 
@@ -98,30 +98,27 @@ class DokdistControllerTest(
     }
 
     private fun mockGodkjentKallMotDokDist() {
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("POST")
-                    .withPath("/rest/v1/distribuerjournalpost"),
-            ).respond(
-                HttpResponse
-                    .response()
-                    .withStatusCode(200)
-                    .withHeader("Content-Type", "application/json;charset=UTF-8")
-                    .withBody("{\"bestillingsId\": \"1234567\"}"),
-            )
+        stubFor(
+            post(urlEqualTo("/rest/v1/distribuerjournalpost"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json;charset=UTF-8")
+                        .withBody("{\"bestillingsId\": \"1234567\"}"),
+                ),
+        )
     }
 
     @Test
     fun `dokdist returnerer OK uten bestillingsId`() {
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("POST")
-                    .withPath("/rest/v1/distribuerjournalpost"),
-            ).respond(HttpResponse.response().withStatusCode(200).withBody(""))
+        stubFor(
+            post(urlEqualTo("/rest/v1/distribuerjournalpost"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(200)
+                        .withBody(""),
+                ),
+        )
 
         val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak", null)
         val response: ResponseEntity<Ressurs<String>> =
@@ -138,19 +135,15 @@ class DokdistControllerTest(
 
     @Test
     fun `dokdist returnerer 400`() {
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("POST")
-                    .withPath("/rest/v1/distribuerjournalpost"),
-            ).respond(
-                HttpResponse
-                    .response()
-                    .withStatusCode(400)
-                    .withHeader("Content-Type", "application/json; charset=utf-8")
-                    .withBody(badRequestResponse()),
-            )
+        stubFor(
+            post(urlEqualTo("/rest/v1/distribuerjournalpost"))
+                .willReturn(
+                    aResponse()
+                        .withStatus(400)
+                        .withHeader("Content-Type", "application/json; charset=utf-8")
+                        .withBody(badRequestResponse()),
+                ),
+        )
 
         val body = DistribuerJournalpostRequest(JOURNALPOST_ID, Fagsystem.BA, "ba-sak", null)
         val response: ResponseEntity<Ressurs<String>> =

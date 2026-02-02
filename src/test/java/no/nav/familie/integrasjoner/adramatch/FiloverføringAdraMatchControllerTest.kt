@@ -18,7 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder
 @ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
 class FiloverføringAdraMatchControllerTest : OppslagSpringRunnerTest() {
     @get:Rule
-    val sftpServer: FakeSftpServerRule = FakeSftpServerRule().apply { port = MOCK_SERVER_PORT }
+    val sftpServer: FakeSftpServerRule = FakeSftpServerRule().apply { port = MOCK_SFTP_SERVER_PORT }
 
     @Before
     fun setUp() {
@@ -43,6 +43,6 @@ class FiloverføringAdraMatchControllerTest : OppslagSpringRunnerTest() {
 
     companion object {
         const val BASE_URL = "/api/adramatch/avstemming"
-        const val MOCK_SERVER_PORT = 18321
+        const val MOCK_SFTP_SERVER_PORT = 18321
     }
 }

@@ -35,7 +35,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.web.client.exchange
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -43,6 +42,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
+import org.wiremock.spring.ConfigureWireMock
+import org.wiremock.spring.EnableWireMock
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.time.LocalDate
@@ -50,7 +51,9 @@ import java.util.UUID
 
 @ActiveProfiles("integrasjonstest", "mock-oauth")
 @TestPropertySource(properties = ["OPPGAVE_URL=http://localhost:28085", "AAD_GRAPH_API_URI=http://localhost:28085"])
-@AutoConfigureWireMock(port = 28085)
+@EnableWireMock(
+    ConfigureWireMock(name = "OppgaveControllerTest", port = 28085),
+)
 class OppgaveControllerTest : OppslagSpringRunnerTest() {
     @BeforeEach
     fun setup() {

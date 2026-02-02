@@ -19,14 +19,17 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.postForObject
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.http.HttpEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
+import org.wiremock.spring.ConfigureWireMock
+import org.wiremock.spring.EnableWireMock
 
 @ActiveProfiles("integrasjonstest", "mock-sts")
 @TestPropertySource(properties = ["SKYGGE_SAK_URL=http://localhost:28085"])
-@AutoConfigureWireMock(port = 28085)
+@EnableWireMock(
+    ConfigureWireMock(name = "SkyggesakControllerTest", port = 28085),
+)
 class SkyggesakControllerTest : OppslagSpringRunnerTest() {
     @BeforeEach
     fun setup() {

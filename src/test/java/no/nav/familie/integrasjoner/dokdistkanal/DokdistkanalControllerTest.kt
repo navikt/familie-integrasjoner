@@ -27,14 +27,17 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.web.client.postForObject
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.http.HttpEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
+import org.wiremock.spring.ConfigureWireMock
+import org.wiremock.spring.EnableWireMock
 
 @ActiveProfiles("integrasjonstest", "mock-oauth")
 @TestPropertySource(properties = ["DOKDISTKANAL_URL=http://localhost:28085", "REGOPPSLAG_URL=http://localhost:28085"])
-@AutoConfigureWireMock(port = 28085)
+@EnableWireMock(
+    ConfigureWireMock(name = "DokdistkanalControllerTest", port = 28085),
+)
 class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
     @BeforeEach
     fun setup() {

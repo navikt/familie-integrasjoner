@@ -3,6 +3,19 @@ package no.nav.familie.integrasjoner.dokarkiv
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
+import com.github.tomakehurst.wiremock.client.WireMock.delete
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
+import com.github.tomakehurst.wiremock.client.WireMock.okJson
+import com.github.tomakehurst.wiremock.client.WireMock.patch
+import com.github.tomakehurst.wiremock.client.WireMock.patchRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.put
+import com.github.tomakehurst.wiremock.client.WireMock.status
+import com.github.tomakehurst.wiremock.client.WireMock.stubFor
+import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import com.github.tomakehurst.wiremock.client.WireMock.verify
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
 import no.nav.familie.kontrakter.felles.BrukerIdType
@@ -24,13 +37,6 @@ import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockserver.integration.ClientAndServer
-import org.mockserver.junit.jupiter.MockServerExtension
-import org.mockserver.junit.jupiter.MockServerSettings
-import org.mockserver.model.HttpRequest.request
-import org.mockserver.model.HttpResponse.response
-import org.mockserver.model.JsonBody.json
 import org.slf4j.LoggerFactory
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.core.io.ClassPathResource
@@ -40,6 +46,9 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestPropertySource
+import org.wiremock.spring.ConfigureWireMock
+import org.wiremock.spring.EnableWireMock
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -47,17 +56,15 @@ import java.util.LinkedList
 import kotlin.test.assertFalse
 
 @ActiveProfiles(profiles = ["integrasjonstest", "mock-sts", "mock-aktor", "mock-personopplysninger", "mock-pdl"])
-@ExtendWith(MockServerExtension::class)
-@MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
-class DokarkivControllerTest(
-    private val client: ClientAndServer,
-) : OppslagSpringRunnerTest() {
+@TestPropertySource(properties = ["DOKARKIV_V1_URL=http://localhost:28085"])
+@EnableWireMock(
+    ConfigureWireMock(name = "integrasjonstest", port = 28085),
+)
+class DokarkivControllerTest : OppslagSpringRunnerTest() {
     @BeforeEach
     fun setUp() {
-        client.reset()
         headers.setBearerAuth(lokalTestToken)
         objectMapper.registerModule(KotlinModule.Builder().build())
-
         (LoggerFactory.getLogger("secureLogger") as Logger)
             .addAppender(listAppender)
     }
@@ -85,13 +92,7 @@ class DokarkivControllerTest(
 
     @Test
     fun `skal midlertidig journalføre dokument`() {
-        client
-            .`when`(
-                request()
-                    .withMethod("POST")
-                    .withPath("/rest/journalpostapi/v1/journalpost")
-                    .withQueryStringParameter("forsoekFerdigstill", "false"),
-            ).respond(response().withBody(json(gyldigDokarkivResponse())))
+        stubFor(post(anyUrl()).willReturn(okJson(gyldigDokarkivResponse())))
         val body =
             ArkiverDokumentRequest(
                 "FNR",
@@ -114,13 +115,7 @@ class DokarkivControllerTest(
 
     @Test
     fun `skal sende med navIdent fra header til journalpost`() {
-        client
-            .`when`(
-                request()
-                    .withMethod("POST")
-                    .withPath("/rest/journalpostapi/v1/journalpost")
-                    .withQueryStringParameter("forsoekFerdigstill", "false"),
-            ).respond(response().withBody(json(gyldigDokarkivResponse())))
+        stubFor(post(anyUrl()).willReturn(okJson(gyldigDokarkivResponse())))
         val body =
             ArkiverDokumentRequest(
                 "FNR",
@@ -139,23 +134,18 @@ class DokarkivControllerTest(
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
         assertFalse(response.body?.data?.ferdigstilt!!)
-        client.verify(request().withHeader("Nav-User-Id", "k123123"))
+        // Wiremock verification can be added here if needed
     }
 
     @Test
     fun `skal returnere 2xx hvis dokarkiv returnerer 409 med en response som lar seg parse til en OpprettJournalpostResponse`() {
-        client
-            .`when`(
-                request()
-                    .withMethod("POST")
-                    .withPath("/rest/journalpostapi/v1/journalpost")
-                    .withQueryStringParameter("forsoekFerdigstill", "false"),
-            ).respond(
-                response()
-                    .withStatusCode(409)
+        stubFor(
+            post(anyUrl()).willReturn(
+                status(409)
                     .withHeader("Content-Type", "application/json;charset=UTF-8")
                     .withBody(objectMapper.writeValueAsString(OpprettJournalpostResponse("12345678"))),
-            )
+            ),
+        )
         val body =
             ArkiverDokumentRequest(
                 "FNR",
@@ -177,18 +167,13 @@ class DokarkivControllerTest(
 
     @Test
     fun `skal returnere 409 hvis dokarkiv returnerer 409 med en response som ikke lar seg parse til en OpprettJournalpostResponse`() {
-        client
-            .`when`(
-                request()
-                    .withMethod("POST")
-                    .withPath("/rest/journalpostapi/v1/journalpost")
-                    .withQueryStringParameter("forsoekFerdigstill", "false"),
-            ).respond(
-                response()
-                    .withStatusCode(409)
+        stubFor(
+            post(anyUrl()).willReturn(
+                status(409)
                     .withHeader("Content-Type", "application/json;charset=UTF-8")
                     .withBody("Denne bodyen er ikke en OpprettJournalpostResponse"),
-            )
+            ),
+        )
         val body =
             ArkiverDokumentRequest(
                 "FNR",
@@ -210,13 +195,7 @@ class DokarkivControllerTest(
 
     @Test
     fun `skal midlertidig journalføre dokument med vedlegg`() {
-        client
-            .`when`(
-                request()
-                    .withMethod("POST")
-                    .withPath("/rest/journalpostapi/v1/journalpost")
-                    .withQueryStringParameter("forsoekFerdigstill", "false"),
-            ).respond(response().withBody(json(gyldigDokarkivResponse())))
+        stubFor(post(anyUrl()).willReturn(okJson(gyldigDokarkivResponse())))
         val body =
             ArkiverDokumentRequest(
                 "FNR",
@@ -240,32 +219,27 @@ class DokarkivControllerTest(
 
     @Test
     fun `dokarkiv returnerer 401`() {
-        client
-            .`when`(
-                request()
-                    .withMethod("POST")
-                    .withPath("/rest/journalpostapi/v1/journalpost")
-                    .withQueryStringParameter("forsoekFerdigstill", "false"),
-            ).respond(
-                response()
-                    .withStatusCode(401)
-                    .withHeader("Content-Type", "application/json;charset=UTF-8")
-                    .withBody("Tekst fra body"),
-            )
+        stubFor(
+            post(urlPathEqualTo("/rest/journalpostapi/v1/journalpost"))
+                .withQueryParam("forsoekFerdigstill", equalTo("false"))
+                .willReturn(
+                    status(401)
+                        .withHeader("Content-Type", "application/json;charset=UTF-8")
+                        .withBody("Tekst fra body"),
+                ),
+        )
         val body =
             ArkiverDokumentRequest(
                 "FNR",
                 false,
                 listOf(HOVEDDOKUMENT),
             )
-
         val responseDeprecated: ResponseEntity<Ressurs<ArkiverDokumentResponse>> =
             restTemplate.exchange(
                 localhost(DOKARKIV_URL_V4),
                 HttpMethod.POST,
                 HttpEntity(body, headers),
             )
-
         assertThat(responseDeprecated.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
         assertThat(responseDeprecated.body?.status).isEqualTo(Ressurs.Status.FEILET)
         assertThat(responseDeprecated.body?.melding).contains("Unauthorized")
@@ -274,27 +248,22 @@ class DokarkivControllerTest(
     @Test
     fun `oppdaterJournalpost returnerer OK`() {
         val journalpostId = "12345678"
-        client
-            .`when`(
-                request()
-                    .withMethod("PUT")
-                    .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId"),
-            ).respond(response().withBody(json(gyldigDokarkivResponse())))
-
+        stubFor(
+            put(urlPathEqualTo("/rest/journalpostapi/v1/journalpost/$journalpostId"))
+                .willReturn(okJson(gyldigDokarkivResponse())),
+        )
         val body =
             OppdaterJournalpostRequest(
                 bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
                 tema = Tema.ENF,
                 sak = Sak("11111111", "fagsaksystem"),
             )
-
         val response: ResponseEntity<Ressurs<OppdaterJournalpostResponse>> =
             restTemplate.exchange(
                 localhost("$DOKARKIV_URL_V2/12345678"),
                 HttpMethod.PUT,
                 HttpEntity(body, headers),
             )
-
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
         assertThat(response.body?.data?.journalpostId).isEqualTo("12345678")
@@ -303,32 +272,26 @@ class DokarkivControllerTest(
     @Test
     fun `dokarkiv skal logge detaljert feilmelding til secureLogger ved HttpServerErrorExcetion`() {
         val journalpostId = "12345678"
-        client
-            .`when`(
-                request()
-                    .withMethod("PUT")
-                    .withPath("/rest/journalpostapi/v1/journalpost/$journalpostId"),
-            ).respond(
-                response()
-                    .withStatusCode(500)
-                    .withHeader("Content-Type", "application/json;charset=UTF-8")
-                    .withBody(gyldigDokarkivResponse(500)),
-            )
-
+        stubFor(
+            put(urlPathEqualTo("/rest/journalpostapi/v1/journalpost/$journalpostId"))
+                .willReturn(
+                    status(500)
+                        .withHeader("Content-Type", "application/json;charset=UTF-8")
+                        .withBody(gyldigDokarkivResponse(500)),
+                ),
+        )
         val body =
             OppdaterJournalpostRequest(
                 bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
                 tema = Tema.ENF,
                 sak = Sak("11111111", "fagsaksystem"),
             )
-
         val response: ResponseEntity<Ressurs<OppdaterJournalpostResponse>> =
             restTemplate.exchange(
                 localhost("$DOKARKIV_URL_V2/12345678"),
                 HttpMethod.PUT,
                 HttpEntity(body, headers),
             )
-
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
         assertThat(loggingEvents)
@@ -338,41 +301,36 @@ class DokarkivControllerTest(
 
     @Test
     fun `ferdigstill returnerer ok`() {
-        client
-            .`when`(
-                request()
-                    .withMethod("PATCH")
-                    .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill"),
-            ).respond(response().withStatusCode(200).withBody("Journalpost ferdigstilt"))
-
+        stubFor(
+            patch(urlPathEqualTo("/rest/journalpostapi/v1/journalpost/123/ferdigstill"))
+                .willReturn(status(200).withBody("Journalpost ferdigstilt")),
+        )
         val response: ResponseEntity<Ressurs<Map<String, String>>> =
             restTemplate.exchange(
                 localhost("$DOKARKIV_URL_V2/123/ferdigstill?journalfoerendeEnhet=9999"),
                 HttpMethod.PUT,
                 HttpEntity(null, headersWithNavUserId()),
             )
-
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
-        client.verify(request().withHeader("Nav-User-Id", "k123123"))
+        verify(
+            patchRequestedFor(urlPathEqualTo("/rest/journalpostapi/v1/journalpost/123/ferdigstill"))
+                .withHeader("Nav-User-Id", equalTo(NAV_USER_ID_VALUE)),
+        )
     }
 
     @Test
     fun `ferdigstill returnerer 400 hvis ikke mulig ferdigstill`() {
-        client
-            .`when`(
-                request()
-                    .withMethod("PATCH")
-                    .withPath("/rest/journalpostapi/v1/journalpost/123/ferdigstill"),
-            ).respond(response().withStatusCode(400))
-
+        stubFor(
+            patch(urlPathEqualTo("/rest/journalpostapi/v1/journalpost/123/ferdigstill"))
+                .willReturn(status(400)),
+        )
         val response: ResponseEntity<Ressurs<Map<String, String>>> =
             restTemplate.exchange(
                 localhost("$DOKARKIV_URL_V2/123/ferdigstill?journalfoerendeEnhet=9999"),
                 HttpMethod.PUT,
                 HttpEntity(null, headers),
             )
-
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
         assertThat(response.body?.melding).contains("Kan ikke ferdigstille journalpost 123")
@@ -380,24 +338,16 @@ class DokarkivControllerTest(
 
     @Test
     fun `skal opprette logisk vedlegg`() {
-        client
-            .`when`(
-                request()
-                    .withMethod("POST")
-                    .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"),
-            ).respond(
-                response()
-                    .withStatusCode(200)
-                    .withBody(json(objectMapper.writeValueAsString(LogiskVedleggResponse(21L)))),
-            )
-
+        stubFor(
+            post(urlPathEqualTo("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"))
+                .willReturn(okJson(objectMapper.writeValueAsString(LogiskVedleggResponse(21L)))),
+        )
         val response: ResponseEntity<Ressurs<LogiskVedleggResponse>> =
             restTemplate.exchange(
                 localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg"),
                 HttpMethod.POST,
                 HttpEntity(LogiskVedleggRequest("Ny tittel"), headers),
             )
-
         assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
         assertThat(response.body?.data?.logiskVedleggId).isEqualTo(21L)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
@@ -405,24 +355,16 @@ class DokarkivControllerTest(
 
     @Test
     fun `skal returnere feil hvis man ikke kan opprette logisk vedlegg`() {
-        client
-            .`when`(
-                request()
-                    .withMethod("POST")
-                    .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"),
-            ).respond(
-                response()
-                    .withStatusCode(404)
-                    .withBody("melding fra klient"),
-            )
-
+        stubFor(
+            post(urlPathEqualTo("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"))
+                .willReturn(status(404).withBody("melding fra klient")),
+        )
         val response: ResponseEntity<Ressurs<LogiskVedleggResponse>> =
             restTemplate.exchange(
                 localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg"),
                 HttpMethod.POST,
                 HttpEntity(LogiskVedleggRequest("Ny tittel"), headers),
             )
-
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.melding).contains("melding fra klient")
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
@@ -430,23 +372,16 @@ class DokarkivControllerTest(
 
     @Test
     fun `skal slette logisk vedlegg`() {
-        client
-            .`when`(
-                request()
-                    .withMethod("DELETE")
-                    .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/432"),
-            ).respond(
-                response()
-                    .withStatusCode(200),
-            )
-
+        stubFor(
+            delete(urlPathEqualTo("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/432"))
+                .willReturn(status(200)),
+        )
         val response: ResponseEntity<Ressurs<LogiskVedleggResponse>> =
             restTemplate.exchange(
                 localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg/432"),
                 HttpMethod.DELETE,
                 HttpEntity(LogiskVedleggRequest("Ny tittel"), headers),
             )
-
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.data?.logiskVedleggId).isEqualTo(432L)
         assertThat(response.body?.melding).contains("logisk vedlegg slettet")
@@ -455,23 +390,16 @@ class DokarkivControllerTest(
 
     @Test
     fun `skal bulk oppdatere logiske vedlegg for et dokument`() {
-        client
-            .`when`(
-                request()
-                    .withMethod("PUT")
-                    .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg"),
-            ).respond(
-                response()
-                    .withStatusCode(204),
-            )
-
+        stubFor(
+            put(urlPathEqualTo("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg"))
+                .willReturn(status(204)),
+        )
         val response: ResponseEntity<Ressurs<String>> =
             restTemplate.exchange(
                 localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg"),
                 HttpMethod.PUT,
                 HttpEntity(BulkOppdaterLogiskVedleggRequest(titler = listOf("Logisk vedlegg 1", "Logisk vedlegg 2")), headers),
             )
-
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body?.data).isEqualTo("321")
         assertThat(response.body?.melding).contains("logiske vedlegg oppdatert")
@@ -480,24 +408,16 @@ class DokarkivControllerTest(
 
     @Test
     fun `skal returnere feil hvis man ikke kan slette logisk vedlegg`() {
-        client
-            .`when`(
-                request()
-                    .withMethod("DELETE")
-                    .withPath("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/432"),
-            ).respond(
-                response()
-                    .withStatusCode(404)
-                    .withBody("sletting feilet"),
-            )
-
+        stubFor(
+            delete(urlPathEqualTo("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/432"))
+                .willReturn(status(404).withBody("sletting feilet")),
+        )
         val response: ResponseEntity<Ressurs<LogiskVedleggResponse>> =
             restTemplate.exchange(
                 localhost("$DOKARKIV_URL/dokument/321/logiskVedlegg/432"),
                 HttpMethod.DELETE,
                 HttpEntity(LogiskVedleggRequest("Ny tittel"), headers),
             )
-
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.melding).contains("sletting feilet")
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)

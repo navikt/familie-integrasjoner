@@ -14,17 +14,20 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.exchange
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
+import org.wiremock.spring.ConfigureWireMock
+import org.wiremock.spring.EnableWireMock
 
 @ActiveProfiles("integrasjonstest", "mock-oauth")
 @TestPropertySource(properties = ["MODIA_CONTEXT_HOLDER_URL=http://localhost:28085"])
-@AutoConfigureWireMock(port = 28085)
+@EnableWireMock(
+    ConfigureWireMock(name = "ModiaContextHolderControllerTest", port = 28085),
+)
 class ModiaContextHolderControllerTest : OppslagSpringRunnerTest() {
     @BeforeEach
     fun setUp() {
