@@ -196,8 +196,8 @@ tilgang:
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 ORGANISASJON_URL: #Denne er ikke i bruk da OrganisasjonV5 mockes ut lokalt
-DOKARKIV_V1_URL: http://localhost:18321
-DOKDIST_URL: http://localhost:18321
+DOKARKIV_V1_URL: http://localhost:28085
+DOKDIST_URL: http://localhost:28085
 EGEN_ANSATT_URL: #Mockes ut lokalt
 KODEVERK_URL: #Mockes ut lokalt
 FORSTESIDEGENERATOR_URL: #Mockes lokal
@@ -210,8 +210,8 @@ MODIA_CONTEXT_HOLDER_URL: #Mockes lokalt
 ARBEID_INNTEKT_URL: #Mockes lokalt
 SAF_SELVBETJENING_URL:
 
-SAF_URL: http://localhost:18321/rest/saf
-OPPGAVE_URL: http://localhost:18321
+SAF_URL: http://localhost:28085
+OPPGAVE_URL: http://localhost:28085
 CREDENTIAL_USERNAME: not-a-real-srvuser
 CREDENTIAL_PASSWORD: not-a-real-pw
 
