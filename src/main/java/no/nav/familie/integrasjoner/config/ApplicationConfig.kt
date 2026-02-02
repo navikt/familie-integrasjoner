@@ -1,6 +1,5 @@
 package no.nav.familie.integrasjoner.config
 
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import no.nav.familie.log.NavSystemtype
 import no.nav.familie.log.filter.LogFilter
 import no.nav.familie.log.filter.RequestTimeFilter
@@ -32,9 +31,6 @@ import java.time.temporal.ChronoUnit
 @Import(NaisProxyCustomizer::class)
 class ApplicationConfig {
     private val logger = LoggerFactory.getLogger(ApplicationConfig::class.java)
-
-    @Bean
-    fun kotlinModule(): KotlinModule = KotlinModule.Builder().build()
 
     @Bean
     fun logFilter(): FilterRegistrationBean<LogFilter> {
