@@ -3,7 +3,7 @@ package no.nav.familie.integrasjoner.egenansatt
 import com.github.tomakehurst.wiremock.client.WireMock
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.client.rest.EgenAnsattRestClient
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -45,7 +45,7 @@ class EgenAnsattControllerTest : OppslagSpringRunnerTest() {
                             "Content-Type",
                             "application/json",
                         ).withBody(
-                            objectMapper.writeValueAsString(
+                            jsonMapper.writeValueAsString(
                                 erEgenAnsatt,
                             ),
                         ),

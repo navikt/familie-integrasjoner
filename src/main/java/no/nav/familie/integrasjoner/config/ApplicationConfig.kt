@@ -1,11 +1,11 @@
 package no.nav.familie.integrasjoner.config
 
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import no.nav.familie.http.client.RetryOAuth2HttpClient
-import no.nav.familie.http.config.NaisProxyCustomizer
 import no.nav.familie.log.NavSystemtype
 import no.nav.familie.log.filter.LogFilter
 import no.nav.familie.log.filter.RequestTimeFilter
+import no.nav.familie.restklient.client.RetryOAuth2HttpClient
+import no.nav.familie.restklient.config.NaisProxyCustomizer
 import no.nav.security.token.support.client.core.http.OAuth2HttpClient
 import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation

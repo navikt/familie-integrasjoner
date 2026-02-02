@@ -1,12 +1,12 @@
 package no.nav.familie.integrasjoner.client.rest
 
-import no.nav.familie.http.client.AbstractPingableRestClient
-import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.config.incrementLoggFeil
 import no.nav.familie.integrasjoner.personopplysning.internal.PostadresseRequest
 import no.nav.familie.integrasjoner.personopplysning.internal.PostadresseResponse
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.log.mdc.MDCConstants
+import no.nav.familie.restklient.client.AbstractPingableRestClient
+import no.nav.familie.restklient.util.UriUtil
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -44,7 +44,11 @@ class RegoppslagRestClient(
             when (e.statusCode) {
                 HttpStatus.NOT_FOUND,
                 HttpStatus.GONE,
-                -> null // Person er død og har ukjent adresse
+                -> {
+                    null
+                }
+
+                // Person er død og har ukjent adresse
                 else -> {
                     incrementLoggFeil("regoppslag.hentPostadresse")
                     throw e

@@ -11,7 +11,7 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Status.FEILET
 import no.nav.familie.kontrakter.felles.Ressurs.Status.SUKSESS
 import no.nav.familie.kontrakter.felles.getDataOrThrow
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -55,7 +55,7 @@ class AaregControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(response?.status).isEqualTo(SUKSESS)
         assertThat(response?.getDataOrThrow()).hasSize(1)
-        val arbeidsforhold = objectMapper.convertValue(response?.getDataOrThrow()!!.first(), Arbeidsforhold::class.java)
+        val arbeidsforhold = jsonMapper.convertValue(response?.getDataOrThrow()!!.first(), Arbeidsforhold::class.java)
         assertThat(arbeidsforhold.arbeidstaker?.offentligIdent).isEqualTo(IDENT)
         assertThat(arbeidsforhold.arbeidsgiver?.organisasjonsnummer).isEqualTo("998877665")
         assertThat(arbeidsforhold.ansettelsesperiode?.periode?.fom).isEqualTo(LocalDate.of(2000, 8, 4))

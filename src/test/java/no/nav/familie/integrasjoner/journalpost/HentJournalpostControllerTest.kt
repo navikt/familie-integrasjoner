@@ -28,7 +28,7 @@ import no.nav.familie.kontrakter.felles.journalpost.Journalstatus
 import no.nav.familie.kontrakter.felles.journalpost.TilgangsstyrtJournalpost
 import no.nav.familie.kontrakter.felles.journalpost.Utsendingsmåte
 import no.nav.familie.kontrakter.felles.journalpost.VarselType
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -136,7 +136,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
     fun `hent journalpostForBruker skal returnere journalposter og status ok`() {
         stubFor(
             post(urlPathEqualTo("/graphql"))
-                .withRequestBody(equalTo(objectMapper.writeValueAsString(gyldigBrukerRequest())))
+                .withRequestBody(equalTo(jsonMapper.writeValueAsString(gyldigBrukerRequest())))
                 .willReturn(okJson(lesFil("saf/gyldigJournalposterResponse.json"))),
         )
 
@@ -194,7 +194,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
         val barnetrygdSøknad = lagBarnetrygdSøknad("12345678910", "12345678911")
         stubFor(
             post(urlPathEqualTo("/graphql"))
-                .withRequestBody(equalTo(objectMapper.writeValueAsString(gyldigBrukerRequest())))
+                .withRequestBody(equalTo(jsonMapper.writeValueAsString(gyldigBrukerRequest())))
                 .willReturn(okJson(lesFil("saf/gyldigJournalposterResponseBarnetrygd.json"))),
         )
         stubFor(
@@ -203,17 +203,17 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
         )
         stubFor(
             post(urlPathEqualTo("/rest/pdl/graphql"))
-                .withRequestBody(equalTo(objectMapper.writeValueAsString(gyldigPdlPersonRequest("12345678910"))))
+                .withRequestBody(equalTo(jsonMapper.writeValueAsString(gyldigPdlPersonRequest("12345678910"))))
                 .willReturn(okJson(lesFil("pdl/pdlAdressebeskyttelseResponse.json"))),
         )
         stubFor(
             post(urlPathEqualTo("/rest/pdl/graphql"))
-                .withRequestBody(equalTo(objectMapper.writeValueAsString(gyldigPdlPersonRequest("12345678911"))))
+                .withRequestBody(equalTo(jsonMapper.writeValueAsString(gyldigPdlPersonRequest("12345678911"))))
                 .willReturn(okJson(lesFil("pdl/pdlAdressebeskyttelseResponse.json"))),
         )
         stubFor(
             get(urlPathEqualTo("/rest/saf/rest/hentdokument/453492634/453871494/ORIGINAL"))
-                .willReturn(okJson(objectMapper.writeValueAsString(barnetrygdSøknad)).withHeader("Content-Type", "application/json")),
+                .willReturn(okJson(jsonMapper.writeValueAsString(barnetrygdSøknad)).withHeader("Content-Type", "application/json")),
         )
 
         val response: ResponseEntity<Ressurs<List<TilgangsstyrtJournalpost>>> =
