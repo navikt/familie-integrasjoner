@@ -183,19 +183,6 @@
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.mock-server</groupId>
-            <artifactId>mockserver-netty</artifactId>
-            <version>${mock-server.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mock-server</groupId>
-            <artifactId>mockserver-junit-jupiter</artifactId>
-            <version>${mock-server.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>com.github.stefanbirkner</groupId>
             <artifactId>fake-sftp-server-rule</artifactId>
