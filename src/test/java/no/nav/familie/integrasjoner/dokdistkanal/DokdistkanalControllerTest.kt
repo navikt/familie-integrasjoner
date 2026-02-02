@@ -20,7 +20,7 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Status.SUKSESS
 import no.nav.familie.kontrakter.felles.dokdistkanal.Distribusjonskanal
 import no.nav.familie.kontrakter.felles.dokdistkanal.DokdistkanalRequest
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import no.nav.familie.log.NavHttpHeaders
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -59,7 +59,7 @@ class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
                 regelBegrunnelse = "Bruker har gyldig e-post og/eller mobilnummer",
             )
 
-        stubFor(post(anyUrl()).willReturn(okJson(objectMapper.writeValueAsString(gyldigDokdistkanalRespons))))
+        stubFor(post(anyUrl()).willReturn(okJson(jsonMapper.writeValueAsString(gyldigDokdistkanalRespons))))
 
         val response =
             restTemplate.postForObject<Ressurs<String>>(
@@ -103,7 +103,7 @@ class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             post(anyUrl()).willReturn(
                 okJson(
-                    objectMapper.writeValueAsString(
+                    jsonMapper.writeValueAsString(
                         BestemDistribusjonskanalResponse(
                             distribusjonskanal = "NY_KANAL",
                             regel = "REGEL",
@@ -155,7 +155,7 @@ class DokdistkanalControllerTest : OppslagSpringRunnerTest() {
 
         stubFor(
             post(urlPathMatching("/rest/bestemDistribusjonskanal"))
-                .willReturn(okJson(objectMapper.writeValueAsString(dokdistkanalRespons))),
+                .willReturn(okJson(jsonMapper.writeValueAsString(dokdistkanalRespons))),
         )
         stubFor(
             post(urlPathMatching("/rest/postadresse"))

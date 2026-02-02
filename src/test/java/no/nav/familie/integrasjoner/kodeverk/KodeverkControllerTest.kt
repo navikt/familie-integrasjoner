@@ -5,11 +5,11 @@ import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.jsonMapper
 import no.nav.familie.kontrakter.felles.kodeverk.BeskrivelseDto
 import no.nav.familie.kontrakter.felles.kodeverk.BetydningDto
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkSpråk
-import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.boot.resttestclient.exchange
@@ -44,7 +44,7 @@ class KodeverkControllerTest : OppslagSpringRunnerTest() {
                 aResponse()
                     .withStatus(200)
                     .withHeader("Content-Type", "application/json")
-                    .withBody(objectMapper.writeValueAsString(kodeverk)),
+                    .withBody(jsonMapper.writeValueAsString(kodeverk)),
             ),
         )
 

@@ -20,7 +20,7 @@ import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.config.ApiExceptionHandler
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Tema
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.IdentGruppe
 import no.nav.familie.kontrakter.felles.oppgave.MappeDto
@@ -75,7 +75,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
             get(GET_MAPPER_URL)
                 .willReturn(
                     okJson(
-                        objectMapper.writeValueAsString(
+                        jsonMapper.writeValueAsString(
                             FinnMappeResponseDto(
                                 3,
                                 listOf(
@@ -164,7 +164,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal opprette oppgave med mappeId, returnere oppgaveid og 201 Created`() {
-        stubFor(post("/api/v1/oppgaver").willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
+        stubFor(post("/api/v1/oppgaver").willReturn(okJson(jsonMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
 
         val opprettOppgave =
             OpprettOppgaveRequest(
@@ -191,7 +191,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `skal opprette oppgave uten ident, returnere oppgaveid og 201 Created`() {
-        stubFor(post("/api/v1/oppgaver").willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
+        stubFor(post("/api/v1/oppgaver").willReturn(okJson(jsonMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
 
         val opprettOppgave =
             OpprettOppgaveRequest(
@@ -253,7 +253,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             get("/api/v1/oppgaver/123").willReturn(
                 okJson(
-                    objectMapper.writeValueAsString(
+                    jsonMapper.writeValueAsString(
                         Oppgave(
                             id = 123,
                             status = StatusEnum.FERDIGSTILT,
@@ -281,7 +281,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             get("/api/v1/oppgaver/$OPPGAVE_ID").willReturn(
                 okJson(
-                    objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID, status = StatusEnum.FEILREGISTRERT)),
+                    jsonMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID, status = StatusEnum.FEILREGISTRERT)),
                 ),
             ),
         )
@@ -302,7 +302,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             get("/api/v1/oppgaver/$OPPGAVE_ID").willReturn(
                 okJson(
-                    objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID, status = StatusEnum.OPPRETTET)),
+                    jsonMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID, status = StatusEnum.OPPRETTET)),
                 ),
             ),
         )
@@ -335,7 +335,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody(
-                            objectMapper.writeValueAsBytes(
+                            jsonMapper.writeValueAsBytes(
                                 Oppgave(
                                     id = OPPGAVE_ID,
                                     status = StatusEnum.FERDIGSTILT,
@@ -359,7 +359,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `fordelOppgave skal tilordne oppgave til saksbehandler når saksbehandler er satt på requesten`() {
         val saksbehandlerId = "Z999999"
-        stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
+        stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(jsonMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
         stubFor(
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
                 .willReturn(
@@ -404,7 +404,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `fordelOppgave skal tilbakestille tilordning på oppgave når saksbehandler ikke er satt på requesten`() {
-        stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
+        stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(jsonMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
         stubFor(
             patch(urlEqualTo("/api/v1/oppgaver/$OPPGAVE_ID"))
                 .willReturn(
@@ -452,7 +452,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         stubFor(
             get(GET_OPPGAVE_URL).willReturn(
                 okJson(
-                    objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID, status = StatusEnum.FERDIGSTILT)),
+                    jsonMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID, status = StatusEnum.FERDIGSTILT)),
                 ),
             ),
         )
@@ -479,7 +479,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
     @Test
     fun `Skal hente oppgave basert på id`() {
-        stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(objectMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
+        stubFor(get(GET_OPPGAVE_URL).willReturn(okJson(jsonMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
 
         val response: ResponseEntity<Ressurs<Oppgave>> =
             restTemplate.exchange(localhost("/api/oppgave/$OPPGAVE_ID"), HttpMethod.GET, HttpEntity(null, headers))

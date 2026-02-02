@@ -1,8 +1,6 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import io.micrometer.core.instrument.Metrics
-import no.nav.familie.http.client.AbstractPingableRestClient
-import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.client.QueryParamUtil.toQueryParams
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.oppgave.OppgaveByttEnhetOgTilordnetRessurs
@@ -16,6 +14,8 @@ import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.log.mdc.MDCConstants
+import no.nav.familie.restklient.client.AbstractPingableRestClient
+import no.nav.familie.restklient.util.UriUtil
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Qualifier

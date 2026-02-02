@@ -33,7 +33,7 @@ import no.nav.familie.kontrakter.felles.dokarkiv.Sak
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.ArkiverDokumentRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Dokument
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Filtype
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -64,7 +64,6 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
     @BeforeEach
     fun setUp() {
         headers.setBearerAuth(lokalTestToken)
-        objectMapper.registerModule(KotlinModule.Builder().build())
         (LoggerFactory.getLogger("secureLogger") as Logger)
             .addAppender(listAppender)
     }
@@ -143,7 +142,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
             post(anyUrl()).willReturn(
                 status(409)
                     .withHeader("Content-Type", "application/json;charset=UTF-8")
-                    .withBody(objectMapper.writeValueAsString(OpprettJournalpostResponse("12345678"))),
+                    .withBody(jsonMapper.writeValueAsString(OpprettJournalpostResponse("12345678"))),
             ),
         )
         val body =
@@ -340,7 +339,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
     fun `skal opprette logisk vedlegg`() {
         stubFor(
             post(urlPathEqualTo("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"))
-                .willReturn(okJson(objectMapper.writeValueAsString(LogiskVedleggResponse(21L)))),
+                .willReturn(okJson(jsonMapper.writeValueAsString(LogiskVedleggResponse(21L)))),
         )
         val response: ResponseEntity<Ressurs<LogiskVedleggResponse>> =
             restTemplate.exchange(

@@ -1,7 +1,5 @@
 package no.nav.familie.integrasjoner.client.rest
 
-import no.nav.familie.http.client.AbstractRestClient
-import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.config.incrementLoggFeil
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.graphqlQuery
@@ -19,6 +17,8 @@ import no.nav.familie.integrasjoner.journalpost.internal.SafRequestVariabler
 import no.nav.familie.integrasjoner.journalpost.internal.tilSafRequestForBruker
 import no.nav.familie.kontrakter.felles.journalpost.Journalpost
 import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
+import no.nav.familie.restklient.client.AbstractRestClient
+import no.nav.familie.restklient.util.UriUtil
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders

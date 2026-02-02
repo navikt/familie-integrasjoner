@@ -13,7 +13,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.verify
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Status.SUKSESS
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import no.nav.familie.log.NavHttpHeaders
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -40,7 +40,7 @@ class SkyggesakControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `skal opprette skyggesak i sak`() {
         val request = Skyggesak("BAR", "BA", "123", "321")
-        stubFor(post(anyUrl()).willReturn(okJson(objectMapper.writeValueAsString(request))))
+        stubFor(post(anyUrl()).willReturn(okJson(jsonMapper.writeValueAsString(request))))
 
         val response =
             restTemplate.postForObject<Ressurs<List<Nothing>>>(
@@ -53,7 +53,7 @@ class SkyggesakControllerTest : OppslagSpringRunnerTest() {
 
         verify(
             postRequestedFor(urlEqualTo("/api/v1/saker"))
-                .withRequestBody(equalToJson(objectMapper.writeValueAsString(request)))
+                .withRequestBody(equalToJson(jsonMapper.writeValueAsString(request)))
                 .withHeader("X-Correlation-ID", equalTo("callIdTest")),
         )
 
