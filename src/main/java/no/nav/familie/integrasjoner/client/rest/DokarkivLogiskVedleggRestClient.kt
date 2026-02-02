@@ -59,7 +59,7 @@ class DokarkivLogiskVedleggRestClient(
                 .buildAndExpand(dokumentinfoId)
                 .toUri()
         try {
-            val f: String = putForEntity(uri, request, headers())
+            return putForEntity(uri, request, headers())
         } catch (e: RuntimeException) {
             val responsebody = if (e is HttpStatusCodeException) e.responseBodyAsString else ""
             val message = "Kan ikke bulk oppdatere logiske vedlegg for dokumentinfo $dokumentinfoId $responsebody"

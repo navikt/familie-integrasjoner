@@ -2,6 +2,8 @@ package no.nav.familie.integrasjoner.personopplysning
 
 import ch.qos.logback.classic.Logger
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
+import com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
@@ -111,15 +113,12 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
             post(urlEqualTo("/graphql"))
                 .withHeader(
                     "Tema",
-                    com.github.tomakehurst.wiremock.client.WireMock
-                        .equalTo("ENF"),
+                    equalTo("ENF"),
                 ).withRequestBody(
-                    com.github.tomakehurst.wiremock.client.WireMock
-                        .matchingJsonPath(
-                            "$.variables.identer[0]",
-                            com.github.tomakehurst.wiremock.client.WireMock
-                                .equalTo(ident),
-                        ),
+                    matchingJsonPath(
+                        "$.variables.identer[0]",
+                        equalTo(ident),
+                    ),
                 ).willReturn(
                     aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -136,15 +135,12 @@ class PersonopplysningerControllerTest : OppslagSpringRunnerTest() {
             post(urlEqualTo("/graphql"))
                 .withHeader(
                     "Tema",
-                    com.github.tomakehurst.wiremock.client.WireMock
-                        .equalTo("ENF"),
+                    equalTo("ENF"),
                 ).withRequestBody(
-                    com.github.tomakehurst.wiremock.client.WireMock
-                        .matchingJsonPath(
-                            "$.variables.identer[0]",
-                            com.github.tomakehurst.wiremock.client.WireMock
-                                .equalTo(barnsIdent),
-                        ),
+                    matchingJsonPath(
+                        "$.variables.identer[0]",
+                        equalTo(barnsIdent),
+                    ),
                 ).willReturn(
                     aResponse()
                         .withHeader("Content-Type", "application/json")

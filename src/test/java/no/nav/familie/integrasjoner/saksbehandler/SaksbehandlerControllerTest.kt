@@ -1,6 +1,8 @@
 package no.nav.familie.integrasjoner.saksbehandler
 
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.containing
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
@@ -83,12 +85,10 @@ class SaksbehandlerControllerTest : OppslagSpringRunnerTest() {
             get(urlPathEqualTo("/users"))
                 .withQueryParam(
                     "\$search",
-                    com.github.tomakehurst.wiremock.client.WireMock
-                        .equalTo("\"onPremisesSamAccountName:B857496\""),
+                    equalTo("\"onPremisesSamAccountName:B857496\""),
                 ).withQueryParam(
                     "\$select",
-                    com.github.tomakehurst.wiremock.client.WireMock
-                        .containing("givenName,surname,onPremisesSamAccountName,id,userPrincipalName,streetAddress,city"),
+                    containing("givenName,surname,onPremisesSamAccountName,id,userPrincipalName,streetAddress,city"),
                 ).willReturn(
                     aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -137,12 +137,10 @@ class SaksbehandlerControllerTest : OppslagSpringRunnerTest() {
             get(urlPathEqualTo("/users"))
                 .withQueryParam(
                     "\$search",
-                    com.github.tomakehurst.wiremock.client.WireMock
-                        .equalTo("\"onPremisesSamAccountName:B857496\""),
+                    equalTo("\"onPremisesSamAccountName:B857496\""),
                 ).withQueryParam(
                     "\$select",
-                    com.github.tomakehurst.wiremock.client.WireMock
-                        .containing("givenName,surname,onPremisesSamAccountName,id,userPrincipalName,streetAddress,city"),
+                    containing("givenName,surname,onPremisesSamAccountName,id,userPrincipalName,streetAddress,city"),
                 ).willReturn(
                     aResponse()
                         .withHeader("Content-Type", "application/json")
