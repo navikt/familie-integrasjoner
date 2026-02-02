@@ -1,6 +1,5 @@
 package no.nav.familie.integrasjoner.journalpost.versjonertsøknad
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.familie.integrasjoner.client.rest.SafHentDokumentRestClient
 import no.nav.familie.integrasjoner.client.rest.SafRestClient
 import no.nav.familie.integrasjoner.journalpost.JournalpostNotFoundException

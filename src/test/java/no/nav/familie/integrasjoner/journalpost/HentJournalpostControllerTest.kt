@@ -1,7 +1,6 @@
 package no.nav.familie.integrasjoner.journalpost
 
 import ch.qos.logback.classic.Logger
-import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.okJson
@@ -32,7 +31,6 @@ import no.nav.familie.kontrakter.felles.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.slf4j.LoggerFactory
 import org.springframework.boot.resttestclient.exchange
 import org.springframework.core.io.ClassPathResource
