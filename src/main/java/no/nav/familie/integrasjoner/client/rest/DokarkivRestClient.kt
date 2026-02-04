@@ -1,7 +1,5 @@
 package no.nav.familie.integrasjoner.client.rest
 
-import no.nav.familie.http.client.AbstractPingableRestClient
-import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.integrasjoner.dokarkiv.client.KanIkkeFerdigstilleJournalpostException
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.FerdigstillJournalPost
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
@@ -11,6 +9,8 @@ import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostResponse
 import no.nav.familie.log.NavHttpHeaders
+import no.nav.familie.restklient.client.AbstractPingableRestClient
+import no.nav.familie.restklient.client.AbstractRestClient
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -58,7 +58,7 @@ class DokarkivRestClient(
             if (feilVedJournalføring is HttpClientErrorException.Conflict) {
                 logger.warn("409 ved oppretting av journalpost med eksternReferanseId=${jp.eksternReferanseId}. Denne journalposten er allerede journalført. Returnerer body fra feilmelding som er en OpprettJournalpostResponse.")
                 return try {
-                    feilVedJournalføring.getResponseBodyAs(OpprettJournalpostResponse::class.java)
+                    feilVedJournalføring.getResponseBodyAs(OpprettJournalpostResponse::class.java) ?: throw feilVedJournalføring
                 } catch (parsingFeil: RuntimeException) {
                     throw oppslagExceptionVed("opprettelse", feilVedJournalføring, jp.bruker?.id, "dokarkiv.opprettJournalpost")
                 }

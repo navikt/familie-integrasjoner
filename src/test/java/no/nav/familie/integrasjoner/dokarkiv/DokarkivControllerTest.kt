@@ -2,7 +2,6 @@ package no.nav.familie.integrasjoner.dokarkiv
 
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
 import com.github.tomakehurst.wiremock.client.WireMock.delete
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
@@ -10,7 +9,6 @@ import com.github.tomakehurst.wiremock.client.WireMock.okJson
 import com.github.tomakehurst.wiremock.client.WireMock.patch
 import com.github.tomakehurst.wiremock.client.WireMock.patchRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.post
-import com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.put
 import com.github.tomakehurst.wiremock.client.WireMock.status
 import com.github.tomakehurst.wiremock.client.WireMock.stubFor
@@ -33,12 +31,12 @@ import no.nav.familie.kontrakter.felles.dokarkiv.Sak
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.ArkiverDokumentRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Dokument
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.Filtype
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
-import org.springframework.boot.test.web.client.exchange
+import org.springframework.boot.resttestclient.exchange
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -64,7 +62,6 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
     @BeforeEach
     fun setUp() {
         headers.setBearerAuth(lokalTestToken)
-        objectMapper.registerModule(KotlinModule.Builder().build())
         (LoggerFactory.getLogger("secureLogger") as Logger)
             .addAppender(listAppender)
     }
@@ -143,7 +140,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
             post(anyUrl()).willReturn(
                 status(409)
                     .withHeader("Content-Type", "application/json;charset=UTF-8")
-                    .withBody(objectMapper.writeValueAsString(OpprettJournalpostResponse("12345678"))),
+                    .withBody(jsonMapper.writeValueAsString(OpprettJournalpostResponse("12345678"))),
             ),
         )
         val body =
@@ -340,7 +337,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
     fun `skal opprette logisk vedlegg`() {
         stubFor(
             post(urlPathEqualTo("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"))
-                .willReturn(okJson(objectMapper.writeValueAsString(LogiskVedleggResponse(21L)))),
+                .willReturn(okJson(jsonMapper.writeValueAsString(LogiskVedleggResponse(21L)))),
         )
         val response: ResponseEntity<Ressurs<LogiskVedleggResponse>> =
             restTemplate.exchange(

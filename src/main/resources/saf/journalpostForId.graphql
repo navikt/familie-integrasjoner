@@ -12,7 +12,7 @@ query Journalpost($journalpostId: String!) {
         journalforendeEnhet
         kanal
         utsendingsinfo { varselSendt { type, varslingstidspunkt }, fysiskpostSendt { adressetekstKonvolutt }, digitalpostSendt { adresse } }
-        dokumenter { dokumentInfoId tittel brevkode dokumentstatus dokumentvarianter { variantformat filnavn } logiskeVedlegg { logiskVedleggId tittel } }
+        dokumenter { dokumentInfoId tittel brevkode dokumentstatus dokumentvarianter { variantformat filnavn saksbehandlerHarTilgang } logiskeVedlegg { logiskVedleggId tittel } }
         relevanteDatoer { dato datotype }
         eksternReferanseId
     }

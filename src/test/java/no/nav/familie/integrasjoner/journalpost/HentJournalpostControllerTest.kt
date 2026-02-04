@@ -1,7 +1,6 @@
 package no.nav.familie.integrasjoner.journalpost
 
 import ch.qos.logback.classic.Logger
-import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.okJson
@@ -28,13 +27,12 @@ import no.nav.familie.kontrakter.felles.journalpost.Journalstatus
 import no.nav.familie.kontrakter.felles.journalpost.TilgangsstyrtJournalpost
 import no.nav.familie.kontrakter.felles.journalpost.Utsendingsmåte
 import no.nav.familie.kontrakter.felles.journalpost.VarselType
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.slf4j.LoggerFactory
-import org.springframework.boot.test.web.client.exchange
+import org.springframework.boot.resttestclient.exchange
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
@@ -48,7 +46,7 @@ import org.wiremock.spring.EnableWireMock
 import java.time.LocalDateTime
 
 @EnableWireMock(
-    ConfigureWireMock(name = "integrasjonstest", port = 28085),
+    ConfigureWireMock(name = "HentJournalpostControllerTest", port = 28085),
 )
 @TestPropertySource(properties = ["SAF_URL=http://localhost:28085"])
 @ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth", "mock-egenansatt-false")
@@ -67,17 +65,17 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
         headers.setBearerAuth(lagToken("testbruker"))
         uriHentSaksnummer =
             UriComponentsBuilder
-                .fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/sak")
+                .fromUriString(localhost(JOURNALPOST_BASE_URL) + "/sak")
                 .queryParam("journalpostId", JOURNALPOST_ID)
                 .toUriString()
         uriHentJournalpost =
             UriComponentsBuilder
-                .fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
+                .fromUriString(localhost(JOURNALPOST_BASE_URL))
                 .queryParam("journalpostId", JOURNALPOST_ID)
                 .toUriString()
         uriHentTilgangsstyrtJournalpost =
             UriComponentsBuilder
-                .fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/tilgangsstyrt/baks")
+                .fromUriString(localhost(JOURNALPOST_BASE_URL) + "/tilgangsstyrt/baks")
                 .queryParam("journalpostId", JOURNALPOST_ID)
                 .toUriString()
         uriHentDokument = localhost(JOURNALPOST_BASE_URL) + "/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID"
@@ -109,7 +107,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
     fun `hent tilgangsstyrt baks journalpost skal returnere journalpost og status ok`() {
         val uriHentTilgangsstyrtBaksJournalpost =
             UriComponentsBuilder
-                .fromHttpUrl(localhost("$JOURNALPOST_BASE_URL/tilgangsstyrt/baks"))
+                .fromUriString(localhost("$JOURNALPOST_BASE_URL/tilgangsstyrt/baks"))
                 .queryParam("journalpostId", JOURNALPOST_ID)
                 .toUriString()
         stubFor(
@@ -136,7 +134,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
     fun `hent journalpostForBruker skal returnere journalposter og status ok`() {
         stubFor(
             post(urlPathEqualTo("/graphql"))
-                .withRequestBody(equalTo(objectMapper.writeValueAsString(gyldigBrukerRequest())))
+                .withRequestBody(equalTo(jsonMapper.writeValueAsString(gyldigBrukerRequest())))
                 .willReturn(okJson(lesFil("saf/gyldigJournalposterResponse.json"))),
         )
 
@@ -194,7 +192,7 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
         val barnetrygdSøknad = lagBarnetrygdSøknad("12345678910", "12345678911")
         stubFor(
             post(urlPathEqualTo("/graphql"))
-                .withRequestBody(equalTo(objectMapper.writeValueAsString(gyldigBrukerRequest())))
+                .withRequestBody(equalTo(jsonMapper.writeValueAsString(gyldigBrukerRequest())))
                 .willReturn(okJson(lesFil("saf/gyldigJournalposterResponseBarnetrygd.json"))),
         )
         stubFor(
@@ -203,17 +201,17 @@ class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
         )
         stubFor(
             post(urlPathEqualTo("/rest/pdl/graphql"))
-                .withRequestBody(equalTo(objectMapper.writeValueAsString(gyldigPdlPersonRequest("12345678910"))))
+                .withRequestBody(equalTo(jsonMapper.writeValueAsString(gyldigPdlPersonRequest("12345678910"))))
                 .willReturn(okJson(lesFil("pdl/pdlAdressebeskyttelseResponse.json"))),
         )
         stubFor(
             post(urlPathEqualTo("/rest/pdl/graphql"))
-                .withRequestBody(equalTo(objectMapper.writeValueAsString(gyldigPdlPersonRequest("12345678911"))))
+                .withRequestBody(equalTo(jsonMapper.writeValueAsString(gyldigPdlPersonRequest("12345678911"))))
                 .willReturn(okJson(lesFil("pdl/pdlAdressebeskyttelseResponse.json"))),
         )
         stubFor(
             get(urlPathEqualTo("/rest/saf/rest/hentdokument/453492634/453871494/ORIGINAL"))
-                .willReturn(okJson(objectMapper.writeValueAsString(barnetrygdSøknad)).withHeader("Content-Type", "application/json")),
+                .willReturn(okJson(jsonMapper.writeValueAsString(barnetrygdSøknad)).withHeader("Content-Type", "application/json")),
         )
 
         val response: ResponseEntity<Ressurs<List<TilgangsstyrtJournalpost>>> =

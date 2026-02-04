@@ -5,16 +5,14 @@ import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.kontrakter.felles.Ressurs
+import no.nav.familie.kontrakter.felles.jsonMapper
 import no.nav.familie.kontrakter.felles.kodeverk.BeskrivelseDto
 import no.nav.familie.kontrakter.felles.kodeverk.BetydningDto
-import no.nav.familie.kontrakter.felles.kodeverk.HierarkiGeografiInnlandDto
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkSpråk
-import no.nav.familie.kontrakter.felles.kodeverk.LandDto
-import no.nav.familie.kontrakter.felles.objectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.web.client.exchange
+import org.springframework.boot.resttestclient.exchange
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -24,7 +22,10 @@ import org.wiremock.spring.ConfigureWireMock
 import org.wiremock.spring.EnableWireMock
 import java.time.LocalDate
 
-@ActiveProfiles("integrasjonstest", "mock-oauth")
+@ActiveProfiles(
+    "integrasjonstest",
+    "mock-oauth",
+)
 @TestPropertySource(properties = ["KODEVERK_URL=http://localhost:28085"])
 @EnableWireMock(
     ConfigureWireMock(name = "KodeverkControllerTest", port = 28085),
@@ -43,7 +44,7 @@ class KodeverkControllerTest : OppslagSpringRunnerTest() {
                 aResponse()
                     .withStatus(200)
                     .withHeader("Content-Type", "application/json")
-                    .withBody(objectMapper.writeValueAsString(kodeverk)),
+                    .withBody(jsonMapper.writeValueAsString(kodeverk)),
             ),
         )
 
@@ -75,7 +76,5 @@ class KodeverkControllerTest : OppslagSpringRunnerTest() {
         private const val KODEVERK_EEARG_URL = "$KODEVERK_URL/landkoder/eea"
         private const val GET_KODEVERK_EEAFREG_URL =
             "/api/v1/kodeverk/EEAFreg/koder/betydninger?ekskluderUgyldige=false&spraak=nb"
-        private const val KODEVERK_FYLKER_KOMMUNER_URL = "$KODEVERK_URL/fylkerOgKommuner"
-        private const val GET_KODEVERK_GEOGRAFIHIERARKI_URL = "/api/v1/hierarki/Geografi/noder?ekskluderUgyldige=true&spraak=nb"
     }
 }

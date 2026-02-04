@@ -9,11 +9,11 @@ import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.modiacontextholder.domene.ModiaContextHolderNyAktivBrukerDto
 import no.nav.familie.integrasjoner.modiacontextholder.domene.ModiaContextHolderResponse
 import no.nav.familie.kontrakter.felles.Ressurs
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.web.client.exchange
+import org.springframework.boot.resttestclient.exchange
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -133,7 +133,7 @@ class ModiaContextHolderControllerTest : OppslagSpringRunnerTest() {
     }
 
     private fun modiaResponse(): String =
-        objectMapper.writeValueAsString(
+        jsonMapper.writeValueAsString(
             ModiaContextHolderResponse(
                 aktivBruker = "13025514402",
                 aktivEnhet = "0000",

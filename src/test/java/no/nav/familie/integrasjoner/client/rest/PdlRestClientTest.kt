@@ -1,6 +1,5 @@
 package no.nav.familie.integrasjoner.client.rest
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.familie.integrasjoner.felles.OppslagException
@@ -9,7 +8,7 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedAdress
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonRequest
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlResponse
 import no.nav.familie.kontrakter.felles.Tema
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -19,6 +18,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.web.client.RestOperations
 import org.springframework.web.client.exchange
+import tools.jackson.module.kotlin.readValue
 import java.net.URI
 
 class PdlRestClientTest {
@@ -27,7 +27,7 @@ class PdlRestClientTest {
 
     @Test
     fun `skal parse harUnathorizedFeil`() {
-        val response: PdlResponse<PdlHentGeografiskTilknytning> = objectMapper.readValue<PdlResponse<PdlHentGeografiskTilknytning>>(jsonFeilmelding)
+        val response: PdlResponse<PdlHentGeografiskTilknytning> = jsonMapper.readValue<PdlResponse<PdlHentGeografiskTilknytning>>(jsonFeilmelding)
 
         assertThat(response.harUnauthorizedFeil()).isTrue()
         val detaljertFeilmeldingFraPdl = response.errors?.joinToString { it.extensions.toString() }
