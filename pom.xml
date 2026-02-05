@@ -22,7 +22,7 @@
         <java.version>21</java.version>
         <kotlin.version>2.2.21</kotlin.version>
         <springdoc.version>3.0.1</springdoc.version>
-        <felles.version>4.20260202203558_8d7fafe</felles.version>
+        <felles.version>4.20260205101028_6754677</felles.version>
         <kontrakter.version>4.0_20260204122732_558ee1d</kontrakter.version>
         <token-validation-spring.version>6.0.1</token-validation-spring.version>
         <graphql-kotlin.version>8.8.1</graphql-kotlin.version>
@@ -66,12 +66,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.retry/spring-retry -->
-        <dependency>
-            <groupId>org.springframework.retry</groupId>
-            <artifactId>spring-retry</artifactId>
-            <version>2.0.12</version>
-        </dependency>
+
 
         <dependency>
             <groupId>org.wiremock.integrations</groupId>
