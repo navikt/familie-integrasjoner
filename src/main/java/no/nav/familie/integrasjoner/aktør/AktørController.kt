@@ -1,6 +1,5 @@
 package no.nav.familie.integrasjoner.aktør
 
-import no.nav.familie.integrasjoner.personopplysning.domene.AktørId
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.Tema
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.util.Objects
 
 @RestController
 @ProtectedWithClaims(issuer = "azuread")
@@ -29,7 +29,7 @@ class AktørController(
     ): ResponseEntity<Ressurs<Map<String, String>>> =
         ResponseEntity.ok(
             success(
-                mapOf("personIdent" to aktørService.getPersonIdentFraPdl(AktørId(aktørId), tema)),
+                mapOf("personIdent" to aktørService.getPersonIdentFraPdl(aktørId, tema)),
                 "Hent aktør for personident OK",
             ),
         )
