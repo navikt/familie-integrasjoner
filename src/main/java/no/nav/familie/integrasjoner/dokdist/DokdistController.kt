@@ -40,8 +40,6 @@ class DokdistController(
     fun distribuerJournalpost(
         @RequestBody request: @Valid DistribuerJournalpostRequest,
     ): ResponseEntity<Ressurs<String>> {
-        secureLogger.info("Distribuerer journalpost med id=$request")
-
         val response = dokdistService.distribuerDokumentForJournalpost(request)
         return ResponseEntity.ok(success(response?.bestillingsId ?: throw NullResponseException()))
     }
