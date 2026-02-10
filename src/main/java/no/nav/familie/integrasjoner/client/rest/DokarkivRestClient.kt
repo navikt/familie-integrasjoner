@@ -101,7 +101,7 @@ class DokarkivRestClient(
     ): Throwable {
         val message = "Feil ved $requestType av journalpost "
         val sensitiveInfo = if (e is HttpStatusCodeException) e.responseBodyAsString else "$message for bruker $brukerId "
-        val httpStatus = if (e is HttpStatusCodeException) e.statusCode else null
+        val httpStatus = if (e is HttpStatusCodeException) e.statusCode else HttpStatus.INTERNAL_SERVER_ERROR
         return OppslagException(
             message,
             kilde,
