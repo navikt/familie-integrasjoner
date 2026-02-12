@@ -209,7 +209,6 @@ no.nav.security.jwt:
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
 
-INTEGRASJONER_CLIENT_ID: ${AZURE_APP_CLIENT_ID}
 CLIENT_SECRET: ${AZURE_APP_CLIENT_SECRET}
 KODEVERK_SCOPE: api://prod-gcp.team-rocket.kodeverk-api/.default
 DOKARKIV_SCOPE: api://prod-fss.teamdokumenthandtering.dokarkiv/.default
@@ -220,6 +219,8 @@ REGOPPSLAG_SCOPE: api://prod-fss.teamdokumenthandtering.regoppslag/.default
 AAREG_SCOPE: api://prod-fss.arbeidsforhold.aareg-services-nais/.default
 FORSTESIDEGENERATOR_SCOPE: api://prod-fss.teamdokumenthandtering.foerstesidegenerator/.default
 MODIA_CONTEXT_HOLDER_SCOPE: api://prod-gcp.personoversikt.modiacontextholder/.default
+OPPGAVE_SCOPE: api://prod-fss.oppgavehandtering.oppgave/.default
+SAF_SCOPE: api://prod-fss.teamdokumenthandtering.saf/.default
 
 SAF_AUDIENCE: prod-fss:teamdokumenthandtering:safselvbetjening
 
