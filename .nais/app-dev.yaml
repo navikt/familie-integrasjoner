@@ -12,6 +12,9 @@ metadata:
 spec:
   image: {{ image }}
   port: 8085
+  envFrom:
+    - secret: familie-integrasjoner-servicebruker
+    - secret: familie-integrasjoner-sftp
   liveness:
     path: /internal/status/isAlive
     initialDelay: 30
@@ -23,7 +26,7 @@ spec:
     timeout: 5
     failureThreshold: 10
   vault:
-    enabled: true
+    enabled: false
   webproxy: true
   azure:
     application:
