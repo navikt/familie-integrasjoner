@@ -81,6 +81,7 @@ fun Dokumenttype.tilMetadata(): Dokumentmetadata =
         Dokumenttype.BARNETRYGD_TILBAKEKREVING_VEDTAK -> BarnetrygdTilbakebetalingVedtakMetadata
         Dokumenttype.BARNETRYGD_TILBAKEKREVINGSVEDTAK_MOTREGNING -> BarnetrygdTilbakekrevingsvedtakMotregningMetadata
         Dokumenttype.BARNETRYGD_UTBETALING_ETTER_KA_VEDTAK -> BarnetrygdUtbetalingEtterKAVedtakMetadata
+        Dokumenttype.BARNETRYGD_UTBETALING_ETTER_KA_VEDTAK_INSTITUSJON -> BarnetrygdUtbetalingEtterKAVedtakInstitusjonMetadata
         Dokumenttype.BARNETRYGD_VARSEL_OM_REVURDERING_DELT_BOSTED_PARAGRAF_14 -> BarnetrygdVarselOmRevurderingDeltBostedParagraf14Metadata
         Dokumenttype.BARNETRYGD_VARSEL_OM_REVURDERING_FRA_NASJONAL_TIL_EØS -> BarnetrygdVarselOmRevurderingFraNasjonalTilEøsMetadata
         Dokumenttype.BARNETRYGD_VARSEL_OM_REVURDERING_INSTITUSJON -> BarnetrygdVarselOmRevurderingInstitusjonMetadata
