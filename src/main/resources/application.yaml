@@ -20,10 +20,10 @@ springdoc:
 
 tilgang:
   kode6:
-    rolle-id: "ad7b87a6-9180-467c-affc-20a566b0fec0"
+    rolle-id: "2931da41-8b8e-42cd-99c0-04a169ddae40"
     beskrivelse: Strengt fortrolig adresse
   kode7:
-    rolle-id: "9ec6487d-f37a-4aad-a027-cd221c1ac32b"
+    rolle-id: "e98efc34-12d1-401f-b059-f17e62834065"
     beskrivelse: Fortrolig adresse
   egenAnsatt:
     rolle-id: "e750ceb5-b70b-4d94-b4fa-9d22467b786b"
