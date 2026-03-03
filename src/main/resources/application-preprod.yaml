@@ -211,10 +211,10 @@ no.nav.security.jwt:
 
 tilgang:
   kode6:
-    rolle-id: "5ef775f2-61f8-4283-bf3d-8d03f428aa14"
+    rolle-id: "a1b518e2-3947-478d-8929-e5d685c47cac"
     beskrivelse: Strengt fortrolig adresse
   kode7:
-    rolle-id: "ea930b6b-9397-44d9-b9e6-f4cf527a632a"
+    rolle-id: "2e1dc582-f762-4510-a660-88bf68fb7128"
     beskrivelse: Fortrolig adresse
   egenAnsatt:
     rolle-id: "dbe4ad45-320b-4e9a-aaa1-73cca4ee124d"
