@@ -1,7 +1,6 @@
 package no.nav.familie.integrasjoner.førstesidegenerator
 
 import no.nav.familie.integrasjoner.client.rest.FørstesidegeneratorClient
-import no.nav.familie.integrasjoner.førstesidegenerator.domene.Adresse
 import no.nav.familie.integrasjoner.førstesidegenerator.domene.Bruker
 import no.nav.familie.integrasjoner.førstesidegenerator.domene.Brukertype
 import no.nav.familie.integrasjoner.førstesidegenerator.domene.Førstesidetype

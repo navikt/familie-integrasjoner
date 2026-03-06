@@ -2,10 +2,10 @@ package no.nav.familie.integrasjoner.journalpost.selvbetjening
 
 import com.expediagroup.graphql.client.spring.GraphQLWebClient
 import com.expediagroup.graphql.client.types.GraphQLClientResponse
-import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.integrasjoner.safselvbetjening.generated.HentDokumentoversikt
 import no.nav.familie.integrasjoner.safselvbetjening.generated.enums.Tema
 import no.nav.familie.integrasjoner.safselvbetjening.generated.enums.Variantformat
+import no.nav.familie.restklient.client.AbstractRestClient
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders

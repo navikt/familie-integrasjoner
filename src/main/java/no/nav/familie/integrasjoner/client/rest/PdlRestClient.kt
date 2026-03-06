@@ -1,7 +1,5 @@
 package no.nav.familie.integrasjoner.client.rest
 
-import no.nav.familie.http.client.AbstractRestClient
-import no.nav.familie.http.util.UriUtil
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningDto
@@ -22,6 +20,8 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonRequestVa
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlResponse
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.kontrakter.felles.Tema
+import no.nav.familie.restklient.client.AbstractRestClient
+import no.nav.familie.restklient.util.UriUtil
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders

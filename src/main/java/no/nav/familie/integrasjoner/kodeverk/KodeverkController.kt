@@ -3,7 +3,6 @@ package no.nav.familie.integrasjoner.kodeverk
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.kodeverk.InntektKodeverkDto
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
-import no.nav.familie.kontrakter.felles.kodeverk.LandDto
 import no.nav.security.token.support.core.api.Unprotected
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity

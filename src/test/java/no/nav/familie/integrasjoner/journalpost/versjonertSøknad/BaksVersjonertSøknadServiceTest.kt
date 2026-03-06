@@ -15,7 +15,7 @@ import no.nav.familie.kontrakter.felles.journalpost.Dokumentvariantformat
 import no.nav.familie.kontrakter.felles.journalpost.Journalpost
 import no.nav.familie.kontrakter.felles.journalpost.Journalposttype
 import no.nav.familie.kontrakter.felles.journalpost.Journalstatus
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -48,7 +48,7 @@ class BaksVersjonertSøknadServiceTest {
 
             val kontantstøtteSøknad = lagKontantstøtteSøknad(søkerFnr = søkerFnr, barnFnr = barnFnr)
 
-            every { safHentDokumentRestClient.hentDokument("1", "1", Dokumentvariantformat.ORIGINAL.name) } returns objectMapper.writeValueAsBytes(kontantstøtteSøknad)
+            every { safHentDokumentRestClient.hentDokument("1", "1", Dokumentvariantformat.ORIGINAL.name) } returns jsonMapper.writeValueAsBytes(kontantstøtteSøknad)
 
             // Act
             val baksSøknadBase = baksVersjonertSøknadService.hentBaksSøknadBase(journalpost, Tema.KON)
@@ -75,7 +75,7 @@ class BaksVersjonertSøknadServiceTest {
 
             val barnetrygdSøknad = lagBarnetrygdSøknad(søkerFnr = søkerFnr, barnFnr = barnFnr)
 
-            every { safHentDokumentRestClient.hentDokument("1", "1", Dokumentvariantformat.ORIGINAL.name) } returns objectMapper.writeValueAsBytes(barnetrygdSøknad)
+            every { safHentDokumentRestClient.hentDokument("1", "1", Dokumentvariantformat.ORIGINAL.name) } returns jsonMapper.writeValueAsBytes(barnetrygdSøknad)
 
             // Act
             val baksSøknadBase = baksVersjonertSøknadService.hentBaksSøknadBase(journalpost, Tema.BAR)
@@ -107,7 +107,7 @@ class BaksVersjonertSøknadServiceTest {
             val kontantstøtteSøknad = lagKontantstøtteSøknad(søkerFnr = søkerFnr, barnFnr = barnFnr)
 
             every { safRestClient.hentJournalpost(journalpost.journalpostId) } returns journalpost
-            every { safHentDokumentRestClient.hentDokument(journalpost.journalpostId, dokumentInfo.dokumentInfoId, Dokumentvariantformat.ORIGINAL.name) } returns objectMapper.writeValueAsBytes(kontantstøtteSøknad)
+            every { safHentDokumentRestClient.hentDokument(journalpost.journalpostId, dokumentInfo.dokumentInfoId, Dokumentvariantformat.ORIGINAL.name) } returns jsonMapper.writeValueAsBytes(kontantstøtteSøknad)
 
             // Act
             val versjonertKontantstøtteSøknad = baksVersjonertSøknadService.hentVersjonertKontantstøtteSøknad(journalpost.journalpostId)
@@ -128,7 +128,7 @@ class BaksVersjonertSøknadServiceTest {
             val barnetrygdSøknad = lagBarnetrygdSøknad(søkerFnr = søkerFnr, barnFnr = barnFnr)
 
             every { safRestClient.hentJournalpost(journalpost.journalpostId) } returns journalpost
-            every { safHentDokumentRestClient.hentDokument(journalpost.journalpostId, dokumentInfo.dokumentInfoId, Dokumentvariantformat.ORIGINAL.name) } returns objectMapper.writeValueAsBytes(barnetrygdSøknad)
+            every { safHentDokumentRestClient.hentDokument(journalpost.journalpostId, dokumentInfo.dokumentInfoId, Dokumentvariantformat.ORIGINAL.name) } returns jsonMapper.writeValueAsBytes(barnetrygdSøknad)
 
             // Act
             val versjonertBarnetrygdSøknad = baksVersjonertSøknadService.hentVersjonertBarnetrygdSøknad(journalpost.journalpostId)

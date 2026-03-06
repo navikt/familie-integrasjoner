@@ -8,7 +8,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.springframework.boot.test.web.client.exchange
+import org.springframework.boot.resttestclient.exchange
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
@@ -18,7 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder
 @ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
 class FiloverføringAdraMatchControllerTest : OppslagSpringRunnerTest() {
     @get:Rule
-    val sftpServer: FakeSftpServerRule = FakeSftpServerRule().apply { port = MOCK_SERVER_PORT }
+    val sftpServer: FakeSftpServerRule = FakeSftpServerRule().apply { port = MOCK_SFTP_SERVER_PORT }
 
     @Before
     fun setUp() {
@@ -28,7 +28,7 @@ class FiloverføringAdraMatchControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `skal koble opp og laste opp fil`() {
         sftpServer.createDirectory("/inbound")
-        val uri = UriComponentsBuilder.fromHttpUrl(localhost(BASE_URL)).toUriString()
+        val uri = UriComponentsBuilder.fromUriString(localhost(BASE_URL)).toUriString()
         val payload = Fil("file.txt", "Filinnhold".toByteArray())
         val response: ResponseEntity<Ressurs<String>> =
             restTemplate.exchange(
@@ -43,6 +43,6 @@ class FiloverføringAdraMatchControllerTest : OppslagSpringRunnerTest() {
 
     companion object {
         const val BASE_URL = "/api/adramatch/avstemming"
-        const val MOCK_SERVER_PORT = 18321
+        const val MOCK_SFTP_SERVER_PORT = 18321
     }
 }

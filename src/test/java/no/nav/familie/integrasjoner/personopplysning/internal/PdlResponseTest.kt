@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.personopplysning.internal
 
 import io.mockk.mockk
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Nested
@@ -43,7 +43,7 @@ class PdlResponseTest {
 
             // Assert
             assertNotNull(pdlUnauthorizedDetails)
-            assertThat(pdlUnauthorizedDetails).isEqualTo(listOf(objectMapper.convertValue(unauthorizedDetailsSomLinkedHashMap, PdlUnauthorizedDetails::class.java)))
+            assertThat(pdlUnauthorizedDetails).isEqualTo(listOf(jsonMapper.convertValue(unauthorizedDetailsSomLinkedHashMap, PdlUnauthorizedDetails::class.java)))
         }
     }
 }

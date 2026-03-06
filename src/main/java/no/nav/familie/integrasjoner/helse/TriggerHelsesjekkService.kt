@@ -1,6 +1,6 @@
 package no.nav.familie.integrasjoner.helse
 
-import no.nav.familie.http.health.AbstractHealthIndicator
+import no.nav.familie.restklient.health.AbstractHealthIndicator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired

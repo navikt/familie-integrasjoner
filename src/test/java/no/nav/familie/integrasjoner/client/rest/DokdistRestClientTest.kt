@@ -15,7 +15,6 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.web.client.RestOperations
-import org.springframework.web.client.exchange
 import java.net.URI
 
 class DokdistRestClientTest {
@@ -27,7 +26,8 @@ class DokdistRestClientTest {
         @Test
         fun `skal kaste OppslagException når kall mot dokdist feiler`() {
             // Arrange
-            every { restOperations.exchange<DistribuerJournalpostResponseTo?>(any<URI>(), eq(HttpMethod.POST), any<HttpEntity<DistribuerJournalpostRequestTo>>()) } throws RuntimeException("Noe gikk galt")
+
+            every { restOperations.exchange(any<URI>(), eq(HttpMethod.POST), any<HttpEntity<DistribuerJournalpostRequestTo>>(), eq(DistribuerJournalpostResponseTo::class.java)) } throws RuntimeException("Noe gikk galt")
 
             // Act & Assert
             val oppslagException =

@@ -59,9 +59,9 @@ class GraphQLWebClientConfigTest {
 
             // Assert
             val capturedFilteredRequest = filteredRequestSlot.captured
-            assertThat(capturedFilteredRequest.headers())
+            assertThat(capturedFilteredRequest.headers().toSingleValueMap())
                 .containsKey("Authorization")
-                .containsEntry("Authorization", listOf("Bearer gyldig-token"))
+                .containsEntry("Authorization", "Bearer gyldig-token")
         }
 
         @Test
@@ -131,9 +131,9 @@ class GraphQLWebClientConfigTest {
 
             // Assert
             val capturedFilteredRequest = filteredRequestSlot.captured
-            assertThat(capturedFilteredRequest.headers())
+            assertThat(capturedFilteredRequest.headers().toSingleValueMap())
                 .containsKey(NavHttpHeaders.NAV_CONSUMER_ID.asString())
-                .containsEntry(NavHttpHeaders.NAV_CONSUMER_ID.asString(), listOf(serviceUser))
+                .containsEntry(NavHttpHeaders.NAV_CONSUMER_ID.asString(), serviceUser)
         }
 
         @Test
@@ -154,9 +154,9 @@ class GraphQLWebClientConfigTest {
 
             // Assert
             val capturedFilteredRequest = filteredRequestSlot.captured
-            assertThat(capturedFilteredRequest.headers())
+            assertThat(capturedFilteredRequest.headers().toSingleValueMap())
                 .containsKey(NavHttpHeaders.NAV_CONSUMER_ID.asString())
-                .containsEntry(NavHttpHeaders.NAV_CONSUMER_ID.asString(), listOf(appName))
+                .containsEntry(NavHttpHeaders.NAV_CONSUMER_ID.asString(), appName)
         }
     }
 

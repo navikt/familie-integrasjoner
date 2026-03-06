@@ -3,17 +3,20 @@ package no.nav.familie.integrasjoner.egenansatt
 import com.github.tomakehurst.wiremock.client.WireMock
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.client.rest.EgenAnsattRestClient
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
+import org.wiremock.spring.ConfigureWireMock
+import org.wiremock.spring.EnableWireMock
 
 @ActiveProfiles("integrasjonstest")
 @TestPropertySource(properties = ["EGEN_ANSATT_URL=http://localhost:28085"])
-@AutoConfigureWireMock(port = 28085)
+@EnableWireMock(
+    ConfigureWireMock(name = "EgenAnsattControllerTest", port = 28085),
+)
 class EgenAnsattControllerTest : OppslagSpringRunnerTest() {
     @Autowired
     lateinit var egenAnsattRestClient: EgenAnsattRestClient
@@ -42,7 +45,7 @@ class EgenAnsattControllerTest : OppslagSpringRunnerTest() {
                             "Content-Type",
                             "application/json",
                         ).withBody(
-                            objectMapper.writeValueAsString(
+                            jsonMapper.writeValueAsString(
                                 erEgenAnsatt,
                             ),
                         ),

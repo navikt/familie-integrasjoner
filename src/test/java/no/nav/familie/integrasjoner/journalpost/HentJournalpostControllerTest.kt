@@ -1,6 +1,13 @@
 package no.nav.familie.integrasjoner.journalpost
 
 import ch.qos.logback.classic.Logger
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
+import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.okJson
+import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.status
+import com.github.tomakehurst.wiremock.client.WireMock.stubFor
+import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.baks.søknad.lagBarnetrygdSøknad
 import no.nav.familie.integrasjoner.felles.graphqlCompatible
@@ -20,36 +27,30 @@ import no.nav.familie.kontrakter.felles.journalpost.Journalstatus
 import no.nav.familie.kontrakter.felles.journalpost.TilgangsstyrtJournalpost
 import no.nav.familie.kontrakter.felles.journalpost.Utsendingsmåte
 import no.nav.familie.kontrakter.felles.journalpost.VarselType
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockserver.integration.ClientAndServer
-import org.mockserver.junit.jupiter.MockServerExtension
-import org.mockserver.junit.jupiter.MockServerSettings
-import org.mockserver.model.Header
-import org.mockserver.model.HttpRequest
-import org.mockserver.model.HttpResponse
-import org.mockserver.model.HttpResponse.response
-import org.mockserver.model.JsonBody.json
 import org.slf4j.LoggerFactory
-import org.springframework.boot.test.web.client.exchange
+import org.springframework.boot.resttestclient.exchange
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestPropertySource
 import org.springframework.web.util.UriComponentsBuilder
+import org.wiremock.spring.ConfigureWireMock
+import org.wiremock.spring.EnableWireMock
 import java.time.LocalDateTime
 
+@EnableWireMock(
+    ConfigureWireMock(name = "HentJournalpostControllerTest", port = 28085),
+)
+@TestPropertySource(properties = ["SAF_URL=http://localhost:28085"])
 @ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth", "mock-egenansatt-false")
-@ExtendWith(MockServerExtension::class)
-@MockServerSettings(ports = [OppslagSpringRunnerTest.MOCK_SERVER_PORT])
-class HentJournalpostControllerTest(
-    val client: ClientAndServer,
-) : OppslagSpringRunnerTest() {
+class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
     private val testLogger = LoggerFactory.getLogger(HentJournalpostController::class.java) as Logger
 
     private lateinit var uriHentSaksnummer: String
@@ -59,22 +60,22 @@ class HentJournalpostControllerTest(
 
     @BeforeEach
     fun setUp() {
-        client.reset()
+        // Wiremock reset is automatic per test
         testLogger.addAppender(listAppender)
         headers.setBearerAuth(lagToken("testbruker"))
         uriHentSaksnummer =
             UriComponentsBuilder
-                .fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/sak")
+                .fromUriString(localhost(JOURNALPOST_BASE_URL) + "/sak")
                 .queryParam("journalpostId", JOURNALPOST_ID)
                 .toUriString()
         uriHentJournalpost =
             UriComponentsBuilder
-                .fromHttpUrl(localhost(JOURNALPOST_BASE_URL))
+                .fromUriString(localhost(JOURNALPOST_BASE_URL))
                 .queryParam("journalpostId", JOURNALPOST_ID)
                 .toUriString()
         uriHentTilgangsstyrtJournalpost =
             UriComponentsBuilder
-                .fromHttpUrl(localhost(JOURNALPOST_BASE_URL) + "/tilgangsstyrt/baks")
+                .fromUriString(localhost(JOURNALPOST_BASE_URL) + "/tilgangsstyrt/baks")
                 .queryParam("journalpostId", JOURNALPOST_ID)
                 .toUriString()
         uriHentDokument = localhost(JOURNALPOST_BASE_URL) + "/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID"
@@ -82,18 +83,11 @@ class HentJournalpostControllerTest(
 
     @Test
     fun `hent journalpost skal returnere journalpost og status ok`() {
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("POST")
-                    .withPath("/rest/saf/graphql")
-                    .withBody(gyldigJournalPostIdRequest()),
-            ).respond(
-                response()
-                    .withBody(json(lesFil("saf/gyldigjournalpostresponse.json")))
-                    .withHeaders(Header("Content-Type", "application/json")),
-            )
+        stubFor(
+            post(urlPathEqualTo("/graphql"))
+                .withRequestBody(equalTo(gyldigJournalPostIdRequest()))
+                .willReturn(okJson(lesFil("saf/gyldigjournalpostresponse.json")).withHeader("Content-Type", "application/json")),
+        )
 
         val response: ResponseEntity<Ressurs<Journalpost>> =
             restTemplate.exchange(
@@ -113,21 +107,14 @@ class HentJournalpostControllerTest(
     fun `hent tilgangsstyrt baks journalpost skal returnere journalpost og status ok`() {
         val uriHentTilgangsstyrtBaksJournalpost =
             UriComponentsBuilder
-                .fromHttpUrl(localhost("$JOURNALPOST_BASE_URL/tilgangsstyrt/baks"))
+                .fromUriString(localhost("$JOURNALPOST_BASE_URL/tilgangsstyrt/baks"))
                 .queryParam("journalpostId", JOURNALPOST_ID)
                 .toUriString()
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("POST")
-                    .withPath("/rest/saf/graphql")
-                    .withBody(gyldigJournalPostIdRequest()),
-            ).respond(
-                response()
-                    .withBody(json(lesFil("saf/gyldigjournalpostresponse.json")))
-                    .withHeaders(Header("Content-Type", "application/json")),
-            )
+        stubFor(
+            post(urlPathEqualTo("/graphql"))
+                .withRequestBody(equalTo(gyldigJournalPostIdRequest()))
+                .willReturn(okJson(lesFil("saf/gyldigjournalpostresponse.json")).withHeader("Content-Type", "application/json")),
+        )
 
         val response: ResponseEntity<Ressurs<Journalpost>> =
             restTemplate.exchange(
@@ -145,14 +132,11 @@ class HentJournalpostControllerTest(
 
     @Test
     fun `hent journalpostForBruker skal returnere journalposter og status ok`() {
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("POST")
-                    .withPath("/rest/saf/graphql")
-                    .withBody(objectMapper.writeValueAsString(gyldigBrukerRequest())),
-            ).respond(response().withBody(json(lesFil("saf/gyldigJournalposterResponse.json"))))
+        stubFor(
+            post(urlPathEqualTo("/graphql"))
+                .withRequestBody(equalTo(jsonMapper.writeValueAsString(gyldigBrukerRequest())))
+                .willReturn(okJson(lesFil("saf/gyldigJournalposterResponse.json"))),
+        )
 
         val response: ResponseEntity<Ressurs<List<Journalpost>>> =
             restTemplate.exchange(
@@ -206,48 +190,29 @@ class HentJournalpostControllerTest(
     @Test
     fun `hentTilgangsstyrteJournalposterForBruker skal returnere tilgangsstyrte journalposter og status ok`() {
         val barnetrygdSøknad = lagBarnetrygdSøknad("12345678910", "12345678911")
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("POST")
-                    .withPath("/rest/saf/graphql")
-                    .withBody(objectMapper.writeValueAsString(gyldigBrukerRequest())),
-            ).respond(response().withBody(json(lesFil("saf/gyldigJournalposterResponseBarnetrygd.json"))))
-
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("GET")
-                    .withPath("/soknad/hent-personer-i-digital-soknad/BAR/453492634"),
-            ).respond(response().withBody(json(lesFil("mottak/gyldigPersonerIDigitalSøknadResponse.json"))))
-
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("POST")
-                    .withPath("/rest/pdl/graphql")
-                    .withBody(objectMapper.writeValueAsString(gyldigPdlPersonRequest("12345678910"))),
-            ).respond(response().withBody(json(lesFil("pdl/pdlAdressebeskyttelseResponse.json"))))
-
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("POST")
-                    .withPath("/rest/pdl/graphql")
-                    .withBody(objectMapper.writeValueAsString(gyldigPdlPersonRequest("12345678911"))),
-            ).respond(response().withBody(json(lesFil("pdl/pdlAdressebeskyttelseResponse.json"))))
-
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("GET")
-                    .withPath("/rest/saf/rest/hentdokument/453492634/453871494/ORIGINAL"),
-            ).respond(HttpResponse().withBody(objectMapper.writeValueAsBytes(barnetrygdSøknad)).withHeaders(Header("Content-Type", "application/json")))
+        stubFor(
+            post(urlPathEqualTo("/graphql"))
+                .withRequestBody(equalTo(jsonMapper.writeValueAsString(gyldigBrukerRequest())))
+                .willReturn(okJson(lesFil("saf/gyldigJournalposterResponseBarnetrygd.json"))),
+        )
+        stubFor(
+            get(urlPathEqualTo("/soknad/hent-personer-i-digital-soknad/BAR/453492634"))
+                .willReturn(okJson(lesFil("mottak/gyldigPersonerIDigitalSøknadResponse.json"))),
+        )
+        stubFor(
+            post(urlPathEqualTo("/rest/pdl/graphql"))
+                .withRequestBody(equalTo(jsonMapper.writeValueAsString(gyldigPdlPersonRequest("12345678910"))))
+                .willReturn(okJson(lesFil("pdl/pdlAdressebeskyttelseResponse.json"))),
+        )
+        stubFor(
+            post(urlPathEqualTo("/rest/pdl/graphql"))
+                .withRequestBody(equalTo(jsonMapper.writeValueAsString(gyldigPdlPersonRequest("12345678911"))))
+                .willReturn(okJson(lesFil("pdl/pdlAdressebeskyttelseResponse.json"))),
+        )
+        stubFor(
+            get(urlPathEqualTo("/rest/saf/rest/hentdokument/453492634/453871494/ORIGINAL"))
+                .willReturn(okJson(jsonMapper.writeValueAsString(barnetrygdSøknad)).withHeader("Content-Type", "application/json")),
+        )
 
         val response: ResponseEntity<Ressurs<List<TilgangsstyrtJournalpost>>> =
             restTemplate.exchange(
@@ -284,13 +249,10 @@ class HentJournalpostControllerTest(
 
     @Test
     fun `hent dokument skal returnere dokument og status ok`() {
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("GET")
-                    .withPath("/rest/saf/rest/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID/ARKIV"),
-            ).respond(HttpResponse().withBody("pdf".toByteArray()).withHeaders(Header("Content-Type", "application/pdf")))
+        stubFor(
+            get(urlPathEqualTo("/rest/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID/ARKIV"))
+                .willReturn(status(200).withBody("pdf".toByteArray()).withHeader("Content-Type", "application/pdf")),
+        )
 
         val response: ResponseEntity<Ressurs<ByteArray>> =
             restTemplate.exchange(
@@ -305,27 +267,15 @@ class HentJournalpostControllerTest(
     @Test
     fun `hent tilgangsstyrt baks dokument skal returnere dokument og status ok`() {
         val uriHentTilgangsstyrtBaksDokument = localhost(JOURNALPOST_BASE_URL) + "/hentdokument/tilgangsstyrt/baks/$JOURNALPOST_ID/$DOKUMENTINFO_ID"
-
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("POST")
-                    .withPath("/rest/saf/graphql")
-                    .withBody(gyldigJournalPostIdRequest()),
-            ).respond(
-                response()
-                    .withBody(json(lesFil("saf/gyldigjournalpostresponse.json")))
-                    .withHeaders(Header("Content-Type", "application/json")),
-            )
-
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("GET")
-                    .withPath("/rest/saf/rest/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID/ARKIV"),
-            ).respond(HttpResponse().withBody("pdf".toByteArray()).withHeaders(Header("Content-Type", "application/pdf")))
+        stubFor(
+            post(urlPathEqualTo("/graphql"))
+                .withRequestBody(equalTo(gyldigJournalPostIdRequest()))
+                .willReturn(okJson(lesFil("saf/gyldigjournalpostresponse.json")).withHeader("Content-Type", "application/json")),
+        )
+        stubFor(
+            get(urlPathEqualTo("/rest/hentdokument/$JOURNALPOST_ID/$DOKUMENTINFO_ID/ARKIV"))
+                .willReturn(status(200).withBody("pdf".toByteArray()).withHeader("Content-Type", "application/pdf")),
+        )
 
         val response: ResponseEntity<Ressurs<ByteArray>> =
             restTemplate.exchange(
@@ -339,18 +289,11 @@ class HentJournalpostControllerTest(
 
     @Test
     fun `skal returnere 403 FORBIDDEN med status IKKE_TILGANG hvis man ikke har tilgang til SAF ressurs`() {
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("POST")
-                    .withPath("/rest/saf/graphql")
-                    .withBody(gyldigJournalPostIdRequest()),
-            ).respond(
-                response()
-                    .withBody(json(lesFil("saf/forbidden.json")))
-                    .withHeaders(Header("Content-Type", "application/json")),
-            )
+        stubFor(
+            post(urlPathEqualTo("/graphql"))
+                .withRequestBody(equalTo(gyldigJournalPostIdRequest()))
+                .willReturn(okJson(lesFil("saf/forbidden.json")).withHeader("Content-Type", "application/json")),
+        )
 
         val response: ResponseEntity<Ressurs<Journalpost>> =
             restTemplate.exchange(
@@ -365,18 +308,11 @@ class HentJournalpostControllerTest(
 
     @Test
     fun `skal returnere 404 NOT FOUND med status FEILET hvis man ikke finner SAF ressurs`() {
-        client
-            .`when`(
-                HttpRequest
-                    .request()
-                    .withMethod("POST")
-                    .withPath("/rest/saf/graphql")
-                    .withBody(gyldigJournalPostIdRequest()),
-            ).respond(
-                response()
-                    .withBody(json(lesFil("saf/not_found.json")))
-                    .withHeaders(Header("Content-Type", "application/json")),
-            )
+        stubFor(
+            post(urlPathEqualTo("/graphql"))
+                .withRequestBody(equalTo(gyldigJournalPostIdRequest()))
+                .willReturn(okJson(lesFil("saf/not_found.json")).withHeader("Content-Type", "application/json")),
+        )
 
         val response: ResponseEntity<Ressurs<Journalpost>> =
             restTemplate.exchange(

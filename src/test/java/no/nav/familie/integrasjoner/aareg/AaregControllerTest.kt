@@ -11,23 +11,26 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Status.FEILET
 import no.nav.familie.kontrakter.felles.Ressurs.Status.SUKSESS
 import no.nav.familie.kontrakter.felles.getDataOrThrow
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.web.client.postForObject
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock
+import org.springframework.boot.resttestclient.postForObject
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
+import org.wiremock.spring.ConfigureWireMock
+import org.wiremock.spring.EnableWireMock
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.time.LocalDate
 
 @ActiveProfiles("integrasjonstest", "mock-oauth")
 @TestPropertySource(properties = ["AAREG_URL=http://localhost:28085"])
-@AutoConfigureWireMock(port = 28085)
+@EnableWireMock(
+    ConfigureWireMock(name = "AaregControllerTest", port = 28085),
+)
 class AaregControllerTest : OppslagSpringRunnerTest() {
     @BeforeEach
     fun setup() {
@@ -52,7 +55,7 @@ class AaregControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(response?.status).isEqualTo(SUKSESS)
         assertThat(response?.getDataOrThrow()).hasSize(1)
-        val arbeidsforhold = objectMapper.convertValue(response?.getDataOrThrow()!!.first(), Arbeidsforhold::class.java)
+        val arbeidsforhold = jsonMapper.convertValue(response?.getDataOrThrow()!!.first(), Arbeidsforhold::class.java)
         assertThat(arbeidsforhold.arbeidstaker?.offentligIdent).isEqualTo(IDENT)
         assertThat(arbeidsforhold.arbeidsgiver?.organisasjonsnummer).isEqualTo("998877665")
         assertThat(arbeidsforhold.ansettelsesperiode?.periode?.fom).isEqualTo(LocalDate.of(2000, 8, 4))

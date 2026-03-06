@@ -1,13 +1,13 @@
 package no.nav.familie.integrasjoner.client
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import org.springframework.util.LinkedMultiValueMap
+import tools.jackson.module.kotlin.readValue
 
 object QueryParamUtil {
     fun toQueryParams(any: Any): LinkedMultiValueMap<String, String> {
-        val writeValueAsString = objectMapper.writeValueAsString(any)
-        val readValue: LinkedHashMap<String, Any?> = objectMapper.readValue(writeValueAsString)
+        val writeValueAsString = jsonMapper.writeValueAsString(any)
+        val readValue: LinkedHashMap<String, Any?> = jsonMapper.readValue(writeValueAsString)
         val queryParams = LinkedMultiValueMap<String, String>()
         readValue
             .filterNot { it.value == null }

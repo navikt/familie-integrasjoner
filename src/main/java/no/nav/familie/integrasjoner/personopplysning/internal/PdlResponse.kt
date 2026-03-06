@@ -1,7 +1,7 @@
 package no.nav.familie.integrasjoner.personopplysning.internal
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import no.nav.familie.kontrakter.felles.objectMapper
+import no.nav.familie.kontrakter.felles.jsonMapper
 import no.nav.familie.kontrakter.felles.personopplysning.SIVILSTANDTYPE
 
 data class PdlResponse<T>(
@@ -19,7 +19,7 @@ data class PdlResponse<T>(
 
     fun harUnauthorizedFeil(): Boolean = errors?.any { it.extensions?.unauthorized() == true } ?: false
 
-    fun tilPdlUnauthorizedDetails(): List<PdlUnauthorizedDetails> = errors?.filter { it.extensions?.unauthorized() == true }?.mapNotNull { it.extensions?.details?.let { details -> objectMapper.convertValue(details, PdlUnauthorizedDetails::class.java) } } ?: emptyList()
+    fun tilPdlUnauthorizedDetails(): List<PdlUnauthorizedDetails> = errors?.filter { it.extensions?.unauthorized() == true }?.mapNotNull { it.extensions?.details?.let { details -> jsonMapper.convertValue(details, PdlUnauthorizedDetails::class.java) } } ?: emptyList()
 }
 
 data class PersonDataBolk<T>(

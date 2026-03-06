@@ -1,9 +1,9 @@
 package no.nav.familie.integrasjoner.arbeidsfordeling
 
-import no.nav.familie.http.client.AbstractPingableRestClient
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.arbeidsfordeling.Enhet
 import no.nav.familie.kontrakter.felles.navkontor.NavKontorEnhet
+import no.nav.familie.restklient.client.AbstractPingableRestClient
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus

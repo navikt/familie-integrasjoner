@@ -31,13 +31,13 @@ class CacheConfig {
         }
 }
 
-fun <T> CacheManager.getNullable(
+fun <T : Any> CacheManager.getNullable(
     cache: String,
     key: String,
-    valueLoader: () -> T?,
+    valueLoader: () -> T,
 ): T? = (getCacheOrThrow(cache)).get(key, valueLoader)
 
-fun <T> CacheManager.getValue(
+fun <T : Any> CacheManager.getValue(
     cache: String,
     key: String,
     valueLoader: () -> T,

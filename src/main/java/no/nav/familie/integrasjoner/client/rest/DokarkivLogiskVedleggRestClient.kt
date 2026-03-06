@@ -1,11 +1,12 @@
 package no.nav.familie.integrasjoner.client.rest
 
-import no.nav.familie.http.client.AbstractRestClient
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.dokarkiv.BulkOppdaterLogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggResponse
+import no.nav.familie.restklient.client.AbstractRestClient
+import no.nav.familie.restklient.client.ResponseBodyNullException
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -59,8 +60,10 @@ class DokarkivLogiskVedleggRestClient(
                 .buildAndExpand(dokumentinfoId)
                 .toUri()
         try {
-            return putForEntity(uri, request, headers())
+            putForEntity<Any>(uri, request, headers())
         } catch (e: RuntimeException) {
+            if (e is ResponseBodyNullException) return
+
             val responsebody = if (e is HttpStatusCodeException) e.responseBodyAsString else ""
             val message = "Kan ikke bulk oppdatere logiske vedlegg for dokumentinfo $dokumentinfoId $responsebody"
             throw OppslagException(
@@ -103,7 +106,11 @@ class DokarkivLogiskVedleggRestClient(
         restOperations: RestOperations,
     ) : AbstractRestClient(restOperations, "dokarkiv.logiskvedlegg.slett") {
         fun slettLogiskVedlegg(uri: URI) {
-            deleteForEntity<String>(uri, null, headers())
+            try {
+                deleteForEntity<String>(uri, null, headers())
+            } catch (e: ResponseBodyNullException) {
+                // Ignorerer, slett returnerer tom body
+            }
         }
     }
 

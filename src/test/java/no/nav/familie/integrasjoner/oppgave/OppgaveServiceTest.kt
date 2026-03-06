@@ -3,11 +3,9 @@ package no.nav.familie.integrasjoner.oppgave
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
-import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.unmockkObject
 import io.mockk.verify
-import no.nav.familie.integrasjoner.aktør.AktørService
 import no.nav.familie.integrasjoner.client.rest.OppgaveRestClient
 import no.nav.familie.integrasjoner.saksbehandler.SaksbehandlerService
 import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
@@ -23,12 +21,10 @@ import no.nav.familie.kontrakter.felles.oppgave.Oppgavetype
 import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgaveRequest
 import no.nav.familie.kontrakter.felles.oppgave.StatusEnum
 import no.nav.familie.kontrakter.felles.saksbehandler.Saksbehandler
-import no.nav.familie.log.mdc.MDCConstants
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.slf4j.MDC
 import java.time.LocalDate
 import java.util.UUID
 

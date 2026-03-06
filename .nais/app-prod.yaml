@@ -12,6 +12,9 @@ metadata:
 spec:
   image: {{ image }}
   port: 8085
+  envFrom:
+    - secret: familie-integrasjoner-servicebruker
+    - secret: familie-integrasjoner-sftp
   liveness:
     path: /internal/status/isAlive
     initialDelay: 30
@@ -23,7 +26,7 @@ spec:
     timeout: 5
     failureThreshold: 10
   vault:
-    enabled: true
+    enabled: false
   prometheus:
     enabled: true
     path: /internal/prometheus
@@ -34,8 +37,8 @@ spec:
       claims:
         groups:
           - id: "e750ceb5-b70b-4d94-b4fa-9d22467b786b"  # 0000-GA-Egne_ansatte
-          - id: "9ec6487d-f37a-4aad-a027-cd221c1ac32b"  # 0000-GA-Fortrolig_Adresse
-          - id: "ad7b87a6-9180-467c-affc-20a566b0fec0"  # 0000-GA-Strengt_Fortrolig_Adresse
+          - id: "e98efc34-12d1-401f-b059-f17e62834065"  # 0000-GA-Fortrolig_Adresse
+          - id: "2931da41-8b8e-42cd-99c0-04a169ddae40"  # 0000-GA-Strengt_Fortrolig_Adresse
           - id: "199c2b39-e535-4ae8-ac59-8ccbee7991ae"  # 0000-GA-Barnetrygd-Veileder
           - id: "847e3d72-9dc1-41c3-80ff-f5d4acdd5d46"  # 0000-GA-Barnetrygd
           - id: "7a271f87-39fb-468b-a9ee-6cf3c070f548"  # 0000-GA-Barnetrygd-Beslutter

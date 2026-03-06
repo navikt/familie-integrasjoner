@@ -8,8 +8,8 @@ import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.resttestclient.TestRestTemplate
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.cache.CacheManager
 import org.springframework.http.HttpHeaders
@@ -90,7 +90,6 @@ abstract class OppslagSpringRunnerTest {
     }
 
     companion object {
-        const val MOCK_SERVER_PORT = 18321
         private const val LOCALHOST = "http://localhost:"
 
         protected fun initLoggingEventListAppender(): ListAppender<ILoggingEvent> {
