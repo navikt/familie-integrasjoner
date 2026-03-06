@@ -51,7 +51,7 @@ class CachedTilgangskontrollService(
         tema: Tema,
     ): Tilgang {
         val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent, tema)
-        secureLogger.info("Sjekker tilgang til {}", personMedRelasjoner)
+        secureLogger.info("Sjekker tilgang til {}", personMedRelasjoner.personIdent)
 
         val høyesteGraderingen = TilgangskontrollUtil.høyesteGraderingen(personMedRelasjoner)
         return hentTilgang(høyesteGraderingen, jwtToken, personIdent) { erEgenAnsatt(personMedRelasjoner) }
@@ -113,7 +113,6 @@ class CachedTilgangskontrollService(
 
     companion object {
         private val secureLogger = LoggerFactory.getLogger("secureLogger")
-        private val logger = LoggerFactory.getLogger(CachedTilgangskontrollService::class.java)
 
         const val TILGANG_TIL_BRUKER = "tilgangTilBruker"
     }
