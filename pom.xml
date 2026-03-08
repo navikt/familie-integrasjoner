@@ -21,7 +21,7 @@
         <changelist>-SNAPSHOT</changelist>
         <java.version>25</java.version>
         <kotlin.version>2.3.10</kotlin.version>
-        <springdoc.version>3.0.1</springdoc.version>
+        <springdoc.version>3.0.2</springdoc.version>
         <felles.version>4.20260301040348_4280733</felles.version>
         <kontrakter.version>4.0_20260227102250_91258ac</kontrakter.version>
         <token-validation-spring.version>6.0.3</token-validation-spring.version>
@@ -71,7 +71,7 @@
         <dependency>
             <groupId>org.wiremock.integrations</groupId>
             <artifactId>wiremock-spring-boot-standalone</artifactId>
-            <version>4.1.0</version>
+            <version>4.2.0</version>
             <scope>test</scope>
         </dependency>
 
