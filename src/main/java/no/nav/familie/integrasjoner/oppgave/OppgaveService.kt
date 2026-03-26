@@ -200,22 +200,29 @@ class OppgaveService constructor(
                 oppgaveRestClient.oppdaterOppgave(patchOppgaveDto)
             }
 
-            StatusEnum.FERDIGSTILT -> logger.info("Oppgave er allerede ferdigstilt. oppgaveId=$oppgaveId")
-            StatusEnum.FEILREGISTRERT -> throw OppslagException(
-                "Oppgave har status feilregistrert og kan ikke oppdateres. " +
-                    "oppgaveId=$oppgaveId",
-                "Oppgave.ferdigstill",
-                Level.MEDIUM,
-                HttpStatus.BAD_REQUEST,
-            )
+            StatusEnum.FERDIGSTILT -> {
+                logger.info("Oppgave er allerede ferdigstilt. oppgaveId=$oppgaveId")
+            }
 
-            null -> throw OppslagException(
-                "Oppgave har ingen status og kan ikke oppdateres. " +
-                    "oppgaveId=$oppgaveId",
-                "Oppgave.ferdigstill",
-                Level.MEDIUM,
-                HttpStatus.BAD_REQUEST,
-            )
+            StatusEnum.FEILREGISTRERT -> {
+                throw OppslagException(
+                    "Oppgave har status feilregistrert og kan ikke oppdateres. " +
+                        "oppgaveId=$oppgaveId",
+                    "Oppgave.ferdigstill",
+                    Level.MEDIUM,
+                    HttpStatus.BAD_REQUEST,
+                )
+            }
+
+            null -> {
+                throw OppslagException(
+                    "Oppgave har ingen status og kan ikke oppdateres. " +
+                        "oppgaveId=$oppgaveId",
+                    "Oppgave.ferdigstill",
+                    Level.MEDIUM,
+                    HttpStatus.BAD_REQUEST,
+                )
+            }
         }
     }
 

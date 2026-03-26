@@ -87,7 +87,9 @@ class DokdistkanalController(
                     adresse.adresselinje1?.isNotBlank() == true
                 }
 
-                else -> false
+                else -> {
+                    false
+                }
             }
     }
 
