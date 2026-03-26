@@ -77,18 +77,20 @@ class DokdistkanalController(
     private fun PersonIdent.harPostadresse(tema: Tema): Boolean {
         val adresse = personopplysningerService.hentPostadresse(ident, tema)?.adresse ?: return false
         return adresse.landkode in landkoderISO2 &&
-                when (adresse.type) {
-                    NORSKPOSTADRESSE -> {
-                        adresse.postnummer.let { it?.length == 4 && isNumeric(it) } &&
-                                adresse.poststed?.isNotBlank() == true
-                    }
-
-                    UTENLANDSKPOSTADRESSE -> {
-                        adresse.adresselinje1?.isNotBlank() == true
-                    }
-
-                    else -> false
+            when (adresse.type) {
+                NORSKPOSTADRESSE -> {
+                    adresse.postnummer.let { it?.length == 4 && isNumeric(it) } &&
+                        adresse.poststed?.isNotBlank() == true
                 }
+
+                UTENLANDSKPOSTADRESSE -> {
+                    adresse.adresselinje1?.isNotBlank() == true
+                }
+
+                else -> {
+                    false
+                }
+            }
     }
 
     companion object {
