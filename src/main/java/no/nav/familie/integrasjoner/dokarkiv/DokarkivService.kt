@@ -102,6 +102,7 @@ class DokarkivService(
             dokumenter = dokumenter.toList(),
             eksternReferanseId = eksternReferanseId,
             journalfoerendeEnhet = arkiverDokumentRequest.journalførendeEnhet,
+            overstyrInnsynsregler = arkiverDokumentRequest.overstyrInnsynsregler,
             sak = sak,
         )
     }

@@ -88,9 +88,9 @@ class CachedTilgangskontrollService(
     private fun erEgenAnsatt(personMedRelasjoner: PersonMedRelasjoner): Boolean {
         val relevanteIdenter =
             setOf(personMedRelasjoner.personIdent) +
-                personMedRelasjoner.sivilstand.map { it.personIdent } +
-                personMedRelasjoner.barn.map { it.personIdent } +
-                personMedRelasjoner.barnsForeldrer.map { it.personIdent }
+                    personMedRelasjoner.sivilstand.map { it.personIdent } +
+                    personMedRelasjoner.barn.map { it.personIdent } +
+                    personMedRelasjoner.barnsForeldrer.map { it.personIdent }
 
         return egenAnsattService.erEgenAnsatt(relevanteIdenter).any { it.value }
     }
@@ -106,7 +106,7 @@ class CachedTilgangskontrollService(
         }
         secureLogger.info(
             "${jwtToken.jwtTokenClaims.get("preferred_username")} " +
-                "har ikke tilgang ${adRolle?.beskrivelse} for $personIdent",
+                    "har ikke tilgang ${adRolle?.beskrivelse} for $personIdent",
         )
         return Tilgang(personIdent = personIdent, harTilgang = false, begrunnelse = adRolle?.beskrivelse)
     }
