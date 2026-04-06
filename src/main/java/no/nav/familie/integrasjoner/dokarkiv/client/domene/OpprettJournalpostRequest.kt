@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import no.nav.familie.kontrakter.felles.dokarkiv.AvsenderMottaker
 import no.nav.familie.kontrakter.felles.dokarkiv.DokarkivBruker
 import no.nav.familie.kontrakter.felles.dokarkiv.Sak
+import no.nav.familie.kontrakter.felles.journalpost.OverstyrInnsynsregel
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class OpprettJournalpostRequest(
@@ -18,4 +19,5 @@ class OpprettJournalpostRequest(
     val eksternReferanseId: String? = null,
     val sak: Sak? = null,
     val dokumenter: List<ArkivDokument> = ArrayList(),
+    val overstyrInnsynsregler: OverstyrInnsynsregel? = null,
 )

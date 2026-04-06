@@ -65,11 +65,17 @@ class CachedTilgangskontrollService(
     ): Tilgang {
         val tilgang =
             when (adressebeskyttelsegradering) {
-                FORTROLIG -> hentTilgangForRolle(tilgangConfig.kode7, jwtToken, personIdent)
-                STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND ->
-                    hentTilgangForRolle(tilgangConfig.kode6, jwtToken, personIdent)
+                FORTROLIG -> {
+                    hentTilgangForRolle(tilgangConfig.kode7, jwtToken, personIdent)
+                }
 
-                else -> Tilgang(personIdent = personIdent, harTilgang = true)
+                STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND -> {
+                    hentTilgangForRolle(tilgangConfig.kode6, jwtToken, personIdent)
+                }
+
+                else -> {
+                    Tilgang(personIdent = personIdent, harTilgang = true)
+                }
             }
         if (!tilgang.harTilgang) {
             return tilgang

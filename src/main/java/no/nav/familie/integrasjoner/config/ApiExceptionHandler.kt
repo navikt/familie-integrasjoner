@@ -152,7 +152,9 @@ class ApiExceptionHandler {
                 incrementLoggFeil(e.kilde)
             }
 
-            else -> logger.info("OppslagException : $feilmelding")
+            else -> {
+                logger.info("OppslagException : $feilmelding")
+            }
         }
 
         return ResponseEntity
