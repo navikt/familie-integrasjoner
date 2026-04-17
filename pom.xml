@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.3</version>
+        <version>4.0.5</version>
     </parent>
 
     <groupId>no.nav.familie.integrasjoner</groupId>
@@ -20,12 +20,12 @@
         <sha1></sha1>
         <changelist>-SNAPSHOT</changelist>
         <java.version>25</java.version>
-        <kotlin.version>2.3.10</kotlin.version>
-        <springdoc.version>3.0.1</springdoc.version>
-        <felles.version>4.20260301040348_4280733</felles.version>
+        <kotlin.version>2.3.20</kotlin.version>
+        <springdoc.version>3.0.2</springdoc.version>
+        <felles.version>4.20260315040340_f2acdc7</felles.version>
         <kontrakter.version>4.0_20260409132309_eea2b98</kontrakter.version>
-        <token-validation-spring.version>6.0.3</token-validation-spring.version>
-        <graphql-kotlin.version>9.0.0</graphql-kotlin.version>
+        <token-validation-spring.version>6.0.5</token-validation-spring.version>
+        <graphql-kotlin.version>9.1.0</graphql-kotlin.version>
     </properties>
 
     <dependencies>
@@ -71,7 +71,7 @@
         <dependency>
             <groupId>org.wiremock.integrations</groupId>
             <artifactId>wiremock-spring-boot-standalone</artifactId>
-            <version>4.1.0</version>
+            <version>4.2.1</version>
             <scope>test</scope>
         </dependency>
 
