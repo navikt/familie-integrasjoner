@@ -21,9 +21,9 @@
         <changelist>-SNAPSHOT</changelist>
         <java.version>25</java.version>
         <kotlin.version>2.3.20</kotlin.version>
-        <springdoc.version>3.0.2</springdoc.version>
-        <felles.version>4.20260315040340_f2acdc7</felles.version>
-        <kontrakter.version>4.0_20260409132309_eea2b98</kontrakter.version>
+        <springdoc.version>3.0.3</springdoc.version>
+        <felles.version>4.20260417151548_4d00bd4</felles.version>
+        <kontrakter.version>4.0_20260417102447_88161c0</kontrakter.version>
         <token-validation-spring.version>6.0.5</token-validation-spring.version>
         <graphql-kotlin.version>9.1.0</graphql-kotlin.version>
     </properties>
