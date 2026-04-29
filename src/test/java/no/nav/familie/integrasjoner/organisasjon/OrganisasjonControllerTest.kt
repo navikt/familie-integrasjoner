@@ -68,7 +68,7 @@ class OrganisasjonControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        assertThat(response.body?.melding).contains("Ingen organisasjon med oppgitt organisasjonsnummer ble funnet")
+        assertThat(response.body?.melding).contains("Ingen organisasjon med organisasjonsnummer $ORGNR ble funnet")
     }
 
     @Test
