@@ -1,11 +1,14 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.integrasjoner.config.incrementLoggFeil
+import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.organisasjon.OrganisasjonAdresse
 import no.nav.familie.restklient.client.AbstractPingableRestClient
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestOperations
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
@@ -32,6 +35,14 @@ class OrganisasjonRestClient(
     fun hentOrganisasjon(orgnr: String): HentOrganisasjonResponse =
         try {
             getForEntity(nøkkelinfoUri(orgnr))
+        } catch (e: HttpClientErrorException.NotFound) {
+            throw OppslagException(
+                message = "Ingen organisasjon med organisasjonsnummer $orgnr ble funnet",
+                kilde = "organisasjon.hent",
+                level = OppslagException.Level.LAV,
+                httpStatus = HttpStatus.NOT_FOUND,
+                error = e,
+            )
         } catch (e: Exception) {
             incrementLoggFeil("organisasjon.hent")
             throw e

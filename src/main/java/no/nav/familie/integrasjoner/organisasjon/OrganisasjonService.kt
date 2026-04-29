@@ -1,10 +1,11 @@
 package no.nav.familie.integrasjoner.organisasjon
 
 import no.nav.familie.integrasjoner.client.rest.OrganisasjonRestClient
+import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.organisasjon.Organisasjon
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.client.HttpClientErrorException
 
 @Service
 class OrganisasjonService(
@@ -21,7 +22,7 @@ class OrganisasjonService(
         try {
             organisasjonRestClient.hentOrganisasjon(orgnr)
             true
-        } catch (e: HttpClientErrorException.NotFound) {
+        } catch (oppslagException: OppslagException) {
             false
         }
 }
