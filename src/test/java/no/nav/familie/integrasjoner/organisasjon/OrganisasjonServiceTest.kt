@@ -3,15 +3,19 @@ package no.nav.familie.integrasjoner.organisasjon
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.notFound
 import com.github.tomakehurst.wiremock.client.WireMock.okJson
+import com.github.tomakehurst.wiremock.client.WireMock.serverError
 import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
+import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.organisasjon.Gyldighetsperiode
 import no.nav.familie.kontrakter.felles.organisasjon.Organisasjon
 import no.nav.familie.kontrakter.felles.organisasjon.OrganisasjonAdresse
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import org.wiremock.spring.ConfigureWireMock
@@ -67,6 +71,21 @@ internal class OrganisasjonServiceTest : OppslagSpringRunnerTest() {
                 .willReturn(notFound().withBody(bodyOrgIkkeFunnet)),
         )
         assertThat(organisasjonService.validerOrganisasjon("1")).isFalse
+    }
+
+    @Test
+    internal fun `hentOrganisasjon kaster OppslagException med status NOT_FOUND og level LAV når EREG returnerer 404`() {
+        stubFor(
+            get(urlEqualTo("/v2/organisasjon/2/noekkelinfo"))
+                .willReturn(notFound().withBody(bodyOrgIkkeFunnet)),
+        )
+
+        assertThatThrownBy { organisasjonService.hentOrganisasjon("2") }
+            .isInstanceOfSatisfying(OppslagException::class.java) {
+                assertThat(it.httpStatus).isEqualTo(HttpStatus.NOT_FOUND)
+                assertThat(it.level).isEqualTo(OppslagException.Level.LAV)
+                assertThat(it.kilde).isEqualTo("organisasjon.hent")
+            }
     }
 
     private val bodyOrg =
