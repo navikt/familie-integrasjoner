@@ -68,7 +68,7 @@ jobs:
           VAR: image=${{ needs.build.outputs.image }}
 
   deploy-preprod:
-    name: Deploy til prod-fss
+    name: Deploy til preprod-fss
     needs: build
     runs-on: ubuntu-latest
     permissions:
