@@ -6,6 +6,7 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.dokarkiv.ArkiverDokumentResponse
+import no.nav.familie.kontrakter.felles.dokarkiv.AvsluttSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.BulkOppdaterLogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggResponse
@@ -22,6 +23,7 @@ import org.springframework.validation.ObjectError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -83,6 +85,20 @@ class DokarkivController(
     ): ResponseEntity<Ressurs<OppdaterJournalpostResponse>> {
         val response = journalføringService.oppdaterJournalpost(oppdaterJournalpostRequest, journalpostId, navIdent)
         return ResponseEntity.ok(success(response, "Oppdatert journalpost $journalpostId sakstilknyttning"))
+    }
+
+    @PatchMapping(path = ["/v2/avsluttSak"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun avsluttSak(
+        @RequestBody @Valid
+        avsluttSakRequest: AvsluttSakRequest,
+    ): ResponseEntity<Ressurs<Map<String, String>>> {
+        journalføringService.avsluttSak(avsluttSakRequest)
+        return ResponseEntity.ok(
+            success(
+                mapOf("fagsakId" to avsluttSakRequest.fagsakId),
+                "Avsluttet sak ${avsluttSakRequest.fagsakId} i fagsaksystem ${avsluttSakRequest.fagsaksystem}",
+            ),
+        )
     }
 
     @PutMapping("/v2/{journalpostId}/ferdigstill")
