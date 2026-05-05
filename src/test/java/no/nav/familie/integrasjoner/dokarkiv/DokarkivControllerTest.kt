@@ -17,9 +17,11 @@ import com.github.tomakehurst.wiremock.client.WireMock.verify
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
 import no.nav.familie.kontrakter.felles.BrukerIdType
+import no.nav.familie.kontrakter.felles.Fagsystem
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.dokarkiv.ArkiverDokumentResponse
+import no.nav.familie.kontrakter.felles.dokarkiv.AvsluttSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.BulkOppdaterLogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.DokarkivBruker
 import no.nav.familie.kontrakter.felles.dokarkiv.Dokumenttype
@@ -50,6 +52,7 @@ import org.wiremock.spring.EnableWireMock
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
+import java.time.LocalDateTime
 import java.util.LinkedList
 import kotlin.test.assertFalse
 
@@ -331,6 +334,86 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
         assertThat(response.body?.melding).contains("Kan ikke ferdigstille journalpost 123")
+    }
+
+    @Test
+    fun `avsluttSak returnerer ok og kaller dokarkiv`() {
+        stubFor(
+            patch(urlPathEqualTo("/rest/journalpostapi/v1/sak/avsluttSak"))
+                .willReturn(status(200).withBody("OK")),
+        )
+
+        val body =
+            AvsluttSakRequest(
+                tema = Tema.BAR,
+                fagsakId = "123",
+                fagsaksystem = Fagsystem.BA,
+                bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
+                opprettetDato = LocalDateTime.of(2024, 1, 1, 0, 0),
+                administrativEnhet = "9999",
+            )
+
+        val response: ResponseEntity<Ressurs<Map<String, String>>> =
+            restTemplate.exchange(
+                localhost("$DOKARKIV_URL/avsluttSak"),
+                HttpMethod.PATCH,
+                HttpEntity(body, headers),
+            )
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.body?.data).isEqualTo(mapOf("fagsakId" to "123"))
+        assertThat(response.body?.melding).isEqualTo("Avsluttet sak 123 i fagsaksystem BA")
+        verify(patchRequestedFor(urlPathEqualTo("/rest/journalpostapi/v1/sak/avsluttSak")))
+    }
+
+    @Test
+    fun `avsluttSak returnerer feil hvis dokarkiv feiler`() {
+        stubFor(
+            patch(urlPathEqualTo("/rest/journalpostapi/v1/sak/avsluttSak"))
+                .willReturn(status(500)),
+        )
+
+        val body =
+            AvsluttSakRequest(
+                tema = Tema.BAR,
+                fagsakId = "123",
+                fagsaksystem = Fagsystem.BA,
+                bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
+                opprettetDato = LocalDateTime.of(2024, 1, 1, 0, 0),
+                administrativEnhet = "9999",
+            )
+
+        val response: ResponseEntity<Ressurs<Map<String, String>>> =
+            restTemplate.exchange(
+                localhost("$DOKARKIV_URL/avsluttSak"),
+                HttpMethod.PATCH,
+                HttpEntity(body, headers),
+            )
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.body?.melding).contains("Feil ved avslutting av sak i dokarkiv av journalpost")
+    }
+
+    @Test
+    fun `avsluttSak returnerer bad request ved valideringsfeil`() {
+        val invalidBody = """{"tema":"BAR"}"""
+        val jsonHeaders =
+            HttpHeaders().apply {
+                putAll(headers)
+                contentType = org.springframework.http.MediaType.APPLICATION_JSON
+            }
+
+        val response: ResponseEntity<Ressurs<Map<String, String>>> =
+            restTemplate.exchange(
+                localhost("$DOKARKIV_URL/avsluttSak"),
+                HttpMethod.PATCH,
+                HttpEntity(invalidBody, jsonHeaders),
+            )
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
     }
 
     @Test

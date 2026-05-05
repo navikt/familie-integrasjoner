@@ -6,6 +6,7 @@ import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostReq
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.kontrakter.felles.dokarkiv.AvsluttSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostResponse
 import no.nav.familie.log.NavHttpHeaders
@@ -93,6 +94,22 @@ class DokarkivRestClient(
         ferdigstillJournalPostClient.ferdigstillJournalpost(journalpostId, journalførendeEnhet, navIdent)
     }
 
+    fun avsluttSak(
+        request: AvsluttSakRequest,
+    ) {
+        val uri =
+            UriComponentsBuilder
+                .fromUri(dokarkivUrl)
+                .path(PATH_AVSLUTT_SAK)
+                .build()
+                .toUri()
+        try {
+            patchForEntity<String>(uri, request)
+        } catch (e: RuntimeException) {
+            throw oppslagExceptionVed("avslutting av sak i dokarkiv", e, request.bruker.id, "dokarkiv.avsluttSak")
+        }
+    }
+
     private fun oppslagExceptionVed(
         requestType: String,
         e: RuntimeException,
@@ -160,6 +177,7 @@ class DokarkivRestClient(
         private const val PATH_JOURNALPOST = "rest/journalpostapi/v1/journalpost"
         private const val QUERY_FERDIGSTILL = "forsoekFerdigstill={boolean}"
         private const val PATH_FERDIGSTILL_JOURNALPOST = "rest/journalpostapi/v1/journalpost/%s/ferdigstill"
+        private const val PATH_AVSLUTT_SAK = "rest/journalpostapi/v1/sak/avsluttSak"
         private const val NAV_CALL_ID = "Nav-Callid"
 
         private val NAVIDENT_REGEX = """^[a-zA-Z]\d{6}$""".toRegex()

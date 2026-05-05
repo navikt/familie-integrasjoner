@@ -3,6 +3,8 @@ package no.nav.familie.integrasjoner.dokarkiv
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.runs
 import io.mockk.slot
 import io.mockk.verify
 import no.nav.familie.integrasjoner.client.rest.DokarkivLogiskVedleggRestClient
@@ -21,6 +23,7 @@ import no.nav.familie.kontrakter.felles.BrukerIdType
 import no.nav.familie.kontrakter.felles.Fagsystem
 import no.nav.familie.kontrakter.felles.Språkkode
 import no.nav.familie.kontrakter.felles.Tema
+import no.nav.familie.kontrakter.felles.dokarkiv.AvsluttSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.DokarkivBruker
 import no.nav.familie.kontrakter.felles.dokarkiv.Dokumenttype
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
@@ -73,6 +76,27 @@ class DokarkivServiceTest {
     @AfterEach
     internal fun tearDown() {
         MDC.remove(MDCConstants.MDC_CALL_ID)
+    }
+
+    @Test
+    fun `avsluttSak skal kalle videre på dokarkiv klient ved avslutting av sak`() {
+        val slot = slot<AvsluttSakRequest>()
+        every { dokarkivRestClient.avsluttSak(capture(slot)) } just runs
+
+        val request =
+            AvsluttSakRequest(
+                tema = Tema.BAR,
+                fagsakId = "123",
+                fagsaksystem = Fagsystem.BA,
+                bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
+                opprettetDato = java.time.LocalDateTime.of(2024, 1, 1, 0, 0),
+                administrativEnhet = "9999",
+            )
+
+        dokarkivService.avsluttSak(request)
+
+        verify(exactly = 1) { dokarkivRestClient.avsluttSak(request) }
+        assertThat(slot.captured).isEqualTo(request)
     }
 
     @Test
