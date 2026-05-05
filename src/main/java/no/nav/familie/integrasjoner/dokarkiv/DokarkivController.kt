@@ -87,7 +87,7 @@ class DokarkivController(
         return ResponseEntity.ok(success(response, "Oppdatert journalpost $journalpostId sakstilknyttning"))
     }
 
-    @PatchMapping(path = ["/v2/avsluttSak"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    @PatchMapping(path = ["/avsluttSak"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun avsluttSak(
         @RequestBody @Valid
         avsluttSakRequest: AvsluttSakRequest,

@@ -106,7 +106,7 @@ class DokarkivRestClient(
         try {
             patchForEntity<String>(uri, request)
         } catch (e: RuntimeException) {
-            throw oppslagExceptionVed("Feil ved avslutting av sak i dokarkiv", e, request.bruker.id, "dokarkiv.avsluttSak")
+            throw oppslagExceptionVed("avslutting av sak i dokarkiv", e, request.bruker.id, "dokarkiv.avsluttSak")
         }
     }
 
