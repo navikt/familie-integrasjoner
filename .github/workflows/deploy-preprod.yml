@@ -35,7 +35,7 @@ jobs:
 
       - name: Bygg og push docker image
         if: github.event.pull_request.draft == false && github.event.pull_request.user.login != 'dependabot[bot]'
-        uses: nais/docker-build-push@cd5ec5663feb0e05c3fa374d1fb442605b046c6b # ratchet:nais/docker-build-push@v0
+        uses: nais/docker-build-push@be85229e81c0293c265c646c084f05317fb6e0d2 # ratchet:nais/docker-build-push@v0
         id: docker-push
         with:
           team: teamfamilie
@@ -56,7 +56,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v4
 
       - name: Deploy til dev-fss team namespace
-        uses: nais/deploy/actions/deploy@fa754451577294aae42872a69b888b3470478ec1 # ratchet:nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@2f28259ff29ea37915f5a0c9e2a8e3542c429df7 # ratchet:nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-fss
           RESOURCE: .nais/app-dev.yaml
