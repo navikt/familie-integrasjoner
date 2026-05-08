@@ -5,6 +5,7 @@ import no.nav.familie.log.filter.LogFilter
 import no.nav.familie.log.filter.RequestTimeFilter
 import no.nav.familie.restklient.client.RetryOAuth2HttpClient
 import no.nav.familie.restklient.config.NaisProxyCustomizer
+import no.nav.familie.sikkerhet.context.FamilieFellesNavTokenSupportKonfigurasjon
 import no.nav.security.token.support.client.core.http.OAuth2HttpClient
 import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
@@ -28,7 +29,7 @@ import java.time.temporal.ChronoUnit
 @EnableJwtTokenValidation(ignore = ["org.springframework", "org.springdoc"])
 @EnableOAuth2Client(cacheEnabled = true)
 @EnableScheduling
-@Import(NaisProxyCustomizer::class)
+@Import(NaisProxyCustomizer::class, FamilieFellesNavTokenSupportKonfigurasjon::class)
 class ApplicationConfig {
     private val logger = LoggerFactory.getLogger(ApplicationConfig::class.java)
 

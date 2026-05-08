@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.5</version>
+        <version>4.0.6</version>
     </parent>
 
     <groupId>no.nav.familie.integrasjoner</groupId>
@@ -20,12 +20,12 @@
         <sha1></sha1>
         <changelist>-SNAPSHOT</changelist>
         <java.version>25</java.version>
-        <kotlin.version>2.3.20</kotlin.version>
+        <kotlin.version>2.3.21</kotlin.version>
         <springdoc.version>3.0.3</springdoc.version>
-        <felles.version>4.20260420125050_76c5fea</felles.version>
-        <kontrakter.version>4.0_20260505114201_a33e0b9</kontrakter.version>
-        <token-validation-spring.version>6.0.5</token-validation-spring.version>
-        <graphql-kotlin.version>9.1.0</graphql-kotlin.version>
+        <felles.version>4.20260508110757_96596c8</felles.version>
+        <kontrakter.version>4.0_20260505124916_025d466</kontrakter.version>
+        <token-validation-spring.version>6.0.7</token-validation-spring.version>
+        <graphql-kotlin.version>9.2.0</graphql-kotlin.version>
     </properties>
 
     <dependencies>
@@ -134,6 +134,11 @@
         <dependency>
             <groupId>no.nav.familie.felles</groupId>
             <artifactId>metrikker</artifactId>
+            <version>${felles.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.familie.felles</groupId>
+            <artifactId>sikkerhet-token-support</artifactId>
             <version>${felles.version}</version>
         </dependency>
         <dependency>
