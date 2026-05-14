@@ -8,6 +8,7 @@ import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.dokarkiv.ArkiverDokumentResponse
 import no.nav.familie.kontrakter.felles.dokarkiv.AvsluttSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.BulkOppdaterLogiskVedleggRequest
+import no.nav.familie.kontrakter.felles.dokarkiv.GjenåpneSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggResponse
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
@@ -97,6 +98,20 @@ class DokarkivController(
             success(
                 mapOf("fagsakId" to avsluttSakRequest.fagsakId),
                 "Avsluttet sak ${avsluttSakRequest.fagsakId} i fagsaksystem ${avsluttSakRequest.fagsaksystem}",
+            ),
+        )
+    }
+
+    @PatchMapping(path = ["/gjenaapneSak"], produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun gjenaapneSak(
+        @RequestBody @Valid
+        gjenåpneSakRequest: GjenåpneSakRequest,
+    ): ResponseEntity<Ressurs<Map<String, String>>> {
+        journalføringService.gjenaapneSak(gjenåpneSakRequest)
+        return ResponseEntity.ok(
+            success(
+                mapOf("fagsakId" to gjenåpneSakRequest.fagsakId),
+                "Gjenåpnet sak ${gjenåpneSakRequest.fagsakId} i fagsaksystem ${gjenåpneSakRequest.fagsaksystem}",
             ),
         )
     }

@@ -26,6 +26,7 @@ import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.dokarkiv.AvsluttSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.DokarkivBruker
 import no.nav.familie.kontrakter.felles.dokarkiv.Dokumenttype
+import no.nav.familie.kontrakter.felles.dokarkiv.GjenåpneSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostResponse
 import no.nav.familie.kontrakter.felles.dokarkiv.Sak
@@ -96,6 +97,25 @@ class DokarkivServiceTest {
         dokarkivService.avsluttSak(request)
 
         verify(exactly = 1) { dokarkivRestClient.avsluttSak(request) }
+        assertThat(slot.captured).isEqualTo(request)
+    }
+
+    @Test
+    fun `gjenaapneSak skal kalle videre på dokarkiv klient ved gjenåpning av sak`() {
+        val slot = slot<GjenåpneSakRequest>()
+        every { dokarkivRestClient.gjenaapneSak(capture(slot)) } just runs
+
+        val request =
+            GjenåpneSakRequest(
+                tema = Tema.BAR,
+                fagsakId = "123",
+                fagsaksystem = Fagsystem.BA,
+                bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
+            )
+
+        dokarkivService.gjenaapneSak(request)
+
+        verify(exactly = 1) { dokarkivRestClient.gjenaapneSak(request) }
         assertThat(slot.captured).isEqualTo(request)
     }
 

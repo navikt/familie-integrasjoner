@@ -25,6 +25,7 @@ import no.nav.familie.kontrakter.felles.dokarkiv.AvsluttSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.BulkOppdaterLogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.DokarkivBruker
 import no.nav.familie.kontrakter.felles.dokarkiv.Dokumenttype
+import no.nav.familie.kontrakter.felles.dokarkiv.GjenåpneSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggResponse
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
@@ -414,6 +415,62 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+    }
+
+    @Test
+    fun `gjenaapneSak returnerer ok og kaller dokarkiv`() {
+        stubFor(
+            patch(urlPathEqualTo("/rest/journalpostapi/v1/sak/gjenaapneSak"))
+                .willReturn(status(200).withBody("OK")),
+        )
+
+        val body =
+            GjenåpneSakRequest(
+                tema = Tema.BAR,
+                fagsakId = "123",
+                fagsaksystem = Fagsystem.BA,
+                bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
+            )
+
+        val response: ResponseEntity<Ressurs<Map<String, String>>> =
+            restTemplate.exchange(
+                localhost("$DOKARKIV_URL/gjenaapneSak"),
+                HttpMethod.PATCH,
+                HttpEntity(body, headers),
+            )
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+        assertThat(response.body?.data).isEqualTo(mapOf("fagsakId" to "123"))
+        assertThat(response.body?.melding).isEqualTo("Gjenåpnet sak 123 i fagsaksystem BA")
+        verify(patchRequestedFor(urlPathEqualTo("/rest/journalpostapi/v1/sak/gjenaapneSak")))
+    }
+
+    @Test
+    fun `gjenaapneSak returnerer feil hvis dokarkiv feiler`() {
+        stubFor(
+            patch(urlPathEqualTo("/rest/journalpostapi/v1/sak/gjenaapneSak"))
+                .willReturn(status(500)),
+        )
+
+        val body =
+            GjenåpneSakRequest(
+                tema = Tema.BAR,
+                fagsakId = "123",
+                fagsaksystem = Fagsystem.BA,
+                bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
+            )
+
+        val response: ResponseEntity<Ressurs<Map<String, String>>> =
+            restTemplate.exchange(
+                localhost("$DOKARKIV_URL/gjenaapneSak"),
+                HttpMethod.PATCH,
+                HttpEntity(body, headers),
+            )
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+        assertThat(response.body?.melding).contains("Feil ved gjenåpning av sak i dokarkiv av journalpost")
     }
 
     @Test
