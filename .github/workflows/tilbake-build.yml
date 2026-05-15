@@ -36,6 +36,15 @@ jobs:
       - name: Bygg og push docker image
         uses: nais/docker-build-push@be85229e81c0293c265c646c084f05317fb6e0d2 # ratchet:nais/docker-build-push@v0
         id: docker-push
+        continue-on-error: true
+        with:
+          team: tilbake
+          tag: latest
+          byosbom: target/classes/META-INF/sbom/application.cdx.json
+
+      - name: Bygg og push docker image (retry)
+        if: steps.docker-push.outcome == 'failure'
+        uses: nais/docker-build-push@be85229e81c0293c265c646c084f05317fb6e0d2 # ratchet:nais/docker-build-push@v0
         with:
           team: tilbake
           tag: latest
