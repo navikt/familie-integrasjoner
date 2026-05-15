@@ -103,11 +103,11 @@ class DokarkivController(
     }
 
     @PatchMapping(path = ["/gjenaapneSak"], produces = [MediaType.APPLICATION_JSON_VALUE])
-    fun gjenaapneSak(
+    fun gjenåpneSak(
         @RequestBody @Valid
         gjenåpneSakRequest: GjenåpneSakRequest,
     ): ResponseEntity<Ressurs<Map<String, String>>> {
-        journalføringService.gjenaapneSak(gjenåpneSakRequest)
+        journalføringService.gjenåpneSak(gjenåpneSakRequest)
         return ResponseEntity.ok(
             success(
                 mapOf("fagsakId" to gjenåpneSakRequest.fagsakId),

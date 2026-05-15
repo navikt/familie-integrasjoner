@@ -418,7 +418,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `gjenaapneSak returnerer ok og kaller dokarkiv`() {
+    fun `gjenåpneSak returnerer ok og kaller dokarkiv`() {
         stubFor(
             patch(urlPathEqualTo("/rest/journalpostapi/v1/sak/gjenaapneSak"))
                 .willReturn(status(200).withBody("OK")),
@@ -447,7 +447,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `gjenaapneSak returnerer feil hvis dokarkiv feiler`() {
+    fun `gjenåpneSak returnerer feil hvis dokarkiv feiler`() {
         stubFor(
             patch(urlPathEqualTo("/rest/journalpostapi/v1/sak/gjenaapneSak"))
                 .willReturn(status(500)),

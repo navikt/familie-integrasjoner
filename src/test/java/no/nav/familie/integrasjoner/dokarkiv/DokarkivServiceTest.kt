@@ -101,9 +101,9 @@ class DokarkivServiceTest {
     }
 
     @Test
-    fun `gjenaapneSak skal kalle videre på dokarkiv klient ved gjenåpning av sak`() {
+    fun `gjenåpneSak skal kalle videre på dokarkiv klient ved gjenåpning av sak`() {
         val slot = slot<GjenåpneSakRequest>()
-        every { dokarkivRestClient.gjenaapneSak(capture(slot)) } just runs
+        every { dokarkivRestClient.gjenåpneSak(capture(slot)) } just runs
 
         val request =
             GjenåpneSakRequest(
@@ -113,9 +113,9 @@ class DokarkivServiceTest {
                 bruker = DokarkivBruker(BrukerIdType.FNR, "12345678910"),
             )
 
-        dokarkivService.gjenaapneSak(request)
+        dokarkivService.gjenåpneSak(request)
 
-        verify(exactly = 1) { dokarkivRestClient.gjenaapneSak(request) }
+        verify(exactly = 1) { dokarkivRestClient.gjenåpneSak(request) }
         assertThat(slot.captured).isEqualTo(request)
     }
 

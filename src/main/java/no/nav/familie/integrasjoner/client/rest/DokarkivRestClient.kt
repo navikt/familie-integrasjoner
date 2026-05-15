@@ -111,19 +111,19 @@ class DokarkivRestClient(
         }
     }
 
-    fun gjenaapneSak(
-        request: GjenåpneSakRequest,
+    fun gjenåpneSak(
+        gjenåpneSakRequest: GjenåpneSakRequest,
     ) {
         val uri =
             UriComponentsBuilder
                 .fromUri(dokarkivUrl)
-                .path(PATH_GJENAAPNE_SAK)
+                .path(PATH_GJENÅPNE_SAK)
                 .build()
                 .toUri()
         try {
-            patchForEntity<String>(uri, request)
+            patchForEntity<String>(uri, gjenåpneSakRequest)
         } catch (e: RuntimeException) {
-            throw oppslagExceptionVed("gjenåpning av sak i dokarkiv", e, request.bruker.id, "dokarkiv.gjenaapneSak")
+            throw oppslagExceptionVed("gjenåpning av sak i dokarkiv", e, gjenåpneSakRequest.bruker.id, "dokarkiv.gjenaapneSak")
         }
     }
 
@@ -195,7 +195,7 @@ class DokarkivRestClient(
         private const val QUERY_FERDIGSTILL = "forsoekFerdigstill={boolean}"
         private const val PATH_FERDIGSTILL_JOURNALPOST = "rest/journalpostapi/v1/journalpost/%s/ferdigstill"
         private const val PATH_AVSLUTT_SAK = "rest/journalpostapi/v1/sak/avsluttSak"
-        private const val PATH_GJENAAPNE_SAK = "rest/journalpostapi/v1/sak/gjenaapneSak"
+        private const val PATH_GJENÅPNE_SAK = "rest/journalpostapi/v1/sak/gjenaapneSak"
         private const val NAV_CALL_ID = "Nav-Callid"
 
         private val NAVIDENT_REGEX = """^[a-zA-Z]\d{6}$""".toRegex()

@@ -49,9 +49,9 @@ class DokarkivService(
         request: AvsluttSakRequest,
     ) = dokarkivRestClient.avsluttSak(request)
 
-    fun gjenaapneSak(
+    fun gjenåpneSak(
         request: GjenåpneSakRequest,
-    ) = dokarkivRestClient.gjenaapneSak(request)
+    ) = dokarkivRestClient.gjenåpneSak(request)
 
     fun lagJournalpost(
         arkiverDokumentRequest: ArkiverDokumentRequest,
