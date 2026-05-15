@@ -17,6 +17,7 @@ import no.nav.familie.kontrakter.felles.dokarkiv.AvsenderMottaker
 import no.nav.familie.kontrakter.felles.dokarkiv.AvsluttSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.BulkOppdaterLogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.DokarkivBruker
+import no.nav.familie.kontrakter.felles.dokarkiv.GjenåpneSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggResponse
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
@@ -47,6 +48,10 @@ class DokarkivService(
     fun avsluttSak(
         request: AvsluttSakRequest,
     ) = dokarkivRestClient.avsluttSak(request)
+
+    fun gjenåpneSak(
+        request: GjenåpneSakRequest,
+    ) = dokarkivRestClient.gjenåpneSak(request)
 
     fun lagJournalpost(
         arkiverDokumentRequest: ArkiverDokumentRequest,

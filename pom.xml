@@ -23,7 +23,7 @@
         <kotlin.version>2.3.21</kotlin.version>
         <springdoc.version>3.0.3</springdoc.version>
         <felles.version>4.20260508110757_96596c8</felles.version>
-        <kontrakter.version>4.0_20260505124916_025d466</kontrakter.version>
+        <kontrakter.version>4.0_20260514200726_bf1a1ee</kontrakter.version>
         <token-validation-spring.version>6.0.7</token-validation-spring.version>
         <graphql-kotlin.version>9.2.0</graphql-kotlin.version>
     </properties>
