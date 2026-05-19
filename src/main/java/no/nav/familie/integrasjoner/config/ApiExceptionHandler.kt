@@ -10,7 +10,6 @@ import no.nav.familie.integrasjoner.personopplysning.PdlUnauthorizedException
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.security.token.support.client.core.OAuth2ClientException
-import no.nav.security.token.support.spring.validation.interceptor.JwtTokenUnauthorizedException
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -28,14 +27,6 @@ import org.springframework.web.context.request.async.AsyncRequestNotUsableExcept
 @ControllerAdvice
 class ApiExceptionHandler {
     private val logger = LoggerFactory.getLogger(ApiExceptionHandler::class.java)
-
-    @ExceptionHandler(JwtTokenUnauthorizedException::class)
-    fun handleUnauthorizedException(e: JwtTokenUnauthorizedException?): ResponseEntity<Ressurs<Any>> {
-        logger.warn("Kan ikke logget inn.", e)
-        return ResponseEntity
-            .status(HttpStatus.UNAUTHORIZED)
-            .body(failure(errorMessage = "Du er ikke logget inn.", frontendFeilmelding = "Du er ikke logget inn", error = e))
-    }
 
     @ExceptionHandler(ResourceAccessException::class)
     fun handleResourceAccessException(e: ResourceAccessException): ResponseEntity<Ressurs<Any>> {
