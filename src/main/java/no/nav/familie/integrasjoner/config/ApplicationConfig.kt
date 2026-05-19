@@ -8,7 +8,6 @@ import no.nav.familie.restklient.config.NaisProxyCustomizer
 import no.nav.familie.sikkerhet.context.FamilieFellesSpringSecurityKonfigurasjon
 import no.nav.security.token.support.client.core.http.OAuth2HttpClient
 import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client
-import no.nav.security.token.support.spring.api.EnableJwtTokenValidation
 import org.slf4j.LoggerFactory
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
@@ -26,7 +25,6 @@ import java.time.temporal.ChronoUnit
 @SpringBootConfiguration
 @ComponentScan("no.nav.familie.integrasjoner", "no.nav.familie.metrikker")
 @ConfigurationPropertiesScan
-@EnableJwtTokenValidation(ignore = ["org.springframework", "org.springdoc"])
 @EnableOAuth2Client(cacheEnabled = true)
 @EnableScheduling
 @Import(NaisProxyCustomizer::class, FamilieFellesSpringSecurityKonfigurasjon::class)

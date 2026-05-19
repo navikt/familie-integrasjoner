@@ -4,7 +4,6 @@ import no.nav.familie.kontrakter.ba.søknad.VersjonertBarnetrygdSøknad
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.ks.søknad.VersjonertKontantstøtteSøknad
-import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController
  */
 @RestController
 @RequestMapping("/api/baks/versjonertsoknad")
-@ProtectedWithClaims(issuer = "azuread")
 class BaksVersjonertSøknadController(
     private val baksVersjonertSøknadService: BaksVersjonertSøknadService,
 ) {
