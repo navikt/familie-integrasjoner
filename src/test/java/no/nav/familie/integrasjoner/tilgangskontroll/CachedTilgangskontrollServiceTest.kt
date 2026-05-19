@@ -12,11 +12,13 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedAdresseBe
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
 import no.nav.familie.kontrakter.felles.Tema
-import no.nav.security.token.support.core.jwt.JwtToken
-import no.nav.security.token.support.core.jwt.JwtTokenClaims
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 
 internal class CachedTilgangskontrollServiceTest {
     private val egenAnsattService = mockk<EgenAnsattService>()
@@ -37,25 +39,17 @@ internal class CachedTilgangskontrollServiceTest {
             tilgangConfig,
         )
 
-    private val jwtToken = mockk<JwtToken>(relaxed = true)
-    private val jwtTokenClaims = mockk<JwtTokenClaims>()
-
     @BeforeEach
     internal fun setUp() {
-        every { jwtToken.jwtTokenClaims } returns jwtTokenClaims
-        every { jwtTokenClaims.get("preferred_username") }.returns(listOf("bob"))
-        every { jwtTokenClaims.getAsList(any()) }.returns(emptyList())
         every { egenAnsattService.erEgenAnsatt(any<String>()) } returns false
-        every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } answers
-            { firstArg<Set<String>>().associateWith { false } }
+        every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } answers { firstArg<Set<String>>().associateWith { false } }
+
+        mockToken(tilganger = emptyList())
     }
 
-    private fun mockHarKode7() {
-        every { jwtTokenClaims.getAsList(any()) }.returns(listOf(kode7Id))
-    }
-
-    private fun mockHarKode6() {
-        every { jwtTokenClaims.getAsList(any()) }.returns(listOf(kode6Id))
+    @AfterEach
+    fun cleanUp() {
+        SecurityContextHolder.clearContext()
     }
 
     @Test
@@ -88,7 +82,7 @@ internal class CachedTilgangskontrollServiceTest {
 
     @Test
     internal fun `har ikke tilgang når søkeren er STRENGT_FORTROLIG og saksbehandler har kode7`() {
-        mockHarKode7()
+        mockToken(tilganger = listOf(kode7Id))
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
             lagPersonMedRelasjoner(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG)
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isFalse
@@ -96,7 +90,7 @@ internal class CachedTilgangskontrollServiceTest {
 
     @Test
     internal fun `har tilgang når søkeren er STRENGT_FORTROLIG og saksbehandler har kode6`() {
-        mockHarKode6()
+        mockToken(tilganger = listOf(kode6Id))
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
             lagPersonMedRelasjoner(ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG)
         assertThat(sjekkTilgangTilPersonMedRelasjoner()).isTrue
@@ -154,7 +148,7 @@ internal class CachedTilgangskontrollServiceTest {
     fun `skal returnere ident til etterspurt person når relasjon er fortrolig`() {
         every { personopplysningerService.hentPersonMedRelasjoner(any(), Tema.ENF) } returns
             lagPersonMedRelasjoner(barnsForeldrer = ADRESSEBESKYTTELSEGRADERING.FORTROLIG)
-        val tilgang = cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner("søker", jwtToken, Tema.ENF)
+        val tilgang = cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner("søker", Tema.ENF)
         assertThat(tilgang.harTilgang).isFalse
         assertThat(tilgang.personIdent).isEqualTo("søker")
     }
@@ -166,14 +160,14 @@ internal class CachedTilgangskontrollServiceTest {
         every { egenAnsattService.erEgenAnsatt(any<Set<String>>()) } answers {
             firstArg<Set<String>>().associateWith { it == "sivilstand" }
         }
-        val tilgang = cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner("søker", jwtToken, Tema.ENF)
+        val tilgang = cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner("søker", Tema.ENF)
         assertThat(tilgang.harTilgang).isFalse
         assertThat(tilgang.personIdent).isEqualTo("søker")
     }
 
-    private fun sjekkTilgangTilPersonMedRelasjoner() = cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner("", jwtToken, Tema.ENF).harTilgang
+    private fun sjekkTilgangTilPersonMedRelasjoner() = cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner("", Tema.ENF).harTilgang
 
-    private fun sjekkTilgangTilPerson() = cachedTilgangskontrollService.sjekkTilgang("", jwtToken, Tema.ENF).harTilgang
+    private fun sjekkTilgangTilPerson() = cachedTilgangskontrollService.sjekkTilgang("", Tema.ENF).harTilgang
 
     private fun lagPersonMedRelasjoner(
         adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING? = null,
@@ -196,5 +190,17 @@ internal class CachedTilgangskontrollServiceTest {
 
     private fun mockHentPersonMedAdressebeskyttelse(adressebeskyttelse: ADRESSEBESKYTTELSEGRADERING = ADRESSEBESKYTTELSEGRADERING.UGRADERT) {
         every { personopplysningerService.hentAdressebeskyttelse(any(), any()) } returns Adressebeskyttelse(adressebeskyttelse)
+    }
+
+    private fun mockToken(tilganger: List<String>) {
+        val jwt =
+            Jwt
+                .withTokenValue("token")
+                .header("header", "header value")
+                .claim("groups", tilganger)
+                .build()
+        val securityContext = SecurityContextHolder.createEmptyContext()
+        securityContext.authentication = JwtAuthenticationToken(jwt)
+        SecurityContextHolder.setContext(securityContext)
     }
 }
