@@ -55,6 +55,11 @@ familie:
 
 AZURE_APP_CLIENT_ID: "dummy-klient-id"
 AZURE_APP_CLIENT_SECRET: "dummy-klient-secret"
+AZURE_OPENID_CONFIG_JWKS_URI: "dummy-azure-openid-config-jwks-uri"
+AZURE_OPENID_CONFIG_ISSUER: "dummy-azure-openid-config-issuer-uri"
+  
+TOKEN_X_JWKS_URI: "dummy-token-x-jwks-uri"
+TOKEN_X_ISSUER: "dummy-token-x-issuer"
 TOKEN_X_WELL_KNOWN_URL: "dummy-token-x-well-known-url"
 #Dummy private jwk
 TOKEN_X_PRIVATE_JWK: '{
