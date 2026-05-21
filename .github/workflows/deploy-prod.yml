@@ -52,7 +52,7 @@ jobs:
 
   deploy-prod:
     name: Deploy til prod-fss
-    needs: build
+    needs: [build, deploy-preprod]
     runs-on: ubuntu-latest
     permissions:
       contents: "read"
