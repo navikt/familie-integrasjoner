@@ -45,7 +45,7 @@ jobs:
       image: ${{ steps.docker-push.outputs.image }}
 
   deploy-dev:
-    if: github.event.pull_request.draft == false && github.event.pull_request.user.login != 'dependabot[bot]'
+    if: github.event_name == 'workflow_dispatch'
     name: Deploy to dev-fss
     needs: build-dev
     runs-on: ubuntu-latest
