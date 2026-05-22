@@ -7,6 +7,8 @@ import no.nav.familie.kontrakter.felles.journalpost.Journalpost
 import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
 import no.nav.familie.kontrakter.felles.journalpost.TilgangsstyrtJournalpost
 import no.nav.security.token.support.core.api.ProtectedWithClaims
+import no.nav.security.token.support.spring.SpringTokenValidationContextHolder
+import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -22,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController
 class HentJournalpostController(
     private val journalpostService: JournalpostService,
 ) {
+    private val secureLogger = LoggerFactory.getLogger("secureLogger")
+
     @GetMapping
     fun hentJournalpost(
         @RequestParam(name = "journalpostId") journalpostId: String,
@@ -52,13 +56,16 @@ class HentJournalpostController(
         @PathVariable journalpostId: String,
         @PathVariable dokumentInfoId: String,
         @RequestParam("variantFormat", required = false) variantFormat: String?,
-    ): ResponseEntity<Ressurs<ByteArray>> =
-        ResponseEntity.ok(
+    ): ResponseEntity<Ressurs<ByteArray>> {
+        val token = SpringTokenValidationContextHolder().getTokenValidationContext().getJwtToken("azuread")?.encodedToken
+        secureLogger.info("hentDokument kalt med token: $token")
+        return ResponseEntity.ok(
             success(
                 journalpostService.hentDokument(journalpostId, dokumentInfoId, variantFormat ?: "ARKIV"),
                 "OK",
             ),
         )
+    }
 
     @GetMapping("hentdokument/tilgangsstyrt/baks/{journalpostId}/{dokumentInfoId}")
     fun hentTilgangsstyrtBaksDokument(
