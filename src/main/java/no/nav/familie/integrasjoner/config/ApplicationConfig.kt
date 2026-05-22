@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.config
 
+import no.nav.familie.integrasjoner.sikkerhet.TokenLoggingFilter
 import no.nav.familie.log.NavSystemtype
 import no.nav.familie.log.filter.LogFilter
 import no.nav.familie.log.filter.RequestTimeFilter
@@ -48,6 +49,15 @@ class ApplicationConfig {
         val filterRegistration = FilterRegistrationBean<RequestTimeFilter>()
         filterRegistration.setFilter(RequestTimeFilter())
         filterRegistration.order = 2
+        return filterRegistration
+    }
+
+    @Bean
+    fun tokenLoggingFilter(): FilterRegistrationBean<TokenLoggingFilter> {
+        logger.info("Registering TokenLoggingFilter filter")
+        val filterRegistration = FilterRegistrationBean<TokenLoggingFilter>()
+        filterRegistration.setFilter(TokenLoggingFilter())
+        filterRegistration.order = 3
         return filterRegistration
     }
 
