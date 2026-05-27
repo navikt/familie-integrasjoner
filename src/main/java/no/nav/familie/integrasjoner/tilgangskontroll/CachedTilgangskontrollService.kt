@@ -30,7 +30,7 @@ class CachedTilgangskontrollService(
     @Cacheable(
         cacheNames = [TILGANG_TIL_BRUKER],
         keyGenerator = "tilgangCacheKeyGenerator",
-        condition = "#personIdent != null",
+        condition = "@tilgangskontrollCacheConfig.skalCache(#personIdent)",
     )
     fun sjekkTilgang(
         personIdent: String,
@@ -46,7 +46,7 @@ class CachedTilgangskontrollService(
     @Cacheable(
         cacheNames = ["TILGANG_TIL_PERSON_MED_RELASJONER"],
         keyGenerator = "tilgangCacheKeyGenerator",
-        condition = "#personIdent != null",
+        condition = "@tilgangskontrollCacheConfig.skalCache(#personIdent)",
     )
     fun sjekkTilgangTilPersonMedRelasjoner(
         personIdent: String,
@@ -123,11 +123,13 @@ class CachedTilgangskontrollService(
 
 @Configuration
 class TilgangskontrollCacheConfig {
+    fun skalCache(personIdent: String?): Boolean = personIdent != null && runCatching { hentJwt().subject != null }.getOrDefault(false)
+
     @Bean
     fun tilgangCacheKeyGenerator(): KeyGenerator =
         KeyGenerator { _, _, params ->
             val personIdent = params[0] as String
-            val subject = hentJwt().subject
+            val subject = hentJwt().subject!!
             "$subject:$personIdent"
         }
 }

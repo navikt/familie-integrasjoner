@@ -348,10 +348,6 @@ internal class OppgaveServiceTest {
 
     @Nested
     inner class TilbakestillFordelingPåOppgaveTest {
-        @BeforeEach
-        fun setUp() {
-        }
-
         @Test
         fun `Skal sette endretAvEnhetsnr til SB sin enhet hvis det er SB som har gjort endringen`() {
             // Arrange

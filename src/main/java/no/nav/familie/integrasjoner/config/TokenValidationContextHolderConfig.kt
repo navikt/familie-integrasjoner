@@ -7,7 +7,7 @@ import no.nav.security.token.support.core.jwt.JwtToken
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
-// TODO: Fjern denne klassen når alle klienter er skrevet om til å bruke Texas.Expand annotationCheck warning on line R11
+// TODO: Fjern denne klassen når alle klienter er skrevet om til å bruke Texas.
 
 /**
  * Midlertidig konfigurasjon i overgangen fra Nav token-support til Spring Security.

@@ -53,8 +53,6 @@ internal class CachedTilgangskontrollServiceCacheTest {
         every { personopplysningerService.hentAdressebeskyttelse(any(), any()) } returns Adressebeskyttelse(UGRADERT)
         every { personopplysningerService.hentPersonMedRelasjoner(any(), any()) } returns lagPersonMedRelasjoner()
 
-        mockToken("saksbehandler-1")
-
         cacheManager.resetCaches()
     }
 
@@ -65,6 +63,7 @@ internal class CachedTilgangskontrollServiceCacheTest {
 
     @Test
     fun `sjekkTilgang - andre kall med samme personIdent og saksbehandler skal hentes fra cache`() {
+        mockToken("saksbehandler-1")
         cachedTilgangskontrollService.sjekkTilgang(PERSON_IDENT, Tema.BAR)
         cachedTilgangskontrollService.sjekkTilgang(PERSON_IDENT, Tema.BAR)
 
@@ -73,6 +72,7 @@ internal class CachedTilgangskontrollServiceCacheTest {
 
     @Test
     fun `sjekkTilgang - kall med ulik personIdent skal ikke treffe cache`() {
+        mockToken("saksbehandler-1")
         cachedTilgangskontrollService.sjekkTilgang(PERSON_IDENT, Tema.BAR)
         cachedTilgangskontrollService.sjekkTilgang(ANNEN_PERSON_IDENT, Tema.BAR)
 
@@ -82,6 +82,7 @@ internal class CachedTilgangskontrollServiceCacheTest {
 
     @Test
     fun `sjekkTilgang - kall med ulik saksbehandler skal ikke treffe cache`() {
+        mockToken("saksbehandler-1")
         cachedTilgangskontrollService.sjekkTilgang(PERSON_IDENT, Tema.BAR)
         mockToken("saksbehandler-2")
         cachedTilgangskontrollService.sjekkTilgang(PERSON_IDENT, Tema.BAR)
@@ -91,6 +92,7 @@ internal class CachedTilgangskontrollServiceCacheTest {
 
     @Test
     fun `sjekkTilgangTilPersonMedRelasjoner - andre kall med samme personIdent og saksbehandler skal hentes fra cache`() {
+        mockToken("saksbehandler-1")
         cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner(PERSON_IDENT, Tema.ENF)
         cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner(PERSON_IDENT, Tema.ENF)
 
@@ -99,6 +101,7 @@ internal class CachedTilgangskontrollServiceCacheTest {
 
     @Test
     fun `sjekkTilgangTilPersonMedRelasjoner - kall med ulik personIdent skal ikke treffe cache`() {
+        mockToken("saksbehandler-1")
         cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner(PERSON_IDENT, Tema.ENF)
         cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner(ANNEN_PERSON_IDENT, Tema.ENF)
 
@@ -108,6 +111,7 @@ internal class CachedTilgangskontrollServiceCacheTest {
 
     @Test
     fun `sjekkTilgangTilPersonMedRelasjoner - kall med ulik saksbehandler skal ikke treffe cache`() {
+        mockToken("saksbehandler-1")
         cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner(PERSON_IDENT, Tema.ENF)
         mockToken("saksbehandler-2")
         cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner(PERSON_IDENT, Tema.ENF)
@@ -115,12 +119,30 @@ internal class CachedTilgangskontrollServiceCacheTest {
         verify(exactly = 2) { personopplysningerService.hentPersonMedRelasjoner(PERSON_IDENT, any()) }
     }
 
-    private fun mockToken(subject: String) {
+    @Test
+    fun `sjekkTilgang - kall uten sub i token skal ikke caches`() {
+        mockToken(null)
+        cachedTilgangskontrollService.sjekkTilgang(PERSON_IDENT, Tema.BAR)
+        cachedTilgangskontrollService.sjekkTilgang(PERSON_IDENT, Tema.BAR)
+
+        verify(exactly = 2) { personopplysningerService.hentAdressebeskyttelse(PERSON_IDENT, any()) }
+    }
+
+    @Test
+    fun `sjekkTilgangTilPersonMedRelasjoner - kall uten sub i token skal ikke caches`() {
+        mockToken(null)
+        cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner(PERSON_IDENT, Tema.ENF)
+        cachedTilgangskontrollService.sjekkTilgangTilPersonMedRelasjoner(PERSON_IDENT, Tema.ENF)
+
+        verify(exactly = 2) { personopplysningerService.hentPersonMedRelasjoner(PERSON_IDENT, any()) }
+    }
+
+    private fun mockToken(subject: String?) {
         val jwt =
             Jwt
                 .withTokenValue("token")
                 .header("header", "header value")
-                .subject(subject)
+                .apply { subject?.let { subject(subject) } }
                 .claim("groups", emptyList<String>())
                 .build()
         val securityContext = SecurityContextHolder.createEmptyContext()
