@@ -10,7 +10,6 @@ import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.personopplysning.FinnPersonidenterResponse
 import no.nav.familie.kontrakter.felles.personopplysning.Ident
-import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -25,7 +24,6 @@ import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpClientErrorException.Forbidden
 
 @RestController
-@ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/personopplysning")
 class PersonopplysningerController(
     private val personopplysningerService: PersonopplysningerService,

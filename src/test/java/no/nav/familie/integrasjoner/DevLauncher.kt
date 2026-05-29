@@ -1,12 +1,12 @@
 package no.nav.familie.integrasjoner
 
 import no.nav.familie.integrasjoner.config.ApplicationConfig
-import no.nav.security.token.support.spring.test.EnableMockOAuth2Server
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.context.annotation.Import
+import org.springframework.test.context.ContextConfiguration
 
 @Import(ApplicationConfig::class)
-@EnableMockOAuth2Server
+@ContextConfiguration(initializers = [MockOAuth2ServerInitializer::class])
 class DevLauncher
 
 fun main(args: Array<String>) {

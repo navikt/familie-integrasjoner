@@ -14,7 +14,6 @@ import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggResponse
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostResponse
 import no.nav.familie.kontrakter.felles.dokarkiv.v2.ArkiverDokumentRequest
-import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -37,7 +36,6 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.function.Consumer
 
 @RestController
-@ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/arkiv")
 class DokarkivController(
     private val journalføringService: DokarkivService,

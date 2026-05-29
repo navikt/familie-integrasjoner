@@ -12,7 +12,6 @@ import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.dokdistkanal.Distribusjonskanal
 import no.nav.familie.kontrakter.felles.dokdistkanal.DokdistkanalRequest
-import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.apache.commons.lang3.StringUtils.isNumeric
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -26,7 +25,6 @@ import java.util.Locale
 import java.util.stream.Collectors
 
 @RestController
-@ProtectedWithClaims(issuer = "azuread")
 @RequestMapping("/api/dokdistkanal")
 class DokdistkanalController(
     private val dokdistkanalRestClient: DokdistkanalRestClient,

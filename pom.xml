@@ -22,9 +22,9 @@
         <java.version>25</java.version>
         <kotlin.version>2.3.21</kotlin.version>
         <springdoc.version>3.0.3</springdoc.version>
-        <felles.version>4.20260508110757_96596c8</felles.version>
+        <felles.version>4.20260520144147_4729200</felles.version>
         <kontrakter.version>4.0_20260514200726_bf1a1ee</kontrakter.version>
-        <token-validation-spring.version>6.0.7</token-validation-spring.version>
+        <token-validation-spring.version>6.0.8</token-validation-spring.version>
         <graphql-kotlin.version>9.2.0</graphql-kotlin.version>
     </properties>
 
@@ -65,6 +65,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
         </dependency>
 
 
@@ -112,13 +116,8 @@
         </dependency>
         <dependency>
             <groupId>no.nav.security</groupId>
-            <artifactId>token-validation-spring</artifactId>
-            <version>${token-validation-spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>no.nav.security</groupId>
-            <artifactId>token-validation-spring-test</artifactId>
-            <version>${token-validation-spring.version}</version>
+            <artifactId>mock-oauth2-server</artifactId>
+            <version>4.0.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -138,7 +137,7 @@
         </dependency>
         <dependency>
             <groupId>no.nav.familie.felles</groupId>
-            <artifactId>sikkerhet-token-support</artifactId>
+            <artifactId>sikkerhet-spring-security</artifactId>
             <version>${felles.version}</version>
         </dependency>
         <dependency>
