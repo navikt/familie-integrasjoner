@@ -23,6 +23,7 @@ import no.nav.familie.kontrakter.felles.oppgave.StatusEnum
 import no.nav.familie.kontrakter.felles.saksbehandler.Saksbehandler
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -362,6 +363,7 @@ internal class OppgaveServiceTest {
             val oppgaveSlot = slot<Oppgave>()
 
             every { SikkerhetsContext.hentSaksbehandlerEllerSystembruker() } returns "Z444444"
+            every { SikkerhetsContext.hentSaksbehandlerNavn() } returns "Saksbehandler"
 
             every { saksbehandlerService.hentSaksbehandler("Z444444") } returns
                 Saksbehandler(
@@ -400,6 +402,7 @@ internal class OppgaveServiceTest {
             val oppgaveSlot = slot<Oppgave>()
 
             every { SikkerhetsContext.hentSaksbehandlerEllerSystembruker() } returns SYSTEM_FORKORTELSE
+            every { SikkerhetsContext.hentSaksbehandlerNavn() } returns "Saksbehandler"
             every { oppgaveRestClient.finnOppgaveMedId(oppgaveId) } returns originalOppgave
             every { oppgaveRestClient.oppdaterOppgave(capture(oppgaveSlot)) } returns originalOppgave
 

@@ -2,7 +2,6 @@ package no.nav.familie.integrasjoner.saksbehandler
 
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.saksbehandler.Saksbehandler
-import no.nav.security.token.support.core.api.ProtectedWithClaims
 import org.springframework.context.annotation.Profile
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -15,7 +14,6 @@ import java.util.UUID
 @Profile("e2e")
 class SaksbehandlerControllerE2E {
     @GetMapping(path = ["/{id}"])
-    @ProtectedWithClaims(issuer = "azuread")
     fun hentSaksbehandler(
         @PathVariable id: String,
     ): Ressurs<Saksbehandler> =

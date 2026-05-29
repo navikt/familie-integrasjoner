@@ -9,13 +9,13 @@ import no.nav.security.token.support.client.core.ClientProperties
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenResponse
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.spring.ClientConfigurationProperties
-import no.nav.security.token.support.core.exceptions.JwtTokenValidatorException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
@@ -104,7 +104,7 @@ class GraphQLWebClientConfigTest {
 
             // Act & Assert
             val exception =
-                assertThrows<JwtTokenValidatorException> {
+                assertThrows<AuthenticationCredentialsNotFoundException> {
                     exchangeTokenXBearerTokenFilter.filter(request, mockedExchangeFunction).block()
                 }
             assertThat(exception.message).isEqualTo("Kunne ikke hente accesstoken")

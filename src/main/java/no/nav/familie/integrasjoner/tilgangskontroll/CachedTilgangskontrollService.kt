@@ -9,12 +9,16 @@ import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSE
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG
 import no.nav.familie.integrasjoner.personopplysning.internal.ADRESSEBESKYTTELSEGRADERING.STRENGT_FORTROLIG_UTLAND
 import no.nav.familie.integrasjoner.personopplysning.internal.PersonMedRelasjoner
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext.hentClaim
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext.hentJwt
 import no.nav.familie.integrasjoner.tilgangskontroll.domene.AdRolle
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.tilgangskontroll.Tilgang
-import no.nav.security.token.support.core.jwt.JwtToken
 import org.slf4j.LoggerFactory
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.cache.interceptor.KeyGenerator
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Service
 
 @Service
@@ -25,52 +29,49 @@ class CachedTilgangskontrollService(
 ) {
     @Cacheable(
         cacheNames = [TILGANG_TIL_BRUKER],
-        key = "#jwtToken.subject.concat(#personIdent)",
-        condition = "#personIdent != null && #jwtToken.subject != null",
+        keyGenerator = "tilgangCacheKeyGenerator",
+        condition = "@tilgangskontrollCacheConfig.skalCache(#personIdent)",
     )
     fun sjekkTilgang(
         personIdent: String,
-        jwtToken: JwtToken,
         tema: Tema,
     ): Tilgang =
         try {
             val adressebeskyttelse = personopplysningerService.hentAdressebeskyttelse(personIdent, tema).gradering
-            hentTilgang(adressebeskyttelse, jwtToken, personIdent) { egenAnsattService.erEgenAnsatt(personIdent) }
+            hentTilgang(adressebeskyttelse, personIdent) { egenAnsattService.erEgenAnsatt(personIdent) }
         } catch (pdlUnauthorizedException: PdlUnauthorizedException) {
             Tilgang(personIdent = personIdent, harTilgang = false, begrunnelse = pdlUnauthorizedException.message)
         }
 
     @Cacheable(
         cacheNames = ["TILGANG_TIL_PERSON_MED_RELASJONER"],
-        key = "#jwtToken.subject.concat(#personIdent)",
-        condition = "#jwtToken.subject != null",
+        keyGenerator = "tilgangCacheKeyGenerator",
+        condition = "@tilgangskontrollCacheConfig.skalCache(#personIdent)",
     )
     fun sjekkTilgangTilPersonMedRelasjoner(
         personIdent: String,
-        jwtToken: JwtToken,
         tema: Tema,
     ): Tilgang {
         val personMedRelasjoner = personopplysningerService.hentPersonMedRelasjoner(personIdent, tema)
         secureLogger.info("Sjekker tilgang til {}", personMedRelasjoner.personIdent)
 
         val høyesteGraderingen = TilgangskontrollUtil.høyesteGraderingen(personMedRelasjoner)
-        return hentTilgang(høyesteGraderingen, jwtToken, personIdent) { erEgenAnsatt(personMedRelasjoner) }
+        return hentTilgang(høyesteGraderingen, personIdent) { erEgenAnsatt(personMedRelasjoner) }
     }
 
     private fun hentTilgang(
         adressebeskyttelsegradering: ADRESSEBESKYTTELSEGRADERING?,
-        jwtToken: JwtToken,
         personIdent: String,
         egenAnsattSjekk: () -> Boolean,
     ): Tilgang {
         val tilgang =
             when (adressebeskyttelsegradering) {
                 FORTROLIG -> {
-                    hentTilgangForRolle(tilgangConfig.kode7, jwtToken, personIdent)
+                    hentTilgangForRolle(tilgangConfig.kode7, personIdent)
                 }
 
                 STRENGT_FORTROLIG, STRENGT_FORTROLIG_UTLAND -> {
-                    hentTilgangForRolle(tilgangConfig.kode6, jwtToken, personIdent)
+                    hentTilgangForRolle(tilgangConfig.kode6, personIdent)
                 }
 
                 else -> {
@@ -81,7 +82,7 @@ class CachedTilgangskontrollService(
             return tilgang
         }
         if (egenAnsattSjekk()) {
-            return hentTilgangForRolle(tilgangConfig.egenAnsatt, jwtToken, personIdent)
+            return hentTilgangForRolle(tilgangConfig.egenAnsatt, personIdent)
         }
         return Tilgang(personIdent = personIdent, harTilgang = true)
     }
@@ -103,17 +104,13 @@ class CachedTilgangskontrollService(
 
     private fun hentTilgangForRolle(
         adRolle: AdRolle?,
-        jwtToken: JwtToken,
         personIdent: String,
     ): Tilgang {
-        val grupper = jwtToken.jwtTokenClaims.getAsList("groups")
+        val grupper = hentClaim<List<String>>("groups") ?: emptyList()
         if (grupper.any { it == adRolle?.rolleId }) {
             return Tilgang(personIdent, true)
         }
-        secureLogger.info(
-            "${jwtToken.jwtTokenClaims.get("preferred_username")} " +
-                "har ikke tilgang ${adRolle?.beskrivelse} for $personIdent",
-        )
+        secureLogger.info("${hentClaim<String>("preferred_username")} har ikke tilgang ${adRolle?.beskrivelse} for $personIdent")
         return Tilgang(personIdent = personIdent, harTilgang = false, begrunnelse = adRolle?.beskrivelse)
     }
 
@@ -122,4 +119,17 @@ class CachedTilgangskontrollService(
 
         const val TILGANG_TIL_BRUKER = "tilgangTilBruker"
     }
+}
+
+@Configuration
+class TilgangskontrollCacheConfig {
+    fun skalCache(personIdent: String?): Boolean = personIdent != null && runCatching { hentJwt().subject != null }.getOrDefault(false)
+
+    @Bean
+    fun tilgangCacheKeyGenerator(): KeyGenerator =
+        KeyGenerator { _, _, params ->
+            val personIdent = params[0] as String
+            val subject = hentJwt().subject!!
+            "$subject:$personIdent"
+        }
 }
