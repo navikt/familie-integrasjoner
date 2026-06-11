@@ -476,7 +476,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `skal opprette logisk vedlegg`() {
         stubFor(
-            post(urlPathEqualTo("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"))
+            post(urlPathEqualTo("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg"))
                 .willReturn(okJson(jsonMapper.writeValueAsString(LogiskVedleggResponse(21L)))),
         )
         val response: ResponseEntity<Ressurs<LogiskVedleggResponse>> =
@@ -493,7 +493,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
     @Test
     fun `skal returnere feil hvis man ikke kan opprette logisk vedlegg`() {
         stubFor(
-            post(urlPathEqualTo("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg/"))
+            post(urlPathEqualTo("/rest/journalpostapi/v1/dokumentInfo/321/logiskVedlegg"))
                 .willReturn(status(404).withBody("melding fra klient")),
         )
         val response: ResponseEntity<Ressurs<LogiskVedleggResponse>> =
