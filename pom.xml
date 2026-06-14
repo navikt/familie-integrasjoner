@@ -20,12 +20,12 @@
         <sha1></sha1>
         <changelist>-SNAPSHOT</changelist>
         <java.version>25</java.version>
-        <kotlin.version>2.3.21</kotlin.version>
+        <kotlin.version>2.4.0</kotlin.version>
         <springdoc.version>3.0.3</springdoc.version>
-        <felles.version>4.20260520144147_4729200</felles.version>
-        <kontrakter.version>4.0_20260514200726_bf1a1ee</kontrakter.version>
-        <token-validation-spring.version>6.0.8</token-validation-spring.version>
-        <graphql-kotlin.version>9.2.0</graphql-kotlin.version>
+        <felles.version>4.20260529121328_2754f7c</felles.version>
+        <kontrakter.version>4.0_20260611084408_a47ed94</kontrakter.version>
+        <token-validation-spring.version>6.0.10</token-validation-spring.version>
+        <graphql-kotlin.version>10.0.0</graphql-kotlin.version>
     </properties>
 
     <dependencies>
@@ -206,7 +206,7 @@
         <dependency>
             <groupId>io.mockk</groupId>
             <artifactId>mockk-jvm</artifactId>
-            <version>1.14.9</version>
+            <version>1.14.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
