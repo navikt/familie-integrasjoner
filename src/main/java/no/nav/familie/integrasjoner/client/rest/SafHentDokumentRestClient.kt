@@ -6,7 +6,6 @@ import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
 import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpClientErrorException
@@ -27,12 +26,6 @@ class SafHentDokumentRestClient(
 ) {
     private val safHentdokumentUri = UriComponentsBuilder.fromUri(safBaseUrl).path(PATH_HENT_DOKUMENT)
 
-    private fun httpHeaders(): HttpHeaders =
-        HttpHeaders().apply {
-            accept = listOf(MediaType.ALL)
-            add(NAV_CALL_ID, MDCOperations.getCallId())
-        }
-
     fun hentDokument(
         journalpostId: String,
         dokumentInfoId: String,
@@ -43,9 +36,9 @@ class SafHentDokumentRestClient(
             return restClient
                 .get()
                 .uri(hentDokumentUri)
-                .headers { headers ->
-                    httpHeaders().forEach { (k, v) -> headers.addAll(k, v) }
-                }.retrieve()
+                .accept(MediaType.ALL)
+                .header(NAV_CALL_ID, MDCOperations.getCallId())
+                .retrieve()
                 .body<ByteArray>()!!
         } catch (e: HttpClientErrorException.Forbidden) {
             incrementLoggFeil("saf.dokument.forbidden")

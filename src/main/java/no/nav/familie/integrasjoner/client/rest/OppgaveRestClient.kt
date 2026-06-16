@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
@@ -59,9 +58,8 @@ class OppgaveRestClient(
             restClient
                 .get()
                 .uri(requestUrl(oppgaveId))
-                .headers { h ->
-                    httpHeaders().forEach { (key, values) -> h.addAll(key, values) }
-                }.retrieve()
+                .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+                .retrieve()
                 .body<Oppgave>()!!
         } catch (e: HttpClientErrorException) {
             if (e.statusCode == HttpStatus.FORBIDDEN) {
@@ -101,9 +99,8 @@ class OppgaveRestClient(
             restClient
                 .get()
                 .uri(buildOppgaveRequestUri(oppgaveRequest))
-                .headers { h ->
-                    httpHeaders().forEach { (key, values) -> h.addAll(key, values) }
-                }.retrieve()
+                .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+                .retrieve()
                 .body<FinnOppgaveResponseDto>()!!
         val oppgaver: MutableList<Oppgave> = oppgaverOgAntall.oppgaver.toMutableList()
         val grense =
@@ -125,9 +122,8 @@ class OppgaveRestClient(
                                 limit = min(grense - offset, LIMIT_MOT_OPPGAVE),
                             ),
                         ),
-                    ).headers { h ->
-                        httpHeaders().forEach { (key, values) -> h.addAll(key, values) }
-                    }.retrieve()
+                    ).header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+                    .retrieve()
                     .body<FinnOppgaveResponseDto>()!!
             oppgaver.addAll(nyeOppgaver.oppgaver)
             offset += LIMIT_MOT_OPPGAVE
@@ -140,9 +136,8 @@ class OppgaveRestClient(
         restClient
             .get()
             .uri(buildMappeRequestUri(finnMappeRequest))
-            .headers { h ->
-                httpHeaders().forEach { (key, values) -> h.addAll(key, values) }
-            }.retrieve()
+            .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+            .retrieve()
             .body<FinnMappeResponseDto>()!!
 
     fun oppdaterOppgave(patchDto: Oppgave): Oppgave? =
@@ -151,9 +146,8 @@ class OppgaveRestClient(
                 restClient
                     .patch()
                     .uri(requestUrl(patchDto.id ?: error("Kan ikke finne oppgaveId på oppgaven")))
-                    .headers { h ->
-                        httpHeaders().forEach { (key, values) -> h.addAll(key, values) }
-                    }.body(patchDto)
+                    .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+                    .body(patchDto)
                     .retrieve()
                     .body<Oppgave>()!!
             }.fold(
@@ -190,9 +184,8 @@ class OppgaveRestClient(
                 restClient
                     .patch()
                     .uri(requestUrl(byttEnhetOgTilordnetRessursPatch.id))
-                    .headers { h ->
-                        httpHeaders().forEach { (key, values) -> h.addAll(key, values) }
-                    }.body(byttEnhetOgTilordnetRessursPatch)
+                    .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+                    .body(byttEnhetOgTilordnetRessursPatch)
                     .retrieve()
                     .body<Oppgave>()!!
             }.fold(
@@ -225,9 +218,8 @@ class OppgaveRestClient(
                 restClient
                     .post()
                     .uri(uri)
-                    .headers { h ->
-                        httpHeaders().forEach { (key, values) -> h.addAll(key, values) }
-                    }.body(dto)
+                    .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+                    .body(dto)
                     .retrieve()
                     .body<Oppgave>()!!
             }.map { it.id ?: error("Kan ikke finne oppgaveId på oppgaven $it") }
@@ -276,9 +268,8 @@ class OppgaveRestClient(
             restClient
                 .get()
                 .uri(requestUrl)
-                .headers { h ->
-                    httpHeaders().forEach { (key, values) -> h.addAll(key, values) }
-                }.retrieve()
+                .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+                .retrieve()
                 .body<FinnOppgaveResponseDto>()!!
         if (finnOppgaveResponseDto.oppgaver.isEmpty()) {
             returnerteIngenOppgaver.increment()
@@ -295,11 +286,6 @@ class OppgaveRestClient(
         }
         return finnOppgaveResponseDto.oppgaver[0]
     }
-
-    private fun httpHeaders(): HttpHeaders =
-        HttpHeaders().apply {
-            add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
-        }
 
     companion object {
         private const val PATH_OPPGAVE = "/api/v1/oppgaver"

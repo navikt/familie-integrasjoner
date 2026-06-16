@@ -30,13 +30,9 @@ class ArbeidOgInntektClient(
             restClient
                 .get()
                 .uri(redirectUri)
-                .headers { h ->
-                    HttpHeaders()
-                        .apply {
-                            accept = listOf(MediaType.TEXT_PLAIN)
-                            set("Nav-Personident", personIdent.ident)
-                        }.forEach { (key, values) -> h.addAll(key, values) }
-                }.retrieve()
+                .header(HttpHeaders.ACCEPT, MediaType.TEXT_PLAIN_VALUE)
+                .header("Nav-Personident", personIdent.ident)
+                .retrieve()
                 .body<String>()!!
         } catch (e: Exception) {
             throw OppslagException(

@@ -58,9 +58,11 @@ class PdlRestClient(
                 restClient
                     .post()
                     .uri(pdlUri)
-                    .headers { headers ->
-                        pdlHttpHeaders(tema).forEach { (k, v) -> headers.addAll(k, v) }
-                    }.body(pdlAdressebeskyttelseRequest)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                    .header("Tema", tema.name)
+                    .header("behandlingsnummer", tema.behandlingsnummer)
+                    .body(pdlAdressebeskyttelseRequest)
                     .retrieve()
                     .body<PdlResponse<PdlPersonMedAdressebeskyttelse>>()!!
             } catch (e: Exception) {
@@ -90,9 +92,11 @@ class PdlRestClient(
                 restClient
                     .post()
                     .uri(pdlUri)
-                    .headers { headers ->
-                        pdlHttpHeaders(tema).forEach { (k, v) -> headers.addAll(k, v) }
-                    }.body(pdlPersonRequest)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                    .header("Tema", tema.name)
+                    .header("behandlingsnummer", tema.behandlingsnummer)
+                    .body(pdlPersonRequest)
                     .retrieve()
                     .body<PdlResponse<PdlPerson>>()!!
             } catch (e: Exception) {
@@ -123,9 +127,11 @@ class PdlRestClient(
                 restClient
                     .post()
                     .uri(pdlUri)
-                    .headers { headers ->
-                        pdlHttpHeaders(tema).forEach { (k, v) -> headers.addAll(k, v) }
-                    }.body(pdlPersonRequest)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                    .header("Tema", tema.name)
+                    .header("behandlingsnummer", tema.behandlingsnummer)
+                    .body(pdlPersonRequest)
                     .retrieve()
                     .body<PdlResponse<PdlHentIdenter>>()!!
             } catch (e: Exception) {
@@ -197,9 +203,11 @@ class PdlRestClient(
                 restClient
                     .post()
                     .uri(pdlUri)
-                    .headers { headers ->
-                        pdlHttpHeaders(tema).forEach { (k, v) -> headers.addAll(k, v) }
-                    }.body(pdlGeografiskTilknytningRequest)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                    .header("Tema", tema.name)
+                    .header("behandlingsnummer", tema.behandlingsnummer)
+                    .body(pdlGeografiskTilknytningRequest)
                     .retrieve()
                     .body<PdlResponse<PdlHentGeografiskTilknytning>>()!!
 
@@ -260,11 +268,3 @@ class PdlRestClient(
         private val HENT_ADRESSEBESKYTTELSE_QUERY = graphqlQuery("/pdl/adressebeskyttelse.graphql")
     }
 }
-
-fun pdlHttpHeaders(tema: Tema): HttpHeaders =
-    HttpHeaders().apply {
-        contentType = MediaType.APPLICATION_JSON
-        accept = listOf(MediaType.APPLICATION_JSON)
-        add("Tema", tema.name)
-        add("behandlingsnummer", tema.behandlingsnummer)
-    }

@@ -46,9 +46,10 @@ class SafRestClient(
             restClient
                 .post()
                 .uri(safUri)
-                .headers { headers ->
-                    httpHeaders().forEach { (k, v) -> headers.addAll(k, v) }
-                }.body(safJournalpostRequest)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .header(NAV_CALL_ID, MDCOperations.getCallId())
+                .body(safJournalpostRequest)
                 .retrieve()
                 .body<SafJournalpostResponse<SafJournalpostData>>()!!
         if (!response.harFeil()) {
@@ -106,9 +107,10 @@ class SafRestClient(
             restClient
                 .post()
                 .uri(safUri)
-                .headers { headers ->
-                    httpHeaders().forEach { (k, v) -> headers.addAll(k, v) }
-                }.body(safJournalpostRequest)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .header(NAV_CALL_ID, MDCOperations.getCallId())
+                .body(safJournalpostRequest)
                 .retrieve()
                 .body<SafJournalpostResponse<SafJournalpostBrukerData>>()!!
 
@@ -138,13 +140,6 @@ class SafRestClient(
             }
         }
     }
-
-    private fun httpHeaders(): HttpHeaders =
-        HttpHeaders().apply {
-            contentType = MediaType.APPLICATION_JSON
-            accept = listOf(MediaType.APPLICATION_JSON)
-            add(NAV_CALL_ID, MDCOperations.getCallId())
-        }
 
     companion object {
         private const val PATH_GRAPHQL = "graphql"

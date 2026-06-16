@@ -9,7 +9,6 @@ import no.nav.familie.log.mdc.MDCConstants
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
@@ -32,9 +31,8 @@ class RegoppslagRestClient(
             restClient
                 .post()
                 .uri(uri)
-                .headers { h ->
-                    httpHeaders().forEach { (key, values) -> h.addAll(key, values) }
-                }.body(
+                .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+                .body(
                     PostadresseRequest(
                         ident = ident,
                         tema = tema.name,
@@ -55,11 +53,6 @@ class RegoppslagRestClient(
                     throw e
                 }
             }
-        }
-
-    private fun httpHeaders(): HttpHeaders =
-        HttpHeaders().apply {
-            add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
         }
 
     companion object {

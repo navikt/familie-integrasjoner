@@ -12,7 +12,9 @@ import no.nav.familie.kontrakter.felles.Tema
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
@@ -45,9 +47,11 @@ class PdlClientCredentialRestClient(
                 restClient
                     .post()
                     .uri(pdlUri)
-                    .headers { headers ->
-                        pdlHttpHeaders(tema).forEach { (k, v) -> headers.addAll(k, v) }
-                    }.body(request)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                    .header("Tema", tema.name)
+                    .header("behandlingsnummer", tema.behandlingsnummer)
+                    .body(request)
                     .retrieve()
                     .body<PdlBolkResponse<PdlPersonMedRelasjonerOgAdressebeskyttelse>>()!!
             } catch (e: Exception) {

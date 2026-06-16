@@ -6,7 +6,6 @@ import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.saksbehandler.SaksbehandlerGrupper
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
@@ -51,9 +50,8 @@ class AzureGraphRestClient(
             restClient
                 .get()
                 .uri(saksbehandlersøkUri(navIdent))
-                .headers { h ->
-                    consistencyHeaders().forEach { (key, values) -> h.addAll(key, values) }
-                }.retrieve()
+                .header("ConsistencyLevel", "eventual")
+                .retrieve()
                 .body<AzureAdBrukere>()!!
         } catch (e: Exception) {
             throw OppslagException(
@@ -70,9 +68,8 @@ class AzureGraphRestClient(
             restClient
                 .get()
                 .uri(hentGruppeneTilSaksbehandlerUri(azureId))
-                .headers { h ->
-                    consistencyHeaders().forEach { (key, values) -> h.addAll(key, values) }
-                }.retrieve()
+                .header("ConsistencyLevel", "eventual")
+                .retrieve()
                 .body<SaksbehandlerGrupper>()!!
         } catch (e: Exception) {
             throw OppslagException(
@@ -99,11 +96,6 @@ class AzureGraphRestClient(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 e,
             )
-        }
-
-    private fun consistencyHeaders(): HttpHeaders =
-        HttpHeaders().apply {
-            add("ConsistencyLevel", "eventual")
         }
 
     companion object {

@@ -42,9 +42,9 @@ class AaregRestClient(
             restClient
                 .get()
                 .uri(uri)
-                .headers { h ->
-                    httpHeaders(personIdent).forEach { (key, values) -> h.addAll(key, values) }
-                }.retrieve()
+                .header(NavHttpHeaders.NAV_PERSONIDENT.asString(), personIdent)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .retrieve()
                 .body<List<Arbeidsforhold>>()!!
         } catch (e: RestClientException) {
             var feilmelding = "Feil ved oppslag av arbeidsforhold."
@@ -61,12 +61,6 @@ class AaregRestClient(
             )
         }
     }
-
-    private fun httpHeaders(personIdent: String): HttpHeaders =
-        HttpHeaders().apply {
-            add(NavHttpHeaders.NAV_PERSONIDENT.asString(), personIdent)
-            add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        }
 
     companion object {
         private const val PATH_ARBEIDSFORHOLD = "/v1/arbeidstaker/arbeidsforhold"

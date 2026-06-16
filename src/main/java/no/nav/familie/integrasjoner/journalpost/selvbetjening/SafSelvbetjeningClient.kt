@@ -7,7 +7,6 @@ import no.nav.familie.integrasjoner.safselvbetjening.generated.enums.Tema
 import no.nav.familie.integrasjoner.safselvbetjening.generated.enums.Variantformat
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestClient
@@ -51,13 +50,11 @@ class SafSelvbetjeningClient(
                 .toUri()
 
         try {
-            val headers = HttpHeaders().apply { accept = listOf(MediaType.APPLICATION_PDF) }
             return restClient
                 .get()
                 .uri(safHentdokumentUri)
-                .headers { consumer ->
-                    headers.forEach { (k, v) -> consumer.addAll(k, v) }
-                }.retrieve()
+                .accept(MediaType.APPLICATION_PDF)
+                .retrieve()
                 .body<ByteArray>()!!
         } catch (e: Exception) {
             throw SafSelvbetjeningException(
