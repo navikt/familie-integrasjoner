@@ -1,9 +1,9 @@
 package no.nav.familie.integrasjoner.config
 
 import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.log.interceptor.ConsumerIdClientInterceptor
 import no.nav.familie.log.interceptor.MdcValuesPropagatingClientInterceptor
-import no.nav.security.token.support.spring.SpringTokenValidationContextHolder
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -15,15 +15,7 @@ class RestClientConfig(
     private val consumerIdClientInterceptor: ConsumerIdClientInterceptor,
     private val mdcValuesPropagatingClientInterceptor: MdcValuesPropagatingClientInterceptor,
 ) {
-    private fun hentBrukerToken(): String? =
-        try {
-            SpringTokenValidationContextHolder()
-                .getTokenValidationContext()
-                .getJwtToken("azuread")
-                ?.encodedToken
-        } catch (_: Exception) {
-            null
-        }
+    private fun hentBrukerToken(): String? = SikkerhetsContext.hentJwt()?.tokenValue
 
     // --- Hybrid (OBO + CC-fallback) ---
 
