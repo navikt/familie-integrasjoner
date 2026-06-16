@@ -4,14 +4,14 @@ import no.nav.familie.integrasjoner.config.incrementLoggFeil
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
 import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
-import no.nav.familie.restklient.client.AbstractRestClient
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.client.RestOperations
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
@@ -23,8 +23,8 @@ import java.net.URI
 @Service
 class SafHentDokumentRestClient(
     @Value("\${SAF_URL}") safBaseUrl: URI,
-    @Qualifier("jwtBearer") val restTemplate: RestOperations,
-) : AbstractRestClient(restTemplate, "saf.journalpost") {
+    @Qualifier("safRestClient") private val restClient: RestClient,
+) {
     private val safHentdokumentUri = UriComponentsBuilder.fromUri(safBaseUrl).path(PATH_HENT_DOKUMENT)
 
     private fun httpHeaders(): HttpHeaders =
@@ -40,7 +40,13 @@ class SafHentDokumentRestClient(
     ): ByteArray {
         val hentDokumentUri = safHentdokumentUri.buildAndExpand(journalpostId, dokumentInfoId, variantFormat).toUri()
         try {
-            return getForEntity(hentDokumentUri, httpHeaders())
+            return restClient
+                .get()
+                .uri(hentDokumentUri)
+                .headers { headers ->
+                    httpHeaders().forEach { (k, v) -> headers.addAll(k, v) }
+                }.retrieve()
+                .body<ByteArray>()!!
         } catch (e: HttpClientErrorException.Forbidden) {
             incrementLoggFeil("saf.dokument.forbidden")
             throw JournalpostForbiddenException(e.message, e)

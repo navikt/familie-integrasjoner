@@ -4,8 +4,6 @@ import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.førstesidegenerator.domene.PostFørstesideRequest
 import no.nav.familie.integrasjoner.førstesidegenerator.domene.PostFørstesideResponse
 import no.nav.familie.log.mdc.MDCConstants
-import no.nav.familie.restklient.client.AbstractPingableRestClient
-import no.nav.familie.restklient.util.UriUtil
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -13,17 +11,16 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpStatusCodeException
-import org.springframework.web.client.RestOperations
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Component
 class FørstesidegeneratorClient(
     @Value("\${FORSTESIDEGENERATOR_URL}") private val førstesidegeneratorURI: URI,
-    @Qualifier("jwtBearer") private val restTemplate: RestOperations,
-) : AbstractPingableRestClient(restTemplate, "forstesidegenterator") {
-    override val pingUri: URI = UriUtil.uri(førstesidegeneratorURI, PATH_PING)
-
+    @Qualifier("førstesidegeneratorRestClient") private val restClient: RestClient,
+) {
     fun genererFørsteside(dto: PostFørstesideRequest): PostFørstesideResponse {
         val uri =
             UriComponentsBuilder
@@ -32,8 +29,16 @@ class FørstesidegeneratorClient(
                 .build()
                 .toUri()
         return Result
-            .runCatching { postForEntity<PostFørstesideResponse>(uri, dto, httpHeaders()) }
-            .onFailure {
+            .runCatching {
+                restClient
+                    .post()
+                    .uri(uri)
+                    .headers { h ->
+                        httpHeaders().forEach { (key, values) -> h.addAll(key, values) }
+                    }.body(dto)
+                    .retrieve()
+                    .body<PostFørstesideResponse>()!!
+            }.onFailure {
                 var feilmelding = "Feil ved oppretting av førsteside for ${dto.førstesidetype}."
                 if (it is HttpStatusCodeException) {
                     feilmelding += " Response fra førstesidegenerator = ${it.responseBodyAsString}"
@@ -56,7 +61,6 @@ class FørstesidegeneratorClient(
         }
 
     companion object {
-        private const val PATH_PING = "internal/isAlive"
         private const val PATH_GENERER = "/api/foerstesidegenerator/v1/foersteside"
         private const val X_CORRELATION_ID = "X-Correlation-ID"
         private const val NAV_CONSUMER_ID = "Nav-Consumer-Id"

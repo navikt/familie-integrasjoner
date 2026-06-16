@@ -6,13 +6,12 @@ import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostReq
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.integrasjoner.felles.Pingable
 import no.nav.familie.kontrakter.felles.dokarkiv.AvsluttSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.GjenåpneSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostResponse
 import no.nav.familie.log.NavHttpHeaders
-import no.nav.familie.restklient.client.AbstractPingableRestClient
-import no.nav.familie.restklient.client.AbstractRestClient
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -21,24 +20,30 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpStatusCodeException
+import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientResponseException
-import org.springframework.web.client.RestOperations
+import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Component
 class DokarkivRestClient(
     @Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
-    @Qualifier("jwtBearerOboOgSts") private val restOperations: RestOperations,
-) : AbstractPingableRestClient(restOperations, "dokarkiv.opprett") {
-    override val pingUri: URI =
+    @Qualifier("dokarkivRestClient") private val restClient: RestClient,
+) : Pingable {
+    private val livenessUri: URI =
         UriComponentsBuilder
             .fromUri(dokarkivUrl)
             .path(PATH_PING)
             .build()
             .toUri()
 
-    private val ferdigstillJournalPostClient = FerdigstillJournalPostClient(restOperations, dokarkivUrl)
+    override fun ping(): String =
+        restClient
+            .get()
+            .uri(livenessUri)
+            .retrieve()
+            .body<String>() ?: "OK"
 
     fun lagJournalpostUri(ferdigstill: Boolean): URI =
         UriComponentsBuilder
@@ -55,7 +60,13 @@ class DokarkivRestClient(
     ): OpprettJournalpostResponse {
         val uri = lagJournalpostUri(ferdigstill)
         try {
-            return postForEntity(uri, jp, headers(navIdent))
+            return restClient
+                .post()
+                .uri(uri)
+                .headers { it.putAll(headers(navIdent)) }
+                .body(jp)
+                .retrieve()
+                .body<OpprettJournalpostResponse>()!!
         } catch (feilVedJournalføring: RuntimeException) {
             if (feilVedJournalføring is HttpClientErrorException.Conflict) {
                 logger.warn("409 ved oppretting av journalpost med eksternReferanseId=${jp.eksternReferanseId}. Denne journalposten er allerede journalført. Returnerer body fra feilmelding som er en OpprettJournalpostResponse.")
@@ -81,7 +92,13 @@ class DokarkivRestClient(
                 .build()
                 .toUri()
         try {
-            return putForEntity(uri, jp, headers(navIdent))
+            return restClient
+                .put()
+                .uri(uri)
+                .headers { it.putAll(headers(navIdent)) }
+                .body(jp)
+                .retrieve()
+                .body<OppdaterJournalpostResponse>()!!
         } catch (e: RuntimeException) {
             throw oppslagExceptionVed("oppdatering", e, jp.bruker?.id, "dokarkiv.oppdaterJournalpost")
         }
@@ -92,7 +109,30 @@ class DokarkivRestClient(
         journalførendeEnhet: String,
         navIdent: String? = null,
     ) {
-        ferdigstillJournalPostClient.ferdigstillJournalpost(journalpostId, journalførendeEnhet, navIdent)
+        val uri = ferdigstillJournalpostUri(journalpostId)
+        try {
+            restClient
+                .patch()
+                .uri(uri)
+                .headers { it.putAll(headers(navIdent)) }
+                .body(FerdigstillJournalPost(journalførendeEnhet))
+                .retrieve()
+                .body<String>()
+        } catch (e: RestClientResponseException) {
+            if (e.statusCode.value() == HttpStatus.BAD_REQUEST.value()) {
+                throw KanIkkeFerdigstilleJournalpostException(
+                    "Kan ikke ferdigstille journalpost " +
+                        "$journalpostId body ${e.responseBodyAsString}",
+                )
+            }
+            throw OppslagException(
+                "Feil ved ferdigstilling av journalpost",
+                "dokarkiv.ferdigstill.feil",
+                OppslagException.Level.MEDIUM,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                e,
+            )
+        }
     }
 
     fun avsluttSak(
@@ -105,7 +145,12 @@ class DokarkivRestClient(
                 .build()
                 .toUri()
         try {
-            patchForEntity<String>(uri, request)
+            restClient
+                .patch()
+                .uri(uri)
+                .body(request)
+                .retrieve()
+                .body<String>()
         } catch (e: RuntimeException) {
             throw oppslagExceptionVed("avslutting av sak i dokarkiv", e, request.bruker.id, "dokarkiv.avsluttSak")
         }
@@ -121,7 +166,12 @@ class DokarkivRestClient(
                 .build()
                 .toUri()
         try {
-            patchForEntity<String>(uri, gjenåpneSakRequest)
+            restClient
+                .patch()
+                .uri(uri)
+                .body(gjenåpneSakRequest)
+                .retrieve()
+                .body<String>()
         } catch (e: RuntimeException) {
             throw oppslagExceptionVed("gjenåpning av sak i dokarkiv", e, gjenåpneSakRequest.bruker.id, "dokarkiv.gjenaapneSak")
         }
@@ -146,46 +196,12 @@ class DokarkivRestClient(
         )
     }
 
-    /**
-     * Privat klasse for å gi egne metrics for ferdigstilling av journalpost.
-     *
-     */
-    private class FerdigstillJournalPostClient(
-        restOperations: RestOperations,
-        private val dokarkivUrl: URI,
-    ) : AbstractRestClient(restOperations, "dokarkiv.ferdigstill") {
-        private fun ferdigstillJournalpostUri(journalpostId: String): URI =
-            UriComponentsBuilder
-                .fromUri(dokarkivUrl)
-                .path(String.format(PATH_FERDIGSTILL_JOURNALPOST, journalpostId))
-                .build()
-                .toUri()
-
-        fun ferdigstillJournalpost(
-            journalpostId: String,
-            journalførendeEnhet: String,
-            navIdent: String?,
-        ) {
-            val uri = ferdigstillJournalpostUri(journalpostId)
-            try {
-                patchForEntity<String>(uri, FerdigstillJournalPost(journalførendeEnhet), headers(navIdent))
-            } catch (e: RestClientResponseException) {
-                if (e.statusCode.value() == HttpStatus.BAD_REQUEST.value()) {
-                    throw KanIkkeFerdigstilleJournalpostException(
-                        "Kan ikke ferdigstille journalpost " +
-                            "$journalpostId body ${e.responseBodyAsString}",
-                    )
-                }
-                throw OppslagException(
-                    "Feil ved ferdigstilling av journalpost",
-                    "dokarkiv.ferdigstill.feil",
-                    OppslagException.Level.MEDIUM,
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    e,
-                )
-            }
-        }
-    }
+    private fun ferdigstillJournalpostUri(journalpostId: String): URI =
+        UriComponentsBuilder
+            .fromUri(dokarkivUrl)
+            .path(String.format(PATH_FERDIGSTILL_JOURNALPOST, journalpostId))
+            .build()
+            .toUri()
 
     companion object {
         private val logger = LoggerFactory.getLogger(DokarkivRestClient::class.java)

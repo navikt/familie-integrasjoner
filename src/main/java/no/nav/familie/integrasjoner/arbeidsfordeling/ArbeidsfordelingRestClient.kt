@@ -3,12 +3,12 @@ package no.nav.familie.integrasjoner.arbeidsfordeling
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.arbeidsfordeling.Enhet
 import no.nav.familie.kontrakter.felles.navkontor.NavKontorEnhet
-import no.nav.familie.restklient.client.AbstractPingableRestClient
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestOperations
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
@@ -16,18 +16,21 @@ import java.net.URI
 class ArbeidsfordelingRestClient(
     @Value("\${NORG2_URL}")
     private val norg2Uri: URI,
-    @Qualifier("noAuthorize")
-    restOperations: RestOperations,
-) : AbstractPingableRestClient(restOperations, "norg2") {
+    @Qualifier("utenAuthRestClient")
+    private val restClient: RestClient,
+) {
     fun hentEnhet(geografiskOmråde: String): NavKontorEnhet =
         try {
-            getForEntity(
-                UriComponentsBuilder
-                    .fromUri(norg2Uri)
-                    .pathSegment("api/v1/enhet/navkontor/$geografiskOmråde")
-                    .build()
-                    .toUri(),
-            )
+            restClient
+                .get()
+                .uri(
+                    UriComponentsBuilder
+                        .fromUri(norg2Uri)
+                        .pathSegment("api/v1/enhet/navkontor/$geografiskOmråde")
+                        .build()
+                        .toUri(),
+                ).retrieve()
+                .body<NavKontorEnhet>()!!
         } catch (e: Exception) {
             throw OppslagException(
                 "Feil ved henting av enhet",
@@ -40,13 +43,16 @@ class ArbeidsfordelingRestClient(
 
     fun hentNavkontor(enhetId: String): NavKontorEnhet =
         try {
-            getForEntity(
-                UriComponentsBuilder
-                    .fromUri(norg2Uri)
-                    .pathSegment("api/v1/enhet/$enhetId")
-                    .build()
-                    .toUri(),
-            )
+            restClient
+                .get()
+                .uri(
+                    UriComponentsBuilder
+                        .fromUri(norg2Uri)
+                        .pathSegment("api/v1/enhet/$enhetId")
+                        .build()
+                        .toUri(),
+                ).retrieve()
+                .body<NavKontorEnhet>()!!
         } catch (e: Exception) {
             throw OppslagException(
                 "Feil ved henting av navkontor",
@@ -59,14 +65,18 @@ class ArbeidsfordelingRestClient(
 
     fun finnBehandlendeEnhetMedBesteMatch(arbeidsfordelingskriterie: ArbeidsfordelingKriterie): List<Enhet> =
         try {
-            postForEntity<List<NavKontorEnhet>>(
-                UriComponentsBuilder
-                    .fromUri(norg2Uri)
-                    .pathSegment("api/v1/arbeidsfordeling/enheter/bestmatch")
-                    .build()
-                    .toUri(),
-                arbeidsfordelingskriterie,
-            ).map { Enhet(enhetId = it.enhetNr, enhetNavn = it.navn) }
+            restClient
+                .post()
+                .uri(
+                    UriComponentsBuilder
+                        .fromUri(norg2Uri)
+                        .pathSegment("api/v1/arbeidsfordeling/enheter/bestmatch")
+                        .build()
+                        .toUri(),
+                ).body(arbeidsfordelingskriterie)
+                .retrieve()
+                .body<List<NavKontorEnhet>>()!!
+                .map { Enhet(enhetId = it.enhetNr, enhetNavn = it.navn) }
         } catch (e: Exception) {
             throw OppslagException(
                 "Feil ved oppslag av best matchende behandlende enhet",
@@ -76,12 +86,4 @@ class ArbeidsfordelingRestClient(
                 e,
             )
         }
-
-    override val pingUri: URI
-        get() =
-            UriComponentsBuilder
-                .fromUri(norg2Uri)
-                .pathSegment("api/ping")
-                .build()
-                .toUri()
 }

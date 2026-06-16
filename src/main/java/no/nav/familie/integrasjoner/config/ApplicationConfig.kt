@@ -23,7 +23,11 @@ import java.time.Duration
 import java.time.temporal.ChronoUnit
 
 @SpringBootConfiguration
-@ComponentScan("no.nav.familie.integrasjoner", "no.nav.familie.metrikker")
+@ComponentScan(
+    "no.nav.familie.integrasjoner",
+    "no.nav.familie.metrikker",
+    "no.nav.familie.felles.tokenklient",
+)
 @ConfigurationPropertiesScan
 @EnableOAuth2Client(cacheEnabled = true)
 @EnableScheduling

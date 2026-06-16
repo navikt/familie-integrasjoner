@@ -4,7 +4,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
-import no.nav.familie.integrasjoner.dokarkiv.client.domene.FerdigstillJournalPost
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.log.mdc.MDCConstants.MDC_CALL_ID
 import org.assertj.core.api.Assertions.assertThat
@@ -14,20 +13,21 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.slf4j.MDC
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
+import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientResponseException
-import org.springframework.web.client.RestOperations
-import org.springframework.web.client.exchange
 import java.net.URI
 
 class DokarkivRestClientTest {
-    private val restOperations: RestOperations = mockk()
+    private val restClient: RestClient = mockk()
+    private val requestBodyUriSpec: RestClient.RequestBodyUriSpec = mockk()
+    private val requestBodySpec: RestClient.RequestBodySpec = mockk()
+    private val responseSpec: RestClient.ResponseSpec = mockk()
     private val dokarkivRestClient: DokarkivRestClient =
         DokarkivRestClient(
             dokarkivUrl = URI("http://localhost:8080/dokarkiv"),
-            restOperations = restOperations,
+            restClient = restClient,
         )
 
     @BeforeEach
@@ -46,7 +46,13 @@ class DokarkivRestClientTest {
         @Test
         fun `skal kaste OppslagException ved feil mot dokarkiv`() {
             // Arrange
-            every { restOperations.exchange<String>(any<URI>(), eq(HttpMethod.PATCH), any<HttpEntity<FerdigstillJournalPost>>()) } throws
+            every { restClient.patch() } returns requestBodyUriSpec
+            every { requestBodyUriSpec.uri(any<URI>()) } returns requestBodySpec
+            every { requestBodySpec.headers(any()) } returns requestBodySpec
+            every { requestBodySpec.body(any()) } returns requestBodySpec
+            every { requestBodySpec.retrieve() } returns responseSpec
+            every { responseSpec.hint(any(), any()) } returns responseSpec
+            every { responseSpec.body(any<ParameterizedTypeReference<String>>()) } throws
                 RestClientResponseException(
                     "Noe gikk galt",
                     HttpStatus.NOT_FOUND,

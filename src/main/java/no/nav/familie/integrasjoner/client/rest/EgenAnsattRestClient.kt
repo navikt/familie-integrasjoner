@@ -1,19 +1,20 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.integrasjoner.config.incrementLoggFeil
-import no.nav.familie.restklient.client.AbstractPingableRestClient
-import no.nav.familie.restklient.util.UriUtil
+import no.nav.familie.integrasjoner.felles.Pingable
+import no.nav.familie.integrasjoner.felles.UriUtil
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import org.springframework.web.client.RestOperations
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import java.net.URI
 
 @Component
 class EgenAnsattRestClient(
     @Value("\${EGEN_ANSATT_URL}") private val uri: URI,
-    @Qualifier("noAuthorize") private val restTemplate: RestOperations,
-) : AbstractPingableRestClient(restTemplate, "egenansatt") {
+    @Qualifier("utenAuthRestClient") private val restClient: RestClient,
+) : Pingable {
     override val pingUri: URI = UriUtil.uri(uri, PATH_PING)
     private val egenAnsattUri: URI = UriUtil.uri(uri, "skjermet")
     private val egenAnsattBulkUri: URI = UriUtil.uri(uri, "skjermetBulk")
@@ -28,7 +29,12 @@ class EgenAnsattRestClient(
 
     fun erEgenAnsatt(personIdent: String): Boolean =
         try {
-            postForEntity(egenAnsattUri, SkjermetDataRequestDTO(personIdent))
+            restClient
+                .post()
+                .uri(egenAnsattUri)
+                .body(SkjermetDataRequestDTO(personIdent))
+                .retrieve()
+                .body<Boolean>()!!
         } catch (e: Exception) {
             incrementLoggFeil("egenAnsatt.ident")
             throw e
@@ -36,13 +42,25 @@ class EgenAnsattRestClient(
 
     fun erEgenAnsatt(personidenter: Set<String>): Map<String, Boolean> =
         try {
-            postForEntity(egenAnsattBulkUri, SkjermetDataBolkRequestDTO(personidenter))
+            restClient
+                .post()
+                .uri(egenAnsattBulkUri)
+                .body(SkjermetDataBolkRequestDTO(personidenter))
+                .retrieve()
+                .body<Map<String, Boolean>>()!!
         } catch (e: Exception) {
             incrementLoggFeil("egenAnsatt.identer")
             throw e
         }
 
+    override fun ping(): String =
+        restClient
+            .get()
+            .uri(pingUri)
+            .retrieve()
+            .body<String>() ?: "OK"
+
     companion object {
-        private const val PATH_PING = "internal/health/readiness"
+        private const val PATH_PING = "internal/alive"
     }
 }

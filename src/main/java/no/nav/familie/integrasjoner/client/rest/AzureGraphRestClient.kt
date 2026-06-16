@@ -4,21 +4,21 @@ import no.nav.familie.integrasjoner.azure.domene.AzureAdBruker
 import no.nav.familie.integrasjoner.azure.domene.AzureAdBrukere
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.saksbehandler.SaksbehandlerGrupper
-import no.nav.familie.restklient.client.AbstractRestClient
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestOperations
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Service
 class AzureGraphRestClient(
-    @Qualifier("jwtBearer") restTemplate: RestOperations,
+    @Qualifier("azureGraphRestClient") private val restClient: RestClient,
     @Value("\${AAD_GRAPH_API_URI}") private val aadGraphURI: URI,
-) : AbstractRestClient(restTemplate, "AzureGraph") {
+) {
     private fun saksbehandlerUri(id: String): URI =
         UriComponentsBuilder
             .fromUri(aadGraphURI)
@@ -48,12 +48,13 @@ class AzureGraphRestClient(
 
     fun finnSaksbehandler(navIdent: String): AzureAdBrukere =
         try {
-            getForEntity(
-                saksbehandlersøkUri(navIdent),
-                HttpHeaders().apply {
-                    add("ConsistencyLevel", "eventual")
-                },
-            )
+            restClient
+                .get()
+                .uri(saksbehandlersøkUri(navIdent))
+                .headers { h ->
+                    consistencyHeaders().forEach { (key, values) -> h.addAll(key, values) }
+                }.retrieve()
+                .body<AzureAdBrukere>()!!
         } catch (e: Exception) {
             throw OppslagException(
                 "Feil ved henting av saksbehandler med nav ident",
@@ -66,12 +67,13 @@ class AzureGraphRestClient(
 
     fun hentGruppeneTilSaksbehandler(azureId: String): SaksbehandlerGrupper =
         try {
-            getForEntity(
-                hentGruppeneTilSaksbehandlerUri(azureId),
-                HttpHeaders().apply {
-                    add("ConsistencyLevel", "eventual")
-                },
-            )
+            restClient
+                .get()
+                .uri(hentGruppeneTilSaksbehandlerUri(azureId))
+                .headers { h ->
+                    consistencyHeaders().forEach { (key, values) -> h.addAll(key, values) }
+                }.retrieve()
+                .body<SaksbehandlerGrupper>()!!
         } catch (e: Exception) {
             throw OppslagException(
                 "Feil ved henting av saksbehandlers grupper med azure id",
@@ -84,15 +86,24 @@ class AzureGraphRestClient(
 
     fun hentSaksbehandler(id: String): AzureAdBruker =
         try {
-            getForEntity(saksbehandlerUri(id))
+            restClient
+                .get()
+                .uri(saksbehandlerUri(id))
+                .retrieve()
+                .body<AzureAdBruker>()!!
         } catch (e: Exception) {
-            throw throw OppslagException(
+            throw OppslagException(
                 "Feil ved henting av saksbehandler med id",
                 "azure.saksbehandler.id",
                 OppslagException.Level.MEDIUM,
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 e,
             )
+        }
+
+    private fun consistencyHeaders(): HttpHeaders =
+        HttpHeaders().apply {
+            add("ConsistencyLevel", "eventual")
         }
 
     companion object {
