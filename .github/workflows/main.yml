@@ -71,7 +71,7 @@ jobs:
 
   deploy-prod:
     name: Deploy to prod-fss
-    needs: deploy-dev
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: "read"
