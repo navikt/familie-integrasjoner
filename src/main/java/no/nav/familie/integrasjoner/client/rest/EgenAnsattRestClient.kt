@@ -1,7 +1,6 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.integrasjoner.config.incrementLoggFeil
-import no.nav.familie.integrasjoner.felles.Pingable
 import no.nav.familie.integrasjoner.felles.UriUtil
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -14,8 +13,7 @@ import java.net.URI
 class EgenAnsattRestClient(
     @Value("\${EGEN_ANSATT_URL}") private val uri: URI,
     @Qualifier("utenAuthRestClient") private val restClient: RestClient,
-) : Pingable {
-    override val pingUri: URI = UriUtil.uri(uri, PATH_PING)
+) {
     private val egenAnsattUri: URI = UriUtil.uri(uri, "skjermet")
     private val egenAnsattBulkUri: URI = UriUtil.uri(uri, "skjermetBulk")
 
@@ -52,15 +50,4 @@ class EgenAnsattRestClient(
             incrementLoggFeil("egenAnsatt.identer")
             throw e
         }
-
-    override fun ping(): String =
-        restClient
-            .get()
-            .uri(pingUri)
-            .retrieve()
-            .body<String>() ?: "OK"
-
-    companion object {
-        private const val PATH_PING = "internal/alive"
-    }
 }

@@ -3,7 +3,7 @@ package no.nav.familie.integrasjoner.client.rest
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.sak.Skyggesak
 import no.nav.familie.log.mdc.MDCConstants
-import no.nav.familie.restklient.client.AbstractPingableRestClient
+import no.nav.familie.restklient.client.AbstractRestClient
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Qualifier
@@ -21,8 +21,7 @@ import java.net.URI
 class SkyggesakRestClient(
     @Value("\${SKYGGE_SAK_URL}") private val skyggesakUrl: String,
     @Qualifier("sts") private val restTemplate: RestOperations,
-) : AbstractPingableRestClient(restTemplate, "skyggesak.sak") {
-    override val pingUri: URI = URI.create("$skyggesakUrl/internal/alive")
+) : AbstractRestClient(restTemplate, "skyggesak.sak") {
     private val sakUri = URI.create("$skyggesakUrl/api/v1/saker")
 
     private val logger = LoggerFactory.getLogger(SkyggesakRestClient::class.java)

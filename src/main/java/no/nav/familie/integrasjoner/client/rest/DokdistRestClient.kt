@@ -4,7 +4,6 @@ import no.nav.familie.integrasjoner.dokdist.NullResponseException
 import no.nav.familie.integrasjoner.dokdist.domene.DistribuerJournalpostRequestTo
 import no.nav.familie.integrasjoner.dokdist.domene.DistribuerJournalpostResponseTo
 import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.familie.integrasjoner.felles.Pingable
 import no.nav.familie.integrasjoner.felles.UriUtil
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -19,8 +18,7 @@ import java.net.URI
 class DokdistRestClient(
     @Value("\${DOKDIST_URL}") private val dokdistUri: URI,
     @Qualifier("dokdistRestClient") private val restClient: RestClient,
-) : Pingable {
-    override val pingUri: URI = UriUtil.uri(dokdistUri, PATH_PING)
+) {
     val distribuerUri = UriUtil.uri(dokdistUri, PATH_DISTRIBUERJOURNALPOST)
 
     fun distribuerJournalpost(req: DistribuerJournalpostRequestTo): DistribuerJournalpostResponseTo? {
@@ -49,15 +47,7 @@ class DokdistRestClient(
         return response ?: throw NullResponseException()
     }
 
-    override fun ping(): String =
-        restClient
-            .get()
-            .uri(pingUri)
-            .retrieve()
-            .body<String>() ?: "OK"
-
     companion object {
-        private const val PATH_PING = "internal/alive"
         private const val PATH_DISTRIBUERJOURNALPOST = "rest/v1/distribuerjournalpost"
     }
 }

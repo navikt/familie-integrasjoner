@@ -2,8 +2,6 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.integrasjoner.aareg.domene.Arbeidsforhold
 import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.familie.integrasjoner.felles.Pingable
-import no.nav.familie.integrasjoner.felles.UriUtil
 import no.nav.familie.log.NavHttpHeaders
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -23,9 +21,7 @@ import java.time.LocalDate
 class AaregRestClient(
     @Value("\${AAREG_URL}") private val aaregUrl: URI,
     @Qualifier("aaregRestClient") private val restClient: RestClient,
-) : Pingable {
-    override val pingUri: URI = UriUtil.uri(aaregUrl, PATH_PING)
-
+) {
     fun hentArbeidsforhold(
         personIdent: String,
         ansettelsesperiodeFom: LocalDate,
@@ -66,13 +62,6 @@ class AaregRestClient(
         }
     }
 
-    override fun ping(): String =
-        restClient
-            .get()
-            .uri(pingUri)
-            .retrieve()
-            .body<String>() ?: "OK"
-
     private fun httpHeaders(personIdent: String): HttpHeaders =
         HttpHeaders().apply {
             add(NavHttpHeaders.NAV_PERSONIDENT.asString(), personIdent)
@@ -80,7 +69,6 @@ class AaregRestClient(
         }
 
     companion object {
-        private const val PATH_PING = "internal/alive"
         private const val PATH_ARBEIDSFORHOLD = "/v1/arbeidstaker/arbeidsforhold"
     }
 }

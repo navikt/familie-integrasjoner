@@ -6,7 +6,6 @@ import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostReq
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.familie.integrasjoner.felles.Pingable
 import no.nav.familie.kontrakter.felles.dokarkiv.AvsluttSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.GjenåpneSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
@@ -30,21 +29,7 @@ import java.net.URI
 class DokarkivRestClient(
     @Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
     @Qualifier("dokarkivRestClient") private val restClient: RestClient,
-) : Pingable {
-    private val livenessUri: URI =
-        UriComponentsBuilder
-            .fromUri(dokarkivUrl)
-            .path(PATH_PING)
-            .build()
-            .toUri()
-
-    override fun ping(): String =
-        restClient
-            .get()
-            .uri(livenessUri)
-            .retrieve()
-            .body<String>() ?: "OK"
-
+) {
     fun lagJournalpostUri(ferdigstill: Boolean): URI =
         UriComponentsBuilder
             .fromUri(dokarkivUrl)
@@ -206,7 +191,6 @@ class DokarkivRestClient(
     companion object {
         private val logger = LoggerFactory.getLogger(DokarkivRestClient::class.java)
 
-        private const val PATH_PING = "actuator/health/liveness"
         private const val PATH_JOURNALPOST = "rest/journalpostapi/v1/journalpost"
         private const val QUERY_FERDIGSTILL = "forsoekFerdigstill={boolean}"
         private const val PATH_FERDIGSTILL_JOURNALPOST = "rest/journalpostapi/v1/journalpost/%s/ferdigstill"

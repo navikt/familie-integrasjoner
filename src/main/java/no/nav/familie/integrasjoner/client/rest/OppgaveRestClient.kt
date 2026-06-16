@@ -3,8 +3,6 @@ package no.nav.familie.integrasjoner.client.rest
 import io.micrometer.core.instrument.Metrics
 import no.nav.familie.integrasjoner.client.QueryParamUtil.toQueryParams
 import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.familie.integrasjoner.felles.Pingable
-import no.nav.familie.integrasjoner.felles.UriUtil
 import no.nav.familie.integrasjoner.oppgave.OppgaveByttEnhetOgTilordnetRessurs
 import no.nav.familie.integrasjoner.oppgave.domene.LIMIT_MOT_OPPGAVE
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveRequest
@@ -35,8 +33,7 @@ import kotlin.math.min
 class OppgaveRestClient(
     @Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: URI,
     @Qualifier("oppgaveRestClient") private val restClient: RestClient,
-) : Pingable {
-    override val pingUri: URI = UriUtil.uri(oppgaveBaseUrl, PATH_PING)
+) {
     private val returnerteIngenOppgaver = Metrics.counter("oppslag.oppgave.response", "antall.oppgaver", "ingen")
     private val returnerteMerEnnEnOppgave = Metrics.counter("oppslag.oppgave.response", "antall.oppgaver", "flerEnnEn")
 
@@ -299,20 +296,12 @@ class OppgaveRestClient(
         return finnOppgaveResponseDto.oppgaver[0]
     }
 
-    override fun ping(): String =
-        restClient
-            .get()
-            .uri(pingUri)
-            .retrieve()
-            .body<String>() ?: "OK"
-
     private fun httpHeaders(): HttpHeaders =
         HttpHeaders().apply {
             add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
         }
 
     companion object {
-        private const val PATH_PING = "internal/alive"
         private const val PATH_OPPGAVE = "/api/v1/oppgaver"
         private const val PATH_MAPPE = "/api/v1/mapper"
         private val KONTANTSTØTTE_TEMA = Tema.KON
