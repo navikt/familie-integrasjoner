@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import io.micrometer.core.instrument.Metrics
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.config.incrementLoggFeil
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.UriUtil
@@ -17,9 +18,9 @@ import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostRequest
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostResponse
 import no.nav.familie.integrasjoner.journalpost.internal.SafRequestVariabler
 import no.nav.familie.integrasjoner.journalpost.internal.tilSafRequestForBruker
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.kontrakter.felles.journalpost.Journalpost
 import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
@@ -31,8 +32,10 @@ import java.net.URI
 @Service
 class SafRestClient(
     @Value("\${SAF_URL}") safBaseUrl: URI,
-    @Qualifier("safRestClient") private val restClient: RestClient,
+    @Value("\${SAF_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt()?.tokenValue }
     private val safUri = UriUtil.uri(safBaseUrl, PATH_GRAPHQL)
     private val responsFailure = Metrics.counter("restclient.response.failure", "client", "saf.journalpost")
 

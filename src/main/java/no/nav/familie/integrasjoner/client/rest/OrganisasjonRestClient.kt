@@ -16,7 +16,7 @@ import java.net.URI
 @Component
 class OrganisasjonRestClient(
     @Value("\${ORGANISASJON_URL}") private val organisasjonUri: URI,
-    @Qualifier("utenAuthRestClient") private val restClient: RestClient,
+    @Qualifier("utenAuthHttpClient") private val restClient: RestClient,
 ) {
     private fun nøkkelinfoUri(orgnr: String) =
         UriComponentsBuilder

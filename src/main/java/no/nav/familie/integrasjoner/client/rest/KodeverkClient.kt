@@ -1,9 +1,9 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.felles.UriUtil
 import no.nav.familie.kontrakter.felles.kodeverk.HierarkiGeografiInnlandDto
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
@@ -13,8 +13,11 @@ import java.net.URI
 @Component
 class KodeverkClient(
     @Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
-    @Qualifier("kodeverkRestClient") private val restClient: RestClient,
+    @Value("\${KODEVERK_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
+    private val restClient = entraIDRestClientFactory.lagMaskinTilMaskinRestKlient(scope)
+
     fun hentPostnummer(): KodeverkDto =
         restClient
             .get()

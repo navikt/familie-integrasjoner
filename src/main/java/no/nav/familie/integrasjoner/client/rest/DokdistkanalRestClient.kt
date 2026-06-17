@@ -1,12 +1,13 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.dokdistkanal.domene.BestemDistribusjonskanalRequest
 import no.nav.familie.integrasjoner.dokdistkanal.domene.BestemDistribusjonskanalResponse
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.UriUtil
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.log.mdc.MDCConstants
 import org.slf4j.MDC
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
@@ -17,8 +18,10 @@ import java.net.URI
 @Component
 class DokdistkanalRestClient(
     @Value("\${DOKDISTKANAL_URL}") private val dokdistkanalUri: URI,
-    @Qualifier("dokdistkanalRestClient") private val restClient: RestClient,
+    @Value("\${DOKDISTKANAL_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt()?.tokenValue }
     val uri = UriUtil.uri(dokdistkanalUri, PATH_BESTEM_DISTRIBUSJONSKANAL)
 
     fun bestemDistribusjonskanal(req: BestemDistribusjonskanalRequest): BestemDistribusjonskanalResponse =

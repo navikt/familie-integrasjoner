@@ -1,11 +1,12 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.førstesidegenerator.domene.PostFørstesideRequest
 import no.nav.familie.integrasjoner.førstesidegenerator.domene.PostFørstesideResponse
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.log.mdc.MDCConstants
 import org.slf4j.MDC
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
@@ -18,8 +19,11 @@ import java.net.URI
 @Component
 class FørstesidegeneratorClient(
     @Value("\${FORSTESIDEGENERATOR_URL}") private val førstesidegeneratorURI: URI,
-    @Qualifier("førstesidegeneratorRestClient") private val restClient: RestClient,
+    @Value("\${FORSTESIDEGENERATOR_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt()?.tokenValue }
+
     fun genererFørsteside(dto: PostFørstesideRequest): PostFørstesideResponse {
         val uri =
             UriComponentsBuilder

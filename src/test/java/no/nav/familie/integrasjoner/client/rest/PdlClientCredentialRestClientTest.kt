@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.Tema
 import org.assertj.core.api.Assertions.assertThat
@@ -17,17 +18,21 @@ class PdlClientCredentialRestClientTest {
     private val requestBodyUriSpec: RestClient.RequestBodyUriSpec = mockk()
     private val requestBodySpec: RestClient.RequestBodySpec = mockk()
     private val responseSpec: RestClient.ResponseSpec = mockk()
+    private val factory: EntraIDRestClientFactory =
+        mockk {
+            every { lagMaskinTilMaskinRestKlient(any()) } returns restClient
+        }
     private val pdlClientCredentialRestClient: PdlClientCredentialRestClient =
         PdlClientCredentialRestClient(
             pdlBaseUrl = URI.create("http://pdl"),
-            restClient = restClient,
+            scope = "dummy-scope",
+            entraIDRestClientFactory = factory,
         )
 
     @Nested
     inner class HentPersonMedRelasjonerOgAdressebeskyttelse {
         @Test
         fun `skal kaste OppslagException når kall mot PDL feiler`() {
-            // Arrange
             every { restClient.post() } returns requestBodyUriSpec
             every { requestBodyUriSpec.uri(any<URI>()) } returns requestBodySpec
             every { requestBodySpec.header(any(), any()) } returns requestBodySpec
@@ -35,7 +40,6 @@ class PdlClientCredentialRestClientTest {
             every { requestBodySpec.retrieve() } returns responseSpec
             every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Noe gikk galt")
 
-            // Act & Assert
             val oppslagException =
                 assertThrows<OppslagException> {
                     pdlClientCredentialRestClient.hentPersonMedRelasjonerOgAdressebeskyttelse(listOf("12345678910"), Tema.BAR)

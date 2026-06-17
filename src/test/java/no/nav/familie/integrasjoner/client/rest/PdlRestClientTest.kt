@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.geografisktilknytning.PdlHentGeografiskTilknytning
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlResponse
@@ -21,10 +22,15 @@ class PdlRestClientTest {
     private val requestBodyUriSpec: RestClient.RequestBodyUriSpec = mockk()
     private val requestBodySpec: RestClient.RequestBodySpec = mockk()
     private val responseSpec: RestClient.ResponseSpec = mockk()
+    private val factory: EntraIDRestClientFactory =
+        mockk {
+            every { lagHybridRestKlient(any(), any()) } returns restClient
+        }
     private val pdlRestClient: PdlRestClient =
         PdlRestClient(
             pdlBaseUrl = URI.create("http://pdl"),
-            restClient = restClient,
+            scope = "dummy-scope",
+            entraIDRestClientFactory = factory,
         )
 
     @Test
@@ -40,7 +46,6 @@ class PdlRestClientTest {
     inner class HentAdressebeskyttelse {
         @Test
         fun `skal kaste OppslagException hvis kall mot PDL feiler`() {
-            // Arrange
             every { restClient.post() } returns requestBodyUriSpec
             every { requestBodyUriSpec.uri(any<URI>()) } returns requestBodySpec
             every { requestBodySpec.header(any(), any()) } returns requestBodySpec
@@ -48,7 +53,6 @@ class PdlRestClientTest {
             every { requestBodySpec.retrieve() } returns responseSpec
             every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Noe gikk galt")
 
-            // Act & Assert
             val oppslagException =
                 assertThrows<OppslagException> {
                     pdlRestClient.hentAdressebeskyttelse("12345678910", Tema.BAR)
@@ -61,9 +65,6 @@ class PdlRestClientTest {
         }
     }
 
-    /**
-     * Hentet fra PDL dokumentasjonen
-     */
     val jsonFeilmelding =
         """
         {

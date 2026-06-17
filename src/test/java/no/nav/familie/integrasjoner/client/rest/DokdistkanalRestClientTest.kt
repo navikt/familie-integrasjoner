@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.dokdistkanal.domene.BestemDistribusjonskanalRequest
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.Tema
@@ -18,17 +19,21 @@ class DokdistkanalRestClientTest {
     private val requestBodyUriSpec: RestClient.RequestBodyUriSpec = mockk()
     private val requestBodySpec: RestClient.RequestBodySpec = mockk()
     private val responseSpec: RestClient.ResponseSpec = mockk()
+    private val factory: EntraIDRestClientFactory =
+        mockk {
+            every { lagHybridRestKlient(any(), any()) } returns restClient
+        }
     private val dokdistkanalRestClient: DokdistkanalRestClient =
         DokdistkanalRestClient(
             dokdistkanalUri = URI.create("http://dokdistkanal"),
-            restClient = restClient,
+            scope = "dummy-scope",
+            entraIDRestClientFactory = factory,
         )
 
     @Nested
     inner class BestemDistribusjonskanal {
         @Test
         fun `skal kaste OppslagException ved feil mot dokdistkanal`() {
-            // Arrange
             every { restClient.post() } returns requestBodyUriSpec
             every { requestBodyUriSpec.uri(any<URI>()) } returns requestBodySpec
             every { requestBodySpec.header(any(), any()) } returns requestBodySpec
@@ -36,7 +41,6 @@ class DokdistkanalRestClientTest {
             every { requestBodySpec.retrieve() } returns responseSpec
             every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Noe gikk galt")
 
-            // Act & Assert
             val oppslagException =
                 assertThrows<OppslagException> {
                     dokdistkanalRestClient.bestemDistribusjonskanal(

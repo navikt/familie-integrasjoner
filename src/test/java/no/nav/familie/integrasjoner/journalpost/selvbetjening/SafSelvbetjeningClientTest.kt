@@ -6,6 +6,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.safselvbetjening.generated.HentDokumentoversikt
 import no.nav.familie.integrasjoner.safselvbetjening.generated.enums.Tema
 import org.assertj.core.api.Assertions.assertThat
@@ -18,18 +19,22 @@ import java.net.URI
 class SafSelvbetjeningClientTest {
     private val safSelvbetjeningGraphQLClient: GraphQLWebClient = mockk()
     private val restClient: RestClient = mockk()
+    private val factory: EntraIDRestClientFactory =
+        mockk {
+            every { lagHybridRestKlient(any(), any()) } returns restClient
+        }
     private val safSelvbetjeningClient: SafSelvbetjeningClient =
         SafSelvbetjeningClient(
             safSelvbetjeningGraphQLClient = safSelvbetjeningGraphQLClient,
-            restClient = restClient,
             safSelvbetjeningURI = URI.create("https://test.no"),
+            scope = "dummy-scope",
+            entraIDRestClientFactory = factory,
         )
 
     @Nested
     inner class HentDokumentoversiktForIdent {
         @Test
         fun `skal returnere dokumentoversikt for ident og tema når respons ikke inneholder feil og data ikke er null`() {
-            // Arrange
             val ident = "12345678901"
             val tema = Tema.BAR
             val respons =
@@ -40,16 +45,13 @@ class SafSelvbetjeningClientTest {
 
             coEvery { safSelvbetjeningGraphQLClient.execute(any<HentDokumentoversikt>()) } returns respons
 
-            // Act
             val dokumentoversiktResultat = runBlocking { safSelvbetjeningClient.hentDokumentoversiktForIdent(ident, tema) }
 
-            // Assert
             assertThat(dokumentoversiktResultat).isNotNull
         }
 
         @Test
         fun `skal kaste exception dersom respons inneholder feil`() {
-            // Arrange
             val ident = "12345678901"
             val tema = Tema.BAR
             val respons =
@@ -60,7 +62,6 @@ class SafSelvbetjeningClientTest {
 
             coEvery { safSelvbetjeningGraphQLClient.execute(any<HentDokumentoversikt>()) } returns respons
 
-            // Act & Assert
             val exception =
                 assertThrows<SafSelvbetjeningException> {
                     runBlocking { safSelvbetjeningClient.hentDokumentoversiktForIdent(ident, tema) }
@@ -71,7 +72,6 @@ class SafSelvbetjeningClientTest {
 
         @Test
         fun `skal kaste feil dersom respons ikke inneholder feil men data er null`() {
-            // Arrange
             val ident = "12345678901"
             val tema = Tema.BAR
             val respons =
@@ -82,7 +82,6 @@ class SafSelvbetjeningClientTest {
 
             coEvery { safSelvbetjeningGraphQLClient.execute(any<HentDokumentoversikt>()) } returns respons
 
-            // Act & Assert
             val exception =
                 assertThrows<SafSelvbetjeningException> {
                     runBlocking { safSelvbetjeningClient.hentDokumentoversiktForIdent(ident, tema) }
@@ -96,7 +95,6 @@ class SafSelvbetjeningClientTest {
     inner class HentDokument {
         @Test
         fun `skal kaste feil dersom henting av dokument feiler`() {
-            // Arrange
             val requestHeadersUriSpec: RestClient.RequestHeadersUriSpec<*> = mockk()
             val requestHeadersSpec: RestClient.RequestHeadersSpec<*> = mockk()
             val responseSpec: RestClient.ResponseSpec = mockk()
@@ -107,7 +105,6 @@ class SafSelvbetjeningClientTest {
             every { requestHeadersSpec.retrieve() } returns responseSpec
             every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Error")
 
-            // Act & Assert
             val exception =
                 assertThrows<SafSelvbetjeningException> {
                     safSelvbetjeningClient.hentDokument("123", "456")

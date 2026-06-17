@@ -16,7 +16,7 @@ import java.net.URI
 class ArbeidsfordelingRestClient(
     @Value("\${NORG2_URL}")
     private val norg2Uri: URI,
-    @Qualifier("utenAuthRestClient")
+    @Qualifier("utenAuthHttpClient")
     private val restClient: RestClient,
 ) {
     fun hentEnhet(geografiskOmråde: String): NavKontorEnhet =

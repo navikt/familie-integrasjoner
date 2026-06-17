@@ -1,9 +1,10 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.aareg.domene.Arbeidsforhold
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.log.NavHttpHeaders
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -20,8 +21,11 @@ import java.time.LocalDate
 @Component
 class AaregRestClient(
     @Value("\${AAREG_URL}") private val aaregUrl: URI,
-    @Qualifier("aaregRestClient") private val restClient: RestClient,
+    @Value("\${AAREG_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt()?.tokenValue }
+
     fun hentArbeidsforhold(
         personIdent: String,
         ansettelsesperiodeFom: LocalDate,

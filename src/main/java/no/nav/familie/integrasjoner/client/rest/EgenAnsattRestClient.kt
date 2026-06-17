@@ -12,7 +12,7 @@ import java.net.URI
 @Component
 class EgenAnsattRestClient(
     @Value("\${EGEN_ANSATT_URL}") private val uri: URI,
-    @Qualifier("utenAuthRestClient") private val restClient: RestClient,
+    @Qualifier("utenAuthHttpClient") private val restClient: RestClient,
 ) {
     private val egenAnsattUri: URI = UriUtil.uri(uri, "skjermet")
     private val egenAnsattBulkUri: URI = UriUtil.uri(uri, "skjermetBulk")

@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.client.rest
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
 import no.nav.familie.integrasjoner.journalpost.internal.SafError
@@ -31,10 +32,15 @@ class SafRestClientTest {
     private val requestBodyUriSpec: RestClient.RequestBodyUriSpec = mockk()
     private val requestBodySpec: RestClient.RequestBodySpec = mockk()
     private val responseSpec: RestClient.ResponseSpec = mockk()
+    private val factory: EntraIDRestClientFactory =
+        mockk {
+            every { lagHybridRestKlient(any(), any()) } returns restClient
+        }
     private val safRestClient: SafRestClient =
         SafRestClient(
             safBaseUrl = URI.create("http://saf"),
-            restClient = restClient,
+            scope = "dummy-scope",
+            entraIDRestClientFactory = factory,
         )
 
     @BeforeEach
@@ -51,7 +57,6 @@ class SafRestClientTest {
 
     @Test
     fun finnJournalposter() {
-        // Arrange
         val safJournalpostRequest =
             SafJournalpostRequest(
                 SafRequestForBruker(
@@ -72,13 +77,11 @@ class SafRestClientTest {
 
         every { responseSpec.body(any<ParameterizedTypeReference<SafJournalpostResponse<SafJournalpostBrukerData>>>()) } returns response
 
-        // Act
         val journalpostForbiddenException =
             assertThrows<JournalpostForbiddenException> {
                 safRestClient.finnJournalposter(safJournalpostRequest)
             }
 
-        // Assert
         assertThat(journalpostForbiddenException.message).isEqualTo("Feilmelding")
     }
 }

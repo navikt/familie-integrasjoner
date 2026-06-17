@@ -1,12 +1,14 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import io.micrometer.core.instrument.Metrics
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.client.QueryParamUtil.toQueryParams
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.oppgave.OppgaveByttEnhetOgTilordnetRessurs
 import no.nav.familie.integrasjoner.oppgave.domene.LIMIT_MOT_OPPGAVE
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveRequest
 import no.nav.familie.integrasjoner.oppgave.domene.toDto
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
@@ -16,7 +18,6 @@ import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.log.mdc.MDCConstants
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
@@ -31,8 +32,10 @@ import kotlin.math.min
 @Component
 class OppgaveRestClient(
     @Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: URI,
-    @Qualifier("oppgaveRestClient") private val restClient: RestClient,
+    @Value("\${OPPGAVE_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt()?.tokenValue }
     private val returnerteIngenOppgaver = Metrics.counter("oppslag.oppgave.response", "antall.oppgaver", "ingen")
     private val returnerteMerEnnEnOppgave = Metrics.counter("oppslag.oppgave.response", "antall.oppgaver", "flerEnnEn")
 

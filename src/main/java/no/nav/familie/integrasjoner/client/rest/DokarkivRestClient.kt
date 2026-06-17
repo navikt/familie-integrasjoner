@@ -1,18 +1,19 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.dokarkiv.client.KanIkkeFerdigstilleJournalpostException
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.FerdigstillJournalPost
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostResponse
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.kontrakter.felles.dokarkiv.AvsluttSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.GjenåpneSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostResponse
 import no.nav.familie.log.NavHttpHeaders
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -28,8 +29,11 @@ import java.net.URI
 @Component
 class DokarkivRestClient(
     @Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
-    @Qualifier("dokarkivRestClient") private val restClient: RestClient,
+    @Value("\${DOKARKIV_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt()?.tokenValue }
+
     fun lagJournalpostUri(ferdigstill: Boolean): URI =
         UriComponentsBuilder
             .fromUri(dokarkivUrl)

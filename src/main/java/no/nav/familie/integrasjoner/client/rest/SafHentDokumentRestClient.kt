@@ -1,10 +1,11 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.config.incrementLoggFeil
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
 import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
-import org.springframework.beans.factory.annotation.Qualifier
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -22,8 +23,10 @@ import java.net.URI
 @Service
 class SafHentDokumentRestClient(
     @Value("\${SAF_URL}") safBaseUrl: URI,
-    @Qualifier("safRestClient") private val restClient: RestClient,
+    @Value("\${SAF_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt()?.tokenValue }
     private val safHentdokumentUri = UriComponentsBuilder.fromUri(safBaseUrl).path(PATH_HENT_DOKUMENT)
 
     fun hentDokument(

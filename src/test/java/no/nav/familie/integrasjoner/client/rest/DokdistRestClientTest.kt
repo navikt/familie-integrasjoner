@@ -2,6 +2,7 @@ package no.nav.familie.integrasjoner.client.rest
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.dokdist.domene.DistribuerJournalpostRequestTo
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.Fagsystem
@@ -19,24 +20,27 @@ class DokdistRestClientTest {
     private val requestBodyUriSpec: RestClient.RequestBodyUriSpec = mockk()
     private val requestBodySpec: RestClient.RequestBodySpec = mockk()
     private val responseSpec: RestClient.ResponseSpec = mockk()
+    private val factory: EntraIDRestClientFactory =
+        mockk {
+            every { lagHybridRestKlient(any(), any()) } returns restClient
+        }
     private val dokdistRestClient: DokdistRestClient =
         DokdistRestClient(
             dokdistUri = URI.create("http://dokdist"),
-            restClient = restClient,
+            scope = "dummy-scope",
+            entraIDRestClientFactory = factory,
         )
 
     @Nested
     inner class DistribuerJournalpost {
         @Test
         fun `skal kaste OppslagException når kall mot dokdist feiler`() {
-            // Arrange
             every { restClient.post() } returns requestBodyUriSpec
             every { requestBodyUriSpec.uri(any<URI>()) } returns requestBodySpec
             every { requestBodySpec.body(any()) } returns requestBodySpec
             every { requestBodySpec.retrieve() } returns responseSpec
             every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Noe gikk galt")
 
-            // Act & Assert
             val oppslagException =
                 assertThrows<OppslagException> {
                     dokdistRestClient.distribuerJournalpost(

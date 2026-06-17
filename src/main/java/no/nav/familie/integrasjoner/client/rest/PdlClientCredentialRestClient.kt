@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.UriUtil
 import no.nav.familie.integrasjoner.felles.graphqlQuery
@@ -10,7 +11,6 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonBolkReque
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedRelasjonerOgAdressebeskyttelse
 import no.nav.familie.kontrakter.felles.Tema
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -27,8 +27,10 @@ import java.net.URI
 @Service
 class PdlClientCredentialRestClient(
     @Value("\${PDL_URL}") pdlBaseUrl: URI,
-    @Qualifier("pdlClientCredentialRestClient") private val restClient: RestClient,
+    @Value("\${PDL_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
+    private val restClient = entraIDRestClientFactory.lagMaskinTilMaskinRestKlient(scope)
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
     private val logger = LoggerFactory.getLogger(PdlClientCredentialRestClient::class.java)
     private val secureLogger = LoggerFactory.getLogger("secureLogger")

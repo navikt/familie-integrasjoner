@@ -1,13 +1,13 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.kontrakter.felles.dokarkiv.BulkOppdaterLogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggResponse
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpStatusCodeException
@@ -19,8 +19,11 @@ import java.net.URI
 @Component
 class DokarkivLogiskVedleggRestClient(
     @Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
-    @Qualifier("dokarkivRestClient") private val restClient: RestClient,
+    @Value("\${DOKARKIV_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt()?.tokenValue }
+
     fun opprettLogiskVedlegg(
         dokumentInfoId: String,
         request: LogiskVedleggRequest,
@@ -35,7 +38,7 @@ class DokarkivLogiskVedleggRestClient(
             return restClient
                 .post()
                 .uri(uri)
-                .headers { it.putAll(headers()) }
+                .header(NAV_CALL_ID, MDCOperations.getCallId())
                 .body(request)
                 .retrieve()
                 .body<LogiskVedleggResponse>()!!
@@ -66,7 +69,7 @@ class DokarkivLogiskVedleggRestClient(
             restClient
                 .put()
                 .uri(uri)
-                .headers { it.putAll(headers()) }
+                .header(NAV_CALL_ID, MDCOperations.getCallId())
                 .body(request)
                 .retrieve()
                 .body<Any>()
@@ -97,7 +100,7 @@ class DokarkivLogiskVedleggRestClient(
             restClient
                 .delete()
                 .uri(uri)
-                .headers { it.putAll(headers()) }
+                .header(NAV_CALL_ID, MDCOperations.getCallId())
                 .retrieve()
                 .body<String>()
         } catch (e: RuntimeException) {
@@ -117,12 +120,6 @@ class DokarkivLogiskVedleggRestClient(
         private const val PATH_LOGISKVEDLEGG = "rest/journalpostapi/v1/dokumentInfo/{dokumentInfo}/logiskVedlegg/"
         private const val PATH_OPPDATER_LOGISKVEDLEGG = "rest/journalpostapi/v1/dokumentInfo/{dokumentInfo}/logiskVedlegg"
         private const val PATH_SLETT_LOGISK_VEDLEGG = "$PATH_LOGISKVEDLEGG/{logiskVedleggId}"
-
         private const val NAV_CALL_ID = "Nav-Callid"
-
-        private fun headers(): HttpHeaders =
-            HttpHeaders().apply {
-                add(NAV_CALL_ID, MDCOperations.getCallId())
-            }
     }
 }

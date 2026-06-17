@@ -1,6 +1,7 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import io.micrometer.core.instrument.Metrics
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.felles.UriUtil
 import no.nav.familie.integrasjoner.felles.graphqlQuery
@@ -21,9 +22,9 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonRequest
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonRequestVariables
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlResponse
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.kontrakter.felles.Tema
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -36,8 +37,10 @@ import java.net.URI
 @Service
 class PdlRestClient(
     @Value("\${PDL_URL}") pdlBaseUrl: URI,
-    @Qualifier("pdlRestClient") private val restClient: RestClient,
+    @Value("\${PDL_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt()?.tokenValue }
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
     private val logger = LoggerFactory.getLogger(PdlRestClient::class.java)
     private val secureLogger = LoggerFactory.getLogger("secureLogger")

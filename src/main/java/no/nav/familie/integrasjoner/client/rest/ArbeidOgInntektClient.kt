@@ -16,7 +16,7 @@ import java.net.URI
 @Component
 class ArbeidOgInntektClient(
     @Value("\${ARBEID_INNTEKT_URL}") private val uri: URI,
-    @Qualifier("utenAuthRestClient") private val restClient: RestClient,
+    @Qualifier("utenAuthHttpClient") private val restClient: RestClient,
 ) {
     private val redirectUri =
         UriComponentsBuilder
