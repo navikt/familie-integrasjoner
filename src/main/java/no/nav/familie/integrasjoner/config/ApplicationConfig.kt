@@ -5,6 +5,7 @@ import no.nav.familie.log.filter.LogFilter
 import no.nav.familie.log.filter.RequestTimeFilter
 import no.nav.familie.restklient.client.RetryOAuth2HttpClient
 import no.nav.familie.restklient.config.NaisProxyCustomizer
+import no.nav.familie.restklient.config.RestTemplateSts
 import no.nav.familie.sikkerhet.context.FamilieFellesSpringSecurityKonfigurasjon
 import no.nav.security.token.support.client.core.http.OAuth2HttpClient
 import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client
@@ -31,7 +32,7 @@ import java.time.temporal.ChronoUnit
 @ConfigurationPropertiesScan
 @EnableOAuth2Client(cacheEnabled = true)
 @EnableScheduling
-@Import(NaisProxyCustomizer::class, FamilieFellesSpringSecurityKonfigurasjon::class)
+@Import(NaisProxyCustomizer::class, FamilieFellesSpringSecurityKonfigurasjon::class, RestTemplateSts::class)
 class ApplicationConfig {
     private val logger = LoggerFactory.getLogger(ApplicationConfig::class.java)
 
