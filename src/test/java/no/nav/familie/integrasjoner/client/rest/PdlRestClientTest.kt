@@ -4,8 +4,6 @@ import io.mockk.every
 import io.mockk.mockk
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.geografisktilknytning.PdlHentGeografiskTilknytning
-import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedAdressebeskyttelse
-import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonRequest
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlResponse
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.jsonMapper
@@ -13,17 +11,21 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.web.client.RestOperations
-import org.springframework.web.client.exchange
+import org.springframework.web.client.RestClient
 import tools.jackson.module.kotlin.readValue
 import java.net.URI
 
 class PdlRestClientTest {
-    private val restOperations: RestOperations = mockk()
-    private val pdlRestClient: PdlRestClient = PdlRestClient(pdlBaseUrl = URI.create("pdl"), restTemplate = restOperations)
+    private val restClient: RestClient = mockk()
+    private val requestBodyUriSpec: RestClient.RequestBodyUriSpec = mockk()
+    private val requestBodySpec: RestClient.RequestBodySpec = mockk()
+    private val responseSpec: RestClient.ResponseSpec = mockk()
+    private val pdlRestClient: PdlRestClient =
+        PdlRestClient(
+            pdlBaseUrl = URI.create("http://pdl"),
+            restClient = restClient,
+        )
 
     @Test
     fun `skal parse harUnathorizedFeil`() {
@@ -39,7 +41,12 @@ class PdlRestClientTest {
         @Test
         fun `skal kaste OppslagException hvis kall mot PDL feiler`() {
             // Arrange
-            every { restOperations.exchange<PdlResponse<PdlPersonMedAdressebeskyttelse>>(any<URI>(), eq(HttpMethod.POST), any<HttpEntity<PdlPersonRequest>>()) } throws RuntimeException("Noe gikk galt")
+            every { restClient.post() } returns requestBodyUriSpec
+            every { requestBodyUriSpec.uri(any<URI>()) } returns requestBodySpec
+            every { requestBodySpec.header(any(), any()) } returns requestBodySpec
+            every { requestBodySpec.body(any()) } returns requestBodySpec
+            every { requestBodySpec.retrieve() } returns responseSpec
+            every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Noe gikk galt")
 
             // Act & Assert
             val oppslagException =

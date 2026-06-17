@@ -9,18 +9,18 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.web.client.RestOperations
-import org.springframework.web.client.exchange
+import org.springframework.web.client.RestClient
 import java.net.URI
 
 class AzureGraphRestClientTest {
-    private val restOperations: RestOperations = mockk()
+    private val restClient: RestClient = mockk()
+    private val requestHeadersUriSpec: RestClient.RequestHeadersUriSpec<*> = mockk()
+    private val requestHeadersSpec: RestClient.RequestHeadersSpec<*> = mockk()
+    private val responseSpec: RestClient.ResponseSpec = mockk()
     private val azureGraphRestClient: AzureGraphRestClient =
         AzureGraphRestClient(
-            restTemplate = restOperations,
+            restClient = restClient,
             aadGraphURI = URI("http://localhost:8080"),
         )
 
@@ -29,7 +29,11 @@ class AzureGraphRestClientTest {
         @Test
         fun `skal kaste OppslagException ved feil mot azure`() {
             // Arrange
-            every { restOperations.exchange<AzureAdBrukere>(any<URI>(), eq(HttpMethod.GET), any<HttpEntity<Void>>()) } throws RuntimeException("Noe gikk galt")
+            every { restClient.get() } returns requestHeadersUriSpec
+            every { requestHeadersUriSpec.uri(any<URI>()) } returns requestHeadersSpec
+            every { requestHeadersSpec.header(any(), any()) } returns requestHeadersSpec
+            every { requestHeadersSpec.retrieve() } returns responseSpec
+            every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Noe gikk galt")
 
             // Act & Assert
             val oppslagException = assertThrows<OppslagException> { azureGraphRestClient.finnSaksbehandler("1234") }
@@ -46,7 +50,10 @@ class AzureGraphRestClientTest {
         @Test
         fun `skal kaste OppslagException ved feil mot azure`() {
             // Arrange
-            every { restOperations.exchange<AzureAdBruker>(any<URI>(), eq(HttpMethod.GET), any<HttpEntity<Void>>()) } throws RuntimeException("Noe gikk galt")
+            every { restClient.get() } returns requestHeadersUriSpec
+            every { requestHeadersUriSpec.uri(any<URI>()) } returns requestHeadersSpec
+            every { requestHeadersSpec.retrieve() } returns responseSpec
+            every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Noe gikk galt")
 
             // Act & Assert
             val oppslagException = assertThrows<OppslagException> { azureGraphRestClient.hentSaksbehandler("1234") }

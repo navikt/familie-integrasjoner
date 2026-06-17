@@ -3,28 +3,36 @@ package no.nav.familie.integrasjoner.arbeidsfordeling
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.familie.integrasjoner.felles.OppslagException
-import no.nav.familie.kontrakter.felles.navkontor.NavKontorEnhet
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.web.client.RestOperations
-import org.springframework.web.client.exchange
+import org.springframework.web.client.RestClient
 import java.net.URI
 
 class ArbeidsfordelingRestClientTest {
-    private val restOperations: RestOperations = mockk()
-    private val arbeidsfordelingRestClient: ArbeidsfordelingRestClient = ArbeidsfordelingRestClient(URI.create("norg2"), restOperations)
+    private val restClient: RestClient = mockk()
+    private val requestHeadersUriSpec: RestClient.RequestHeadersUriSpec<*> = mockk()
+    private val requestBodyUriSpec: RestClient.RequestBodyUriSpec = mockk()
+    private val requestBodySpec: RestClient.RequestBodySpec = mockk()
+    private val requestHeadersSpec: RestClient.RequestHeadersSpec<*> = mockk()
+    private val responseSpec: RestClient.ResponseSpec = mockk()
+    private val arbeidsfordelingRestClient: ArbeidsfordelingRestClient =
+        ArbeidsfordelingRestClient(
+            norg2Uri = URI.create("http://norg2"),
+            restClient = restClient,
+        )
 
     @Nested
     inner class HentEnhet {
         @Test
         fun `skal kaste OppslagException ved feil mot Norg2`() {
             // Arrange
-            every { restOperations.exchange<NavKontorEnhet>(any<URI>(), eq(HttpMethod.GET), any<HttpEntity<Void>>()) } throws RuntimeException("Noe gikk galt")
+            every { restClient.get() } returns requestHeadersUriSpec
+            every { requestHeadersUriSpec.uri(any<URI>()) } returns requestHeadersSpec
+            every { requestHeadersSpec.retrieve() } returns responseSpec
+            every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Noe gikk galt")
 
             // Act & Assert
             val oppslagException = assertThrows<OppslagException> { arbeidsfordelingRestClient.hentEnhet("oslo") }
@@ -41,7 +49,10 @@ class ArbeidsfordelingRestClientTest {
         @Test
         fun `skal kaste OppslagException ved feil mot Norg2`() {
             // Arrange
-            every { restOperations.exchange<NavKontorEnhet>(any<URI>(), eq(HttpMethod.GET), any<HttpEntity<Void>>()) } throws RuntimeException("Noe gikk galt")
+            every { restClient.get() } returns requestHeadersUriSpec
+            every { requestHeadersUriSpec.uri(any<URI>()) } returns requestHeadersSpec
+            every { requestHeadersSpec.retrieve() } returns responseSpec
+            every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Noe gikk galt")
 
             // Act & Assert
             val oppslagException = assertThrows<OppslagException> { arbeidsfordelingRestClient.hentNavkontor("1234") }
@@ -58,7 +69,11 @@ class ArbeidsfordelingRestClientTest {
         @Test
         fun `skal kaste OppslagException ved feil mot Norg2`() {
             // Arrange
-            every { restOperations.exchange<List<NavKontorEnhet>>(any<URI>(), eq(HttpMethod.POST), any<HttpEntity<ArbeidsfordelingKriterie>>()) } throws RuntimeException("Noe gikk galt")
+            every { restClient.post() } returns requestBodyUriSpec
+            every { requestBodyUriSpec.uri(any<URI>()) } returns requestBodySpec
+            every { requestBodySpec.body(any()) } returns requestBodySpec
+            every { requestBodySpec.retrieve() } returns responseSpec
+            every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Noe gikk galt")
 
             // Act & Assert
             val oppslagException =

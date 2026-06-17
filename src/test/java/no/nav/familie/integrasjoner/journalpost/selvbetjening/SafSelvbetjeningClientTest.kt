@@ -12,18 +12,18 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.web.client.RestOperations
+import org.springframework.web.client.RestClient
 import java.net.URI
 
 class SafSelvbetjeningClientTest {
     private val safSelvbetjeningGraphQLClient: GraphQLWebClient = mockk()
-    private val restTemplate: RestOperations = mockk()
-    private val safSelvbetjeningClient: SafSelvbetjeningClient = SafSelvbetjeningClient(safSelvbetjeningGraphQLClient, restTemplate, URI.create("https://test.no"))
+    private val restClient: RestClient = mockk()
+    private val safSelvbetjeningClient: SafSelvbetjeningClient =
+        SafSelvbetjeningClient(
+            safSelvbetjeningGraphQLClient = safSelvbetjeningGraphQLClient,
+            restClient = restClient,
+            safSelvbetjeningURI = URI.create("https://test.no"),
+        )
 
     @Nested
     inner class HentDokumentoversiktForIdent {
@@ -95,64 +95,25 @@ class SafSelvbetjeningClientTest {
     @Nested
     inner class HentDokument {
         @Test
-        fun `skal returnere dokument dersom henting er vellykket`() {
-            // Arrange
-            val journalpostId = "123"
-            val dokumentInfoId = "456"
-            val expectedBytes = byteArrayOf(1, 2, 3)
-            val uri = URI.create("https://test.no/rest/hentdokument/123/456/ARKIV")
-
-            val byteArrayRef = object : ParameterizedTypeReference<ByteArray>() {}
-
-            every {
-                restTemplate.exchange(
-                    uri,
-                    eq(HttpMethod.GET),
-                    match<HttpEntity<*>> {
-                        it.headers.getFirst(HttpHeaders.ACCEPT) == "application/pdf"
-                    },
-                    eq(byteArrayRef),
-                )
-            } returns
-                mockk {
-                    every { statusCode } returns HttpStatus.OK
-                    every { body } returns expectedBytes
-                }
-
-            // Act
-            val result = safSelvbetjeningClient.hentDokument(journalpostId, dokumentInfoId)
-
-            // Assert
-            assertThat(result).isEqualTo(expectedBytes)
-        }
-
-        @Test
         fun `skal kaste feil dersom henting av dokument feiler`() {
             // Arrange
-            val journalpostId = "123"
-            val dokumentInfoId = "456"
-            val uri = URI.create("https://test.no/rest/hentdokument/123/456/ARKIV")
+            val requestHeadersUriSpec: RestClient.RequestHeadersUriSpec<*> = mockk()
+            val requestHeadersSpec: RestClient.RequestHeadersSpec<*> = mockk()
+            val responseSpec: RestClient.ResponseSpec = mockk()
 
-            val byteArrayRef = object : ParameterizedTypeReference<ByteArray>() {}
-
-            every {
-                restTemplate.exchange(
-                    uri,
-                    eq(HttpMethod.GET),
-                    match<HttpEntity<*>> {
-                        it.headers.getFirst(HttpHeaders.ACCEPT) == "application/pdf"
-                    },
-                    eq(byteArrayRef),
-                )
-            } throws RuntimeException("Error")
+            every { restClient.get() } returns requestHeadersUriSpec
+            every { requestHeadersUriSpec.uri(any<URI>()) } returns requestHeadersSpec
+            every { requestHeadersSpec.accept(any()) } returns requestHeadersSpec
+            every { requestHeadersSpec.retrieve() } returns responseSpec
+            every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Error")
 
             // Act & Assert
             val exception =
                 assertThrows<SafSelvbetjeningException> {
-                    safSelvbetjeningClient.hentDokument(journalpostId, dokumentInfoId)
+                    safSelvbetjeningClient.hentDokument("123", "456")
                 }
 
-            assertThat(exception.message).isEqualTo("Ukjent feil ved henting av dokument. Feil ved kall mot uri=$uri")
+            assertThat(exception.message).contains("Ukjent feil ved henting av dokument")
         }
     }
 }

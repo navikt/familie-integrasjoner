@@ -22,22 +22,31 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.slf4j.MDC
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.client.RestOperations
-import org.springframework.web.client.exchange
+import org.springframework.core.ParameterizedTypeReference
+import org.springframework.web.client.RestClient
 import java.net.URI
 
 class SafRestClientTest {
-    private val restOperations: RestOperations = mockk()
-    private val safRestClient: SafRestClient = SafRestClient(safBaseUrl = URI.create("pdl"), restTemplate = restOperations)
+    private val restClient: RestClient = mockk()
+    private val requestBodyUriSpec: RestClient.RequestBodyUriSpec = mockk()
+    private val requestBodySpec: RestClient.RequestBodySpec = mockk()
+    private val responseSpec: RestClient.ResponseSpec = mockk()
+    private val safRestClient: SafRestClient =
+        SafRestClient(
+            safBaseUrl = URI.create("http://saf"),
+            restClient = restClient,
+        )
 
     @BeforeEach
     fun setUp() {
         mockkStatic(MDC::class)
         every { MDC.get(MDC_CALL_ID) } returns "123-321-412"
+
+        every { restClient.post() } returns requestBodyUriSpec
+        every { requestBodyUriSpec.uri(any<URI>()) } returns requestBodySpec
+        every { requestBodySpec.header(any(), any()) } returns requestBodySpec
+        every { requestBodySpec.body(any()) } returns requestBodySpec
+        every { requestBodySpec.retrieve() } returns responseSpec
     }
 
     @Test
@@ -61,15 +70,7 @@ class SafRestClientTest {
                 errors = listOf(SafError(message = "Feilmelding", extensions = SafExtension(code = SafErrorCode.forbidden, classification = "Mangler tilgang"))),
             )
 
-        every {
-            restOperations.exchange<SafJournalpostResponse<SafJournalpostBrukerData>>(
-                url = URI("pdl/graphql"),
-                method = eq(HttpMethod.POST),
-                requestEntity = any<HttpEntity<SafJournalpostRequest>>(),
-            )
-        } answers {
-            ResponseEntity(response, HttpStatus.OK)
-        }
+        every { responseSpec.body(any<ParameterizedTypeReference<SafJournalpostResponse<SafJournalpostBrukerData>>>()) } returns response
 
         // Act
         val journalpostForbiddenException =
