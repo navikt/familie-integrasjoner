@@ -1,18 +1,3 @@
-no.nav.security.jwt:
-  client:
-    registration:
-      saf-selvbetjening-onbehalf-of:
-        resource-url: ${SAF_SELVBETJENING_URL}
-        token-endpoint-url: ${TOKEN_X_WELL_KNOWN_URL}
-        grant-type: urn:ietf:params:oauth:grant-type:token-exchange
-        scope: ${SAF_SCOPE}
-        token-exchange:
-          audience: ${SAF_AUDIENCE}
-        authentication:
-          client-id: ${TOKEN_X_CLIENT_ID}
-          client-auth-method: private_key_jwt
-          client-jwk: ${TOKEN_X_PRIVATE_JWK}
-
 tilgang:
   kode6:
     rolle-id: "a1b518e2-3947-478d-8929-e5d685c47cac"
