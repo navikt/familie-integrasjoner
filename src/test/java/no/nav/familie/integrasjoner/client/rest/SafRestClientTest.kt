@@ -50,8 +50,8 @@ class SafRestClientTest {
 
         every { restClient.post() } returns requestBodyUriSpec
         every { requestBodyUriSpec.uri(any<URI>()) } returns requestBodySpec
-        every { requestBodySpec.header(any(), any()) } returns requestBodySpec
-        every { requestBodySpec.body(any()) } returns requestBodySpec
+        every { requestBodySpec.header(any<String>(), *anyVararg<String>()) } returns requestBodySpec
+        every { requestBodySpec.body(any<Any>()) } returns requestBodySpec
         every { requestBodySpec.retrieve() } returns responseSpec
     }
 
@@ -75,6 +75,7 @@ class SafRestClientTest {
                 errors = listOf(SafError(message = "Feilmelding", extensions = SafExtension(code = SafErrorCode.forbidden, classification = "Mangler tilgang"))),
             )
 
+        every { responseSpec.hint(any(), any()) } returns responseSpec
         every { responseSpec.body(any<ParameterizedTypeReference<SafJournalpostResponse<SafJournalpostBrukerData>>>()) } returns response
 
         val journalpostForbiddenException =

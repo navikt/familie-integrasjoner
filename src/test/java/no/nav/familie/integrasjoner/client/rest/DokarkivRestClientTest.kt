@@ -21,10 +21,7 @@ import org.springframework.web.client.RestClientResponseException
 import java.net.URI
 
 class DokarkivRestClientTest {
-    private val restClient: RestClient = mockk()
-    private val requestBodyUriSpec: RestClient.RequestBodyUriSpec = mockk()
-    private val requestBodySpec: RestClient.RequestBodySpec = mockk()
-    private val responseSpec: RestClient.ResponseSpec = mockk()
+    private val restClient: RestClient = mockk(relaxed = true)
     private val factory: EntraIDRestClientFactory =
         mockk {
             every { lagHybridRestKlient(any(), any()) } returns restClient
@@ -51,14 +48,16 @@ class DokarkivRestClientTest {
     inner class FerdigstillJournalpost {
         @Test
         fun `skal kaste OppslagException ved feil mot dokarkiv`() {
-            // Arrange
-            every { restClient.patch() } returns requestBodyUriSpec
-            every { requestBodyUriSpec.uri(any<URI>()) } returns requestBodySpec
-            every { requestBodySpec.headers(any()) } returns requestBodySpec
-            every { requestBodySpec.body(any()) } returns requestBodySpec
-            every { requestBodySpec.retrieve() } returns responseSpec
-            every { responseSpec.hint(any(), any()) } returns responseSpec
-            every { responseSpec.body(any<ParameterizedTypeReference<String>>()) } throws
+            every {
+                restClient
+                    .patch()
+                    .uri(any<URI>())
+                    .headers(any())
+                    .body(any<Any>())
+                    .retrieve()
+                    .hint(any(), any())
+                    .body(any<ParameterizedTypeReference<String>>())
+            } throws
                 RestClientResponseException(
                     "Noe gikk galt",
                     HttpStatus.NOT_FOUND,
@@ -68,8 +67,10 @@ class DokarkivRestClientTest {
                     null,
                 )
 
-            // Act & Assert
-            val oppslagException = assertThrows<OppslagException> { dokarkivRestClient.ferdigstillJournalpost("1234", "oslo", "4321") }
+            val oppslagException =
+                assertThrows<OppslagException> {
+                    dokarkivRestClient.ferdigstillJournalpost("1234", "oslo", "4321")
+                }
 
             assertThat(oppslagException.message).isEqualTo("Feil ved ferdigstilling av journalpost")
             assertThat(oppslagException.kilde).isEqualTo("dokarkiv.ferdigstill.feil")
