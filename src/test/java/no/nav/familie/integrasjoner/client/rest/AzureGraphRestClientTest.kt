@@ -3,8 +3,6 @@ package no.nav.familie.integrasjoner.client.rest
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
-import no.nav.familie.integrasjoner.azure.domene.AzureAdBruker
-import no.nav.familie.integrasjoner.azure.domene.AzureAdBrukere
 import no.nav.familie.integrasjoner.felles.OppslagException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
@@ -15,9 +13,7 @@ import org.springframework.web.client.RestClient
 import java.net.URI
 
 class AzureGraphRestClientTest {
-    private val restClient: RestClient = mockk()
-    private val requestHeadersUriSpec: RestClient.RequestHeadersUriSpec<*> = mockk()
-    private val requestHeadersSpec: RestClient.RequestHeadersSpec<*> = mockk()
+    private val restClient: RestClient = mockk(relaxed = true)
     private val responseSpec: RestClient.ResponseSpec = mockk()
     private val factory: EntraIDRestClientFactory =
         mockk {
@@ -34,10 +30,6 @@ class AzureGraphRestClientTest {
     inner class FinnSaksbehandler {
         @Test
         fun `skal kaste OppslagException ved feil mot azure`() {
-            every { restClient.get() } returns requestHeadersUriSpec
-            every { requestHeadersUriSpec.uri(any<URI>()) } returns requestHeadersSpec
-            every { requestHeadersSpec.header(any(), any()) } returns requestHeadersSpec
-            every { requestHeadersSpec.retrieve() } returns responseSpec
             every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Noe gikk galt")
 
             val oppslagException = assertThrows<OppslagException> { azureGraphRestClient.finnSaksbehandler("1234") }
@@ -53,9 +45,6 @@ class AzureGraphRestClientTest {
     inner class HentSaksbehandler {
         @Test
         fun `skal kaste OppslagException ved feil mot azure`() {
-            every { restClient.get() } returns requestHeadersUriSpec
-            every { requestHeadersUriSpec.uri(any<URI>()) } returns requestHeadersSpec
-            every { requestHeadersSpec.retrieve() } returns responseSpec
             every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Noe gikk galt")
 
             val oppslagException = assertThrows<OppslagException> { azureGraphRestClient.hentSaksbehandler("1234") }

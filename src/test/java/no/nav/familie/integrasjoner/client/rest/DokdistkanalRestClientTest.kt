@@ -15,9 +15,7 @@ import org.springframework.web.client.RestClient
 import java.net.URI
 
 class DokdistkanalRestClientTest {
-    private val restClient: RestClient = mockk()
-    private val requestBodyUriSpec: RestClient.RequestBodyUriSpec = mockk()
-    private val requestBodySpec: RestClient.RequestBodySpec = mockk()
+    private val restClient: RestClient = mockk(relaxed = true)
     private val responseSpec: RestClient.ResponseSpec = mockk()
     private val factory: EntraIDRestClientFactory =
         mockk {
@@ -34,11 +32,6 @@ class DokdistkanalRestClientTest {
     inner class BestemDistribusjonskanal {
         @Test
         fun `skal kaste OppslagException ved feil mot dokdistkanal`() {
-            every { restClient.post() } returns requestBodyUriSpec
-            every { requestBodyUriSpec.uri(any<URI>()) } returns requestBodySpec
-            every { requestBodySpec.header(any(), any()) } returns requestBodySpec
-            every { requestBodySpec.body(any()) } returns requestBodySpec
-            every { requestBodySpec.retrieve() } returns responseSpec
             every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Noe gikk galt")
 
             val oppslagException =

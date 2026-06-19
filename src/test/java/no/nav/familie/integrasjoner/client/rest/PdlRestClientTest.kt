@@ -18,9 +18,7 @@ import tools.jackson.module.kotlin.readValue
 import java.net.URI
 
 class PdlRestClientTest {
-    private val restClient: RestClient = mockk()
-    private val requestBodyUriSpec: RestClient.RequestBodyUriSpec = mockk()
-    private val requestBodySpec: RestClient.RequestBodySpec = mockk()
+    private val restClient: RestClient = mockk(relaxed = true)
     private val responseSpec: RestClient.ResponseSpec = mockk()
     private val factory: EntraIDRestClientFactory =
         mockk {
@@ -46,11 +44,6 @@ class PdlRestClientTest {
     inner class HentAdressebeskyttelse {
         @Test
         fun `skal kaste OppslagException hvis kall mot PDL feiler`() {
-            every { restClient.post() } returns requestBodyUriSpec
-            every { requestBodyUriSpec.uri(any<URI>()) } returns requestBodySpec
-            every { requestBodySpec.header(any(), any()) } returns requestBodySpec
-            every { requestBodySpec.body(any()) } returns requestBodySpec
-            every { requestBodySpec.retrieve() } returns responseSpec
             every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Noe gikk galt")
 
             val oppslagException =

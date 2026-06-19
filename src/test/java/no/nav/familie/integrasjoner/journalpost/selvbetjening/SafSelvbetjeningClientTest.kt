@@ -18,17 +18,12 @@ import java.net.URI
 
 class SafSelvbetjeningClientTest {
     private val safSelvbetjeningGraphQLClient: GraphQLWebClient = mockk()
-    private val restClient: RestClient = mockk()
-    private val factory: EntraIDRestClientFactory =
-        mockk {
-            every { lagHybridRestKlient(any(), any()) } returns restClient
-        }
+    private val restClient: RestClient = mockk(relaxed = true)
     private val safSelvbetjeningClient: SafSelvbetjeningClient =
         SafSelvbetjeningClient(
             safSelvbetjeningGraphQLClient = safSelvbetjeningGraphQLClient,
             safSelvbetjeningURI = URI.create("https://test.no"),
-            scope = "dummy-scope",
-            entraIDRestClientFactory = factory,
+            restClient = restClient,
         )
 
     @Nested
@@ -95,14 +90,8 @@ class SafSelvbetjeningClientTest {
     inner class HentDokument {
         @Test
         fun `skal kaste feil dersom henting av dokument feiler`() {
-            val requestHeadersUriSpec: RestClient.RequestHeadersUriSpec<*> = mockk()
-            val requestHeadersSpec: RestClient.RequestHeadersSpec<*> = mockk()
             val responseSpec: RestClient.ResponseSpec = mockk()
 
-            every { restClient.get() } returns requestHeadersUriSpec
-            every { requestHeadersUriSpec.uri(any<URI>()) } returns requestHeadersSpec
-            every { requestHeadersSpec.accept(any()) } returns requestHeadersSpec
-            every { requestHeadersSpec.retrieve() } returns responseSpec
             every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Error")
 
             val exception =

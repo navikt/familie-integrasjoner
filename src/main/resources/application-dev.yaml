@@ -6,8 +6,8 @@ tilgang:
   egenAnsatt:
     rolle-id: "dbe4ad45-320b-4e9a-aaa1-73cca4ee124d"
 
-NAIS_TOKEN_ENDPOINT: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
-NAIS_TOKEN_EXCHANGE_ENDPOINT: https://tokenx.dev-gcp.nais.io/token
+NAIS_TOKEN_ENDPOINT: http://localhost/token
+NAIS_TOKEN_EXCHANGE_ENDPOINT: http://localhost/token/exchange
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 ORGANISASJON_URL: #Denne er ikke i bruk da OrganisasjonV5 mockes ut lokalt
