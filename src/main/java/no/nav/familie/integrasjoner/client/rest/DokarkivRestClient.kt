@@ -32,7 +32,7 @@ class DokarkivRestClient(
     @Value("\${DOKARKIV_SCOPE}") scope: String,
     entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
-    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
+    private val restClient = entraIDRestClientFactory.lagOboRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
 
     fun lagJournalpostUri(ferdigstill: Boolean): URI =
         UriComponentsBuilder
