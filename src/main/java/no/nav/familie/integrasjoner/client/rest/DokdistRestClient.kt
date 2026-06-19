@@ -21,7 +21,7 @@ class DokdistRestClient(
     @Value("\${DOKDIST_SCOPE}") scope: String,
     entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
-    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt()?.tokenValue }
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
     val distribuerUri = UriUtil.uri(dokdistUri, PATH_DISTRIBUERJOURNALPOST)
 
     fun distribuerJournalpost(req: DistribuerJournalpostRequestTo): DistribuerJournalpostResponseTo? {

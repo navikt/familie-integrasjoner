@@ -35,7 +35,7 @@ class SafRestClient(
     @Value("\${SAF_SCOPE}") scope: String,
     entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
-    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt()?.tokenValue }
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
     private val safUri = UriUtil.uri(safBaseUrl, PATH_GRAPHQL)
     private val responsFailure = Metrics.counter("restclient.response.failure", "client", "saf.journalpost")
 

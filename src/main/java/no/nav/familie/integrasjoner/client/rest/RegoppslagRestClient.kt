@@ -23,7 +23,7 @@ class RegoppslagRestClient(
     @Value("\${REGOPPSLAG_SCOPE}") scope: String,
     entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
-    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt()?.tokenValue }
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
     val uri = UriUtil.uri(regoppslagUri, PATH_POSTADRESSE)
 
     fun hentPostadresse(

@@ -40,7 +40,7 @@ class PdlRestClient(
     @Value("\${PDL_SCOPE}") scope: String,
     entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
-    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt()?.tokenValue }
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
     private val logger = LoggerFactory.getLogger(PdlRestClient::class.java)
     private val secureLogger = LoggerFactory.getLogger("secureLogger")

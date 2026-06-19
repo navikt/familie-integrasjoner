@@ -20,7 +20,7 @@ class AzureGraphRestClient(
     @Value("\${AAD_GRAPH_SCOPE}") scope: String,
     entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
-    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt()?.tokenValue }
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
 
     private fun saksbehandlerUri(id: String): URI =
         UriComponentsBuilder

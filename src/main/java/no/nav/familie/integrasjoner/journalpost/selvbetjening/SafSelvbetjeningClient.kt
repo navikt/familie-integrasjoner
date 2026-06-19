@@ -3,6 +3,8 @@ package no.nav.familie.integrasjoner.journalpost.selvbetjening
 import com.expediagroup.graphql.client.spring.GraphQLWebClient
 import com.expediagroup.graphql.client.types.GraphQLClientResponse
 import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
+import no.nav.familie.integrasjoner.client.rest.RegoppslagRestClient
+import no.nav.familie.integrasjoner.client.rest.SafRestClient
 import no.nav.familie.integrasjoner.safselvbetjening.generated.HentDokumentoversikt
 import no.nav.familie.integrasjoner.safselvbetjening.generated.enums.Tema
 import no.nav.familie.integrasjoner.safselvbetjening.generated.enums.Variantformat
@@ -19,12 +21,9 @@ import java.net.URI
 @Service
 class SafSelvbetjeningClient(
     @Qualifier("SafSelvbetjening") private val safSelvbetjeningGraphQLClient: GraphQLWebClient,
+    @Qualifier("safSelvbetjeningTokenXRestClient") private val restClient: RestClient,
     @Value("\${SAF_SELVBETJENING_URL}") private val safSelvbetjeningURI: URI,
-    @Value("\${SAF_SCOPE}") scope: String,
-    entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
-    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt()?.tokenValue }
-
     suspend fun hentDokumentoversiktForIdent(
         ident: String,
         tema: Tema,

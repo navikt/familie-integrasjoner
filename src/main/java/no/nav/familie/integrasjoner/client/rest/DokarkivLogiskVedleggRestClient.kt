@@ -22,7 +22,7 @@ class DokarkivLogiskVedleggRestClient(
     @Value("\${DOKARKIV_SCOPE}") scope: String,
     entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
-    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt()?.tokenValue }
+    private val restClient = entraIDRestClientFactory.lagOboRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue!! }
 
     fun opprettLogiskVedlegg(
         dokumentInfoId: String,
