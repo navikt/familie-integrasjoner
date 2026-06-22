@@ -20,7 +20,7 @@ import java.net.URI
 @Component
 class DokarkivLogiskVedleggRestClient(
     @Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
-    @Qualifier("jwtBearerOboOgSts") private val restOperations: RestOperations,
+    @Qualifier("jwtBearer") private val restOperations: RestOperations,
 ) : AbstractRestClient(restOperations, "dokarkiv.logiskvedlegg.opprett") {
     private val slettVedleggClient = SlettLogiskVedleggClient(restOperations)
 
