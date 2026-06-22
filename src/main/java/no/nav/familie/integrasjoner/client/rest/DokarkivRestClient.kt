@@ -30,14 +30,7 @@ import java.net.URI
 class DokarkivRestClient(
     @Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
     @Qualifier("jwtBearerOboOgSts") private val restOperations: RestOperations,
-) : AbstractPingableRestClient(restOperations, "dokarkiv.opprett") {
-    override val pingUri: URI =
-        UriComponentsBuilder
-            .fromUri(dokarkivUrl)
-            .path(PATH_PING)
-            .build()
-            .toUri()
-
+) : AbstractRestClient(restOperations, "dokarkiv.opprett") {
     private val ferdigstillJournalPostClient = FerdigstillJournalPostClient(restOperations, dokarkivUrl)
 
     fun lagJournalpostUri(ferdigstill: Boolean): URI =
