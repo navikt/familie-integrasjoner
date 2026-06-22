@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.0</version>
+        <version>4.0.6</version>
     </parent>
 
     <groupId>no.nav.familie.integrasjoner</groupId>
@@ -20,12 +20,12 @@
         <sha1></sha1>
         <changelist>-SNAPSHOT</changelist>
         <java.version>25</java.version>
-        <kotlin.version>2.4.0</kotlin.version>
+        <kotlin.version>2.3.21</kotlin.version>
         <springdoc.version>3.0.3</springdoc.version>
         <felles.version>4.20260622095330_affbfcf</felles.version>
         <kontrakter.version>4.0_20260622094658_80ca90e</kontrakter.version>
         <token-validation-spring.version>6.0.10</token-validation-spring.version>
-        <graphql-kotlin.version>10.0.0</graphql-kotlin.version>
+        <graphql-kotlin.version>9.2.0</graphql-kotlin.version>
     </properties>
 
     <dependencies>
