@@ -1,18 +1,16 @@
 package no.nav.familie.integrasjoner.config
 
 import com.expediagroup.graphql.client.spring.GraphQLWebClient
-import com.nimbusds.oauth2.sdk.GrantType
+import no.nav.familie.felles.tokenklient.tokenx.TokenXClient
 import no.nav.familie.log.IdUtils
 import no.nav.familie.log.NavHttpHeaders
 import no.nav.familie.log.mdc.MDCConstants
-import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
-import no.nav.security.token.support.client.spring.ClientConfigurationProperties
+import no.nav.familie.sikkerhet.EksternBrukerUtils
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
@@ -47,21 +45,15 @@ class GraphQLWebClientConfig {
 
     @Component
     class ExchangeTokenXBearerTokenFilter(
-        private val clientConfigurationProperties: ClientConfigurationProperties,
-        private val oAuth2AccessTokenService: OAuth2AccessTokenService,
+        private val tokenXClient: TokenXClient,
+        @Value("\${SAF_SCOPE}") private val scope: String,
     ) : ExchangeFilterFunction {
         override fun filter(
             request: ClientRequest,
             next: ExchangeFunction,
         ): Mono<ClientResponse> {
-            val clientProperties =
-                clientConfigurationProperties.registration.values
-                    .firstOrNull { request.url().toString().contains(it.resourceUrl.toString()) && it.grantType == GrantType.TOKEN_EXCHANGE }
-                    ?: error("Finner ikke ClientProperties for url:${request.url()} og grantType: ${GrantType.TOKEN_EXCHANGE}")
-
-            val accessToken: String =
-                oAuth2AccessTokenService.getAccessToken(clientProperties).access_token
-                    ?: throw AuthenticationCredentialsNotFoundException("Kunne ikke hente accesstoken")
+            val brukerToken = EksternBrukerUtils.getBearerTokenForLoggedInUser()
+            val accessToken = tokenXClient.hentToken(brukerToken, scope)
             val filtered =
                 ClientRequest
                     .from(request)
@@ -75,7 +67,7 @@ class GraphQLWebClientConfig {
 
     @Component
     class ConsumerIdFilter(
-        @Value("\${credential.username:}")private val serviceUser: String,
+        @Value("\${credential.username:}") private val serviceUser: String,
         @Value("\${application.name}") private val appName: String,
     ) : ExchangeFilterFunction {
         override fun filter(
