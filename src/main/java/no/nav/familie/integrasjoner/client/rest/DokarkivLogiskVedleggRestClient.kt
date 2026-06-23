@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpStatusCodeException
-import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
