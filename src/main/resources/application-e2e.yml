@@ -28,6 +28,15 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      dokarkiv-client-credentials:
+        resource-url: ${DOKARKIV_V1_URL}
+        token-endpoint-url: https://login.microsoftonline.com/navq.onmicrosoft.com/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: ${DOKARKIV_SCOPE}
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
       saf-selvbetjening-onbehalf-of:
         resource-url: ${SAF_SELVBETJENING_URL}
         token-endpoint-url: ${TOKEN_X_WELL_KNOWN_URL}
