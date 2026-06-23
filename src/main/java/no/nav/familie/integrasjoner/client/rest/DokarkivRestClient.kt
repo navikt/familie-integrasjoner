@@ -29,7 +29,7 @@ import java.net.URI
 @Component
 class DokarkivRestClient(
     @Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
-    @Qualifier("jwtBearerOboOgSts") private val restOperations: RestOperations,
+    @Qualifier("jwtBearer") private val restOperations: RestOperations,
 ) : AbstractPingableRestClient(restOperations, "dokarkiv.opprett") {
     override val pingUri: URI =
         UriComponentsBuilder

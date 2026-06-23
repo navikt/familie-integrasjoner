@@ -57,7 +57,7 @@ import java.time.LocalDateTime
 import java.util.LinkedList
 import kotlin.test.assertFalse
 
-@ActiveProfiles(profiles = ["integrasjonstest", "mock-sts", "mock-aktor", "mock-personopplysninger", "mock-pdl"])
+@ActiveProfiles(profiles = ["integrasjonstest", "mock-oauth", "mock-aktor", "mock-personopplysninger", "mock-pdl"])
 @TestPropertySource(properties = ["DOKARKIV_V1_URL=http://localhost:28085"])
 @EnableWireMock(
     ConfigureWireMock(name = "integrasjonstest", port = 28085),
