@@ -24,9 +24,9 @@ class RestClientConfig(
             .build()
 
     @Bean("safSelvbetjeningTokenXRestClient")
-    fun pdlTokenXRestClient(
+    fun safSelvbetjeningTokenXRestClient(
         tokenXClient: TokenXClient,
-        @Value("\${SAF_SCOPE}") scope: String,
+        @Value("\${SAF_TOKENX_SCOPE}") scope: String,
     ): RestClient =
         RestClient
             .builder()
