@@ -11,7 +11,7 @@ MODIA_CONTEXT_HOLDER_SCOPE: api://prod-gcp.personoversikt.modiacontextholder/.de
 OPPGAVE_SCOPE: api://prod-fss.oppgavehandtering.oppgave/.default
 SAF_SCOPE: api://prod-fss.teamdokumenthandtering.saf/.default
 
-SAF_AUDIENCE: prod-fss:teamdokumenthandtering:safselvbetjening
+SAF_TOKENX_SCOPE: prod-fss:teamdokumenthandtering:safselvbetjening
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 ORGANISASJON_URL: https://ereg-services.intern.nav.no

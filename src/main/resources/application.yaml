@@ -78,6 +78,7 @@ TOKEN_X_PRIVATE_JWK: '{
 TOKEN_X_CLIENT_ID: "dummy-token-x-client-id"
 KODEVERK_SCOPE: "dummy-scope"
 SAF_SCOPE: "dummy-scope"
+SAF_TOKENX_SCOPE: "dummy-scope"
 AAREG_SCOPE: "dummy-scope"
 FORSTESIDEGENERATOR_SCOPE: "dummy-scope"
 OPPGAVE_SCOPE: "dummy-scope"

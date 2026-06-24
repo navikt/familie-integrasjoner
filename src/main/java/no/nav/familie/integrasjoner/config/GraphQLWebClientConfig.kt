@@ -46,7 +46,7 @@ class GraphQLWebClientConfig {
     @Component
     class ExchangeTokenXBearerTokenFilter(
         private val tokenXClient: TokenXClient,
-        @Value("\${SAF_SCOPE}") private val scope: String,
+        @Value("\${SAF_TOKENX_SCOPE}") private val scope: String,
     ) : ExchangeFilterFunction {
         override fun filter(
             request: ClientRequest,
