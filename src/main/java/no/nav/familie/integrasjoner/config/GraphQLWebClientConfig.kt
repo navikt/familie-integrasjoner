@@ -53,7 +53,7 @@ class GraphQLWebClientConfig {
             next: ExchangeFunction,
         ): Mono<ClientResponse> {
             val brukerToken = EksternBrukerUtils.getBearerTokenForLoggedInUser()
-            val accessToken = tokenXClient.hentToken(brukerToken, scope)
+            val accessToken = tokenXClient.hentToken(scope = scope, brukerToken = brukerToken)
             val filtered =
                 ClientRequest
                     .from(request)

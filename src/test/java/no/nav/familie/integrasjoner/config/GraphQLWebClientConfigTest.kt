@@ -51,7 +51,7 @@ class GraphQLWebClientConfigTest {
             val mockedExchangeFunction: ExchangeFunction = mockk()
 
             every { EksternBrukerUtils.getBearerTokenForLoggedInUser() } returns "bruker-token"
-            every { tokenXClient.hentToken("bruker-token", "api://test-scope/.default") } returns "vekslet-token"
+            every { tokenXClient.hentToken("api://test-scope/.default", "bruker-token") } returns "vekslet-token"
             every { mockedExchangeFunction.exchange(capture(filteredRequestSlot)) } returns Mono.just(response)
 
             // Act
