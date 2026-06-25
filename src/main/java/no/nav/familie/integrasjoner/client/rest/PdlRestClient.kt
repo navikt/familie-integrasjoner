@@ -9,6 +9,7 @@ import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningD
 import no.nav.familie.integrasjoner.geografisktilknytning.PdlGeografiskTilknytningRequest
 import no.nav.familie.integrasjoner.geografisktilknytning.PdlGeografiskTilknytningVariables
 import no.nav.familie.integrasjoner.geografisktilknytning.PdlHentGeografiskTilknytning
+import no.nav.familie.integrasjoner.personopplysning.PdlGeografiskTilknytningNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.PdlUnauthorizedException
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlAdressebeskyttelse
@@ -233,7 +234,7 @@ class PdlRestClient(
             }
             if (response.data.hentGeografiskTilknytning == null) {
                 secureLogger.info("Finner ikke geografisk tilknytning for ident=$personIdent i PDL")
-                throw PdlNotFoundException()
+                throw PdlGeografiskTilknytningNotFoundException()
             }
             return response.data.hentGeografiskTilknytning
         } catch (e: Exception) {
