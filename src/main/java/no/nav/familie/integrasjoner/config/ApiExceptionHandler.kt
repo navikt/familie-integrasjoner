@@ -5,6 +5,7 @@ import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
 import no.nav.familie.integrasjoner.journalpost.JournalpostNotFoundException
 import no.nav.familie.integrasjoner.journalpost.JournalpostRequestException
 import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
+import no.nav.familie.integrasjoner.personopplysning.PdlGeografiskTilknytningNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.PdlUnauthorizedException
 import no.nav.familie.kontrakter.felles.Ressurs
@@ -113,6 +114,12 @@ class ApiExceptionHandler {
     fun handlePdlNotFoundException(feil: PdlNotFoundException): ResponseEntity<Ressurs<Nothing>> {
         logger.info("Finner ikke personen i PDL")
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(failure(frontendFeilmelding = "Finner ikke personen"))
+    }
+
+    @ExceptionHandler(PdlGeografiskTilknytningNotFoundException::class)
+    fun handlePdlGeografiskTilknytningNotFoundException(feil: PdlGeografiskTilknytningNotFoundException): ResponseEntity<Ressurs<Nothing>> {
+        logger.info("Finner ikke geografisk tilknytning for personen i PDL")
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(failure(frontendFeilmelding = "Finner ikke geografisk tilknytning for person"))
     }
 
     @ExceptionHandler(PdlUnauthorizedException::class)

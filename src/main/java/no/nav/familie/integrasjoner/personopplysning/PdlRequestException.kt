@@ -6,6 +6,8 @@ open class PdlRequestException(
 
 class PdlNotFoundException : PdlRequestException()
 
+class PdlGeografiskTilknytningNotFoundException : PdlRequestException()
+
 class PdlUnauthorizedException(
     melding: String,
 ) : PdlRequestException(melding = melding)
