@@ -1,7 +1,10 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import io.micrometer.core.instrument.Metrics
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.config.incrementLoggFeil
 import no.nav.familie.integrasjoner.felles.MDCOperations
+import no.nav.familie.integrasjoner.felles.UriUtil
 import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
 import no.nav.familie.integrasjoner.journalpost.JournalpostNotFoundException
@@ -15,24 +18,26 @@ import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostRequest
 import no.nav.familie.integrasjoner.journalpost.internal.SafJournalpostResponse
 import no.nav.familie.integrasjoner.journalpost.internal.SafRequestVariabler
 import no.nav.familie.integrasjoner.journalpost.internal.tilSafRequestForBruker
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.kontrakter.felles.journalpost.Journalpost
 import no.nav.familie.kontrakter.felles.journalpost.JournalposterForBrukerRequest
-import no.nav.familie.restklient.client.AbstractRestClient
-import no.nav.familie.restklient.util.UriUtil
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestOperations
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import java.net.URI
 
 @Service
 class SafRestClient(
     @Value("\${SAF_URL}") safBaseUrl: URI,
-    @Qualifier("jwtBearer") val restTemplate: RestOperations,
-) : AbstractRestClient(restTemplate, "saf.journalpost") {
+    @Value("\${SAF_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
+) {
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
     private val safUri = UriUtil.uri(safBaseUrl, PATH_GRAPHQL)
+    private val responsFailure = Metrics.counter("restclient.response.failure", "client", "saf.journalpost")
 
     fun hentJournalpost(journalpostId: String): Journalpost {
         val safJournalpostRequest =
@@ -41,11 +46,15 @@ class SafRestClient(
                 graphqlQuery("/saf/journalpostForId.graphql"),
             )
         val response =
-            postForEntity<SafJournalpostResponse<SafJournalpostData>>(
-                safUri,
-                safJournalpostRequest,
-                httpHeaders(),
-            )
+            restClient
+                .post()
+                .uri(safUri)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .header(NAV_CALL_ID, MDCOperations.getCallId())
+                .body(safJournalpostRequest)
+                .retrieve()
+                .body<SafJournalpostResponse<SafJournalpostData>>()!!
         if (!response.harFeil()) {
             return response.data?.journalpost ?: throw JournalpostRestClientException(
                 "Kan ikke hente journalpost",
@@ -98,11 +107,15 @@ class SafRestClient(
 
     fun finnJournalposter(safJournalpostRequest: SafJournalpostRequest): List<Journalpost> {
         val response =
-            postForEntity<SafJournalpostResponse<SafJournalpostBrukerData>>(
-                safUri,
-                safJournalpostRequest,
-                httpHeaders(),
-            )
+            restClient
+                .post()
+                .uri(safUri)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                .header(NAV_CALL_ID, MDCOperations.getCallId())
+                .body(safJournalpostRequest)
+                .retrieve()
+                .body<SafJournalpostResponse<SafJournalpostBrukerData>>()!!
 
         if (!response.harFeil()) {
             return response.data?.dokumentoversiktBruker?.journalposter
@@ -130,13 +143,6 @@ class SafRestClient(
             }
         }
     }
-
-    private fun httpHeaders(): HttpHeaders =
-        HttpHeaders().apply {
-            contentType = MediaType.APPLICATION_JSON
-            accept = listOf(MediaType.APPLICATION_JSON)
-            add(NAV_CALL_ID, MDCOperations.getCallId())
-        }
 
     companion object {
         private const val PATH_GRAPHQL = "graphql"

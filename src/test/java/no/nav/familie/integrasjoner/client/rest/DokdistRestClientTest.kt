@@ -2,8 +2,8 @@ package no.nav.familie.integrasjoner.client.rest
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.dokdist.domene.DistribuerJournalpostRequestTo
-import no.nav.familie.integrasjoner.dokdist.domene.DistribuerJournalpostResponseTo
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.Fagsystem
 import no.nav.familie.kontrakter.felles.dokdist.Distribusjonstidspunkt
@@ -11,25 +11,30 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.web.client.RestOperations
+import org.springframework.web.client.RestClient
 import java.net.URI
 
 class DokdistRestClientTest {
-    private val restOperations: RestOperations = mockk()
-    private val dokdistRestClient: DokdistRestClient = DokdistRestClient(dokdistUri = URI.create("dokdistkanal"), restTemplate = restOperations)
+    private val restClient: RestClient = mockk(relaxed = true)
+    private val responseSpec: RestClient.ResponseSpec = mockk()
+    private val factory: EntraIDRestClientFactory =
+        mockk {
+            every { lagHybridRestKlient(any(), any()) } returns restClient
+        }
+    private val dokdistRestClient: DokdistRestClient =
+        DokdistRestClient(
+            dokdistUri = URI.create("http://dokdist"),
+            scope = "dummy-scope",
+            entraIDRestClientFactory = factory,
+        )
 
     @Nested
     inner class DistribuerJournalpost {
         @Test
         fun `skal kaste OppslagException når kall mot dokdist feiler`() {
-            // Arrange
+            every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Noe gikk galt")
 
-            every { restOperations.exchange(any<URI>(), eq(HttpMethod.POST), any<HttpEntity<DistribuerJournalpostRequestTo>>(), eq(DistribuerJournalpostResponseTo::class.java)) } throws RuntimeException("Noe gikk galt")
-
-            // Act & Assert
             val oppslagException =
                 assertThrows<OppslagException> {
                     dokdistRestClient.distribuerJournalpost(

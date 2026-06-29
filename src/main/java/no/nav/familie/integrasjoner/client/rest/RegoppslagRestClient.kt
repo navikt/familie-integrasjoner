@@ -1,29 +1,29 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.config.incrementLoggFeil
+import no.nav.familie.integrasjoner.felles.UriUtil
 import no.nav.familie.integrasjoner.personopplysning.internal.PostadresseRequest
 import no.nav.familie.integrasjoner.personopplysning.internal.PostadresseResponse
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.log.mdc.MDCConstants
-import no.nav.familie.restklient.client.AbstractPingableRestClient
-import no.nav.familie.restklient.util.UriUtil
 import org.slf4j.MDC
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
+import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientResponseException
-import org.springframework.web.client.RestOperations
+import org.springframework.web.client.body
 import java.net.URI
 
 @Component
 class RegoppslagRestClient(
     @Value("\${REGOPPSLAG_URL}") private val regoppslagUri: URI,
-    @Qualifier("jwtBearer") private val restTemplate: RestOperations,
-) : AbstractPingableRestClient(restTemplate, "regoppslag") {
-    override val pingUri: URI = UriUtil.uri(regoppslagUri, PATH_PING)
-
+    @Value("\${REGOPPSLAG_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
+) {
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
     val uri = UriUtil.uri(regoppslagUri, PATH_POSTADRESSE)
 
     fun hentPostadresse(
@@ -31,15 +31,17 @@ class RegoppslagRestClient(
         tema: Tema,
     ): PostadresseResponse? =
         try {
-            postForEntity(
-                uri,
-                payload =
+            restClient
+                .post()
+                .uri(uri)
+                .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+                .body(
                     PostadresseRequest(
                         ident = ident,
                         tema = tema.name,
                     ),
-                httpHeaders(),
-            )
+                ).retrieve()
+                .body<PostadresseResponse>()!!
         } catch (e: RestClientResponseException) {
             when (e.statusCode) {
                 HttpStatus.NOT_FOUND,
@@ -56,13 +58,7 @@ class RegoppslagRestClient(
             }
         }
 
-    private fun httpHeaders(): HttpHeaders =
-        HttpHeaders().apply {
-            add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
-        }
-
     companion object {
-        private const val PATH_PING = "actuator/health/liveness"
         private const val PATH_POSTADRESSE = "rest/postadresse"
         private const val X_CORRELATION_ID = "X-Correlation-ID"
     }

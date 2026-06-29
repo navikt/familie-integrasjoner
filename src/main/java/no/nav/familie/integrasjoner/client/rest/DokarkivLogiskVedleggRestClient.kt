@@ -1,28 +1,27 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.felles.MDCOperations
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.kontrakter.felles.dokarkiv.BulkOppdaterLogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.LogiskVedleggResponse
-import no.nav.familie.restklient.client.AbstractRestClient
-import no.nav.familie.restklient.client.ResponseBodyNullException
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpStatusCodeException
-import org.springframework.web.client.RestOperations
+import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Component
 class DokarkivLogiskVedleggRestClient(
     @Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
-    @Qualifier("jwtBearer") private val restOperations: RestOperations,
-) : AbstractRestClient(restOperations, "dokarkiv.logiskvedlegg.opprett") {
-    private val slettVedleggClient = SlettLogiskVedleggClient(restOperations)
+    @Value("\${DOKARKIV_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
+) {
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue!! }
 
     fun opprettLogiskVedlegg(
         dokumentInfoId: String,
@@ -35,7 +34,13 @@ class DokarkivLogiskVedleggRestClient(
                 .buildAndExpand(dokumentInfoId)
                 .toUri()
         try {
-            return postForEntity(uri, request, headers())
+            return restClient
+                .post()
+                .uri(uri)
+                .header(NAV_CALL_ID, MDCOperations.getCallId())
+                .body(request)
+                .retrieve()
+                .body<LogiskVedleggResponse>()!!
         } catch (e: RuntimeException) {
             val responsebody = if (e is HttpStatusCodeException) e.responseBodyAsString else ""
             val message = "Kan ikke opprette logisk vedlegg for dokumentinfo $dokumentInfoId $responsebody"
@@ -60,10 +65,14 @@ class DokarkivLogiskVedleggRestClient(
                 .buildAndExpand(dokumentinfoId)
                 .toUri()
         try {
-            putForEntity<Any>(uri, request, headers())
+            restClient
+                .put()
+                .uri(uri)
+                .header(NAV_CALL_ID, MDCOperations.getCallId())
+                .body(request)
+                .retrieve()
+                .body<Any>()
         } catch (e: RuntimeException) {
-            if (e is ResponseBodyNullException) return
-
             val responsebody = if (e is HttpStatusCodeException) e.responseBodyAsString else ""
             val message = "Kan ikke bulk oppdatere logiske vedlegg for dokumentinfo $dokumentinfoId $responsebody"
             throw OppslagException(
@@ -87,7 +96,12 @@ class DokarkivLogiskVedleggRestClient(
                 .buildAndExpand(dokumentInfoId, logiskVedleggId)
                 .toUri()
         try {
-            slettVedleggClient.slettLogiskVedlegg(uri)
+            restClient
+                .delete()
+                .uri(uri)
+                .header(NAV_CALL_ID, MDCOperations.getCallId())
+                .retrieve()
+                .body<String>()
         } catch (e: RuntimeException) {
             val responsebody = if (e is HttpStatusCodeException) e.responseBodyAsString else ""
             val message = "Kan ikke slette logisk vedlegg for dokumentinfo $dokumentInfoId $responsebody"
@@ -101,29 +115,10 @@ class DokarkivLogiskVedleggRestClient(
         }
     }
 
-    // Egen klasse for egne metrikker
-    private class SlettLogiskVedleggClient(
-        restOperations: RestOperations,
-    ) : AbstractRestClient(restOperations, "dokarkiv.logiskvedlegg.slett") {
-        fun slettLogiskVedlegg(uri: URI) {
-            try {
-                deleteForEntity<String>(uri, null, headers())
-            } catch (e: ResponseBodyNullException) {
-                // Ignorerer, slett returnerer tom body
-            }
-        }
-    }
-
     companion object {
         private const val PATH_LOGISKVEDLEGG = "rest/journalpostapi/v1/dokumentInfo/{dokumentInfo}/logiskVedlegg"
         private const val PATH_OPPDATER_LOGISKVEDLEGG = "rest/journalpostapi/v1/dokumentInfo/{dokumentInfo}/logiskVedlegg"
         private const val PATH_SLETT_LOGISK_VEDLEGG = "$PATH_LOGISKVEDLEGG/{logiskVedleggId}"
-
         private const val NAV_CALL_ID = "Nav-Callid"
-
-        private fun headers(): HttpHeaders =
-            HttpHeaders().apply {
-                add(NAV_CALL_ID, MDCOperations.getCallId())
-            }
     }
 }

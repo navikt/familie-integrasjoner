@@ -1,18 +1,19 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.aareg.domene.Arbeidsforhold
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.log.NavHttpHeaders
-import no.nav.familie.restklient.client.AbstractPingableRestClient
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpStatusCodeException
+import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientException
-import org.springframework.web.client.RestOperations
+import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 import java.time.LocalDate
@@ -20,9 +21,10 @@ import java.time.LocalDate
 @Component
 class AaregRestClient(
     @Value("\${AAREG_URL}") private val aaregUrl: URI,
-    @Qualifier("jwtBearer") private val restTemplate: RestOperations,
-) : AbstractPingableRestClient(restTemplate, "aareg") {
-    override val pingUri: URI = URI.create("$aaregUrl/$PATH_PING")
+    @Value("\${AAREG_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
+) {
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
 
     fun hentArbeidsforhold(
         personIdent: String,
@@ -41,7 +43,13 @@ class AaregRestClient(
                 .toUri()
 
         return try {
-            getForEntity(uri, httpHeaders(personIdent))
+            restClient
+                .get()
+                .uri(uri)
+                .header(NavHttpHeaders.NAV_PERSONIDENT.asString(), personIdent)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .retrieve()
+                .body<List<Arbeidsforhold>>()!!
         } catch (e: RestClientException) {
             var feilmelding = "Feil ved oppslag av arbeidsforhold."
             if (e is HttpStatusCodeException && e.responseBodyAsString.isNotEmpty()) {
@@ -58,14 +66,7 @@ class AaregRestClient(
         }
     }
 
-    private fun httpHeaders(personIdent: String): HttpHeaders =
-        HttpHeaders().apply {
-            add(NavHttpHeaders.NAV_PERSONIDENT.asString(), personIdent)
-            add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        }
-
     companion object {
-        private const val PATH_PING = "ping"
         private const val PATH_ARBEIDSFORHOLD = "/v1/arbeidstaker/arbeidsforhold"
     }
 }

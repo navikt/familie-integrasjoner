@@ -72,8 +72,6 @@ class OppgaveRestClientTestConfig {
 
         every { klient.oppdaterOppgave(any()) } returns response
 
-        every { klient.ping() } returns Unit
-
         return klient
     }
 }

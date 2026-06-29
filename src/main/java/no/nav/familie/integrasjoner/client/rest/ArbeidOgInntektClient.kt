@@ -2,22 +2,22 @@ package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.PersonIdent
-import no.nav.familie.restklient.client.AbstractRestClient
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
-import org.springframework.web.client.RestOperations
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Component
 class ArbeidOgInntektClient(
     @Value("\${ARBEID_INNTEKT_URL}") private val uri: URI,
-    @Qualifier("noAuthorize") private val restOperations: RestOperations,
-) : AbstractRestClient(restOperations, "ainntekt") {
+    @Qualifier("utenAuthHttpClient") private val restClient: RestClient,
+) {
     private val redirectUri =
         UriComponentsBuilder
             .fromUri(uri)
@@ -27,13 +27,13 @@ class ArbeidOgInntektClient(
 
     fun hentUrlTilArbeidOgInntekt(personIdent: PersonIdent): String =
         try {
-            getForEntity(
-                redirectUri,
-                HttpHeaders().apply {
-                    accept = listOf(MediaType.TEXT_PLAIN)
-                    set("Nav-Personident", personIdent.ident)
-                },
-            )
+            restClient
+                .get()
+                .uri(redirectUri)
+                .header(HttpHeaders.ACCEPT, MediaType.TEXT_PLAIN_VALUE)
+                .header("Nav-Personident", personIdent.ident)
+                .retrieve()
+                .body<String>()!!
         } catch (e: Exception) {
             throw OppslagException(
                 "Feil ved oppslag av url for a-inntekt.",

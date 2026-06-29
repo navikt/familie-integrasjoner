@@ -1,6 +1,8 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.integrasjoner.felles.UriUtil
 import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.personopplysning.PdlRequestException
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlBolkResponse
@@ -8,13 +10,14 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonBolkReque
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonBolkRequestVariables
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedRelasjonerOgAdressebeskyttelse
 import no.nav.familie.kontrakter.felles.Tema
-import no.nav.familie.restklient.client.AbstractRestClient
-import no.nav.familie.restklient.util.UriUtil
-import org.springframework.beans.factory.annotation.Qualifier
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestOperations
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import java.net.URI
 
 /**
@@ -24,9 +27,13 @@ import java.net.URI
 @Service
 class PdlClientCredentialRestClient(
     @Value("\${PDL_URL}") pdlBaseUrl: URI,
-    @Qualifier("clientCredential") private val restTemplate: RestOperations,
-) : AbstractRestClient(restTemplate, "pdl.personinfo.cc") {
+    @Value("\${PDL_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
+) {
+    private val restClient = entraIDRestClientFactory.lagMaskinTilMaskinRestKlient(scope)
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
+    private val logger = LoggerFactory.getLogger(PdlClientCredentialRestClient::class.java)
+    private val secureLogger = LoggerFactory.getLogger("secureLogger")
 
     fun hentPersonMedRelasjonerOgAdressebeskyttelse(
         identer: List<String>,
@@ -39,11 +46,16 @@ class PdlClientCredentialRestClient(
             )
         val response =
             try {
-                postForEntity<PdlBolkResponse<PdlPersonMedRelasjonerOgAdressebeskyttelse>>(
-                    pdlUri,
-                    request,
-                    pdlHttpHeaders(tema),
-                )
+                restClient
+                    .post()
+                    .uri(pdlUri)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                    .header("Tema", tema.name)
+                    .header("behandlingsnummer", tema.behandlingsnummer)
+                    .body(request)
+                    .retrieve()
+                    .body<PdlBolkResponse<PdlPersonMedRelasjonerOgAdressebeskyttelse>>()!!
             } catch (e: Exception) {
                 throw OppslagException(
                     "Feil ved henting av person med relasjoner og adressebeskyttelse",
@@ -73,7 +85,7 @@ class PdlClientCredentialRestClient(
             throw PdlRequestException("Feil ved henting av ${T::class} fra PDL. Se secure logg for detaljer.")
         }
         if (pdlResponse.harAdvarsel()) {
-            log.warn("Advarsel ved henting av ${T::class} fra PDL. Se securelogs for detaljer.")
+            logger.warn("Advarsel ved henting av ${T::class} fra PDL. Se securelogs for detaljer.")
             secureLogger.warn("Advarsel ved henting av ${T::class} fra PDL: ${pdlResponse.extensions?.warnings}")
         }
         return pdlResponse.data.personBolk.associateBy({ it.ident }, { it.person!! })
