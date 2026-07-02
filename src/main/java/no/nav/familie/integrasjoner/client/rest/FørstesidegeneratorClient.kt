@@ -1,28 +1,28 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.førstesidegenerator.domene.PostFørstesideRequest
 import no.nav.familie.integrasjoner.førstesidegenerator.domene.PostFørstesideResponse
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.log.mdc.MDCConstants
-import no.nav.familie.restklient.client.AbstractPingableRestClient
-import no.nav.familie.restklient.util.UriUtil
 import org.slf4j.MDC
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpStatusCodeException
-import org.springframework.web.client.RestOperations
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
 @Component
 class FørstesidegeneratorClient(
     @Value("\${FORSTESIDEGENERATOR_URL}") private val førstesidegeneratorURI: URI,
-    @Qualifier("jwtBearer") private val restTemplate: RestOperations,
-) : AbstractPingableRestClient(restTemplate, "forstesidegenterator") {
-    override val pingUri: URI = UriUtil.uri(førstesidegeneratorURI, PATH_PING)
+    @Value("\${FORSTESIDEGENERATOR_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
+) {
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
 
     fun genererFørsteside(dto: PostFørstesideRequest): PostFørstesideResponse {
         val uri =
@@ -32,8 +32,16 @@ class FørstesidegeneratorClient(
                 .build()
                 .toUri()
         return Result
-            .runCatching { postForEntity<PostFørstesideResponse>(uri, dto, httpHeaders()) }
-            .onFailure {
+            .runCatching {
+                restClient
+                    .post()
+                    .uri(uri)
+                    .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+                    .header(NAV_CONSUMER_ID, "familie-integrasjoner")
+                    .body(dto)
+                    .retrieve()
+                    .body<PostFørstesideResponse>()!!
+            }.onFailure {
                 var feilmelding = "Feil ved oppretting av førsteside for ${dto.førstesidetype}."
                 if (it is HttpStatusCodeException) {
                     feilmelding += " Response fra førstesidegenerator = ${it.responseBodyAsString}"
@@ -49,14 +57,7 @@ class FørstesidegeneratorClient(
             }.getOrThrow()
     }
 
-    private fun httpHeaders(): HttpHeaders =
-        HttpHeaders().apply {
-            add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
-            add(NAV_CONSUMER_ID, "familie-integrasjoner")
-        }
-
     companion object {
-        private const val PATH_PING = "internal/isAlive"
         private const val PATH_GENERER = "/api/foerstesidegenerator/v1/foersteside"
         private const val X_CORRELATION_ID = "X-Correlation-ID"
         private const val NAV_CONSUMER_ID = "Nav-Consumer-Id"

@@ -2,33 +2,38 @@ package no.nav.familie.integrasjoner.client.rest
 
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.dokdistkanal.domene.BestemDistribusjonskanalRequest
-import no.nav.familie.integrasjoner.dokdistkanal.domene.BestemDistribusjonskanalResponse
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.Tema
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.web.client.RestOperations
-import org.springframework.web.client.exchange
+import org.springframework.web.client.RestClient
 import java.net.URI
 
 class DokdistkanalRestClientTest {
-    private val restOperations: RestOperations = mockk()
-    private val dokdistkanalRestClient: DokdistkanalRestClient = DokdistkanalRestClient(dokdistkanalUri = URI.create("dokdistkanal"), restTemplate = restOperations)
+    private val restClient: RestClient = mockk(relaxed = true)
+    private val responseSpec: RestClient.ResponseSpec = mockk()
+    private val factory: EntraIDRestClientFactory =
+        mockk {
+            every { lagHybridRestKlient(any(), any()) } returns restClient
+        }
+    private val dokdistkanalRestClient: DokdistkanalRestClient =
+        DokdistkanalRestClient(
+            dokdistkanalUri = URI.create("http://dokdistkanal"),
+            scope = "dummy-scope",
+            entraIDRestClientFactory = factory,
+        )
 
     @Nested
     inner class BestemDistribusjonskanal {
         @Test
         fun `skal kaste OppslagException ved feil mot dokdistkanal`() {
-            // Arrange
-            every { restOperations.exchange<BestemDistribusjonskanalResponse>(any<URI>(), eq(HttpMethod.POST), any<HttpEntity<BestemDistribusjonskanalRequest>>()) } throws RuntimeException("Noe gikk galt")
+            every { responseSpec.body(any<Class<*>>()) } throws RuntimeException("Noe gikk galt")
 
-            // Act & Assert
             val oppslagException =
                 assertThrows<OppslagException> {
                     dokdistkanalRestClient.bestemDistribusjonskanal(

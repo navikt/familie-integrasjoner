@@ -3,31 +3,27 @@ package no.nav.familie.integrasjoner.config
 import no.nav.familie.log.NavSystemtype
 import no.nav.familie.log.filter.LogFilter
 import no.nav.familie.log.filter.RequestTimeFilter
-import no.nav.familie.restklient.client.RetryOAuth2HttpClient
 import no.nav.familie.restklient.config.NaisProxyCustomizer
+import no.nav.familie.restklient.config.RestTemplateSts
 import no.nav.familie.sikkerhet.context.FamilieFellesSpringSecurityKonfigurasjon
-import no.nav.security.token.support.client.core.http.OAuth2HttpClient
-import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client
 import org.slf4j.LoggerFactory
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
-import org.springframework.boot.restclient.RestTemplateBuilder
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Import
-import org.springframework.context.annotation.Primary
 import org.springframework.scheduling.annotation.EnableScheduling
-import org.springframework.web.client.RestClient
-import java.time.Duration
-import java.time.temporal.ChronoUnit
 
 @SpringBootConfiguration
-@ComponentScan("no.nav.familie.integrasjoner", "no.nav.familie.metrikker")
+@ComponentScan(
+    "no.nav.familie.integrasjoner",
+    "no.nav.familie.metrikker",
+    "no.nav.familie.felles.tokenklient",
+)
 @ConfigurationPropertiesScan
-@EnableOAuth2Client(cacheEnabled = true)
 @EnableScheduling
-@Import(NaisProxyCustomizer::class, FamilieFellesSpringSecurityKonfigurasjon::class)
+@Import(NaisProxyCustomizer::class, FamilieFellesSpringSecurityKonfigurasjon::class, RestTemplateSts::class)
 class ApplicationConfig {
     private val logger = LoggerFactory.getLogger(ApplicationConfig::class.java)
 
@@ -48,17 +44,4 @@ class ApplicationConfig {
         filterRegistration.order = 2
         return filterRegistration
     }
-
-    @Primary
-    @Bean
-    fun oAuth2HttpClient(): OAuth2HttpClient =
-        RetryOAuth2HttpClient(
-            RestClient.create(
-                RestTemplateBuilder()
-                    .additionalCustomizers(NaisProxyCustomizer(2_000, 2_000, 4_000))
-                    .connectTimeout(Duration.of(2, ChronoUnit.SECONDS))
-                    .readTimeout(Duration.of(4, ChronoUnit.SECONDS))
-                    .build(),
-            ),
-        )
 }

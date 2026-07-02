@@ -1,35 +1,78 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
+import no.nav.familie.integrasjoner.felles.UriUtil
 import no.nav.familie.kontrakter.felles.kodeverk.HierarkiGeografiInnlandDto
 import no.nav.familie.kontrakter.felles.kodeverk.KodeverkDto
-import no.nav.familie.restklient.client.AbstractRestClient
-import no.nav.familie.restklient.util.UriUtil
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import org.springframework.web.client.RestOperations
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import java.net.URI
 
 @Component
 class KodeverkClient(
     @Value("\${KODEVERK_URL}") private val kodeverkUri: URI,
-    @Qualifier("jwtBearer") private val restTemplate: RestOperations,
-) : AbstractRestClient(restTemplate, "kodeverk") {
-    fun hentPostnummer(): KodeverkDto = getForEntity(kodeverkUri("Postnummer"))
+    @Value("\${KODEVERK_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
+) {
+    private val restClient = entraIDRestClientFactory.lagMaskinTilMaskinRestKlient(scope)
 
-    fun hentPostnummerMedHistorikk(): KodeverkDto = getForEntity(kodeverkUri("Postnummer", true))
+    fun hentPostnummer(): KodeverkDto =
+        restClient
+            .get()
+            .uri(kodeverkUri("Postnummer"))
+            .retrieve()
+            .body<KodeverkDto>()!!
 
-    fun hentLandkoder(): KodeverkDto = getForEntity(kodeverkUri("Landkoder"))
+    fun hentPostnummerMedHistorikk(): KodeverkDto =
+        restClient
+            .get()
+            .uri(kodeverkUri("Postnummer", true))
+            .retrieve()
+            .body<KodeverkDto>()!!
 
-    fun hentLandkoderISO2(): KodeverkDto = getForEntity(kodeverkUri("LandkoderISO2"))
+    fun hentLandkoder(): KodeverkDto =
+        restClient
+            .get()
+            .uri(kodeverkUri("Landkoder"))
+            .retrieve()
+            .body<KodeverkDto>()!!
 
-    fun hentLandkoderMedHistorikk(): KodeverkDto = getForEntity(kodeverkUri("Landkoder", true))
+    fun hentLandkoderISO2(): KodeverkDto =
+        restClient
+            .get()
+            .uri(kodeverkUri("LandkoderISO2"))
+            .retrieve()
+            .body<KodeverkDto>()!!
 
-    fun hentEEALandkoder(): KodeverkDto = getForEntity(kodeverkUri("EEAFreg", medHistorikk = true))
+    fun hentLandkoderMedHistorikk(): KodeverkDto =
+        restClient
+            .get()
+            .uri(kodeverkUri("Landkoder", true))
+            .retrieve()
+            .body<KodeverkDto>()!!
 
-    fun hentKodeverk(kodeverksnavn: String): KodeverkDto = getForEntity(kodeverkUri(kodeverksnavn))
+    fun hentEEALandkoder(): KodeverkDto =
+        restClient
+            .get()
+            .uri(kodeverkUri("EEAFreg", medHistorikk = true))
+            .retrieve()
+            .body<KodeverkDto>()!!
 
-    fun hentGeografiInnland(): HierarkiGeografiInnlandDto = getForEntity(hierarkiUri("Geografi"))
+    fun hentKodeverk(kodeverksnavn: String): KodeverkDto =
+        restClient
+            .get()
+            .uri(kodeverkUri(kodeverksnavn))
+            .retrieve()
+            .body<KodeverkDto>()!!
+
+    fun hentGeografiInnland(): HierarkiGeografiInnlandDto =
+        restClient
+            .get()
+            .uri(hierarkiUri("Geografi"))
+            .retrieve()
+            .body<HierarkiGeografiInnlandDto>()!!
 
     private fun kodeverkUri(
         kodeverksnavn: String,
@@ -48,7 +91,6 @@ class KodeverkClient(
     }
 
     companion object {
-        private const val PATH_PING = "internal/isAlive"
         private const val QUERY = "ekskluderUgyldige=true&spraak=nb"
         private const val QUERY_MED_HISTORIKK = "ekskluderUgyldige=false&spraak=nb"
     }

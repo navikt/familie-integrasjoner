@@ -1,6 +1,9 @@
 package no.nav.familie.integrasjoner.client.rest
 
+import io.micrometer.core.instrument.Metrics
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.felles.OppslagException
+import no.nav.familie.integrasjoner.felles.UriUtil
 import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.geografisktilknytning.GeografiskTilknytningDto
 import no.nav.familie.integrasjoner.geografisktilknytning.PdlGeografiskTilknytningRequest
@@ -20,24 +23,29 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonRequest
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonRequestVariables
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlResponse
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.kontrakter.felles.Tema
-import no.nav.familie.restklient.client.AbstractRestClient
-import no.nav.familie.restklient.util.UriUtil
-import org.springframework.beans.factory.annotation.Qualifier
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestOperations
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import java.net.URI
 
 @Service
 class PdlRestClient(
     @Value("\${PDL_URL}") pdlBaseUrl: URI,
-    @Qualifier("jwtBearer") private val restTemplate: RestOperations,
-) : AbstractRestClient(restTemplate, "pdl.personinfo") {
+    @Value("\${PDL_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
+) {
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
+    private val logger = LoggerFactory.getLogger(PdlRestClient::class.java)
+    private val secureLogger = LoggerFactory.getLogger("secureLogger")
+    private val responsFailure = Metrics.counter("restclient.response.failure", "client", "pdl.personinfo")
 
     fun hentAdressebeskyttelse(
         personIdent: String,
@@ -51,11 +59,16 @@ class PdlRestClient(
 
         val response: PdlResponse<PdlPersonMedAdressebeskyttelse> =
             try {
-                postForEntity(
-                    pdlUri,
-                    pdlAdressebeskyttelseRequest,
-                    pdlHttpHeaders(tema),
-                )
+                restClient
+                    .post()
+                    .uri(pdlUri)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                    .header("Tema", tema.name)
+                    .header("behandlingsnummer", tema.behandlingsnummer)
+                    .body(pdlAdressebeskyttelseRequest)
+                    .retrieve()
+                    .body<PdlResponse<PdlPersonMedAdressebeskyttelse>>()!!
             } catch (e: Exception) {
                 throw pdlOppslagException(
                     personIdent = personIdent,
@@ -80,7 +93,16 @@ class PdlRestClient(
             )
         val response =
             try {
-                postForEntity<PdlResponse<PdlPerson>>(pdlUri, pdlPersonRequest, pdlHttpHeaders(tema))
+                restClient
+                    .post()
+                    .uri(pdlUri)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                    .header("Tema", tema.name)
+                    .header("behandlingsnummer", tema.behandlingsnummer)
+                    .body(pdlPersonRequest)
+                    .retrieve()
+                    .body<PdlResponse<PdlPerson>>()!!
             } catch (e: Exception) {
                 throw pdlOppslagException(personIdent, error = e, kilde = "PdlRestClient.hentPerson")
             }
@@ -106,7 +128,16 @@ class PdlRestClient(
 
         val response =
             try {
-                postForEntity<PdlResponse<PdlHentIdenter>>(pdlUri, pdlPersonRequest, pdlHttpHeaders(tema))
+                restClient
+                    .post()
+                    .uri(pdlUri)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                    .header("Tema", tema.name)
+                    .header("behandlingsnummer", tema.behandlingsnummer)
+                    .body(pdlPersonRequest)
+                    .retrieve()
+                    .body<PdlResponse<PdlHentIdenter>>()!!
             } catch (e: Exception) {
                 throw pdlOppslagException(ident, error = e, kilde = "PdlRestClient.hentIdenter")
             }
@@ -136,7 +167,7 @@ class PdlRestClient(
             )
         }
         if (pdlResponse.harAdvarsel()) {
-            log.warn("Advarsel ved henting av ${DATA::class} fra PDL. Se securelogs for detaljer.")
+            logger.warn("Advarsel ved henting av ${DATA::class} fra PDL. Se securelogs for detaljer.")
             secureLogger.warn("Advarsel ved henting av ${DATA::class} fra PDL: ${pdlResponse.extensions?.warnings}")
         }
         val data =
@@ -173,11 +204,16 @@ class PdlRestClient(
             )
         try {
             val response: PdlResponse<PdlHentGeografiskTilknytning> =
-                postForEntity(
-                    pdlUri,
-                    pdlGeografiskTilknytningRequest,
-                    pdlHttpHeaders(tema),
-                )
+                restClient
+                    .post()
+                    .uri(pdlUri)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
+                    .header("Tema", tema.name)
+                    .header("behandlingsnummer", tema.behandlingsnummer)
+                    .body(pdlGeografiskTilknytningRequest)
+                    .retrieve()
+                    .body<PdlResponse<PdlHentGeografiskTilknytning>>()!!
 
             if (response.harFeil()) {
                 if (response.harNotFoundFeil()) {
@@ -236,11 +272,3 @@ class PdlRestClient(
         private val HENT_ADRESSEBESKYTTELSE_QUERY = graphqlQuery("/pdl/adressebeskyttelse.graphql")
     }
 }
-
-fun pdlHttpHeaders(tema: Tema): HttpHeaders =
-    HttpHeaders().apply {
-        contentType = MediaType.APPLICATION_JSON
-        accept = listOf(MediaType.APPLICATION_JSON)
-        add("Tema", tema.name)
-        add("behandlingsnummer", tema.behandlingsnummer)
-    }

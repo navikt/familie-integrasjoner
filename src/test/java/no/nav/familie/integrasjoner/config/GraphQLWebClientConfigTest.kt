@@ -1,21 +1,21 @@
 package no.nav.familie.integrasjoner.config
 
-import com.nimbusds.oauth2.sdk.GrantType
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.slot
+import io.mockk.unmockkObject
+import no.nav.familie.felles.tokenklient.tokenx.TokenXClient
 import no.nav.familie.log.NavHttpHeaders
-import no.nav.security.token.support.client.core.ClientProperties
-import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenResponse
-import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
-import no.nav.security.token.support.client.spring.ClientConfigurationProperties
+import no.nav.familie.sikkerhet.EksternBrukerUtils
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
 import org.springframework.web.reactive.function.client.ClientRequest
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.ExchangeFunction
@@ -25,89 +25,71 @@ import java.net.URI
 class GraphQLWebClientConfigTest {
     @Nested
     inner class ExchangeBearerTokenFilterTest {
-        private val mockedClientConfigurationProperties: ClientConfigurationProperties = mockk()
-        private val mockedOAuth2AccessTokenService: OAuth2AccessTokenService = mockk()
-        private val exchangeTokenXBearerTokenFilter: GraphQLWebClientConfig.ExchangeTokenXBearerTokenFilter =
+        private val tokenXClient: TokenXClient = mockk()
+        private val exchangeTokenXBearerTokenFilter =
             GraphQLWebClientConfig.ExchangeTokenXBearerTokenFilter(
-                clientConfigurationProperties = mockedClientConfigurationProperties,
-                oAuth2AccessTokenService = mockedOAuth2AccessTokenService,
+                tokenXClient = tokenXClient,
+                scope = "api://test-scope/.default",
             )
 
-        @Test
-        fun `skal utstede nytt obo-token basert på url og matchende registrerte client i ClientProperties og sette det nye tokenet i Authorization-header`() {
-            // Arrange
-            val baseUrl = "https://test.no"
-            val path = "/api/test"
+        @BeforeEach
+        fun setUp() {
+            mockkObject(EksternBrukerUtils)
+        }
 
-            val mockedClientProperties: ClientProperties = mockk()
+        @AfterEach
+        fun tearDown() {
+            unmockkObject(EksternBrukerUtils)
+        }
+
+        @Test
+        fun `skal veksle brukertoken via TokenXClient og sette nytt token i Authorization-header`() {
+            // Arrange
+            val request = ClientRequest.create(HttpMethod.GET, URI.create("https://test.no/api/test")).build()
+            val response = ClientResponse.create(HttpStatus.OK).build()
+            val filteredRequestSlot = slot<ClientRequest>()
             val mockedExchangeFunction: ExchangeFunction = mockk()
 
-            val accessTokenResponse = OAuth2AccessTokenResponse("gyldig-token", 3600, null)
-            val request = ClientRequest.create(HttpMethod.GET, URI.create(baseUrl + path)).build()
-            val response = ClientResponse.create(HttpStatus.OK).build()
-
-            val filteredRequestSlot = slot<ClientRequest>()
-
-            every { mockedClientProperties.resourceUrl } returns URI.create(baseUrl)
-            every { mockedClientProperties.grantType } returns GrantType.TOKEN_EXCHANGE
-            every { mockedClientConfigurationProperties.registration.values } returns listOf(mockedClientProperties)
-            every { mockedOAuth2AccessTokenService.getAccessToken(mockedClientProperties) } returns accessTokenResponse
+            every { EksternBrukerUtils.getBearerTokenForLoggedInUser() } returns "bruker-token"
+            every { tokenXClient.hentToken("api://test-scope/.default", "bruker-token") } returns "vekslet-token"
             every { mockedExchangeFunction.exchange(capture(filteredRequestSlot)) } returns Mono.just(response)
 
             // Act
             exchangeTokenXBearerTokenFilter.filter(request, mockedExchangeFunction).block()
 
             // Assert
-            val capturedFilteredRequest = filteredRequestSlot.captured
-            assertThat(capturedFilteredRequest.headers().toSingleValueMap())
-                .containsKey("Authorization")
-                .containsEntry("Authorization", "Bearer gyldig-token")
+            val capturedRequest = filteredRequestSlot.captured
+            assertThat(capturedRequest.headers().toSingleValueMap())
+                .containsEntry("Authorization", "Bearer vekslet-token")
         }
 
         @Test
-        fun `skal kaste exception dersom ingen client er registrert med matchende resourceUrl og grantType i ClientProperties`() {
+        fun `skal propagere exception dersom henting av brukertoken feiler`() {
             // Arrange
-            val baseUrl = "https://test.no"
-            val path = "/api/test"
-            val request = ClientRequest.create(HttpMethod.GET, URI.create(baseUrl + path)).build()
-            val mockedClientProperties: ClientProperties = mockk()
+            val request = ClientRequest.create(HttpMethod.GET, URI.create("https://test.no/api/test")).build()
             val mockedExchangeFunction: ExchangeFunction = mockk()
 
-            every { mockedClientProperties.resourceUrl } returns URI.create(baseUrl)
-            every { mockedClientProperties.grantType } returns GrantType.JWT_BEARER
-            every { mockedClientConfigurationProperties.registration.values } returns listOf(mockedClientProperties)
-
-            val exception =
-                assertThrows<IllegalStateException> {
-                    exchangeTokenXBearerTokenFilter.filter(request, mockedExchangeFunction).block()
-                }
-
-            assertThat(exception.message).isEqualTo("Finner ikke ClientProperties for url:${baseUrl + path} og grantType: ${GrantType.TOKEN_EXCHANGE}")
-        }
-
-        @Test
-        fun `skal kaste exception dersom hentet access token er null`() {
-            // Arrange
-            val baseUrl = "https://test.no"
-            val path = "/api/test"
-
-            val mockedClientProperties: ClientProperties = mockk()
-            val mockedExchangeFunction: ExchangeFunction = mockk()
-
-            val accessTokenResponse = OAuth2AccessTokenResponse(null, 3600, null)
-            val request = ClientRequest.create(HttpMethod.GET, URI.create(baseUrl + path)).build()
-
-            every { mockedClientProperties.resourceUrl } returns URI.create(baseUrl)
-            every { mockedClientProperties.grantType } returns GrantType.TOKEN_EXCHANGE
-            every { mockedClientConfigurationProperties.registration.values } returns listOf(mockedClientProperties)
-            every { mockedOAuth2AccessTokenService.getAccessToken(mockedClientProperties) } returns accessTokenResponse
+            every { EksternBrukerUtils.getBearerTokenForLoggedInUser() } throws IllegalStateException("Ingen innlogget bruker")
 
             // Act & Assert
-            val exception =
-                assertThrows<AuthenticationCredentialsNotFoundException> {
-                    exchangeTokenXBearerTokenFilter.filter(request, mockedExchangeFunction).block()
-                }
-            assertThat(exception.message).isEqualTo("Kunne ikke hente accesstoken")
+            assertThrows<IllegalStateException> {
+                exchangeTokenXBearerTokenFilter.filter(request, mockedExchangeFunction).block()
+            }
+        }
+
+        @Test
+        fun `skal propagere exception dersom TokenXClient feiler`() {
+            // Arrange
+            val request = ClientRequest.create(HttpMethod.GET, URI.create("https://test.no/api/test")).build()
+            val mockedExchangeFunction: ExchangeFunction = mockk()
+
+            every { EksternBrukerUtils.getBearerTokenForLoggedInUser() } returns "bruker-token"
+            every { tokenXClient.hentToken(any(), any()) } throws RuntimeException("Token exchange feilet")
+
+            // Act & Assert
+            assertThrows<RuntimeException> {
+                exchangeTokenXBearerTokenFilter.filter(request, mockedExchangeFunction).block()
+            }
         }
     }
 
@@ -159,7 +141,4 @@ class GraphQLWebClientConfigTest {
                 .containsEntry(NavHttpHeaders.NAV_CONSUMER_ID.asString(), appName)
         }
     }
-
-    @Nested
-    inner class CallIdFilter
 }

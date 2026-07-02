@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.client.rest
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
 import no.nav.familie.integrasjoner.journalpost.internal.SafError
@@ -22,27 +23,40 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.slf4j.MDC
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.client.RestOperations
-import org.springframework.web.client.exchange
+import org.springframework.core.ParameterizedTypeReference
+import org.springframework.web.client.RestClient
 import java.net.URI
 
 class SafRestClientTest {
-    private val restOperations: RestOperations = mockk()
-    private val safRestClient: SafRestClient = SafRestClient(safBaseUrl = URI.create("pdl"), restTemplate = restOperations)
+    private val restClient: RestClient = mockk()
+    private val requestBodyUriSpec: RestClient.RequestBodyUriSpec = mockk()
+    private val requestBodySpec: RestClient.RequestBodySpec = mockk()
+    private val responseSpec: RestClient.ResponseSpec = mockk()
+    private val factory: EntraIDRestClientFactory =
+        mockk {
+            every { lagHybridRestKlient(any(), any()) } returns restClient
+        }
+    private val safRestClient: SafRestClient =
+        SafRestClient(
+            safBaseUrl = URI.create("http://saf"),
+            scope = "dummy-scope",
+            entraIDRestClientFactory = factory,
+        )
 
     @BeforeEach
     fun setUp() {
         mockkStatic(MDC::class)
         every { MDC.get(MDC_CALL_ID) } returns "123-321-412"
+
+        every { restClient.post() } returns requestBodyUriSpec
+        every { requestBodyUriSpec.uri(any<URI>()) } returns requestBodySpec
+        every { requestBodySpec.header(any<String>(), *anyVararg<String>()) } returns requestBodySpec
+        every { requestBodySpec.body(any<Any>()) } returns requestBodySpec
+        every { requestBodySpec.retrieve() } returns responseSpec
     }
 
     @Test
     fun finnJournalposter() {
-        // Arrange
         val safJournalpostRequest =
             SafJournalpostRequest(
                 SafRequestForBruker(
@@ -61,23 +75,14 @@ class SafRestClientTest {
                 errors = listOf(SafError(message = "Feilmelding", extensions = SafExtension(code = SafErrorCode.forbidden, classification = "Mangler tilgang"))),
             )
 
-        every {
-            restOperations.exchange<SafJournalpostResponse<SafJournalpostBrukerData>>(
-                url = URI("pdl/graphql"),
-                method = eq(HttpMethod.POST),
-                requestEntity = any<HttpEntity<SafJournalpostRequest>>(),
-            )
-        } answers {
-            ResponseEntity(response, HttpStatus.OK)
-        }
+        every { responseSpec.hint(any(), any()) } returns responseSpec
+        every { responseSpec.body(any<ParameterizedTypeReference<SafJournalpostResponse<SafJournalpostBrukerData>>>()) } returns response
 
-        // Act
         val journalpostForbiddenException =
             assertThrows<JournalpostForbiddenException> {
                 safRestClient.finnJournalposter(safJournalpostRequest)
             }
 
-        // Assert
         assertThat(journalpostForbiddenException.message).isEqualTo("Feilmelding")
     }
 }

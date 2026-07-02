@@ -98,7 +98,7 @@ class ModiaContextHolderControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        assertThat(response.body?.melding).isEqualTo("[modia.context.holder.hent][Feil ved henting av Modia context: 500 Server Error on GET request for \"http://localhost:28085/api/context\": \"Noe feilet\"]")
+        assertThat(response.body?.melding).isEqualTo("[modia.context.holder.hent][Feil ved henting av Modia context: 500 Server Error: \"Noe feilet\"]")
     }
 
     @Test
@@ -114,7 +114,7 @@ class ModiaContextHolderControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        assertThat(response.body?.melding).isEqualTo("[modia.context.holder.sett][Feil ved oppdatering av Modia context: 500 Server Error on POST request for \"http://localhost:28085/api/context\": \"Noe feilet\"]")
+        assertThat(response.body?.melding).isEqualTo("[modia.context.holder.sett][Feil ved oppdatering av Modia context: 500 Server Error: \"Noe feilet\"]")
     }
 
     @Test

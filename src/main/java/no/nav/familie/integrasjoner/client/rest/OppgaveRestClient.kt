@@ -1,12 +1,14 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import io.micrometer.core.instrument.Metrics
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.client.QueryParamUtil.toQueryParams
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.oppgave.OppgaveByttEnhetOgTilordnetRessurs
 import no.nav.familie.integrasjoner.oppgave.domene.LIMIT_MOT_OPPGAVE
 import no.nav.familie.integrasjoner.oppgave.domene.OppgaveRequest
 import no.nav.familie.integrasjoner.oppgave.domene.toDto
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
@@ -14,18 +16,15 @@ import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.log.mdc.MDCConstants
-import no.nav.familie.restklient.client.AbstractPingableRestClient
-import no.nav.familie.restklient.util.UriUtil
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpStatusCodeException
-import org.springframework.web.client.RestOperations
+import org.springframework.web.client.RestClient
+import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 import kotlin.math.min
@@ -33,10 +32,10 @@ import kotlin.math.min
 @Component
 class OppgaveRestClient(
     @Value("\${OPPGAVE_URL}") private val oppgaveBaseUrl: URI,
-    @Qualifier("jwtBearer") private val restTemplate: RestOperations,
-) : AbstractPingableRestClient(restTemplate, "oppgave") {
-    override val pingUri = UriUtil.uri(oppgaveBaseUrl, PATH_PING)
-
+    @Value("\${OPPGAVE_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
+) {
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
     private val returnerteIngenOppgaver = Metrics.counter("oppslag.oppgave.response", "antall.oppgaver", "ingen")
     private val returnerteMerEnnEnOppgave = Metrics.counter("oppslag.oppgave.response", "antall.oppgaver", "flerEnnEn")
 
@@ -59,7 +58,12 @@ class OppgaveRestClient(
 
     fun finnOppgaveMedId(oppgaveId: Long): Oppgave =
         try {
-            getForEntity(requestUrl(oppgaveId), httpHeaders())
+            restClient
+                .get()
+                .uri(requestUrl(oppgaveId))
+                .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+                .retrieve()
+                .body<Oppgave>()!!
         } catch (e: HttpClientErrorException) {
             if (e.statusCode == HttpStatus.FORBIDDEN) {
                 throw OppslagException(
@@ -95,7 +99,12 @@ class OppgaveRestClient(
         var offset = oppgaveRequest.offset
 
         val oppgaverOgAntall =
-            getForEntity<FinnOppgaveResponseDto>(buildOppgaveRequestUri(oppgaveRequest), httpHeaders())
+            restClient
+                .get()
+                .uri(buildOppgaveRequestUri(oppgaveRequest))
+                .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+                .retrieve()
+                .body<FinnOppgaveResponseDto>()!!
         val oppgaver: MutableList<Oppgave> = oppgaverOgAntall.oppgaver.toMutableList()
         val grense =
             if (finnOppgaveRequest.limit == null) {
@@ -107,20 +116,18 @@ class OppgaveRestClient(
 
         while (offset < grense) {
             val nyeOppgaver =
-                getForEntity<FinnOppgaveResponseDto>(
-                    buildOppgaveRequestUri(
-                        oppgaveRequest
-                            .copy(
+                restClient
+                    .get()
+                    .uri(
+                        buildOppgaveRequestUri(
+                            oppgaveRequest.copy(
                                 offset = offset,
-                                limit =
-                                    min(
-                                        (grense - offset),
-                                        LIMIT_MOT_OPPGAVE,
-                                    ),
+                                limit = min(grense - offset, LIMIT_MOT_OPPGAVE),
                             ),
-                    ),
-                    httpHeaders(),
-                )
+                        ),
+                    ).header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+                    .retrieve()
+                    .body<FinnOppgaveResponseDto>()!!
             oppgaver.addAll(nyeOppgaver.oppgaver)
             offset += LIMIT_MOT_OPPGAVE
         }
@@ -128,16 +135,24 @@ class OppgaveRestClient(
         return FinnOppgaveResponseDto(oppgaverOgAntall.antallTreffTotalt, oppgaver)
     }
 
-    fun finnMapper(finnMappeRequest: FinnMappeRequest): FinnMappeResponseDto = getForEntity(buildMappeRequestUri(finnMappeRequest), httpHeaders())
+    fun finnMapper(finnMappeRequest: FinnMappeRequest): FinnMappeResponseDto =
+        restClient
+            .get()
+            .uri(buildMappeRequestUri(finnMappeRequest))
+            .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+            .retrieve()
+            .body<FinnMappeResponseDto>()!!
 
     fun oppdaterOppgave(patchDto: Oppgave): Oppgave? =
         Result
             .runCatching {
-                patchForEntity<Oppgave>(
-                    requestUrl(patchDto.id ?: error("Kan ikke finne oppgaveId på oppgaven")),
-                    patchDto,
-                    httpHeaders(),
-                )
+                restClient
+                    .patch()
+                    .uri(requestUrl(patchDto.id ?: error("Kan ikke finne oppgaveId på oppgaven")))
+                    .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+                    .body(patchDto)
+                    .retrieve()
+                    .body<Oppgave>()!!
             }.fold(
                 onSuccess = { it },
                 onFailure = {
@@ -169,11 +184,13 @@ class OppgaveRestClient(
     fun oppdaterEnhetOgTilordnetRessurs(byttEnhetOgTilordnetRessursPatch: OppgaveByttEnhetOgTilordnetRessurs): Oppgave? =
         Result
             .runCatching {
-                patchForEntity<Oppgave>(
-                    requestUrl(byttEnhetOgTilordnetRessursPatch.id),
-                    byttEnhetOgTilordnetRessursPatch,
-                    httpHeaders(),
-                )
+                restClient
+                    .patch()
+                    .uri(requestUrl(byttEnhetOgTilordnetRessursPatch.id))
+                    .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+                    .body(byttEnhetOgTilordnetRessursPatch)
+                    .retrieve()
+                    .body<Oppgave>()!!
             }.fold(
                 onSuccess = { it },
                 onFailure = {
@@ -200,8 +217,15 @@ class OppgaveRestClient(
                 .build()
                 .toUri()
         return Result
-            .runCatching { postForEntity<Oppgave>(uri, dto, httpHeaders()) }
-            .map { it.id ?: error("Kan ikke finne oppgaveId på oppgaven $it") }
+            .runCatching {
+                restClient
+                    .post()
+                    .uri(uri)
+                    .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+                    .body(dto)
+                    .retrieve()
+                    .body<Oppgave>()!!
+            }.map { it.id ?: error("Kan ikke finne oppgaveId på oppgaven $it") }
             .onFailure {
                 var feilmelding = "Feil ved oppretting av oppgave for ${dto.aktoerId?.let { it } ?: dto.personident}."
                 if (it is HttpStatusCodeException) {
@@ -244,8 +268,12 @@ class OppgaveRestClient(
 
     private fun requestOppgaveJson(requestUrl: URI): Oppgave {
         val finnOppgaveResponseDto =
-            getForEntity<FinnOppgaveResponseDto>(requestUrl, httpHeaders())
-                ?: error("Response fra FinnOppgave er null")
+            restClient
+                .get()
+                .uri(requestUrl)
+                .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+                .retrieve()
+                .body<FinnOppgaveResponseDto>()!!
         if (finnOppgaveResponseDto.oppgaver.isEmpty()) {
             returnerteIngenOppgaver.increment()
             throw OppslagException(
@@ -262,13 +290,7 @@ class OppgaveRestClient(
         return finnOppgaveResponseDto.oppgaver[0]
     }
 
-    private fun httpHeaders(): HttpHeaders =
-        HttpHeaders().apply {
-            add(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
-        }
-
     companion object {
-        private const val PATH_PING = "internal/alive"
         private const val PATH_OPPGAVE = "/api/v1/oppgaver"
         private const val PATH_MAPPE = "/api/v1/mapper"
         private val KONTANTSTØTTE_TEMA = Tema.KON
