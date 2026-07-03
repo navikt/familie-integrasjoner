@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
@@ -34,7 +35,7 @@ class SkyggesakRestClient(
                 .uri(sakUri)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
-                .headers { it.setBearerAuth(stsRestClient.systemOIDCToken) }
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + stsRestClient.systemOIDCToken)
                 .body(request)
                 .retrieve()
                 .toBodilessEntity()
