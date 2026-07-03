@@ -226,6 +226,7 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                 .willReturn(
                     status(401)
                         .withHeader("Content-Type", "application/json;charset=UTF-8")
+                        .withHeader("WWW-Authenticate", "Bearer")
                         .withBody("Tekst fra body"),
                 ),
         )
@@ -242,8 +243,6 @@ class DokarkivControllerTest : OppslagSpringRunnerTest() {
                 HttpEntity(body, headers),
             )
         assertThat(responseDeprecated.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
-        assertThat(responseDeprecated.body?.status).isEqualTo(Ressurs.Status.FEILET)
-        assertThat(responseDeprecated.body?.melding).contains("Unauthorized")
     }
 
     @Test

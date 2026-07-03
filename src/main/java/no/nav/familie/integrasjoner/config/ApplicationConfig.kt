@@ -3,8 +3,6 @@ package no.nav.familie.integrasjoner.config
 import no.nav.familie.log.NavSystemtype
 import no.nav.familie.log.filter.LogFilter
 import no.nav.familie.log.filter.RequestTimeFilter
-import no.nav.familie.restklient.config.NaisProxyCustomizer
-import no.nav.familie.restklient.config.RestTemplateSts
 import no.nav.familie.sikkerhet.context.FamilieFellesSpringSecurityKonfigurasjon
 import org.slf4j.LoggerFactory
 import org.springframework.boot.SpringBootConfiguration
@@ -23,7 +21,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 )
 @ConfigurationPropertiesScan
 @EnableScheduling
-@Import(NaisProxyCustomizer::class, FamilieFellesSpringSecurityKonfigurasjon::class, RestTemplateSts::class)
+@Import(FamilieFellesSpringSecurityKonfigurasjon::class)
 class ApplicationConfig {
     private val logger = LoggerFactory.getLogger(ApplicationConfig::class.java)
 

@@ -22,7 +22,7 @@
         <java.version>25</java.version>
         <kotlin.version>2.3.21</kotlin.version>
         <springdoc.version>3.0.3</springdoc.version>
-        <felles.version>4.20260622095330_affbfcf</felles.version>
+        <felles.version>4.20260702123833_b6bbb7f</felles.version>
         <kontrakter.version>4.0_20260622103258_a3e0997</kontrakter.version>
         <token-validation-spring.version>6.0.11</token-validation-spring.version>
         <graphql-kotlin.version>10.0.1</graphql-kotlin.version>
@@ -128,11 +128,6 @@
         <dependency>
             <groupId>no.nav.familie.felles</groupId>
             <artifactId>token-klient</artifactId>
-            <version>${felles.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>no.nav.familie.felles</groupId>
-            <artifactId>rest-klient</artifactId>
             <version>${felles.version}</version>
         </dependency>
         <dependency>
