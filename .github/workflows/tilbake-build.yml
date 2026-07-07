@@ -34,7 +34,7 @@ jobs:
         run: mvn -B --no-transfer-progress package --settings .m2/maven-settings.xml --file pom.xml
 
       - name: Bygg og push docker image
-        uses: nais/docker-build-push@05dbb6091b30bd84279c6d64a45ef8782fd410a5 # ratchet:nais/docker-build-push@v0
+        uses: nais/docker-build-push@31c3a7321909bcb20799fdf46153fec721fd9512 # ratchet:nais/docker-build-push@v0
         id: docker-push
         with:
           team: tilbake
