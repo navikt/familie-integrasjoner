@@ -157,6 +157,7 @@ class ApiExceptionHandler {
 
         return ResponseEntity
             .status(e.httpStatus)
+            .headers { if (e.httpStatus.value() == 401) it.set("WWW-Authenticate", "Bearer") }
             .body(failure(feilmelding, error = e))
     }
 

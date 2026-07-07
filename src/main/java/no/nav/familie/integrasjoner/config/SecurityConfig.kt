@@ -110,6 +110,7 @@ class SecurityConfig(
         AuthenticationEntryPoint { _: HttpServletRequest, response: HttpServletResponse, _: AuthenticationException ->
             response.apply {
                 status = HttpServletResponse.SC_UNAUTHORIZED
+                setHeader("WWW-Authenticate", "Bearer")
                 contentType = MediaType.APPLICATION_JSON_VALUE
                 characterEncoding = Charsets.UTF_8.name()
                 jsonMapper.writeValue(
