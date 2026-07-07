@@ -1,7 +1,6 @@
 package no.nav.familie.integrasjoner.config
 
-import no.nav.familie.kontrakter.felles.jsonMapper
-import no.nav.familie.restklient.sts.StsRestClient
+import no.nav.familie.felles.tokenklient.sts.StsRestClient
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -19,6 +18,6 @@ class IntegrasjonConfig {
     ): StsRestClient {
         val stsFullUrl = URI.create(stsUrl.toString() + "?grant_type=client_credentials&scope=openid")
 
-        return StsRestClient(jsonMapper, stsFullUrl, stsUsername, stsPassword, null)
+        return StsRestClient(stsFullUrl.toString(), stsUsername, stsPassword, null)
     }
 }

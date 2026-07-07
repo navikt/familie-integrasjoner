@@ -49,7 +49,7 @@ import java.time.LocalDateTime
     ConfigureWireMock(name = "HentJournalpostControllerTest", port = 28085),
 )
 @TestPropertySource(properties = ["SAF_URL=http://localhost:28085"])
-@ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth", "mock-egenansatt-false")
+@ActiveProfiles("integrasjonstest", "mock-oauth", "mock-egenansatt-false")
 class HentJournalpostControllerTest : OppslagSpringRunnerTest() {
     private val testLogger = LoggerFactory.getLogger(HentJournalpostController::class.java) as Logger
 

@@ -25,7 +25,7 @@ import org.wiremock.spring.ConfigureWireMock
 import org.wiremock.spring.EnableWireMock
 import java.util.UUID
 
-@ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
+@ActiveProfiles("integrasjonstest", "mock-oauth")
 @TestPropertySource(properties = ["AAD_GRAPH_API_URI=http://localhost:28085"])
 @EnableWireMock(
     ConfigureWireMock(name = "saksbehandler", port = 28085),

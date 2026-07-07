@@ -21,7 +21,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.util.UriComponentsBuilder
 import java.lang.reflect.Method
 
-@ActiveProfiles("integrasjonstest", "mock-sts", "mock-oauth")
+@ActiveProfiles("integrasjonstest")
 class FiloverføringAdraMatchControllerTest : OppslagSpringRunnerTest() {
     @field:RegisterExtension
     private val sftpServer = FakeSftpServerExtension(MOCK_SFTP_SERVER_PORT)
