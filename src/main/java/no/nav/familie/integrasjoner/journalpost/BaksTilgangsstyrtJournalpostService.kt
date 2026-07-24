@@ -49,13 +49,12 @@ class BaksTilgangsstyrtJournalpostService(
             }
         } catch (e: MissingVersionException) {
             logger.warn("Får ikke sjekket tilgang til digital søknad tilknyttet journalpost ${journalpost.journalpostId}.")
-            secureLogger.warn("Feil ved deserialisering av digital søknad ifbm sjekk av tilgang.", e)
-            // For gamle søknader, før 'kontraktVersjon' ble innført, har vi ingen måte å bestemme konkret klasse å deserialisere til.
+            secureLogger.warn("Feil ved deserialisering av digital søknad ifbm sjekk av tilgang: " + (e.message?.take(50))) // For gamle søknader, før 'kontraktVersjon' ble innført, har vi ingen måte å bestemme konkret klasse å deserialisere til.
             // Gir tilgang basert på antagelsen om at fagsak relatert til gamle søknader allerede er satt til Vikafossen dersom det finnes kode 6, 7 eller 19 personer i søknad.
             JournalpostTilgang(harTilgang = true)
         } catch (e: UnsupportedVersionException) {
             logger.error("Får ikke sjekket tilgang til digital søknad tilknyttet journalpost ${journalpost.journalpostId}, da vi mangler støtte for kontraktversjon.")
-            secureLogger.error("Feil ved deserialisering av digital søknad ifbm sjekk av tilgang.", e)
+            secureLogger.error("Feil ved deserialisering av digital søknad ifbm sjekk av tilgang" + (e.message?.take(50)))
             // Hindrer tilgang og logger Error da vi burde kunne deserialisere alle baks-søknader med feltet `kontraktVersjon`.
             JournalpostTilgang(harTilgang = false)
         }
