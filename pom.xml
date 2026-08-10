@@ -20,12 +20,12 @@
         <sha1></sha1>
         <changelist>-SNAPSHOT</changelist>
         <java.version>25</java.version>
-        <kotlin.version>2.3.21</kotlin.version>
-        <springdoc.version>3.0.3</springdoc.version>
-        <felles.version>4.20260702124222_2415d74</felles.version>
-        <kontrakter.version>4.0_20260702124405_ce34af2</kontrakter.version>
+        <kotlin.version>2.4.10</kotlin.version>
+        <springdoc.version>3.1.0</springdoc.version>
+        <felles.version>4.20260807140555_998c828</felles.version>
+        <kontrakter.version>4.0_20260730124851_08988e0</kontrakter.version>
         <token-validation-spring.version>6.0.11</token-validation-spring.version>
-        <graphql-kotlin.version>10.1.2</graphql-kotlin.version>
+        <graphql-kotlin.version>10.2.0</graphql-kotlin.version>
     </properties>
 
     <dependencies>
@@ -75,7 +75,7 @@
         <dependency>
             <groupId>org.wiremock.integrations</groupId>
             <artifactId>wiremock-spring-boot-standalone</artifactId>
-            <version>4.2.1</version>
+            <version>4.2.2</version>
             <scope>test</scope>
         </dependency>
 
@@ -117,7 +117,7 @@
         <dependency>
             <groupId>no.nav.security</groupId>
             <artifactId>mock-oauth2-server</artifactId>
-            <version>5.0.2</version>
+            <version>6.0.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -386,7 +386,7 @@
                 <!-- For å få dependency graph i SLSA som pushes av docker-build-push parameter byosbom -->
                 <groupId>org.cyclonedx</groupId>
                 <artifactId>cyclonedx-maven-plugin</artifactId>
-                <version>2.9.2</version>
+                <version>2.9.3</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
