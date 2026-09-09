@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.client.rest
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.felles.graphqlQuery
 import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
@@ -19,6 +20,7 @@ import no.nav.familie.kontrakter.felles.journalpost.Bruker
 import no.nav.familie.kontrakter.felles.journalpost.Journalposttype
 import no.nav.familie.log.mdc.MDCConstants.MDC_CALL_ID
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -53,6 +55,11 @@ class SafRestClientTest {
         every { requestBodySpec.header(any<String>(), *anyVararg<String>()) } returns requestBodySpec
         every { requestBodySpec.body(any<Any>()) } returns requestBodySpec
         every { requestBodySpec.retrieve() } returns responseSpec
+    }
+
+    @AfterEach
+    fun tearDown() {
+        unmockkStatic(MDC::class)
     }
 
     @Test
