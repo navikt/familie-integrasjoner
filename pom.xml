@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.0</version>
+        <version>4.1.1</version>
     </parent>
 
     <groupId>no.nav.familie.integrasjoner</groupId>
@@ -22,10 +22,10 @@
         <java.version>25</java.version>
         <kotlin.version>2.4.10</kotlin.version>
         <springdoc.version>3.1.0</springdoc.version>
-        <felles.version>4.20260809152656_dbeaaee</felles.version>
-        <kontrakter.version>4.0_20260810095031_5908ad3</kontrakter.version>
+        <felles.version>4.20260818093920_16ad74a</felles.version>
+        <kontrakter.version>4.0_20260821102510_33ea755</kontrakter.version>
         <token-validation-spring.version>6.0.12</token-validation-spring.version>
-        <graphql-kotlin.version>10.2.1</graphql-kotlin.version>
+        <graphql-kotlin.version>10.2.2</graphql-kotlin.version>
     </properties>
 
     <dependencies>
@@ -117,7 +117,7 @@
         <dependency>
             <groupId>no.nav.security</groupId>
             <artifactId>mock-oauth2-server</artifactId>
-            <version>6.0.0</version>
+            <version>6.0.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
