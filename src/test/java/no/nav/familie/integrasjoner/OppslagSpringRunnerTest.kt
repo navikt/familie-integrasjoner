@@ -5,7 +5,9 @@ import ch.qos.logback.core.read.ListAppender
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
+import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.resttestclient.TestRestTemplate
 import org.springframework.boot.test.context.SpringBootTest
@@ -35,10 +37,16 @@ abstract class OppslagSpringRunnerTest {
     @LocalServerPort
     private val port = 0
 
+    @BeforeEach
+    fun clearMdcBeforeTest() {
+        MDC.clear()
+    }
+
     @AfterEach
     fun reset() {
         loggingEvents.clear()
         headers.clear()
+        MDC.clear()
         clearCaches()
     }
 
