@@ -20,11 +20,11 @@
         <sha1></sha1>
         <changelist>-SNAPSHOT</changelist>
         <java.version>25</java.version>
-        <kotlin.version>2.4.10</kotlin.version>
+        <kotlin.version>2.4.20</kotlin.version>
         <springdoc.version>3.1.1</springdoc.version>
         <felles.version>4.20260818093920_16ad74a</felles.version>
-        <kontrakter.version>4.0_20260918153552_a46909e</kontrakter.version>
-        <token-validation-spring.version>6.0.12</token-validation-spring.version>
+        <kontrakter.version>4.0_20261002154824_b2c190a</kontrakter.version>
+        <token-validation-spring.version>6.0.13</token-validation-spring.version>
         <graphql-kotlin.version>10.2.2</graphql-kotlin.version>
     </properties>
 
@@ -75,7 +75,7 @@
         <dependency>
             <groupId>org.wiremock.integrations</groupId>
             <artifactId>wiremock-spring-boot-standalone</artifactId>
-            <version>4.2.3</version>
+            <version>4.4.2</version>
             <scope>test</scope>
         </dependency>
 
@@ -117,7 +117,7 @@
         <dependency>
             <groupId>no.nav.security</groupId>
             <artifactId>mock-oauth2-server</artifactId>
-            <version>6.0.2</version>
+            <version>6.0.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
