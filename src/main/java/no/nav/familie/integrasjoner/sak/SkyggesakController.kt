@@ -3,6 +3,7 @@ package no.nav.familie.integrasjoner.sak
 import no.nav.familie.integrasjoner.client.rest.SkyggesakRestClient
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
+import org.springframework.context.annotation.Profile
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/skyggesak")
+@Profile("!gcp")
 class SkyggesakController(
     private val skyggesakRestClient: SkyggesakRestClient,
 ) {

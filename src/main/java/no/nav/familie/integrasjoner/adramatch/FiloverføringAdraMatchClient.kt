@@ -5,10 +5,12 @@ import com.jcraft.jsch.JSch
 import com.jcraft.jsch.Session
 import no.nav.familie.integrasjoner.config.FiloverføringAdraMatchConfig
 import no.nav.familie.kontrakter.felles.Fil
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import java.io.ByteArrayInputStream
 
 @Service
+@Profile("!gcp")
 class FiloverføringAdraMatchClient(
     private val config: FiloverføringAdraMatchConfig,
 ) {

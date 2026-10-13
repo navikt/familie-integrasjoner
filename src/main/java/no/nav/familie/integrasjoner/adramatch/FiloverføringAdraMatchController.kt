@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping(value = ["/api/adramatch/avstemming"])
-@Profile("!e2e")
+@Profile("!e2e & !gcp")
 class FiloverføringAdraMatchController(
     private val sftpClient: FiloverføringAdraMatchClient,
 ) {

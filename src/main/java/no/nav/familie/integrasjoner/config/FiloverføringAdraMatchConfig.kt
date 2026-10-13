@@ -1,9 +1,11 @@
 package no.nav.familie.integrasjoner.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.context.annotation.Profile
 import java.util.Base64
 
 @ConfigurationProperties("sftp")
+@Profile("!gcp")
 class FiloverføringAdraMatchConfig(
     val username: String,
     val host: String,
