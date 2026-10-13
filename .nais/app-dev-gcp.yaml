@@ -110,6 +110,6 @@ spec:
       runtime: java
   env:
     - name: SPRING_PROFILES_ACTIVE
-      value: preprod,gcp
+      value: gcp
     - name: ON_PREM_URL_ENV
       value: dev

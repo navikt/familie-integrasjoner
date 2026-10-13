@@ -1,3 +1,34 @@
+tilgang:
+  kode6:
+    rolle-id: "a1b518e2-3947-478d-8929-e5d685c47cac"
+    beskrivelse: Strengt fortrolig adresse
+  kode7:
+    rolle-id: "2e1dc582-f762-4510-a660-88bf68fb7128"
+    beskrivelse: Fortrolig adresse
+  egenAnsatt:
+    rolle-id: "dbe4ad45-320b-4e9a-aaa1-73cca4ee124d"
+    beskrivelse: NAV-ansatt
+
+CLIENT_SECRET: ${AZURE_APP_CLIENT_SECRET}
+KODEVERK_SCOPE: api://dev-gcp.team-rocket.kodeverk-api/.default
+DOKARKIV_SCOPE: api://dev-fss.teamdokumenthandtering.dokarkiv/.default
+DOKDIST_SCOPE: api://dev-fss.teamdokumenthandtering.dokdistfordeling/.default
+PDL_SCOPE: api://dev-fss.pdl.pdl-api/.default
+DOKDISTKANAL_SCOPE: api://dev-fss.teamdokumenthandtering.dokdistkanal/.default
+REGOPPSLAG_SCOPE: api://dev-fss.teamdokumenthandtering.regoppslag/.default
+AAREG_SCOPE: api://dev-fss.arbeidsforhold.aareg-services-nais-q1/.default
+FORSTESIDEGENERATOR_SCOPE: api://dev-fss.teamdokumenthandtering.foerstesidegenerator/.default
+MODIA_CONTEXT_HOLDER_SCOPE: api://dev-gcp.personoversikt.modiacontextholder/.default
+OPPGAVE_SCOPE: api://dev-fss.oppgavehandtering.oppgave/.default
+SAF_SCOPE: api://dev-fss.teamdokumenthandtering.saf/.default
+SAF_TOKENX_SCOPE: dev-fss:teamdokumenthandtering:safselvbetjening
+
+AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
+KODEVERK_URL: https://kodeverk-api.nav.no
+NORG2_URL: https://norg2.dev.adeo.no/norg2/
+MODIA_CONTEXT_HOLDER_URL: https://modiacontextholder.intern.dev.nav.no
+ARBEID_INNTEKT_URL: https://arbeid-og-inntekt.dev.adeo.no
+
 ORGANISASJON_URL: https://ereg-services-${ON_PREM_URL_ENV}-fss-pub.nais.io
 DOKARKIV_V1_URL: https://dokarkiv-${ON_PREM_URL_ENV}-fss-pub.nais.io
 PDL_URL: https://pdl-api-${ON_PREM_URL_ENV}-fss-pub.nais.io
