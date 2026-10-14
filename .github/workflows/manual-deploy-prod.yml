@@ -44,7 +44,7 @@ jobs:
         run: mvn -B --no-transfer-progress package ${{ inputs.skip-tests && '-DskipTests' || '' }} --settings .m2/maven-settings.xml --file pom.xml
 
       - name: Build and push docker image
-        uses: nais/docker-build-push@0e73849f69ff260ee27597553c0a7848ca4e9795 # ratchet:nais/docker-build-push@v0
+        uses: nais/docker-build-push@423a915c9b72edf2ba848b88171ccb0489e2a40a # ratchet:nais/docker-build-push@v0
         id: docker-push
         with:
           team: teamfamilie
@@ -65,7 +65,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v4
 
       - name: Deploy to prod-fss namespace
-        uses: nais/deploy/actions/deploy@1de80da70ad26556ecdc5964a8b7ec3bbed98120 # ratchet:nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@9850be311389ca754d9a9f2280615419d738c891 # ratchet:nais/deploy/actions/deploy@v3
         env:
           CLUSTER: prod-fss
           RESOURCE: .nais/app-prod.yaml
