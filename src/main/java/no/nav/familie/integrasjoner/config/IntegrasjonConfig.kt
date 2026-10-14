@@ -10,7 +10,7 @@ import java.net.URI
 @Configuration
 class IntegrasjonConfig {
     @Bean
-    @Profile("!mock-sts")
+    @Profile("!mock-sts & !gcp")
     fun stsRestClient(
         @Value("\${STS_URL}") stsUrl: URI?,
         @Value("\${CREDENTIAL_USERNAME}") stsUsername: String,

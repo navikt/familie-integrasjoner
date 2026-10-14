@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -19,6 +20,7 @@ import org.springframework.web.client.RestClientException
 import java.net.URI
 
 @Component
+@Profile("!gcp")
 class SkyggesakRestClient(
     @Value("\${SKYGGE_SAK_URL}") private val skyggesakUrl: String,
     @Qualifier("utenAuthHttpClient") private val restClient: RestClient,
