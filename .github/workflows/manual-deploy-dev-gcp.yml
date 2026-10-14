@@ -1,0 +1,65 @@
+name: Manual deploy dev-gcp
+on:
+  workflow_dispatch:
+    inputs:
+      skip-tests:
+        description: 'Skip tests?'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: "read"
+  id-token: "write"
+
+jobs:
+  build:
+    name: Build and push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # ratchet:actions/setup-java@v4
+        with:
+          java-version: 25
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build with Maven
+        env:
+          GITHUB_USERNAME: x-access-token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn -B --no-transfer-progress package ${{ inputs.skip-tests && '-DskipTests' || '' }} --settings .m2/maven-settings.xml --file pom.xml
+
+      - name: Build and push docker image
+        uses: nais/docker-build-push@0e73849f69ff260ee27597553c0a7848ca4e9795 # ratchet:nais/docker-build-push@v0
+        id: docker-push
+        with:
+          team: teamfamilie
+          tag: latest
+          byosbom: target/classes/META-INF/sbom/application.cdx.json
+    outputs:
+      image: ${{ steps.docker-push.outputs.image }}
+
+  deploy:
+    name: Deploy to dev-gcp
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v4
+
+      - name: Deploy to dev-gcp namespace with GCP profile
+        uses: nais/deploy/actions/deploy@1de80da70ad26556ecdc5964a8b7ec3bbed98120 # ratchet:nais/deploy/actions/deploy@v2
+        env:
+          CLUSTER: dev-gcp
+          RESOURCE: .nais/app-dev-gcp.yaml
+          VAR: image=${{ needs.build.outputs.image }}
