@@ -22,7 +22,7 @@
         <java.version>25</java.version>
         <kotlin.version>2.4.20</kotlin.version>
         <springdoc.version>3.1.1</springdoc.version>
-        <felles.version>4.20261007140752_857f456</felles.version>
+        <felles.version>4.20261014144209_63578dc</felles.version>
         <kontrakter.version>4.0_20261002154824_b2c190a</kontrakter.version>
         <token-validation-spring.version>6.0.13</token-validation-spring.version>
         <graphql-kotlin.version>10.2.2</graphql-kotlin.version>
