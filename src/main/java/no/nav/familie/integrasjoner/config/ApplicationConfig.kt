@@ -1,5 +1,6 @@
 package no.nav.familie.integrasjoner.config
 
+import no.nav.familie.felles.tokenklient.sts.StsRestClient
 import no.nav.familie.log.NavSystemtype
 import no.nav.familie.log.filter.LogFilter
 import no.nav.familie.log.filter.RequestTimeFilter
@@ -10,6 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.FilterType
 import org.springframework.context.annotation.Import
 import org.springframework.scheduling.annotation.EnableScheduling
 
@@ -18,6 +20,12 @@ import org.springframework.scheduling.annotation.EnableScheduling
     "no.nav.familie.integrasjoner",
     "no.nav.familie.metrikker",
     "no.nav.familie.felles.tokenklient",
+    excludeFilters = [
+        ComponentScan.Filter(
+            type = FilterType.ASSIGNABLE_TYPE,
+            classes = [StsRestClient::class],
+        ),
+    ],
 )
 @ConfigurationPropertiesScan
 @EnableScheduling
