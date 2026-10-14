@@ -20,12 +20,12 @@
         <sha1></sha1>
         <changelist>-SNAPSHOT</changelist>
         <java.version>25</java.version>
-        <kotlin.version>2.4.20</kotlin.version>
+        <kotlin.version>2.4.21</kotlin.version>
         <springdoc.version>3.1.1</springdoc.version>
         <felles.version>4.20261014144209_63578dc</felles.version>
-        <kontrakter.version>4.0_20261002154824_b2c190a</kontrakter.version>
+        <kontrakter.version>4.0_20261014103049_c61507f</kontrakter.version>
         <token-validation-spring.version>6.0.13</token-validation-spring.version>
-        <graphql-kotlin.version>10.2.2</graphql-kotlin.version>
+        <graphql-kotlin.version>11.0.0</graphql-kotlin.version>
     </properties>
 
     <dependencies>
@@ -117,7 +117,7 @@
         <dependency>
             <groupId>no.nav.security</groupId>
             <artifactId>mock-oauth2-server</artifactId>
-            <version>6.0.4</version>
+            <version>6.0.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
