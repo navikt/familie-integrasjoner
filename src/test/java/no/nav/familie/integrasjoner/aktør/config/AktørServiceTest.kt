@@ -3,12 +3,17 @@ package no.nav.familie.integrasjoner.aktør.config
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import no.nav.familie.integrasjoner.aktør.AktørService
 import no.nav.familie.integrasjoner.client.rest.PdlRestClient
 import no.nav.familie.integrasjoner.config.CacheConfig
+import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.kontrakter.felles.Tema
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.CacheManager
@@ -26,6 +31,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
 class AktørServiceTest {
     @Autowired
     private lateinit var pdlRestClient: PdlRestClient
+
+    @Autowired
+    private lateinit var aktørService: AktørService
 
     @Autowired
     private lateinit var cacheManager: CacheManager
@@ -57,6 +65,25 @@ class AktørServiceTest {
     fun tearDown() {
         clearMocks(pdlRestClient)
         cacheManager.cacheNames.forEach { cacheManager.getCache(it)!!.clear() }
+    }
+
+    @Test
+    fun `renser bort fnutter og andre tegn fra aktør-ID før oppslag i PDL`() {
+        val aktørIdMedFnutter = "\"$TESTAKTORID\""
+
+        val personIdent = aktørService.getPersonIdentFraPdl(aktørIdMedFnutter, Tema.ENF)
+
+        assertThat(personIdent).isEqualTo(PERSONIDENT)
+        verify(exactly = 1) { pdlRestClient.hentGjeldendePersonident(TESTAKTORID, Tema.ENF) }
+    }
+
+    @Test
+    fun `avviser aktør-ID uten sifre uten å kalle PDL`() {
+        assertThatThrownBy { aktørService.getPersonIdentFraPdl("\"-\"", Tema.ENF) }
+            .isInstanceOf(OppslagException::class.java)
+            .hasFieldOrPropertyWithValue("httpStatus", org.springframework.http.HttpStatus.BAD_REQUEST)
+
+        verify(exactly = 0) { pdlRestClient.hentGjeldendePersonident(any(), any()) }
     }
 
     companion object {
