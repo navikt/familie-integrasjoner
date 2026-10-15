@@ -5,6 +5,7 @@ import no.nav.familie.integrasjoner.journalpost.JournalpostForbiddenException
 import no.nav.familie.integrasjoner.journalpost.JournalpostNotFoundException
 import no.nav.familie.integrasjoner.journalpost.JournalpostRequestException
 import no.nav.familie.integrasjoner.journalpost.JournalpostRestClientException
+import no.nav.familie.integrasjoner.journalpost.selvbetjening.SafSelvbetjeningException
 import no.nav.familie.integrasjoner.personopplysning.PdlGeografiskTilknytningNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.PdlUnauthorizedException
@@ -13,7 +14,9 @@ import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
 import no.nav.security.token.support.client.core.OAuth2ClientException
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.LoggerFactory
+import org.springframework.core.NestedExceptionUtils
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MissingRequestHeaderException
@@ -102,12 +105,38 @@ class ApiExceptionHandler {
 
     @ExceptionHandler(Exception::class)
     fun handleException(e: Exception): ResponseEntity<Ressurs<Any>> {
-        secureLogger.error("Exception : ", e)
-        logger.warn("Exception : {} - se securelog for detaljer", e.javaClass.name)
+        val mostSpecificCause = NestedExceptionUtils.getMostSpecificCause(e)
+        secureLogger.error("Exception : {} - mostSpecificCause: {}", e.javaClass.name, mostSpecificCause.message, e)
+        logger.warn(
+            "Exception : {} - mostSpecificCause: {} - se securelog for detaljer",
+            e.javaClass.name,
+            mostSpecificCause.javaClass.name,
+        )
 
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(failure("""Det oppstod en feil. ${e.message}""", error = e))
+            .body(failure("""Det oppstod en feil. ${e.message}""", error = mostSpecificCause))
+    }
+
+    /**
+     * Endepunktet for dokument fra SAF selvbetjening svarer med PDF. Content-Type settes eksplisitt slik at
+     * feilsvaret kan skrives som JSON selv om klienten sender Accept: application/pdf.
+     */
+    @ExceptionHandler(SafSelvbetjeningException::class)
+    fun handleSafSelvbetjeningException(e: SafSelvbetjeningException): ResponseEntity<Ressurs<Any>> {
+        val mostSpecificCause = NestedExceptionUtils.getMostSpecificCause(e)
+        val status = (mostSpecificCause as? RestClientResponseException)?.statusCode?.value()
+        secureLogger.warn("SafSelvbetjeningException : {}", e.message, e)
+        logger.warn(
+            "Feil mot SAF selvbetjening. status={} mostSpecificCause={} - se securelog for detaljer",
+            status,
+            mostSpecificCause.javaClass.name,
+        )
+
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(failure(errorMessage = "Feil ved henting av dokument fra SAF selvbetjening"))
     }
 
     @ExceptionHandler(PdlNotFoundException::class)
