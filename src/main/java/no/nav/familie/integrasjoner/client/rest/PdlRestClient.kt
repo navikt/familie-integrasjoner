@@ -25,13 +25,13 @@ import no.nav.familie.integrasjoner.personopplysning.internal.PdlResponse
 import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.kontrakter.felles.Tema
+import no.nav.familie.kontrakter.felles.jsonMapper
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import java.net.URI
 
@@ -125,6 +125,8 @@ class PdlRestClient(
                 variables = PdlIdentRequestVariables(ident, gruppe, historikk),
                 query = HENT_IDENTER_QUERY,
             )
+
+        secureLogger.info("PDL request for identer: ${jsonMapper.writeValueAsString(pdlPersonRequest)}")
 
         val response =
             try {
@@ -270,5 +272,6 @@ class PdlRestClient(
         private val HENT_IDENTER_QUERY = graphqlQuery("/pdl/hentIdenter.graphql")
         private val HENT_GEOGRAFISK_TILKNYTNING_QUERY = graphqlQuery("/pdl/geografisk_tilknytning.graphql")
         private val HENT_ADRESSEBESKYTTELSE_QUERY = graphqlQuery("/pdl/adressebeskyttelse.graphql")
+        private val secureLogger = LoggerFactory.getLogger("secureLogger")
     }
 }

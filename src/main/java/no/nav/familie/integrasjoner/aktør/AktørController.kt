@@ -3,6 +3,8 @@ package no.nav.familie.integrasjoner.aktør
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.success
 import no.nav.familie.kontrakter.felles.Tema
+import no.nav.familie.kontrakter.felles.jsonMapper
+import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -23,11 +25,30 @@ class AktørController(
     fun finnPersonIdentForAktørId(
         @RequestBody(required = true) aktørId: String,
         @PathVariable tema: Tema,
-    ): ResponseEntity<Ressurs<Map<String, String>>> =
-        ResponseEntity.ok(
+    ): ResponseEntity<Ressurs<Map<String, String>>> {
+        secureLogger.info(
+            "Oppslag fra aktør-ID. tema={}, requestBody={}",
+            tema,
+            jsonMapper.writeValueAsString(aktørId),
+        )
+
+        val personIdentFraPdl = aktørService.getPersonIdentFraPdl(aktørId, tema)
+
+        secureLogger.info(
+            "ident fra pdl for tema={}: {}",
+            tema,
+            jsonMapper.writeValueAsString(personIdentFraPdl),
+        )
+
+        return ResponseEntity.ok(
             success(
-                mapOf("personIdent" to aktørService.getPersonIdentFraPdl(aktørId, tema)),
+                mapOf("personIdent" to personIdentFraPdl),
                 "Hent aktør for personident OK",
             ),
         )
+    }
+
+    companion object {
+        private val secureLogger = LoggerFactory.getLogger("secureLogger")
+    }
 }
