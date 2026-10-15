@@ -15,7 +15,15 @@
     </appender>
 
     <appender name="stdout_json" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                <maxDepthPerThrowable>30</maxDepthPerThrowable>
+                <maxLength>10000</maxLength>
+                <shortenedClassNameLength>30</shortenedClassNameLength>
+                <rootCauseFirst>true</rootCauseFirst>
+                <exclude>^org\.springframework\.security\.web\.ObservationFilterChainDecorator</exclude>
+            </throwableConverter>
+        </encoder>
     </appender>
 
     <logger name="secureLogger" level="INFO" additivity="false">
