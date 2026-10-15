@@ -12,24 +12,34 @@ import no.nav.familie.integrasjoner.geografisktilknytning.PdlHentGeografiskTilkn
 import no.nav.familie.integrasjoner.personopplysning.PdlGeografiskTilknytningNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.PdlUnauthorizedException
-import no.nav.familie.integrasjoner.personopplysning.internal.*
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlAdressebeskyttelse
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlHentIdenter
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlIdent
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlIdentRequest
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlIdentRequestVariables
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlPerson
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonMedAdressebeskyttelse
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonRequest
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlPersonRequestVariables
+import no.nav.familie.integrasjoner.personopplysning.internal.PdlResponse
+import no.nav.familie.integrasjoner.personopplysning.internal.Person
 import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.kontrakter.felles.Tema
+import no.nav.familie.kontrakter.felles.jsonMapper
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.body
-import no.nav.familie.kontrakter.felles.jsonMapper
-import org.slf4j.LoggerFactory
 import java.net.URI
 
 @Service
 class PdlRestClient(
     @Value("\${PDL_URL}") pdlBaseUrl: URI,
     @Value("\${PDL_SCOPE}") scope: String,
-    entraIDRestClientFactory: EntraIDRestClientFactory
+    entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
     private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
     private val pdlUri = UriUtil.uri(pdlBaseUrl, PATH_GRAPHQL)
