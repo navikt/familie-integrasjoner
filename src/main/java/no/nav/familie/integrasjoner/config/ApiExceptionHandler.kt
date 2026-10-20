@@ -34,7 +34,7 @@ class ApiExceptionHandler {
 
     @ExceptionHandler(ResourceAccessException::class)
     fun handleResourceAccessException(e: ResourceAccessException): ResponseEntity<Ressurs<Any>> {
-        logger.warn("ResourceAccess - feil ", e)
+        logger.warn("ResourceAccess - feil ", NestedExceptionUtils.getMostSpecificCause(e))
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(failure("""Det oppstod en feil. ${e.message}""", error = e))
@@ -42,12 +42,14 @@ class ApiExceptionHandler {
 
     @ExceptionHandler(RestClientResponseException::class)
     fun handleRestClientResponseException(e: RestClientResponseException): ResponseEntity<Ressurs<Any>> {
-        secureLogger.warn("RestClientResponseException : ${e.responseBodyAsString}", e)
+        val mostSpecificCause = NestedExceptionUtils.getMostSpecificCause(e)
+        secureLogger.warn(
+            "RestClientResponseException : topCause=${e.javaClass.name} mostSpecificCause=${mostSpecificCause.javaClass.name} responseBody=${e.responseBodyAsString}",
+            e,
+        )
         logger.warn(
-            "RestClientResponseException : {} {} {}",
-            e.statusCode.value(),
-            e.statusText,
-            ExceptionUtils.getStackTrace(e),
+            "RestClientResponseException : topCause=${e.javaClass.name} mostSpecificCause=${mostSpecificCause.javaClass.name} - se securelog for detaljer",
+            mostSpecificCause,
         )
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
