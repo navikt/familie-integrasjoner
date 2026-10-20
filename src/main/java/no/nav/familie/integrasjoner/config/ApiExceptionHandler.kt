@@ -11,8 +11,6 @@ import no.nav.familie.integrasjoner.personopplysning.PdlNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.PdlUnauthorizedException
 import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.familie.kontrakter.felles.Ressurs.Companion.failure
-import no.nav.security.token.support.client.core.OAuth2ClientException
-import org.apache.commons.lang3.exception.ExceptionUtils
 import org.slf4j.LoggerFactory
 import org.springframework.core.NestedExceptionUtils
 import org.springframework.http.HttpStatus
@@ -95,14 +93,6 @@ class ApiExceptionHandler {
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(failure("Mangler påkrevd request parameter", error = e))
-    }
-
-    @ExceptionHandler(OAuth2ClientException::class)
-    fun handleOAuth2ClientException(e: OAuth2ClientException): ResponseEntity<Ressurs<Any>> {
-        logger.error("OAuth2ClientException : {} ", ExceptionUtils.getStackTrace(e))
-        return ResponseEntity
-            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(failure("Feil mot azure. Message=${e.message}", error = e))
     }
 
     @ExceptionHandler(Exception::class)
