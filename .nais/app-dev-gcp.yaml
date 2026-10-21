@@ -100,6 +100,9 @@ spec:
     requests:
       memory: 1Gi
       cpu: 200m
+
+  ingresses: # Optional. List of ingress URLs that will route HTTP traffic to the application.
+    - https://familie-integrasjoner.intern.dev.nav.no
   observability:
     logging:
       destinations:
