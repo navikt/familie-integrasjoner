@@ -14,8 +14,7 @@ class KodeverkInitializer(
 ) : ApplicationListener<ApplicationReadyEvent> {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-//    @Scheduled(cron = "0 0 1 * * *")
-    @Scheduled(cron = "0 */10 * * * *")
+    @Scheduled(cron = "0 0 1 * * *")
     fun syncKodeverk() {
         logger.info("Kjører schedulert jobb for å hente kodeverk")
         sync()
