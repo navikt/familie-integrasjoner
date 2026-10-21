@@ -22,7 +22,11 @@ class DokdistController(
 ) {
     @ExceptionHandler(HttpClientErrorException::class)
     fun handleHttpClientException(e: HttpClientErrorException): ResponseEntity<Ressurs<Any>> {
-        secureLogger.warn("Feil ved distribusjon: ${e.message}")
+        if (e.statusCode == HttpStatus.GONE) {
+            secureLogger.info("Feil ved distribusjon: ${e.message}")
+        } else {
+            secureLogger.warn("Feil ved distribusjon: ${e.message}")
+        }
         val ressurs: Ressurs<Any> =
             Ressurs(
                 data = e.responseBodyAsString,
