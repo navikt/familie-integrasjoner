@@ -24,7 +24,7 @@ SAF_SCOPE: api://dev-fss.teamdokumenthandtering.saf/.default
 SAF_TOKENX_SCOPE: dev-fss:teamdokumenthandtering:safselvbetjening
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
-KODEVERK_URL: https://kodeverk-api.nav.no
+KODEVERK_URL: https://kodeverk-api.intern.nav.no
 NORG2_URL: https://norg2.dev.adeo.no/norg2/
 MODIA_CONTEXT_HOLDER_URL: https://modiacontextholder.intern.dev.nav.no
 ARBEID_INNTEKT_URL: https://arbeid-og-inntekt.dev.adeo.no
