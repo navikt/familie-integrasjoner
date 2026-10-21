@@ -9,6 +9,8 @@ metadata:
 spec:
   image: {{ image }}
   port: 8085
+  envFrom:
+    - secret: familie-integrasjoner-servicebruker
   liveness:
     path: /internal/status/isAlive
     initialDelay: 30
@@ -85,9 +87,11 @@ spec:
       rules:
         - application: modiacontextholder
           namespace: personoversikt
-          cluster: dev-gcp
         - application: logging
           namespace: nais-system
+        - application: kodeverk-api
+          namespace: team-rocket
+
   prometheus:
     enabled: true
     path: /internal/prometheus
