@@ -48,8 +48,7 @@ class BaksTilgangsstyrtJournalpostService(
                 return JournalpostTilgang(harTilgang = false, begrunnelse = personerSaksbehandlerIkkeHarTilgangTil.filter { it.begrunnelse != null }.toSet().joinToString(prefix = "(", postfix = ")", separator = ", ") { it.begrunnelse!! })
             }
         } catch (e: MissingVersionException) {
-            logger.warn("Får ikke sjekket tilgang til digital søknad tilknyttet journalpost ${journalpost.journalpostId}.")
-            secureLogger.warn("Feil ved deserialisering av digital søknad ifbm sjekk av tilgang.", e)
+            logger.info("Får ikke sjekket tilgang til digital søknad tilknyttet journalpost ${journalpost.journalpostId}. Søknaden mangler kontraktversjon.")
             // For gamle søknader, før 'kontraktVersjon' ble innført, har vi ingen måte å bestemme konkret klasse å deserialisere til.
             // Gir tilgang basert på antagelsen om at fagsak relatert til gamle søknader allerede er satt til Vikafossen dersom det finnes kode 6, 7 eller 19 personer i søknad.
             JournalpostTilgang(harTilgang = true)
