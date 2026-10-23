@@ -9,6 +9,8 @@ metadata:
 spec:
   image: {{ image }}
   port: 8085
+  envFrom:
+    - secret: familie-integrasjoner-servicebruker
   liveness:
     path: /internal/status/isAlive
     initialDelay: 30
@@ -85,9 +87,30 @@ spec:
       rules:
         - application: modiacontextholder
           namespace: personoversikt
-          cluster: dev-gcp
         - application: logging
           namespace: nais-system
+        - application: skjermede-personer-pip
+          namespace: nom
+        - application: norg2
+          namespace: org
+      external:
+        - host: aareg-services.dev-fss-pub.nais.io
+        - host: arbeid-og-inntekt.dev.adeo.no
+        - host: dokarkiv.dev-fss-pub.nais.io
+        - host: dokdistfordeling.dev-fss-pub.nais.io
+        - host: dokdistkanal.dev-fss-pub.nais.io
+        - host: ereg-services.dev-fss-pub.nais.io
+        - host: foerstesidegenerator.dev-fss-pub.nais.io
+        - host: graph.microsoft.com
+        - host: kodeverk-api.intern.nav.no
+#        - host: norg2.dev.adeo.no
+        - host: oppgave.dev-fss-pub.nais.io
+        - host: pdl-api.dev-fss-pub.nais.io
+        - host: regoppslag.dev-fss-pub.nais.io
+        - host: saf.dev-fss-pub.nais.io
+        - host: safselvbetjening.dev-fss-pub.nais.io
+        - host: sak.dev-fss-pub.nais.io
+#        - host: skjermede-personer-pip.dev-fss-pub.nais.io
   prometheus:
     enabled: true
     path: /internal/prometheus
@@ -100,6 +123,9 @@ spec:
     requests:
       memory: 1Gi
       cpu: 200m
+
+  ingresses: # Optional. List of ingress URLs that will route HTTP traffic to the application.
+    - https://familie-integrasjoner-gcp.intern.dev.nav.no
   observability:
     logging:
       destinations:
