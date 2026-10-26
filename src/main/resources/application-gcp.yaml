@@ -30,7 +30,7 @@ MODIA_CONTEXT_HOLDER_URL: https://modiacontextholder.intern.dev.nav.no
 ARBEID_INNTEKT_URL: https://arbeid-og-inntekt.dev.adeo.no
 
 ORGANISASJON_URL: https://ereg-services.${ON_PREM_URL_ENV}-fss-pub.nais.io
-DOKARKIV_V1_URL: https://dokarkiv-q2.dev.intern.nav.no
+DOKARKIV_V1_URL: https://dokarkiv-q2.dev-fss-pub.nais.io
 PDL_URL: https://pdl-api.${ON_PREM_URL_ENV}-fss-pub.nais.io
 SAF_URL: https://saf-q2.dev.intern.nav.no
 SAF_SELVBETJENING_URL: https://safselvbetjening.dev.intern.nav.no
