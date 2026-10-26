@@ -96,7 +96,7 @@ spec:
       external:
         - host: aareg-services.dev-fss-pub.nais.io
         - host: arbeid-og-inntekt.dev.adeo.no
-        - host: dokarkiv.intern.dev.nav.no
+        - host: dokarkiv-q2.dev-fss-pub.nais.io
         - host: dokarkiv.dev.intern.nav.no
         - host: dokarkiv-q2.dev.intern.nav.no
         - host: dokdistfordeling-q2.dev.intern.nav.no
