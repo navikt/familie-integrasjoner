@@ -30,15 +30,15 @@ MODIA_CONTEXT_HOLDER_URL: https://modiacontextholder.intern.dev.nav.no
 ARBEID_INNTEKT_URL: https://arbeid-og-inntekt.dev.adeo.no
 
 ORGANISASJON_URL: https://ereg-services.${ON_PREM_URL_ENV}-fss-pub.nais.io
-DOKARKIV_V1_URL: https://dokarkiv.${ON_PREM_URL_ENV}-fss-pub.nais.io
+DOKARKIV_V1_URL: https://dokarkiv-q2.dev-fss-pub.nais.io
 PDL_URL: https://pdl-api.${ON_PREM_URL_ENV}-fss-pub.nais.io
-SAF_URL: https://saf.${ON_PREM_URL_ENV}-fss-pub.nais.io
-SAF_SELVBETJENING_URL: https://safselvbetjening.${ON_PREM_URL_ENV}-fss-pub.nais.io
+SAF_URL: https://saf-q2.dev.intern.nav.no
+SAF_SELVBETJENING_URL: https://safselvbetjening.dev.intern.nav.no
 OPPGAVE_URL: https://oppgave-${ON_PREM_URL_ENV}.fss-pub.nais.io
-FORSTESIDEGENERATOR_URL: https://foerstesidegenerator.${ON_PREM_URL_ENV}-fss-pub.nais.io
+FORSTESIDEGENERATOR_URL: https://foerstesidegenerator-q2.dev.intern.nav.no
 EGEN_ANSATT_URL: https://skjermede-personer-pip.${ON_PREM_URL_ENV}-fss-pub.nais.io
-DOKDIST_URL: https://dokdistfordeling.${ON_PREM_URL_ENV}-fss-pub.nais.io
-DOKDISTKANAL_URL: https://dokdistkanal.${ON_PREM_URL_ENV}-fss-pub.nais.io
+DOKDIST_URL: https://dokdistfordeling-q2.dev.intern.nav.no
+DOKDISTKANAL_URL: https://dokdistkanal.dev.intern.nav.no
 AAREG_URL: https://aareg-services.${ON_PREM_URL_ENV}-fss-pub.nais.io/api
-SKYGGE_SAK_URL: https://sak.${ON_PREM_URL_ENV}-fss-pub.nais.io
+SKYGGE_SAK_URL: https://sak-q2.dev.intern.nav.no
 REGOPPSLAG_URL: https://regoppslag.${ON_PREM_URL_ENV}-fss-pub.nais.io
