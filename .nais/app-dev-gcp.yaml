@@ -96,20 +96,20 @@ spec:
       external:
         - host: aareg-services.dev-fss-pub.nais.io
         - host: arbeid-og-inntekt.dev.adeo.no
-        - host: dokarkiv.dev-fss-pub.nais.io
-        - host: dokdistfordeling.dev-fss-pub.nais.io
-        - host: dokdistkanal.dev-fss-pub.nais.io
+        - host: dokarkiv-q2.dev-fss-pub.nais.io
+        - host: dokdistfordeling-q2.dev.intern.nav.no
+        - host: dokdistkanal.dev.intern.nav.no
         - host: ereg-services.dev-fss-pub.nais.io
-        - host: foerstesidegenerator.dev-fss-pub.nais.io
+        - host: foerstesidegenerator-q2.dev.intern.nav.no
         - host: graph.microsoft.com
         - host: kodeverk-api.intern.nav.no
 #        - host: norg2.dev.adeo.no
         - host: oppgave.dev-fss-pub.nais.io
         - host: pdl-api.dev-fss-pub.nais.io
         - host: regoppslag.dev-fss-pub.nais.io
-        - host: saf.dev-fss-pub.nais.io
-        - host: safselvbetjening.dev-fss-pub.nais.io
-        - host: sak.dev-fss-pub.nais.io
+        - host: saf-q2.dev.intern.nav.no
+        - host: safselvbetjening.dev.intern.nav.no
+        - host: sak-q2.dev.intern.nav.no
 #        - host: skjermede-personer-pip.dev-fss-pub.nais.io
   prometheus:
     enabled: true
