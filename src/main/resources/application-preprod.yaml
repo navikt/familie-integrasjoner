@@ -21,6 +21,7 @@ FORSTESIDEGENERATOR_SCOPE: api://dev-fss.teamdokumenthandtering.foerstesidegener
 MODIA_CONTEXT_HOLDER_SCOPE: api://dev-gcp.personoversikt.modiacontextholder/.default
 OPPGAVE_SCOPE: api://dev-fss.oppgavehandtering.oppgave/.default
 SAF_SCOPE: api://dev-fss.teamdokumenthandtering.saf/.default
+EGEN_ANSATT_SCOPE: api://dev-fss.nom.skjermede-personer-pip/.default
 
 SAF_TOKENX_SCOPE: dev-fss:teamdokumenthandtering:safselvbetjening
 
