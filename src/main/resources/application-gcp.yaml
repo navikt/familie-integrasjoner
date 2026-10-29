@@ -25,18 +25,20 @@ SAF_TOKENX_SCOPE: dev-fss:teamdokumenthandtering:safselvbetjening
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 KODEVERK_URL: https://kodeverk-api.intern.nav.no
-NORG2_URL: https://norg2.dev.adeo.no/norg2/
+#NORG2_URL: https://norg2.intern.dev.nav.no/norg2/
+NORG2_URL: https://norg2.dev-fss-pub.nais.io/norg2
 MODIA_CONTEXT_HOLDER_URL: https://modiacontextholder.intern.dev.nav.no
-ARBEID_INNTEKT_URL: https://arbeid-og-inntekt.dev.adeo.no
+ARBEID_INNTEKT_URL: https://arbeid-og-inntekt-q2.dev-fss-pub.nais.io
 
 ORGANISASJON_URL: https://ereg-services.${ON_PREM_URL_ENV}-fss-pub.nais.io
 DOKARKIV_V1_URL: https://dokarkiv-q2.dev-fss-pub.nais.io
 PDL_URL: https://pdl-api.${ON_PREM_URL_ENV}-fss-pub.nais.io
 SAF_URL: https://saf-q2.${ON_PREM_URL_ENV}-fss-pub.nais.io
 SAF_SELVBETJENING_URL: https://safselvbetjening.${ON_PREM_URL_ENV}-fss-pub.nais.io
-OPPGAVE_URL: https://oppgave-${ON_PREM_URL_ENV}.fss-pub.nais.io
+OPPGAVE_URL: https://oppgave.${ON_PREM_URL_ENV}.fss-pub.nais.io
 FORSTESIDEGENERATOR_URL: https://foerstesidegenerator.${ON_PREM_URL_ENV}-fss-pub.nais.io
-EGEN_ANSATT_URL: https://skjermede-personer-pip.${ON_PREM_URL_ENV}-fss-pub.nais.io
+#EGEN_ANSATT_URL: https://skjermede-personer-pip.${ON_PREM_URL_ENV}-fss-pub.nais.io
+EGEN_ANSATT_URL: http://skjermede-personer-pip.nom
 DOKDIST_URL: https://dokdistfordeling.${ON_PREM_URL_ENV}-fss-pub.nais.io
 DOKDISTKANAL_URL: https://dokdistkanal-q2.${ON_PREM_URL_ENV}-fss-pub.nais.io
 AAREG_URL: https://aareg-services.${ON_PREM_URL_ENV}-fss-pub.nais.io/api

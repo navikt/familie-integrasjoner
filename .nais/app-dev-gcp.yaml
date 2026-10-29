@@ -95,7 +95,7 @@ spec:
           namespace: org
       external:
         - host: aareg-services.dev-fss-pub.nais.io
-        - host: arbeid-og-inntekt.dev.adeo.no
+        - host: arbeid-og-inntekt-q2.dev-fss-pub.nais.io
         - host: dokarkiv-q2.dev-fss-pub.nais.io
         - host: dokarkiv.dev.intern.nav.no
         - host: dokarkiv-q2.dev.intern.nav.no
@@ -105,7 +105,7 @@ spec:
         - host: foerstesidegenerator-q2.dev-fss-pub.nais.io
         - host: graph.microsoft.com
         - host: kodeverk-api.intern.nav.no
-#        - host: norg2.dev.adeo.no
+        - host: norg2.dev-fss-pub.nais.io
         - host: oppgave.dev-fss-pub.nais.io
         - host: pdl-api.dev-fss-pub.nais.io
         - host: regoppslag.dev-fss-pub.nais.io
