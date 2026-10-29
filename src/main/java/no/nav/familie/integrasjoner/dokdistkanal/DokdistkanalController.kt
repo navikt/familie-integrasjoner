@@ -64,9 +64,8 @@ class DokdistkanalController(
                 Distribusjonskanal.UKJENT
             }
         var melding = regelBegrunnelse
-        logger.info("kjører mottaker.harPostadresse")
-        val harPostadresse = mottaker.harPostadresse(tema)
-        if (distribusjonskanal == Distribusjonskanal.PRINT && !harPostadresse) {
+
+        if (distribusjonskanal == Distribusjonskanal.PRINT && !mottaker.harPostadresse(tema)) {
             distribusjonskanal = Distribusjonskanal.INGEN_DISTRIBUSJON
             melding = "Mottaker har ukjent adresse"
         }
