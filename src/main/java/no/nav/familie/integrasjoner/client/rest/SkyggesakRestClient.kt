@@ -20,7 +20,7 @@ import org.springframework.web.client.RestClientException
 import java.net.URI
 
 @Component
-@Profile("!gcp")
+//@Profile("!gcp")
 class SkyggesakRestClient(
     @Value("\${SKYGGE_SAK_URL}") private val skyggesakUrl: String,
     @Qualifier("utenAuthHttpClient") private val restClient: RestClient,
