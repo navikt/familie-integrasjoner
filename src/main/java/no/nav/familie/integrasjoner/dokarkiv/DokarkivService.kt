@@ -81,6 +81,8 @@ class DokarkivService(
 
         // førsteside
         arkiverDokumentRequest.førsteside?.also {
+            // TODO: Fjern loglinjen
+            LOG.info("Genererer førsteside")
             val bytes = førstesideGeneratorService.genererForside(it, arkiverDokumentRequest.fnr, metadata.tema)
             dokumenter +=
                 ArkivDokument(

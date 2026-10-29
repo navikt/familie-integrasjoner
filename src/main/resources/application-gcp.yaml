@@ -35,10 +35,11 @@ DOKARKIV_V1_URL: https://dokarkiv-q2.dev-fss-pub.nais.io
 PDL_URL: https://pdl-api.${ON_PREM_URL_ENV}-fss-pub.nais.io
 SAF_URL: https://saf-q2.${ON_PREM_URL_ENV}-fss-pub.nais.io
 SAF_SELVBETJENING_URL: https://safselvbetjening.${ON_PREM_URL_ENV}-fss-pub.nais.io
-OPPGAVE_URL: https://oppgave.${ON_PREM_URL_ENV}.fss-pub.nais.io
+OPPGAVE_URL: https://oppgave.${ON_PREM_URL_ENV}-fss-pub.nais.io
 FORSTESIDEGENERATOR_URL: https://foerstesidegenerator.${ON_PREM_URL_ENV}-fss-pub.nais.io
 #EGEN_ANSATT_URL: https://skjermede-personer-pip.${ON_PREM_URL_ENV}-fss-pub.nais.io
-EGEN_ANSATT_URL: http://skjermede-personer-pip.nom
+#EGEN_ANSATT_URL: http://skjermede-personer-pip.nom
+EGEN_ANSATT_URL: https://skjermede-personer-pip.intern.dev.nav.no
 DOKDIST_URL: https://dokdistfordeling.${ON_PREM_URL_ENV}-fss-pub.nais.io
 DOKDISTKANAL_URL: https://dokdistkanal-q2.${ON_PREM_URL_ENV}-fss-pub.nais.io
 AAREG_URL: https://aareg-services.${ON_PREM_URL_ENV}-fss-pub.nais.io/api
