@@ -91,8 +91,6 @@ spec:
           namespace: nais-system
         - application: skjermede-personer-pip
           namespace: nom
-        - application: norg2
-          namespace: org
       external:
         - host: aareg-services.dev-fss-pub.nais.io
         - host: arbeid-og-inntekt-q2.dev-fss-pub.nais.io
@@ -112,8 +110,7 @@ spec:
         - host: saf-q2.dev-fss-pub.nais.io
         - host: safselvbetjening.dev.intern.nav.no
         - host: sak-q2.dev-fss-pub.nais.io
-        - host: skjermede-personer-pip.intern.dev.nav.no
-#        - host: skjermede-personer-pip.dev-fss-pub.nais.io
+#        - host: skjermede-personer-pip.intern.dev.nav.no
   prometheus:
     enabled: true
     path: /internal/prometheus
@@ -139,6 +136,6 @@ spec:
       runtime: java
   env:
     - name: SPRING_PROFILES_ACTIVE
-      value: gcp
+      value: "preprod,preprod-gcp,gcp"
     - name: ON_PREM_URL_ENV
       value: dev
