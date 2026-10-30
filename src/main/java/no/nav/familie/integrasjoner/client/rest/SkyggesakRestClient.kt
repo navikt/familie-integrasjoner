@@ -1,21 +1,19 @@
 package no.nav.familie.integrasjoner.client.rest
 
-import no.nav.familie.felles.tokenklient.sts.StsRestClient
+import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.sak.Skyggesak
+import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.log.mdc.MDCConstants
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpStatusCodeException
-import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientException
 import java.net.URI
 
@@ -23,9 +21,10 @@ import java.net.URI
 @Profile("!gcp")
 class SkyggesakRestClient(
     @Value("\${SKYGGE_SAK_URL}") private val skyggesakUrl: String,
-    @Qualifier("utenAuthHttpClient") private val restClient: RestClient,
-    private val stsRestClient: StsRestClient,
+    @Value("\${SKYGGE_SAK_SCOPE}") scope: String,
+    entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
+    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
     private val sakUri = URI.create("$skyggesakUrl/api/v1/saker")
 
     private val logger = LoggerFactory.getLogger(SkyggesakRestClient::class.java)
@@ -37,7 +36,6 @@ class SkyggesakRestClient(
                 .uri(sakUri)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + stsRestClient.systemOIDCToken)
                 .body(request)
                 .retrieve()
                 .toBodilessEntity()
