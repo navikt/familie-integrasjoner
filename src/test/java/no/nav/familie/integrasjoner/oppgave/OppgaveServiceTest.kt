@@ -104,6 +104,31 @@ internal class OppgaveServiceTest {
     }
 
     @Test
+    fun `skal sette personident når identgruppe er npid`() {
+        val npid = "01530000000"
+        val oppgaveSlot = slot<Oppgave>()
+        val request =
+            OpprettOppgaveRequest(
+                ident = OppgaveIdentV2(npid, IdentGruppe.NPID),
+                fristFerdigstillelse = LocalDate.now().plusDays(3),
+                behandlingstema = "behandlingstema",
+                enhetsnummer = "enhetsnummer",
+                tema = Tema.BAR,
+                oppgavetype = Oppgavetype.BehandleSak,
+                saksId = "saksid",
+                beskrivelse = "Oppgavetekst",
+            )
+
+        every { oppgaveRestClient.opprettOppgave(capture(oppgaveSlot)) } returns 0L
+        every { saksbehandlerService.hentNavIdent(any()) } returns "ident"
+
+        oppgaveService.opprettOppgave(request)
+
+        assertThat(oppgaveSlot.captured.personident).isEqualTo(npid)
+        assertThat(oppgaveSlot.captured.aktoerId).isNull()
+    }
+
+    @Test
     fun `skal sette aktørid når identgruppe er aktørid`() {
         val aktørid = "12345678912"
         val oppgaveSlot = slot<Oppgave>()

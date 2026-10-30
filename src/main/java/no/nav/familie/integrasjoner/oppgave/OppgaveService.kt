@@ -241,7 +241,8 @@ class OppgaveService constructor(
         }
     }
 
-    private fun erPersonident(oppgaveIdent: OppgaveIdentV2?) = oppgaveIdent?.gruppe == IdentGruppe.FOLKEREGISTERIDENT
+    // Oppgave-API-et tar imot både folkeregisterident og NPID i feltet personident
+    private fun erPersonident(oppgaveIdent: OppgaveIdentV2?) = oppgaveIdent?.gruppe == IdentGruppe.FOLKEREGISTERIDENT || oppgaveIdent?.gruppe == IdentGruppe.NPID
 
     private fun erAktørId(oppgaveIdent: OppgaveIdentV2?) = oppgaveIdent?.gruppe == IdentGruppe.AKTOERID
 
