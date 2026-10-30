@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/skyggesak")
-@Profile("!gcp")
 class SkyggesakController(
     private val skyggesakRestClient: SkyggesakRestClient,
 ) {
