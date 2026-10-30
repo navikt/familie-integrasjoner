@@ -1,20 +1,19 @@
 package no.nav.familie.integrasjoner.client.rest
 
-import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.config.incrementLoggFeil
 import no.nav.familie.integrasjoner.felles.UriUtil
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import java.net.URI
 
 @Component
 class EgenAnsattRestClient(
     @Value("\${EGEN_ANSATT_URL}") private val uri: URI,
-    @Value("\${EGEN_ANSATT_SCOPE}") scope: String,
-    entraIDRestClientFactory: EntraIDRestClientFactory,
+    @Qualifier("egenAnsattHttpClient") private val restClient: RestClient,
 ) {
-    private val restClient = entraIDRestClientFactory.lagMaskinTilMaskinRestKlient(scope)
     private val egenAnsattUri: URI = UriUtil.uri(uri, "skjermet")
     private val egenAnsattBulkUri: URI = UriUtil.uri(uri, "skjermetBulk")
 

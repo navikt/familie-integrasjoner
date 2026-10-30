@@ -13,7 +13,7 @@ import org.springframework.test.context.TestPropertySource
 import org.wiremock.spring.ConfigureWireMock
 import org.wiremock.spring.EnableWireMock
 
-@ActiveProfiles("integrasjonstest", "mock-oauth")
+@ActiveProfiles("integrasjonstest")
 @TestPropertySource(properties = ["EGEN_ANSATT_URL=http://localhost:28085"])
 @EnableWireMock(
     ConfigureWireMock(name = "EgenAnsattControllerTest", port = 28085),
@@ -35,11 +35,11 @@ class EgenAnsattControllerTest : OppslagSpringRunnerTest() {
     }
 
     @Test
-    fun `Bolk henter skjerming med maskin-til-maskin-token`() {
+    fun `Bolk henter skjerming uten token i fss`() {
         WireMock.stubFor(
             WireMock
                 .post("/skjermetBulk")
-                .withHeader(HttpHeaders.AUTHORIZATION, WireMock.equalTo("Bearer mock-m2m-token"))
+                .withHeader(HttpHeaders.AUTHORIZATION, WireMock.absent())
                 .withRequestBody(WireMock.equalToJson("""{"personidenter":["$FNR"]}"""))
                 .willReturn(
                     WireMock
@@ -56,7 +56,7 @@ class EgenAnsattControllerTest : OppslagSpringRunnerTest() {
         WireMock.stubFor(
             WireMock
                 .post(PATH_OG_QUERY)
-                .withHeader(HttpHeaders.AUTHORIZATION, WireMock.equalTo("Bearer mock-m2m-token"))
+                .withHeader(HttpHeaders.AUTHORIZATION, WireMock.absent())
                 .withRequestBody(WireMock.equalToJson("""{"personident":"$FNR"}"""))
                 .willReturn(
                     WireMock
