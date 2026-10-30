@@ -1,0 +1,20 @@
+EGEN_ANSATT_SCOPE: api://dev-gcp.nom.skjermede-personer-pip/.default
+
+AAREG_URL: https://aareg-services.dev-fss-pub.nais.io/api
+ARBEID_INNTEKT_URL: https://arbeid-og-inntekt-q2.dev-fss-pub.nais.io
+DOKARKIV_V1_URL: https://dokarkiv-q2.dev-fss-pub.nais.io
+DOKDISTKANAL_URL: https://dokdistkanal-q2.dev-fss-pub.nais.io
+DOKDIST_URL: https://dokdistfordeling.dev-fss-pub.nais.io
+#EGEN_ANSATT_URL: https://skjermede-personer-pip.intern.dev.nav.no
+EGEN_ANSATT_URL: http://skjermede-personer-pip.nom
+FORSTESIDEGENERATOR_URL: https://foerstesidegenerator.dev-fss-pub.nais.io
+KODEVERK_URL: https://kodeverk-api.intern.nav.no
+MODIA_CONTEXT_HOLDER_URL: https://modiacontextholder.intern.dev.nav.no
+NORG2_URL: https://norg2.dev-fss-pub.nais.io/norg2
+OPPGAVE_URL: https://oppgave.dev-fss-pub.nais.io
+ORGANISASJON_URL: https://ereg-services.dev-fss-pub.nais.io
+PDL_URL: https://pdl-api.dev-fss-pub.nais.io
+REGOPPSLAG_URL: https://regoppslag.dev-fss-pub.nais.io
+SAF_SELVBETJENING_URL: https://safselvbetjening.dev-fss-pub.nais.io
+SAF_URL: https://saf-q2.dev-fss-pub.nais.io
+SKYGGE_SAK_URL: https://sak-q2.dev-fss-pub.nais.io
