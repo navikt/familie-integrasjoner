@@ -105,9 +105,10 @@ class PersonopplysningerService(
 
     private fun Map<String, PdlPersonMedRelasjonerOgAdressebeskyttelse>.getOrThrow(ident: String) =
         this[ident] ?: throw OppslagException(
-            "Finner ikke $ident i response fra pdl",
+            "Finner ikke person i response fra pdl",
             "pdl",
             OppslagException.Level.MEDIUM,
+            sensitiveInfo = "Finner ikke $ident i response fra pdl",
         )
 
     private fun hentPersonMedRelasjonerOgAdressebeskyttelse(
