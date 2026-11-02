@@ -9,8 +9,6 @@ metadata:
 spec:
   image: {{ image }}
   port: 8085
-  envFrom:
-    - secret: familie-integrasjoner-servicebruker
   liveness:
     path: /internal/status/isAlive
     initialDelay: 30
