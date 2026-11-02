@@ -91,7 +91,6 @@ AAD_GRAPH_SCOPE: https://graph.microsoft.com/.default
 PDL_SCOPE: "dummy-scope"
 SKYGGE_SAK_SCOPE: "dummy-scope"
 
-STS_URL: http://security-token-service.default.svc.nais.local/rest/v1/sts/token
 KODEVERK_URL: http://kodeverk.default
 PDL_URL: http://pdl-api.pdl
 DOKARKIV_V1_URL: http://dokarkiv.teamdokumenthandtering
