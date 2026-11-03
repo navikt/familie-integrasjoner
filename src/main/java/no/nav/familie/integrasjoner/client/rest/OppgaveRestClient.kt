@@ -10,20 +10,17 @@ import no.nav.familie.integrasjoner.oppgave.domene.OppgaveRequest
 import no.nav.familie.integrasjoner.oppgave.domene.toDto
 import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
 import no.nav.familie.kontrakter.felles.Tema
-import no.nav.familie.kontrakter.felles.oppgave.FinnMappeRequest
-import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
-import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
-import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
-import no.nav.familie.kontrakter.felles.oppgave.Oppgave
+import no.nav.familie.kontrakter.felles.oppgave.*
 import no.nav.familie.log.mdc.MDCConstants
 import org.slf4j.LoggerFactory
 import org.slf4j.MDC
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpStatusCodeException
-import org.springframework.web.client.RestClient
+import org.springframework.web.client.RestClientException
 import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
@@ -180,6 +177,42 @@ class OppgaveRestClient(
                     )
                 },
             )
+
+    fun oppdaterOppgaveNokkelord(
+        oppgaveId: Long,
+        request: OppdaterOppgaveNokkelordRequest,
+    ) {
+        try {
+            val uri =
+                UriComponentsBuilder
+                    .fromUri(oppgaveBaseUrl)
+                    .path("/api/v2/oppgaver/{oppgaveId}")
+                    .buildAndExpand(oppgaveId)
+                    .toUri()
+
+            restClient
+                .patch()
+                .uri(uri)
+                .header(X_CORRELATION_ID, MDC.get(MDCConstants.MDC_CALL_ID))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(request)
+                .retrieve()
+                .toBodilessEntity()
+        } catch (e: RestClientException) {
+            var feilmelding = "Feil ved oppdatering av nøkkelord for oppgave $oppgaveId."
+            if (e is HttpStatusCodeException) {
+                feilmelding += " Response fra oppgave = ${e.responseBodyAsString}"
+            }
+            val versjonskonflikt = e is HttpStatusCodeException && e.statusCode == HttpStatus.CONFLICT
+            throw OppslagException(
+                feilmelding,
+                "oppgave.oppdaterOppgaveNokkelord",
+                if (versjonskonflikt) OppslagException.Level.LAV else OppslagException.Level.KRITISK,
+                if (versjonskonflikt) HttpStatus.CONFLICT else HttpStatus.INTERNAL_SERVER_ERROR,
+                e,
+            )
+        }
+    }
 
     fun oppdaterEnhetOgTilordnetRessurs(byttEnhetOgTilordnetRessursPatch: OppgaveByttEnhetOgTilordnetRessurs): Oppgave? =
         Result

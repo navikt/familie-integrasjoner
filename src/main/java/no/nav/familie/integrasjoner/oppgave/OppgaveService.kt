@@ -14,6 +14,7 @@ import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.IdentGruppe
 import no.nav.familie.kontrakter.felles.oppgave.MappeDto
+import no.nav.familie.kontrakter.felles.oppgave.OppdaterOppgaveNokkelordRequest
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.kontrakter.felles.oppgave.OppgaveIdentV2
 import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgaveRequest
@@ -39,6 +40,13 @@ class OppgaveService constructor(
     fun hentOppgave(oppgaveId: Long): Oppgave = oppgaveRestClient.finnOppgaveMedId(oppgaveId)
 
     fun patchOppgave(patchOppgave: Oppgave): Long = oppgaveRestClient.oppdaterOppgave(patchOppgave)?.id!!
+
+    fun oppdaterOppgaveNokkelord(
+        oppgaveId: Long,
+        request: OppdaterOppgaveNokkelordRequest,
+    ) {
+        oppgaveRestClient.oppdaterOppgaveNokkelord(oppgaveId, request)
+    }
 
     fun fordelOppgave(
         oppgaveId: Long,
