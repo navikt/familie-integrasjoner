@@ -27,5 +27,13 @@ http://localhost:8093/swagger-ui.html
 
 #### Test token i q2
 I q2 er det mulig å hente ut azure test tokens fra azure-token-generator:
+
+##### fss
 client credential: https://azure-token-generator.intern.dev.nav.no/api/m2m?aud=dev-fss.teamfamilie.familie-integrasjoner
+
 on-behalf-of: https://azure-token-generator.intern.dev.nav.no/api/obo?aud=dev-fss.teamfamilie.familie-integrasjoner
+
+##### gcp
+client credential: https://azure-token-generator.intern.dev.nav.no/api/m2m?aud=dev-gcp.teamfamilie.familie-integrasjoner
+
+on-behalf-of: https://azure-token-generator.intern.dev.nav.no/api/obo?aud=dev-gcp.teamfamilie.familie-integrasjoner
