@@ -67,8 +67,7 @@ class RestClientConfigTest {
                 "spring.profiles.active=$profiles",
                 "EGEN_ANSATT_SCOPE=$scope",
                 "EGEN_ANSATT_URL=http://skjermede-personer-pip",
-            )
-            .run { context ->
+            ).run { context ->
                 assertThat(context).hasNotFailed()
                 val client = context.getBean(EgenAnsattRestClient::class.java)
 
