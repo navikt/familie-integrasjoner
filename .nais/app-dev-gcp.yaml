@@ -132,5 +132,3 @@ spec:
   env:
     - name: SPRING_PROFILES_ACTIVE
       value: "preprod,preprod-gcp,gcp"
-    - name: ON_PREM_URL_ENV
-      value: dev
