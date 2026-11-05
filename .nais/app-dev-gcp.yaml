@@ -19,6 +19,8 @@ spec:
     initialDelay: 30
     timeout: 5
     failureThreshold: 10
+  vault:
+    enabled: false
   azure:
     application:
       tenant: "trygdeetaten.no"
