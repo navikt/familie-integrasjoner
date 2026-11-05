@@ -69,6 +69,23 @@ jobs:
           RESOURCE: .nais/app-dev.yaml
           VAR: image=${{ needs.build.outputs.image }}
 
+  deploy-dev-gcp:
+    name: Deploy to dev-gcp
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v4
+
+      - name: Deploy to dev-gcp namespace
+        uses: nais/deploy/actions/deploy@d003bddf74ce5b96fa3056ae60bd4b9b3bbc89ef # ratchet:nais/deploy/actions/deploy@v3
+        env:
+          CLUSTER: dev-gcp
+          RESOURCE: .nais/app-dev-gcp.yaml
+          VAR: image=${{ needs.build.outputs.image }}
+
   deploy-prod:
     name: Deploy to prod-fss
     needs: build

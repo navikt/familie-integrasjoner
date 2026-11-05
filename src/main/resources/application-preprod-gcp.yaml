@@ -7,7 +7,7 @@ DOKDISTKANAL_URL: https://dokdistkanal-q2.dev-fss-pub.nais.io
 DOKDIST_URL: https://dokdistfordeling.dev-fss-pub.nais.io
 EGEN_ANSATT_URL: http://skjermede-personer-pip.nom
 FORSTESIDEGENERATOR_URL: https://foerstesidegenerator.dev-fss-pub.nais.io
-KODEVERK_URL: https://kodeverk-api.intern.nav.no
+KODEVERK_URL: https://kodeverk-api.nav.no
 MODIA_CONTEXT_HOLDER_URL: http://modiacontextholder.personoversikt
 NORG2_URL: https://norg2.dev-fss-pub.nais.io/norg2
 OPPGAVE_URL: https://oppgave.dev-fss-pub.nais.io
