@@ -103,6 +103,23 @@ jobs:
           RESOURCE: .nais/app-prod.yaml
           VAR: image=${{ needs.build.outputs.image }}
 
+  deploy-prod-gcp:
+    name: Deploy to prod-gcp
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v4
+
+      - name: Deploy to prod-gcp namespace
+        uses: nais/deploy/actions/deploy@d003bddf74ce5b96fa3056ae60bd4b9b3bbc89ef # ratchet:nais/deploy/actions/deploy@v3
+        env:
+          CLUSTER: prod-gcp
+          RESOURCE: .nais/app-prod-gcp.yaml
+          VAR: image=${{ needs.build.outputs.image }}
+
   loggfeil:
     name: Send log to Slack on failure
     runs-on: ubuntu-latest
