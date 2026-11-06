@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping(value = ["/api/adramatch/avstemming"])
 @Profile("!e2e & !gcp")
+@Deprecated("Team-tilbake skal implementere tilsvarende i eget namespace")
 class FiloverføringAdraMatchController(
     private val sftpClient: FiloverføringAdraMatchClient,
 ) {

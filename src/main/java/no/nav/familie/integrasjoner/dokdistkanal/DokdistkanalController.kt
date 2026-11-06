@@ -73,6 +73,7 @@ class DokdistkanalController(
     }
 
     private fun PersonIdent.harPostadresse(tema: Tema): Boolean {
+        logger.info("Henter postadresse")
         val adresse = personopplysningerService.hentPostadresse(ident, tema)?.adresse ?: return false
         return adresse.landkode in landkoderISO2 &&
             when (adresse.type) {

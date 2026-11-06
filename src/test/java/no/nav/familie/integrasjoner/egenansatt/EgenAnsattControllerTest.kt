@@ -7,6 +7,7 @@ import no.nav.familie.kontrakter.felles.jsonMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpHeaders
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 import org.wiremock.spring.ConfigureWireMock
@@ -33,10 +34,30 @@ class EgenAnsattControllerTest : OppslagSpringRunnerTest() {
         assertThat(egenAnsattRestClient.erEgenAnsatt(FNR)).isFalse
     }
 
+    @Test
+    fun `Bolk henter skjerming uten token i fss`() {
+        WireMock.stubFor(
+            WireMock
+                .post("/skjermetBulk")
+                .withHeader(HttpHeaders.AUTHORIZATION, WireMock.absent())
+                .withRequestBody(WireMock.equalToJson("""{"personidenter":["$FNR"]}"""))
+                .willReturn(
+                    WireMock
+                        .aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("""{"$FNR":true}"""),
+                ),
+        )
+
+        assertThat(egenAnsattRestClient.erEgenAnsatt(setOf(FNR))).containsEntry(FNR, true)
+    }
+
     private fun stubGetEgenAnsatt(erEgenAnsatt: Boolean) {
         WireMock.stubFor(
             WireMock
                 .post(PATH_OG_QUERY)
+                .withHeader(HttpHeaders.AUTHORIZATION, WireMock.absent())
+                .withRequestBody(WireMock.equalToJson("""{"personident":"$FNR"}"""))
                 .willReturn(
                     WireMock
                         .aResponse()
