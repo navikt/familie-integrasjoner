@@ -29,7 +29,10 @@ class SecurityConfig(
     fun publicFilterChain(http: HttpSecurity): SecurityFilterChain {
         http {
             securityMatcher(
-                "/internal/**",
+                "/internal",
+                "/internal/health/**",
+                "/internal/metrics/**",
+                "/internal/prometheus",
                 "/v3/api-docs/**",
                 "/swagger-ui/**",
                 "/api/kodeverk/**",

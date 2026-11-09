@@ -58,16 +58,34 @@ class SecurityConfigTest : OppslagSpringRunnerTest() {
         assertThat(response.statusCode).isNotIn(UNAUTHORIZED, FORBIDDEN)
     }
 
-    @Test
-    fun `internal-endepunkt er tilgjengelig uten token`() {
+    @ParameterizedTest
+    @ValueSource(strings = ["/internal", "/internal/health", "/internal/metrics", "/internal/metrics/jvm.memory.used", "/internal/prometheus"])
+    fun `offentlige internal-endepunkter er tilgjengelige uten token`(
+        path: String,
+    ) {
         val response =
             restTemplate.exchange<String>(
-                localhost("/internal/health"),
+                localhost(path),
                 HttpMethod.GET,
                 HttpEntity<Any>(headers),
             )
 
-        assertThat(response.statusCode).isNotIn(UNAUTHORIZED, FORBIDDEN)
+        assertThat(response.statusCode).isEqualTo(OK)
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["/internal/info", "/internal/mappings", "/internal/status/isAlive", "/internal/healthcheck", "/internal/prometheus/other"])
+    fun `øvrige internal-endepunkter krever token`(
+        path: String,
+    ) {
+        val response =
+            restTemplate.exchange<String>(
+                localhost(path),
+                HttpMethod.GET,
+                HttpEntity<Any>(headers),
+            )
+
+        assertThat(response.statusCode).isEqualTo(UNAUTHORIZED)
     }
 
     @Test
