@@ -6,10 +6,16 @@ import no.nav.familie.kontrakter.felles.Ressurs
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.actuate.info.InfoEndpoint
 import org.springframework.boot.resttestclient.exchange
+import org.springframework.context.ApplicationContext
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus.FORBIDDEN
+import org.springframework.http.HttpStatus.OK
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
@@ -17,6 +23,29 @@ import java.util.UUID
 
 @ActiveProfiles("integrasjonstest", "mock-oauth")
 class SecurityConfigTest : OppslagSpringRunnerTest() {
+    @Autowired
+    private lateinit var applicationContext: ApplicationContext
+
+    @ParameterizedTest
+    @ValueSource(strings = ["/internal/health/liveness", "/internal/health/readiness"])
+    fun `helseprober er tilgjengelige uten token`(
+        path: String,
+    ) {
+        val response =
+            restTemplate.exchange<String>(
+                localhost(path),
+                HttpMethod.GET,
+                HttpEntity<Any>(headers),
+            )
+
+        assertThat(response.statusCode).isEqualTo(OK)
+    }
+
+    @Test
+    fun `info-endepunktet er deaktivert`() {
+        assertThat(applicationContext.getBeansOfType(InfoEndpoint::class.java)).isEmpty()
+    }
+
     @Test
     fun `api-ping er tilgjengelig uten token`() {
         val response =
