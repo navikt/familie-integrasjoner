@@ -42,7 +42,7 @@ jobs:
         run: mvn -B --no-transfer-progress package --settings .m2/maven-settings.xml --file pom.xml
 
       - name: Build and push docker image
-        uses: nais/docker-build-push@dd7421d5068057a020ca46ead966c26190c516b1 # ratchet:nais/docker-build-push@v0
+        uses: nais/docker-build-push@d3a1f7e259ecc381a50435e1d4add9059429ebd7 # ratchet:nais/docker-build-push@v0
         id: docker-push
         with:
           team: teamfamilie
@@ -63,10 +63,27 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v4
 
       - name: Deploy to dev-fss namespace
-        uses: nais/deploy/actions/deploy@d003bddf74ce5b96fa3056ae60bd4b9b3bbc89ef # ratchet:nais/deploy/actions/deploy@v3
+        uses: nais/deploy/actions/deploy@033f70f2484ddfa91dc3d878e06ced3113f996ad # ratchet:nais/deploy/actions/deploy@v3
         env:
           CLUSTER: dev-fss
           RESOURCE: .nais/app-dev.yaml
+          VAR: image=${{ needs.build.outputs.image }}
+
+  deploy-dev-gcp:
+    name: Deploy to dev-gcp
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v4
+
+      - name: Deploy to dev-gcp namespace
+        uses: nais/deploy/actions/deploy@033f70f2484ddfa91dc3d878e06ced3113f996ad # ratchet:nais/deploy/actions/deploy@v3
+        env:
+          CLUSTER: dev-gcp
+          RESOURCE: .nais/app-dev-gcp.yaml
           VAR: image=${{ needs.build.outputs.image }}
 
   deploy-prod:
@@ -80,10 +97,27 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v4
 
       - name: Deploy to prod-fss namespace
-        uses: nais/deploy/actions/deploy@d003bddf74ce5b96fa3056ae60bd4b9b3bbc89ef # ratchet:nais/deploy/actions/deploy@v3
+        uses: nais/deploy/actions/deploy@033f70f2484ddfa91dc3d878e06ced3113f996ad # ratchet:nais/deploy/actions/deploy@v3
         env:
           CLUSTER: prod-fss
           RESOURCE: .nais/app-prod.yaml
+          VAR: image=${{ needs.build.outputs.image }}
+
+  deploy-prod-gcp:
+    name: Deploy to prod-gcp
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v4
+
+      - name: Deploy to prod-gcp namespace
+        uses: nais/deploy/actions/deploy@033f70f2484ddfa91dc3d878e06ced3113f996ad # ratchet:nais/deploy/actions/deploy@v3
+        env:
+          CLUSTER: prod-gcp
+          RESOURCE: .nais/app-prod-gcp.yaml
           VAR: image=${{ needs.build.outputs.image }}
 
   loggfeil:

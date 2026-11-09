@@ -1,0 +1,125 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: familie-integrasjoner
+  namespace: teamfamilie
+  labels:
+    team: teamfamilie
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "600M"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+
+spec:
+  image: {{ image }}
+  port: 8085
+  liveness:
+    path: /internal/status/isAlive
+    initialDelay: 30
+    timeout: 5
+    failureThreshold: 10
+  readiness:
+    path: /internal/status/isAlive
+    initialDelay: 30
+    timeout: 5
+    failureThreshold: 10
+  vault:
+    enabled: false
+  webproxy: true
+  azure:
+    application:
+      enabled: true
+      claims:
+        groups:
+          - id: "e750ceb5-b70b-4d94-b4fa-9d22467b786b"  # 0000-GA-Egne_ansatte
+          - id: "e98efc34-12d1-401f-b059-f17e62834065"  # 0000-GA-Fortrolig_Adresse
+          - id: "2931da41-8b8e-42cd-99c0-04a169ddae40"  # 0000-GA-Strengt_Fortrolig_Adresse
+          - id: "199c2b39-e535-4ae8-ac59-8ccbee7991ae"  # 0000-GA-Barnetrygd-Veileder
+          - id: "847e3d72-9dc1-41c3-80ff-f5d4acdd5d46"  # 0000-GA-Barnetrygd
+          - id: "7a271f87-39fb-468b-a9ee-6cf3c070f548"  # 0000-GA-Barnetrygd-Beslutter
+          - id: "31778fd8-3b71-4867-8db6-a81235fbe001"  # 0000-GA-Enslig-Forsorger-Veileder
+          - id: "6406aba2-b930-41d3-a85b-dd13731bc974"  # 0000-GA-Enslig-Forsorger-Saksbehandler
+          - id: "5fcc0e1d-a4c2-49f0-93dc-27c9fea41e54"  # 0000-GA-Enslig-Forsorger-Beslutter
+          - id: "e40090eb-c2fb-400e-b412-e9084019a73b"  # 0000-GA-Kontantstotte
+          - id: "54cd86b8-2e23-48b2-8852-b05b5827bb0f"  # 0000-GA-Kontantstotte-Veileder
+        extra:
+          - "NAVident"
+  tokenx:
+    enabled: true
+  accessPolicy:
+    inbound:
+      rules:
+        - application: familie-ks-sak
+          cluster: prod-gcp
+        - application: familie-ba-sak
+          cluster: prod-gcp
+        - application: familie-ba-minside-frontend
+          cluster: prod-gcp
+        - application: familie-tilbake
+          cluster: prod-gcp
+        - application: tilbakekreving-backend
+          namespace: tilbake
+          cluster: prod-gcp
+        - application: familie-baks-mottak
+          cluster: prod-gcp
+        - application: familie-ef-mottak
+          cluster: prod-gcp
+        - application: familie-ef-sak
+          cluster: prod-gcp
+        - application: familie-klage
+          cluster: prod-gcp
+        - application: familie-ef-iverksett
+          cluster: prod-gcp
+        - application: familie-ef-personhendelse
+          cluster: prod-gcp
+        - application: familie-ef-proxy
+          cluster: prod-fss
+    outbound:
+      rules:
+        - application: modiacontextholder
+          namespace: personoversikt
+        - application: logging
+          namespace: nais-system
+        - application: skjermede-personer-pip
+          namespace: nom
+      external:
+        - host: aareg-services.prod-fss-pub.nais.io
+        - host: arbeid-og-inntekt.prod-fss-pub.nais.io
+        - host: dokarkiv.prod-fss-pub.nais.io
+        - host: dokdistfordeling.prod-fss-pub.nais.io
+        - host: dokdistkanal.prod-fss-pub.nais.io
+        - host: ereg-services.prod-fss-pub.nais.io
+        - host: foerstesidegenerator.prod-fss-pub.nais.io
+        - host: graph.microsoft.com
+        - host: kodeverk-api.intern.nav.no
+        - host: norg2.prod-fss-pub.nais.io
+        - host: oppgave.prod-fss-pub.nais.io
+        - host: pdl-api.prod-fss-pub.nais.io
+        - host: regoppslag.prod-fss-pub.nais.io
+        - host: saf.prod-fss-pub.nais.io
+        - host: safselvbetjening.prod-fss-pub.nais.io
+        - host: sak.prod-fss-pub.nais.io
+  prometheus:
+    enabled: true
+    path: /internal/prometheus
+  replicas:
+    min: 2
+    max: 2
+  resources:
+    limits:
+      memory: 4Gi
+    requests:
+      memory: 1Gi
+      cpu: 200m
+  ingresses:
+    - https://familie-integrasjoner-gcp.intern.nav.no
+  observability:
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+  env:
+    - name: SPRING_PROFILES_ACTIVE
+      value: "prod,prod-gcp,gcp"

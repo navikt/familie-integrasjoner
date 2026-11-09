@@ -34,7 +34,6 @@ OPPGAVE_URL: http://localhost:28085
 PDL_URL: http://localhost:28085/rest/pdl
 REGOPPSLAG_URL: http://localhost:28085
 CREDENTIAL_USERNAME: not-a-real-srvuser
-CREDENTIAL_PASSWORD: not-a-real-pw
 
 wiremock:
   reset-mappings-after-each-test: true
