@@ -71,6 +71,7 @@ class OppgaveRestClientTestConfig {
         } returns 42
 
         every { klient.oppdaterOppgave(any()) } returns response
+        every { klient.oppdaterOppgaveNokkelord(any(), any()) } returns Unit
 
         return klient
     }
