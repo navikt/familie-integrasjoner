@@ -4,6 +4,10 @@ import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.anyRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
+import com.github.tomakehurst.wiremock.client.WireMock.equalToJson
 import com.github.tomakehurst.wiremock.client.WireMock.exactly
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath
@@ -11,11 +15,13 @@ import com.github.tomakehurst.wiremock.client.WireMock.okJson
 import com.github.tomakehurst.wiremock.client.WireMock.patch
 import com.github.tomakehurst.wiremock.client.WireMock.patchRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.status
 import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.verify
+import no.nav.familie.integrasjoner.MockOAuth2ServerInitializer
 import no.nav.familie.integrasjoner.OppslagSpringRunnerTest
 import no.nav.familie.integrasjoner.config.ApiExceptionHandler
 import no.nav.familie.kontrakter.felles.Ressurs
@@ -24,21 +30,29 @@ import no.nav.familie.kontrakter.felles.jsonMapper
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.IdentGruppe
 import no.nav.familie.kontrakter.felles.oppgave.MappeDto
+import no.nav.familie.kontrakter.felles.oppgave.OppdaterOppgaveNokkelordRequest
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.kontrakter.felles.oppgave.OppgaveIdentV2
 import no.nav.familie.kontrakter.felles.oppgave.OppgaveResponse
 import no.nav.familie.kontrakter.felles.oppgave.Oppgavetype
 import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgaveRequest
 import no.nav.familie.kontrakter.felles.oppgave.StatusEnum
+import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.NullSource
+import org.junit.jupiter.params.provider.ValueSource
 import org.slf4j.LoggerFactory
 import org.springframework.boot.resttestclient.exchange
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
@@ -166,6 +180,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
     fun `skal opprette oppgave med mappeId, returnere oppgaveid og 201 Created`() {
         stubFor(post("/api/v1/oppgaver").willReturn(okJson(jsonMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
 
+        val beskrivelse = "--- 01.11.2026 10:00 (familie-ef-sak) --- \nGodkjenn vedtak"
         val opprettOppgave =
             OpprettOppgaveRequest(
                 ident = OppgaveIdentV2(ident = "123456789012", gruppe = IdentGruppe.AKTOERID),
@@ -176,7 +191,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 oppgavetype = Oppgavetype.BehandleSak,
                 mappeId = 1234L,
                 saksId = "saksid",
-                beskrivelse = "Oppgavetekst",
+                beskrivelse = beskrivelse,
             )
         val response: ResponseEntity<Ressurs<OppgaveResponse>> =
             restTemplate.exchange(
@@ -187,10 +202,20 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
 
         assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
         assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
+        verify(
+            exactly(1),
+            postRequestedFor(urlEqualTo("/api/v1/oppgaver"))
+                .withRequestBody(matchingJsonPath("$.mappeId", equalTo("1234")))
+                .withRequestBody(matchingJsonPath("$.tildeltEnhetsnr", equalTo("enhetsnummer")))
+                .withRequestBody(matchingJsonPath("$.beskrivelse", equalTo(beskrivelse))),
+        )
+        verify(exactly(1), anyRequestedFor(anyUrl()))
     }
 
-    @Test
-    fun `skal opprette oppgave uten ident, returnere oppgaveid og 201 Created`() {
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = ["4489"])
+    fun `skal opprette oppgave uten ident med eller uten enhet, returnere oppgaveid og 201 Created`(enhetsnummer: String?) {
         stubFor(post("/api/v1/oppgaver").willReturn(okJson(jsonMapper.writeValueAsString(Oppgave(id = OPPGAVE_ID)))))
 
         val opprettOppgave =
@@ -198,7 +223,7 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
                 ident = null,
                 fristFerdigstillelse = LocalDate.now().plusDays(3),
                 behandlingstema = "behandlingstema",
-                enhetsnummer = "enhetsnummer",
+                enhetsnummer = enhetsnummer,
                 tema = Tema.BAR,
                 oppgavetype = Oppgavetype.BehandleSak,
                 saksId = "saksid",
@@ -246,6 +271,102 @@ class OppgaveControllerTest : OppslagSpringRunnerTest() {
         assertThat(response.body?.melding)
             .contains("Feil ved oppretting av oppgave for 123456789012. Response fra oppgave = body")
         assertThat(response.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+
+    @Nested
+    inner class OppdaterOppgaveNokkelordTest {
+        private val request = OppdaterOppgaveNokkelordRequest(setOf("Kontrollsak", "EØS"), OppdaterOppgaveNokkelordRequest.Meta(7))
+        private val url = "$OPPGAVE_URL/$OPPGAVE_ID/nokkelord"
+        private val oppgaveUrl = "/api/v2/oppgaver/$OPPGAVE_ID"
+
+        @BeforeEach
+        fun brukSystemToken() {
+            val clientId = UUID.randomUUID().toString()
+            headers.setBearerAuth(
+                MockOAuth2ServerInitializer.server
+                    .issueToken(
+                        issuerId = "azuread",
+                        clientId = clientId,
+                        DefaultOAuth2TokenCallback(
+                            issuerId = "azuread",
+                            subject = clientId,
+                            audience = listOf("aud-localhost"),
+                            claims = mapOf("oid" to clientId, "azp" to clientId, "roles" to listOf("access_as_application")),
+                        ),
+                    ).serialize(),
+            )
+        }
+
+        @Test
+        fun `skal patche kun nøkkelord og versjon via v2 uten å opprette eller hente oppgaven`() {
+            stubFor(
+                patch(urlEqualTo(oppgaveUrl))
+                    .willReturn(okJson("""{"id":$OPPGAVE_ID,"meta":{"versjon":8},"nokkelord":["Kontrollsak","EØS"]}""")),
+            )
+
+            val response: ResponseEntity<Ressurs<OppgaveResponse>> =
+                restTemplate.exchange(localhost(url), HttpMethod.PATCH, HttpEntity(request, headers))
+
+            assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+            assertThat(response.body?.status).isEqualTo(Ressurs.Status.SUKSESS)
+            assertThat(response.body?.data?.oppgaveId).isEqualTo(OPPGAVE_ID)
+            verify(
+                exactly(1),
+                patchRequestedFor(urlEqualTo(oppgaveUrl))
+                    .withHeader(HttpHeaders.AUTHORIZATION, equalTo("Bearer mock-m2m-token"))
+                    .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
+                    .withRequestBody(equalToJson("""{"nokkelord":["Kontrollsak","EØS"],"meta":{"versjon":7}}""", true, false)),
+            )
+            verify(exactly(1), anyRequestedFor(anyUrl()))
+        }
+
+        @Test
+        fun `skal videresende tomt nøkkelordsett for å fjerne alle nøkkelord`() {
+            stubFor(patch(urlEqualTo(oppgaveUrl)).willReturn(aResponse().withStatus(204)))
+
+            val response: ResponseEntity<Ressurs<OppgaveResponse>> =
+                restTemplate.exchange(localhost(url), HttpMethod.PATCH, HttpEntity(request.copy(nokkelord = emptySet()), headers))
+
+            assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
+            verify(
+                exactly(1),
+                patchRequestedFor(urlEqualTo(oppgaveUrl))
+                    .withRequestBody(equalToJson("""{"nokkelord":[],"meta":{"versjon":7}}""", true, false)),
+            )
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = [409, 400, 500])
+        fun `skal returnere versjonskonflikt eller eksplisitt feil uten å opprette en ny oppgave`(status: Int) {
+            stubFor(patch(urlEqualTo(oppgaveUrl)).willReturn(aResponse().withStatus(status).withBody("Feil fra oppgave")))
+
+            val response: ResponseEntity<Ressurs<OppgaveResponse>> =
+                restTemplate.exchange(localhost(url), HttpMethod.PATCH, HttpEntity(request, headers))
+
+            assertThat(response.statusCode).isEqualTo(if (status == 409) HttpStatus.CONFLICT else HttpStatus.INTERNAL_SERVER_ERROR)
+            assertThat(response.body?.status).isEqualTo(Ressurs.Status.FEILET)
+            assertThat(response.body?.melding).contains("Feil ved oppdatering av nøkkelord for oppgave $OPPGAVE_ID", "Feil fra oppgave")
+            verify(exactly(1), anyRequestedFor(anyUrl()))
+        }
+
+        @ParameterizedTest
+        @ValueSource(
+            strings = [
+                """{"nokkelord":["Kontrollsak"]}""",
+                """{"meta":{"versjon":7}}""",
+                """{"nokkelord":[],"meta":{}}""",
+                """{"nokkelord":[],"meta":null}""",
+            ],
+        )
+        fun `skal avvise forespørsler som mangler påkrevde felt uten å kalle oppgave`(json: String) {
+            headers.contentType = MediaType.APPLICATION_JSON
+
+            val response: ResponseEntity<String> =
+                restTemplate.exchange(localhost(url), HttpMethod.PATCH, HttpEntity(json, headers))
+
+            assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+            verify(exactly(0), anyRequestedFor(anyUrl()))
+        }
     }
 
     @Test

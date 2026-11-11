@@ -9,6 +9,7 @@ import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnOppgaveResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.MappeDto
+import no.nav.familie.kontrakter.felles.oppgave.OppdaterOppgaveNokkelordRequest
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.kontrakter.felles.oppgave.OppgaveResponse
 import no.nav.familie.kontrakter.felles.oppgave.OpprettOppgaveRequest
@@ -81,6 +82,20 @@ class OppgaveController(
     ): ResponseEntity<Ressurs<OppgaveResponse>> {
         val oppgaveId = oppgaveService.patchOppgave(oppgave)
         return ResponseEntity.ok().body(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av oppgave OK"))
+    }
+
+    @Operation(
+        description =
+            "Erstatter alle nøkkelord på oppgaven via oppgave-api v2 med systemautentisering. Et tomt sett fjerner alle nøkkelord. " +
+                "Andre oppgavefelt beholdes. meta.versjon må være oppgavens gjeldende versjon, ellers returneres 409 Conflict.",
+    )
+    @PatchMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/{oppgaveId}/nokkelord"])
+    fun oppdaterOppgaveNokkelord(
+        @PathVariable oppgaveId: Long,
+        @RequestBody request: OppdaterOppgaveNokkelordRequest,
+    ): ResponseEntity<Ressurs<OppgaveResponse>> {
+        oppgaveService.oppdaterOppgaveNokkelord(oppgaveId, request)
+        return ResponseEntity.ok(success(OppgaveResponse(oppgaveId = oppgaveId), "Oppdatering av nøkkelord OK"))
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE], path = ["/opprett"])

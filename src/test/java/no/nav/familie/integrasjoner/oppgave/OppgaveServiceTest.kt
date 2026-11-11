@@ -15,6 +15,7 @@ import no.nav.familie.kontrakter.felles.oppgave.FinnMappeRequest
 import no.nav.familie.kontrakter.felles.oppgave.FinnMappeResponseDto
 import no.nav.familie.kontrakter.felles.oppgave.IdentGruppe
 import no.nav.familie.kontrakter.felles.oppgave.MappeDto
+import no.nav.familie.kontrakter.felles.oppgave.OppdaterOppgaveNokkelordRequest
 import no.nav.familie.kontrakter.felles.oppgave.Oppgave
 import no.nav.familie.kontrakter.felles.oppgave.OppgaveIdentV2
 import no.nav.familie.kontrakter.felles.oppgave.Oppgavetype
@@ -126,6 +127,18 @@ internal class OppgaveServiceTest {
 
         assertThat(oppgaveSlot.captured.aktoerId).isEqualTo(aktørid)
         assertThat(oppgaveSlot.captured.personident).isNull()
+    }
+
+    @Test
+    fun `skal videresende nøkkelordforespørselen uendret uten enhetsoppslag`() {
+        val request = OppdaterOppgaveNokkelordRequest(setOf("Kontrollsak"), OppdaterOppgaveNokkelordRequest.Meta(7))
+        every { oppgaveRestClient.oppdaterOppgaveNokkelord(42, request) } returns Unit
+
+        oppgaveService.oppdaterOppgaveNokkelord(42, request)
+
+        verify(exactly = 1) { oppgaveRestClient.oppdaterOppgaveNokkelord(42, request) }
+        verify(exactly = 0) { saksbehandlerService.hentSaksbehandler(any()) }
+        verify(exactly = 0) { oppgaveRestClient.opprettOppgave(any()) }
     }
 
     @Nested
