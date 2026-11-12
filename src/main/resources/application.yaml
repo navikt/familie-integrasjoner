@@ -37,15 +37,18 @@ sftp:
   passphrase: ${SFTP_PASSPHRASE}
 
 management:
+  endpoint.info.access: none
   endpoint.health:
     show-details: always
+    probes.enabled: true
     status:
       order: DOWN, DOWN-NONCRITICAL, UP
+  info:
+    defaults:
+      enabled: false
   endpoints.web:
-    exposure.include: info, health, metrics, prometheus
+    exposure.include: health, metrics, prometheus
     base-path: "/internal"
-    path-mapping:
-      info: "status/isAlive"
   prometheus.metrics.export.enabled: true
 
 familie:

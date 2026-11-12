@@ -10,12 +10,12 @@ spec:
   image: {{ image }}
   port: 8085
   liveness:
-    path: /internal/status/isAlive
+    path: /internal/health/liveness
     initialDelay: 30
     timeout: 5
     failureThreshold: 10
   readiness:
-    path: /internal/status/isAlive
+    path: /internal/health/readiness
     initialDelay: 30
     timeout: 5
     failureThreshold: 10
