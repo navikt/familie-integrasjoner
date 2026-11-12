@@ -31,7 +31,7 @@ jobs:
           echo "::error::This workflow can only be run from the main branch"
           exit 1
 
-      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # ratchet:actions/setup-java@v4
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # ratchet:actions/setup-java@v4
         with:
           java-version: 25
           distribution: 'temurin'
@@ -64,7 +64,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v4
 
       - name: Deploy to prod-gcp namespace with GCP profile
-        uses: nais/deploy/actions/deploy@033f70f2484ddfa91dc3d878e06ced3113f996ad # ratchet:nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@420caaa3a59af9aca910e372e5b7a85f3c7cd553 # ratchet:nais/deploy/actions/deploy@v2
         env:
           CLUSTER: prod-gcp
           RESOURCE: .nais/app-prod-gcp.yaml
