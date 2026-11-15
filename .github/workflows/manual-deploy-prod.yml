@@ -44,7 +44,7 @@ jobs:
         run: mvn -B --no-transfer-progress package ${{ inputs.skip-tests && '-DskipTests' || '' }} --settings .m2/maven-settings.xml --file pom.xml
 
       - name: Build and push docker image
-        uses: nais/docker-build-push@d3a1f7e259ecc381a50435e1d4add9059429ebd7 # ratchet:nais/docker-build-push@v0
+        uses: nais/docker-build-push@588f76a6f45aeb1e75d5e8417ec6ef6d79b2b39f # ratchet:nais/docker-build-push@v0
         id: docker-push
         with:
           team: teamfamilie
