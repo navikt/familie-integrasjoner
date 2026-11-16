@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.client.JettyClientHttpRequestFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpStatusCodeException
@@ -24,6 +25,7 @@ import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
+import java.time.Duration
 
 @Component
 class DokarkivRestClient(
@@ -31,7 +33,12 @@ class DokarkivRestClient(
     @Value("\${DOKARKIV_SCOPE}") scope: String,
     entraIDRestClientFactory: EntraIDRestClientFactory,
 ) {
-    private val restClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
+    private val restClient =
+        entraIDRestClientFactory
+            .lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
+            .mutate()
+            .requestFactory(JettyClientHttpRequestFactory().apply { setReadTimeout(READ_TIMEOUT) })
+            .build()
 
     fun lagJournalpostUri(ferdigstill: Boolean): URI =
         UriComponentsBuilder
@@ -193,6 +200,8 @@ class DokarkivRestClient(
 
     companion object {
         private val logger = LoggerFactory.getLogger(DokarkivRestClient::class.java)
+
+        private val READ_TIMEOUT = Duration.ofSeconds(20)
 
         private const val PATH_JOURNALPOST = "rest/journalpostapi/v1/journalpost"
         private const val QUERY_FERDIGSTILL = "forsoekFerdigstill={boolean}"

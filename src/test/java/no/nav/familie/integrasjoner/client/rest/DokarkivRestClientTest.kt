@@ -24,7 +24,8 @@ class DokarkivRestClientTest {
     private val restClient: RestClient = mockk(relaxed = true)
     private val factory: EntraIDRestClientFactory =
         mockk {
-            every { lagHybridRestKlient(any(), any()) } returns restClient
+            every { lagHybridRestKlient(any(), any()) } returns
+                mockk { every { mutate().requestFactory(any()).build() } returns restClient }
         }
     private val dokarkivRestClient: DokarkivRestClient =
         DokarkivRestClient(
