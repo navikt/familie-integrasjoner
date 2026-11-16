@@ -201,7 +201,7 @@ class DokarkivRestClient(
     companion object {
         private val logger = LoggerFactory.getLogger(DokarkivRestClient::class.java)
 
-        private val READ_TIMEOUT = Duration.ofSeconds(20)
+        private val READ_TIMEOUT = Duration.ofSeconds(60)
 
         private const val PATH_JOURNALPOST = "rest/journalpostapi/v1/journalpost"
         private const val QUERY_FERDIGSTILL = "forsoekFerdigstill={boolean}"
