@@ -5,6 +5,7 @@ import io.mockk.mockk
 import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.felles.OppslagException
 import no.nav.familie.integrasjoner.geografisktilknytning.PdlHentGeografiskTilknytning
+import no.nav.familie.integrasjoner.personopplysning.PdlGeografiskTilknytningNotFoundException
 import no.nav.familie.integrasjoner.personopplysning.internal.PdlResponse
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.jsonMapper
@@ -12,6 +13,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
 import org.springframework.web.client.RestClient
 import tools.jackson.module.kotlin.readValue
@@ -19,6 +21,8 @@ import java.net.URI
 
 class PdlRestClientTest {
     private val restClient: RestClient = mockk(relaxed = true)
+    private val requestBodyUriSpec: RestClient.RequestBodyUriSpec = mockk()
+    private val requestBodySpec: RestClient.RequestBodySpec = mockk()
     private val responseSpec: RestClient.ResponseSpec = mockk()
     private val factory: EntraIDRestClientFactory =
         mockk {
@@ -55,6 +59,25 @@ class PdlRestClientTest {
             assertThat(oppslagException.kilde).isEqualTo("PdlRestClient.hentAdressebeskyttelse")
             assertThat(oppslagException.level).isEqualTo(OppslagException.Level.MEDIUM)
             assertThat(oppslagException.httpStatus).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    @Nested
+    inner class HentGeografiskTilknytning {
+        @Test
+        fun `skal kaste PdlGeografiskTilknytningNotFoundException hvis personen mangler geografisk tilknytning i PDL`() {
+            every { restClient.post() } returns requestBodyUriSpec
+            every { requestBodyUriSpec.uri(any<URI>()) } returns requestBodySpec
+            every { requestBodySpec.header(any<String>(), *anyVararg<String>()) } returns requestBodySpec
+            every { requestBodySpec.body(any<Any>()) } returns requestBodySpec
+            every { requestBodySpec.retrieve() } returns responseSpec
+            every { responseSpec.hint(any(), any()) } returns responseSpec
+            every { responseSpec.body(any<ParameterizedTypeReference<PdlResponse<PdlHentGeografiskTilknytning>>>()) } returns
+                PdlResponse(data = PdlHentGeografiskTilknytning(hentGeografiskTilknytning = null), errors = null, extensions = null)
+
+            assertThrows<PdlGeografiskTilknytningNotFoundException> {
+                pdlRestClient.hentGeografiskTilknytning("12345678910", Tema.BAR)
+            }
         }
     }
 
