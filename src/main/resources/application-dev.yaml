@@ -4,7 +4,7 @@ tilgang:
   kode7:
     rolle-id: "2e1dc582-f762-4510-a660-88bf68fb7128"
   egenAnsatt:
-    rolle-id: "dbe4ad45-320b-4e9a-aaa1-73cca4ee124d"
+    rolle-id: "8df187e3-f6ab-4a5d-8830-61bf148e59fe"
 
 NAIS_TOKEN_ENDPOINT: http://localhost/token
 NAIS_TOKEN_EXCHANGE_ENDPOINT: http://localhost/token/exchange

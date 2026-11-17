@@ -26,7 +26,7 @@ tilgang:
     rolle-id: "e98efc34-12d1-401f-b059-f17e62834065"
     beskrivelse: Fortrolig adresse
   egenAnsatt:
-    rolle-id: "e750ceb5-b70b-4d94-b4fa-9d22467b786b"
+    rolle-id: "3121171d-bced-4967-b993-caaf57f02b73"
     beskrivelse: NAV-ansatt
 
 sftp:
