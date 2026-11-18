@@ -241,6 +241,7 @@ class PdlRestClient(
             when (e) {
                 is OppslagException -> throw e
                 is PdlNotFoundException -> throw e
+                is PdlGeografiskTilknytningNotFoundException -> throw e
                 else -> throw pdlOppslagException(personIdent, error = e, kilde = "PdlRestClient.hentGeografiskTilknytning")
             }
         }
