@@ -14,6 +14,7 @@ import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostResponse
 import no.nav.familie.log.NavHttpHeaders
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -32,13 +33,13 @@ class DokarkivRestClient(
     @Value("\${DOKARKIV_V1_URL}") private val dokarkivUrl: URI,
     @Value("\${DOKARKIV_SCOPE}") scope: String,
     entraIDRestClientFactory: EntraIDRestClientFactory,
-) {
-    private val restClient =
-        entraIDRestClientFactory
-            .lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
-            .mutate()
-            .requestFactory(JettyClientHttpRequestFactory().apply { setReadTimeout(READ_TIMEOUT) })
-            .build()
+) : DisposableBean {
+    private val journalpostRequestFactory = JettyClientHttpRequestFactory().apply { setReadTimeout(JOURNALPOST_READ_TIMEOUT) }
+
+    private val hybridRestClient = entraIDRestClientFactory.lagHybridRestKlient(scope) { SikkerhetsContext.hentJwt().tokenValue }
+    private val journalpostRestClient = hybridRestClient.mutate().requestFactory(journalpostRequestFactory).build()
+
+    override fun destroy() = journalpostRequestFactory.destroy()
 
     fun lagJournalpostUri(ferdigstill: Boolean): URI =
         UriComponentsBuilder
@@ -55,7 +56,7 @@ class DokarkivRestClient(
     ): OpprettJournalpostResponse {
         val uri = lagJournalpostUri(ferdigstill)
         try {
-            return restClient
+            return journalpostRestClient
                 .post()
                 .uri(uri)
                 .headers { it.putAll(headers(navIdent)) }
@@ -87,7 +88,7 @@ class DokarkivRestClient(
                 .build()
                 .toUri()
         try {
-            return restClient
+            return hybridRestClient
                 .put()
                 .uri(uri)
                 .headers { it.putAll(headers(navIdent)) }
@@ -106,7 +107,7 @@ class DokarkivRestClient(
     ) {
         val uri = ferdigstillJournalpostUri(journalpostId)
         try {
-            restClient
+            hybridRestClient
                 .patch()
                 .uri(uri)
                 .headers { it.putAll(headers(navIdent)) }
@@ -140,7 +141,7 @@ class DokarkivRestClient(
                 .build()
                 .toUri()
         try {
-            restClient
+            hybridRestClient
                 .patch()
                 .uri(uri)
                 .body(request)
@@ -161,7 +162,7 @@ class DokarkivRestClient(
                 .build()
                 .toUri()
         try {
-            restClient
+            hybridRestClient
                 .patch()
                 .uri(uri)
                 .body(gjenåpneSakRequest)
@@ -201,7 +202,7 @@ class DokarkivRestClient(
     companion object {
         private val logger = LoggerFactory.getLogger(DokarkivRestClient::class.java)
 
-        private val READ_TIMEOUT = Duration.ofMinutes(3)
+        private val JOURNALPOST_READ_TIMEOUT = Duration.ofMinutes(3)
 
         private const val PATH_JOURNALPOST = "rest/journalpostapi/v1/journalpost"
         private const val QUERY_FERDIGSTILL = "forsoekFerdigstill={boolean}"
