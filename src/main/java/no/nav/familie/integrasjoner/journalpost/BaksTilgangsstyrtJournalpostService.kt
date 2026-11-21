@@ -10,6 +10,7 @@ import no.nav.familie.kontrakter.felles.søknad.MissingVersionException
 import no.nav.familie.kontrakter.felles.søknad.UnsupportedVersionException
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import tools.jackson.core.JacksonException
 import java.time.LocalDateTime
 
 @Service
@@ -33,30 +34,36 @@ class BaksTilgangsstyrtJournalpostService(
 
         if (!støtterTilgangsstyringSjekk(journalpost, tema)) return JournalpostTilgang(harTilgang = true)
 
-        return try {
-            val baksSøknadBase = baksVersjonertSøknadService.hentBaksSøknadBase(journalpost, tema)
-            val personerSaksbehandlerIkkeHarTilgangTil =
-                tilgangskontrollService
-                    .sjekkTilgangTilBrukere(
-                        personIdenter = baksSøknadBase.personerISøknad(),
-                        tema = tema,
-                    ).filter { !it.harTilgang }
-
-            if (personerSaksbehandlerIkkeHarTilgangTil.isEmpty()) {
+        val baksSøknadBase =
+            try {
+                baksVersjonertSøknadService.hentBaksSøknadBase(journalpost, tema)
+            } catch (e: MissingVersionException) {
+                logger.info("Får ikke sjekket tilgang til digital søknad tilknyttet journalpost ${journalpost.journalpostId}. Søknaden mangler kontraktversjon.")
+                // For gamle søknader, før 'kontraktVersjon' ble innført, har vi ingen måte å bestemme konkret klasse å deserialisere til.
+                // Gir tilgang basert på antagelsen om at fagsak relatert til gamle søknader allerede er satt til Vikafossen dersom det finnes kode 6, 7 eller 19 personer i søknad.
                 return JournalpostTilgang(harTilgang = true)
-            } else {
-                return JournalpostTilgang(harTilgang = false, begrunnelse = personerSaksbehandlerIkkeHarTilgangTil.filter { it.begrunnelse != null }.toSet().joinToString(prefix = "(", postfix = ")", separator = ", ") { it.begrunnelse!! })
+            } catch (e: UnsupportedVersionException) {
+                logger.error("Får ikke sjekket tilgang til digital søknad tilknyttet journalpost ${journalpost.journalpostId}, da vi mangler støtte for kontraktversjon.")
+                secureLogger.error("Feil ved deserialisering av digital søknad ifbm sjekk av tilgang.", e)
+                // Hindrer tilgang og logger Error da vi burde kunne deserialisere alle baks-søknader med feltet `kontraktVersjon`.
+                return JournalpostTilgang(harTilgang = false, begrunnelse = "(Får ikke sjekket tilgang fordi søknadens kontraktversjon ikke støttes)")
+            } catch (e: JacksonException) {
+                logger.error("Får ikke sjekket tilgang til digital søknad tilknyttet journalpost ${journalpost.journalpostId}, da original variant ikke lar seg deserialisere.")
+                secureLogger.error("Feil ved deserialisering av digital søknad ifbm sjekk av tilgang.", e)
+                return JournalpostTilgang(harTilgang = false, begrunnelse = "(Får ikke sjekket tilgang fordi søknaden ikke kan leses)")
             }
-        } catch (e: MissingVersionException) {
-            logger.info("Får ikke sjekket tilgang til digital søknad tilknyttet journalpost ${journalpost.journalpostId}. Søknaden mangler kontraktversjon.")
-            // For gamle søknader, før 'kontraktVersjon' ble innført, har vi ingen måte å bestemme konkret klasse å deserialisere til.
-            // Gir tilgang basert på antagelsen om at fagsak relatert til gamle søknader allerede er satt til Vikafossen dersom det finnes kode 6, 7 eller 19 personer i søknad.
+
+        val personerSaksbehandlerIkkeHarTilgangTil =
+            tilgangskontrollService
+                .sjekkTilgangTilBrukere(
+                    personIdenter = baksSøknadBase.personerISøknad(),
+                    tema = tema,
+                ).filter { !it.harTilgang }
+
+        return if (personerSaksbehandlerIkkeHarTilgangTil.isEmpty()) {
             JournalpostTilgang(harTilgang = true)
-        } catch (e: UnsupportedVersionException) {
-            logger.error("Får ikke sjekket tilgang til digital søknad tilknyttet journalpost ${journalpost.journalpostId}, da vi mangler støtte for kontraktversjon.")
-            secureLogger.error("Feil ved deserialisering av digital søknad ifbm sjekk av tilgang.", e)
-            // Hindrer tilgang og logger Error da vi burde kunne deserialisere alle baks-søknader med feltet `kontraktVersjon`.
-            JournalpostTilgang(harTilgang = false)
+        } else {
+            JournalpostTilgang(harTilgang = false, begrunnelse = personerSaksbehandlerIkkeHarTilgangTil.filter { it.begrunnelse != null }.toSet().joinToString(prefix = "(", postfix = ")", separator = ", ") { it.begrunnelse!! })
         }
     }
 

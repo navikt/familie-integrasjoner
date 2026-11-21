@@ -8,13 +8,19 @@ import no.nav.familie.integrasjoner.tilgangskontroll.TilgangskontrollService
 import no.nav.familie.kontrakter.felles.Tema
 import no.nav.familie.kontrakter.felles.journalpost.DokumentInfo
 import no.nav.familie.kontrakter.felles.journalpost.Journalpost
+import no.nav.familie.kontrakter.felles.jsonMapper
 import no.nav.familie.kontrakter.felles.søknad.MissingVersionException
 import no.nav.familie.kontrakter.felles.søknad.UnsupportedVersionException
 import no.nav.familie.kontrakter.felles.tilgangskontroll.Tilgang
+import no.nav.familie.kontrakter.ks.søknad.VersjonertKontantstøtteSøknad
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.params.provider.ValueSource
+import tools.jackson.core.JacksonException
+import tools.jackson.module.kotlin.readValue
 import java.time.LocalDateTime
 
 class BaksTilgangsstyrtJournalpostServiceTest {
@@ -207,6 +213,55 @@ class BaksTilgangsstyrtJournalpostServiceTest {
         assertThat(tilgangsstyrteJournalposter).hasSize(1)
         val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && !it.journalpostTilgang.harTilgang }
         assertThat(tilgangsstyrtJournalpost).isNotNull
+        assertThat(tilgangsstyrtJournalpost!!.journalpostTilgang.begrunnelse).isEqualTo("(Får ikke sjekket tilgang fordi søknadens kontraktversjon ikke støttes)")
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["%PDF-1.7", ""])
+    fun `skal mappe om liste av Journalpost til liste av TilgangsstyrtJournalpost med harTilgang satt til false dersom digital søknad og original variant ikke lar seg deserialisere`(originalVariant: String) {
+        // Arrange
+        val journalpost = mockk<Journalpost>()
+        val dokumentInfo = mockk<DokumentInfo>()
+
+        every { journalpost.journalpostId } returns "1"
+        every { journalpost.tema } returns Tema.KON.name
+        every { journalpost.datoMottatt } returns LocalDateTime.of(2024, 12, 12, 0, 0)
+        every { journalpost.harDigitalSøknad(any()) } returns true
+        every { journalpost.dokumenter } returns listOf(dokumentInfo)
+        every { dokumentInfo.erSøknadForTema(any()) } returns true
+        every { dokumentInfo.harOriginalVariant() } returns true
+
+        every { baksVersjonertSøknadService.hentBaksSøknadBase(any(), any()) } answers { jsonMapper.readValue<VersjonertKontantstøtteSøknad>(originalVariant).kontantstøtteSøknad }
+
+        // Act
+        val tilgangsstyrteJournalposter = baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost))
+
+        // Assert
+        assertThat(tilgangsstyrteJournalposter).hasSize(1)
+        val tilgangsstyrtJournalpost = tilgangsstyrteJournalposter.find { it.journalpost.journalpostId == journalpost.journalpostId && !it.journalpostTilgang.harTilgang }
+        assertThat(tilgangsstyrtJournalpost).isNotNull
+        assertThat(tilgangsstyrtJournalpost!!.journalpostTilgang.begrunnelse).isEqualTo("(Får ikke sjekket tilgang fordi søknaden ikke kan leses)")
+    }
+
+    @Test
+    fun `skal kaste feilen videre dersom tilgangssjekken feiler med deserialiseringsfeil`() {
+        // Arrange
+        val journalpost = mockk<Journalpost>()
+        val dokumentInfo = mockk<DokumentInfo>()
+
+        every { journalpost.journalpostId } returns "1"
+        every { journalpost.tema } returns Tema.KON.name
+        every { journalpost.datoMottatt } returns LocalDateTime.of(2024, 12, 12, 0, 0)
+        every { journalpost.harDigitalSøknad(any()) } returns true
+        every { journalpost.dokumenter } returns listOf(dokumentInfo)
+        every { dokumentInfo.erSøknadForTema(any()) } returns true
+        every { dokumentInfo.harOriginalVariant() } returns true
+
+        every { baksVersjonertSøknadService.hentBaksSøknadBase(any(), any()) } returns lagKontantstøtteSøknad("12345678910", "12345678911")
+        every { tilgangskontrollService.sjekkTilgangTilBrukere(any(), any()) } answers { jsonMapper.readValue<List<Tilgang>>("%PDF-1.7") }
+
+        // Act & Assert
+        assertThrows<JacksonException> { baksTilgangsstyrtJournalpostService.mapTilTilgangsstyrteJournalposter(listOf(journalpost)) }
     }
 
     @ParameterizedTest
