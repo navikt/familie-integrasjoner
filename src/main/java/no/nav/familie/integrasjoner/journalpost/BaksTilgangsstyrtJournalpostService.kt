@@ -48,8 +48,8 @@ class BaksTilgangsstyrtJournalpostService(
                 // Hindrer tilgang og logger Error da vi burde kunne deserialisere alle baks-søknader med feltet `kontraktVersjon`.
                 return JournalpostTilgang(harTilgang = false, begrunnelse = "(Får ikke sjekket tilgang fordi søknadens kontraktversjon ikke støttes)")
             } catch (e: JacksonException) {
-                logger.error("Får ikke sjekket tilgang til digital søknad tilknyttet journalpost ${journalpost.journalpostId}, da original variant ikke lar seg deserialisere.")
-                secureLogger.error("Feil ved deserialisering av digital søknad ifbm sjekk av tilgang.", e)
+                logger.warn("Får ikke sjekket tilgang til digital søknad tilknyttet journalpost ${journalpost.journalpostId}, da original variant ikke lar seg deserialisere.")
+                secureLogger.warn("Feil ved deserialisering av digital søknad ifbm sjekk av tilgang.", e)
                 return JournalpostTilgang(harTilgang = false, begrunnelse = "(Får ikke sjekket tilgang fordi søknaden ikke kan leses)")
             }
 
