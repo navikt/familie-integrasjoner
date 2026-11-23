@@ -15,6 +15,7 @@ spec:
   envFrom:
     - secret: familie-integrasjoner-servicebruker
     - secret: familie-integrasjoner-sftp
+    - secret: familie-integrasjoner-unleash-api-token
   liveness:
     path: /internal/health/liveness
     initialDelay: 30
@@ -99,6 +100,8 @@ spec:
           cluster: dev-gcp
         - application: logging
           namespace: nais-system
+      external:
+        - host: teamfamilie-unleash-api.nav.cloud.nais.io
   prometheus:
     enabled: true
     path: /internal/prometheus
