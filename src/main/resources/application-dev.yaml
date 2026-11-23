@@ -8,6 +8,11 @@ tilgang:
 
 NAIS_TOKEN_ENDPOINT: http://localhost/token
 NAIS_TOKEN_EXCHANGE_ENDPOINT: http://localhost/token/exchange
+UNLEASH_SERVER_API_URL: http://localhost:4242
+UNLEASH_SERVER_API_TOKEN: dummy-token-not-used
+
+unleash:
+  enabled: false
 
 AAD_GRAPH_API_URI: https://graph.microsoft.com/v1.0/
 ORGANISASJON_URL: #Denne er ikke i bruk da OrganisasjonV5 mockes ut lokalt
