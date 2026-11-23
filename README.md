@@ -2,7 +2,7 @@
 App for integrasjoner mot NAV-interne registre, GSAK, mm. Brukes i saksbehandling av kontantstøtte, barnetrygd og enslig forsørger.
 
 ## Bygging lokalt
-Appen kjører på Java 21. Bygging gjøres ved å kjøre `mvn clean install`. 
+Appen kjører på Java 25. Bygging gjøres ved å kjøre `mvn clean install`. 
 
 ## Kjøring og testing lokalt
 For å kjøre opp appen lokalt kan en kjøre `DevLauncher` med Spring-profilen `dev` satt. Dette kan feks gjøres ved å sette
@@ -10,19 +10,8 @@ For å kjøre opp appen lokalt kan en kjøre `DevLauncher` med Spring-profilen `
 
 Appen er da tilgjengelig under `localhost:8085`.
 
-Dersom man vil gå mot endepunkter som krever autentisering lokalt, kan man få et testtoken ved å gå mot `localhost:8085/local/cookie`. 
-
-## Produksjonssetting
-Hvis du skal deploye appen til prod, må du pushe en ny tag på main. Dette gjøres ved å kjøre tag-scriptet som ligger i `.github`-mappen. Da spesifiserer du om du vil bumpe major eller minor, scriptet vil da bumpe med 1 opp fra nyeste tag. 
-
-Eksempelvis: 
-
-Nyeste tag er `v0.5`.`./tag.sh -M` vil da pushe tagen `v1.0`, og `./tag.sh -m` vil pushe tagen `v0.6`.
-
-Når en ny tag pushes, trigges github action workflowen som heter Deploy-Prod. 
-
 ### Swagger
-http://localhost:8093/swagger-ui.html
+http://localhost:8085/swagger-ui/index.html
 
 
 #### Test token i q2
