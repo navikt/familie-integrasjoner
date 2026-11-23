@@ -12,13 +12,37 @@ import java.util.UUID
 
 class FeatureToggleServiceTest {
     @Test
-    fun `skal returnere status for kjente toggles og false for ukjent toggle`() {
-        val unleashService = FakeUnleashService(mapOf("aktiv" to true, "deaktivert" to false))
+    fun `skal returnere true for aktiv toggle med eksakt Unleash ID`() {
+        val unleashService = FakeUnleashService(mapOf(FeatureToggle.SAKSBEHANDLER_UTELAT_AZUREID.navn to true))
         val service = FeatureToggleService(unleashService)
 
-        assertThat(service.isEnabled("aktiv")).isTrue()
-        assertThat(service.isEnabled("deaktivert")).isFalse()
-        assertThat(service.isEnabled("ukjent-toggle")).isFalse()
+        assertThat(FeatureToggle.SAKSBEHANDLER_UTELAT_AZUREID.navn)
+            .isEqualTo("familie-integrasjoner.saksbehandler-utelat-azureid")
+        assertThat(service.isEnabled(FeatureToggle.SAKSBEHANDLER_UTELAT_AZUREID)).isTrue()
+        assertThat(unleashService.toggleIds).containsExactly("familie-integrasjoner.saksbehandler-utelat-azureid")
+        assertThat(unleashService.defaultValues).containsExactly(false)
+        assertThat(unleashService.propertiesMethodCalled).isFalse()
+    }
+
+    @Test
+    fun `skal returnere false for deaktivert toggle`() {
+        val unleashService = FakeUnleashService(mapOf(FeatureToggle.SAKSBEHANDLER_UTELAT_AZUREID.navn to false))
+        val service = FeatureToggleService(unleashService)
+
+        assertThat(service.isEnabled(FeatureToggle.SAKSBEHANDLER_UTELAT_AZUREID)).isFalse()
+        assertThat(unleashService.toggleIds).containsExactly("familie-integrasjoner.saksbehandler-utelat-azureid")
+        assertThat(unleashService.defaultValues).containsExactly(false)
+        assertThat(unleashService.propertiesMethodCalled).isFalse()
+    }
+
+    @Test
+    fun `skal returnere false når toggle mangler`() {
+        val unleashService = FakeUnleashService(emptyMap())
+        val service = FeatureToggleService(unleashService)
+
+        assertThat(service.isEnabled(FeatureToggle.SAKSBEHANDLER_UTELAT_AZUREID)).isFalse()
+        assertThat(unleashService.toggleIds).containsExactly("familie-integrasjoner.saksbehandler-utelat-azureid")
+        assertThat(unleashService.defaultValues).containsExactly(false)
         assertThat(unleashService.propertiesMethodCalled).isFalse()
     }
 
@@ -44,7 +68,7 @@ class FeatureToggleServiceTest {
                         assertThat(context).hasSingleBean(FeatureToggleService::class.java)
 
                         val toggleId = "context-test-${UUID.randomUUID()}"
-                        assertThat(context.getBean(FeatureToggleService::class.java).isEnabled(toggleId)).isFalse()
+                        assertThat(context.getBean(UnleashService::class.java).isEnabled(toggleId)).isFalse()
                         assertThat(context.getBean(UnleashService::class.java).javaClass.name)
                             .doesNotContain("DefaultUnleashService")
                     }
@@ -59,6 +83,9 @@ class FeatureToggleServiceTest {
     private class FakeUnleashService(
         private val toggles: Map<String, Boolean>,
     ) : UnleashService {
+        val toggleIds = mutableListOf<String>()
+        val defaultValues = mutableListOf<Boolean>()
+
         var propertiesMethodCalled = false
             private set
 
@@ -73,7 +100,11 @@ class FeatureToggleServiceTest {
         override fun isEnabled(
             toggleId: String,
             defaultValue: Boolean,
-        ): Boolean = toggles[toggleId] ?: defaultValue
+        ): Boolean {
+            toggleIds.add(toggleId)
+            defaultValues.add(defaultValue)
+            return toggles[toggleId] ?: defaultValue
+        }
 
         override fun destroy() = Unit
     }

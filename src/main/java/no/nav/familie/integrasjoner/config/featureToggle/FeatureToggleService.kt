@@ -7,5 +7,5 @@ import org.springframework.stereotype.Service
 class FeatureToggleService(
     private val unleashService: UnleashService,
 ) {
-    fun isEnabled(toggleId: String): Boolean = unleashService.isEnabled(toggleId)
+    fun isEnabled(toggle: FeatureToggle): Boolean = unleashService.isEnabled(toggle.navn)
 }
