@@ -1,0 +1,69 @@
+name: Deploy unleash api-token for dev og prod i gcp og fss
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-dev:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: deploy unleash api-token to dev-gcp
+        uses: nais/deploy/actions/deploy@b1a9a40dae937091497f8f29c5ea5334cc1c0643 # ratchet:nais/deploy/actions/deploy@v3
+        env:
+          CLUSTER: dev-gcp
+          RESOURCE: .nais/unleash/unleash-apitoken-dev.yaml
+  deploy-dev-fss:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: deploy unleash api-token to dev-fss
+        uses: nais/deploy/actions/deploy@b1a9a40dae937091497f8f29c5ea5334cc1c0643 # ratchet:nais/deploy/actions/deploy@v3
+        env:
+          CLUSTER: dev-fss
+          RESOURCE: .nais/unleash/unleash-apitoken-dev.yaml
+  deploy-prod:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: deploy unleash api-token to prod-gcp
+        uses: nais/deploy/actions/deploy@b1a9a40dae937091497f8f29c5ea5334cc1c0643 # ratchet:nais/deploy/actions/deploy@v3
+        env:
+          CLUSTER: prod-gcp
+          RESOURCE: .nais/unleash/unleash-apitoken-prod.yaml
+  deploy-prod-fss:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # ratchet:actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: deploy unleash api-token to prod-fss
+        uses: nais/deploy/actions/deploy@b1a9a40dae937091497f8f29c5ea5334cc1c0643 # ratchet:nais/deploy/actions/deploy@v3
+        env:
+          CLUSTER: prod-fss
+          RESOURCE: .nais/unleash/unleash-apitoken-prod.yaml
