@@ -137,6 +137,11 @@
         </dependency>
         <dependency>
             <groupId>no.nav.familie.felles</groupId>
+            <artifactId>unleash</artifactId>
+            <version>${felles.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.nav.familie.felles</groupId>
             <artifactId>sikkerhet-spring-security</artifactId>
             <version>${felles.version}</version>
         </dependency>

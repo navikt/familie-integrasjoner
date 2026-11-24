@@ -12,6 +12,8 @@ metadata:
 spec:
   image: {{ image }}
   port: 8085
+  envFrom:
+    - secret: familie-integrasjoner-unleash-api-token
   liveness:
     path: /internal/health/liveness
     initialDelay: 30
@@ -98,6 +100,7 @@ spec:
         - host: saf.prod-fss-pub.nais.io
         - host: safselvbetjening.prod-fss-pub.nais.io
         - host: sak.prod-fss-pub.nais.io
+        - host: teamfamilie-unleash-api.nav.cloud.nais.io
   prometheus:
     enabled: true
     path: /internal/prometheus

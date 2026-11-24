@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @ComponentScan(
     "no.nav.familie.integrasjoner",
     "no.nav.familie.metrikker",
+    "no.nav.familie.unleash",
     "no.nav.familie.felles.tokenklient.entraid",
     "no.nav.familie.felles.tokenklient.tokenx",
 )

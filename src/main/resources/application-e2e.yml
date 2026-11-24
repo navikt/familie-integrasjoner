@@ -31,3 +31,8 @@ logging:
   config: "classpath:logback-e2e.xml"
 
 NAIS_APP_NAME: familie-integrasjoner
+
+unleash:
+  enabled: false
+UNLEASH_SERVER_API_URL: http://unleash-dummy.invalid/api
+UNLEASH_SERVER_API_TOKEN: e2e-dummy-token
