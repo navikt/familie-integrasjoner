@@ -5,10 +5,13 @@ import com.expediagroup.graphql.client.types.GraphQLClientResponse
 import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.client.rest.RegoppslagRestClient
 import no.nav.familie.integrasjoner.client.rest.SafRestClient
+import no.nav.familie.integrasjoner.config.lagJettyHttpClient
+import no.nav.familie.integrasjoner.config.medTimeout
 import no.nav.familie.integrasjoner.safselvbetjening.generated.HentDokumentoversikt
 import no.nav.familie.integrasjoner.safselvbetjening.generated.enums.Tema
 import no.nav.familie.integrasjoner.safselvbetjening.generated.enums.Variantformat
 import no.nav.familie.integrasjoner.sikkerhet.SikkerhetsContext
+import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
@@ -17,13 +20,21 @@ import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
+import java.time.Duration
 
 @Service
 class SafSelvbetjeningClient(
     @Qualifier("SafSelvbetjening") private val safSelvbetjeningGraphQLClient: GraphQLWebClient,
-    @Qualifier("safSelvbetjeningTokenXRestClient") private val restClient: RestClient,
+    @Qualifier("safSelvbetjeningTokenXRestClient") restClient: RestClient,
     @Value("\${SAF_SELVBETJENING_URL}") private val safSelvbetjeningURI: URI,
-) {
+) : DisposableBean {
+    private val httpClient = lagJettyHttpClient(HENT_DOKUMENT_TIMEOUT)
+    private val restClient = restClient.medTimeout(httpClient, HENT_DOKUMENT_TIMEOUT)
+
+    override fun destroy() {
+        httpClient.stop()
+    }
+
     suspend fun hentDokumentoversiktForIdent(
         ident: String,
         tema: Tema,
@@ -66,5 +77,10 @@ class SafSelvbetjeningClient(
                 e,
             )
         }
+    }
+
+    companion object {
+        // Store PDF-er bruker ofte mer enn 10s, se RestClientTimeout.kt.
+        private val HENT_DOKUMENT_TIMEOUT = Duration.ofSeconds(60)
     }
 }

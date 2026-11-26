@@ -10,21 +10,51 @@ import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
 import no.nav.familie.integrasjoner.safselvbetjening.generated.HentDokumentoversikt
 import no.nav.familie.integrasjoner.safselvbetjening.generated.enums.Tema
 import org.assertj.core.api.Assertions.assertThat
+import org.eclipse.jetty.client.HttpClient
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.http.client.ClientHttpRequestFactory
+import org.springframework.test.util.ReflectionTestUtils
 import org.springframework.web.client.RestClient
 import java.net.URI
+import java.time.Duration
 
 class SafSelvbetjeningClientTest {
     private val safSelvbetjeningGraphQLClient: GraphQLWebClient = mockk()
     private val restClient: RestClient = mockk(relaxed = true)
+    private val builder: RestClient.Builder = mockk(relaxed = true)
+    private val requestFactories = mutableListOf<ClientHttpRequestFactory>()
+
+    init {
+        every { restClient.mutate() } returns builder
+        every { builder.requestFactory(capture(requestFactories)) } returns builder
+        every { builder.build() } returns mockk(relaxed = true)
+    }
+
     private val safSelvbetjeningClient: SafSelvbetjeningClient =
         SafSelvbetjeningClient(
             safSelvbetjeningGraphQLClient = safSelvbetjeningGraphQLClient,
             safSelvbetjeningURI = URI.create("https://test.no"),
             restClient = restClient,
         )
+
+    @AfterEach
+    fun tearDown() {
+        safSelvbetjeningClient.destroy()
+    }
+
+    @Test
+    fun `skal hente dokumenter med 60 sekunders timeout`() {
+        // Act
+        val requestFactory = requestFactories.single()
+
+        // Assert
+        assertThat(ReflectionTestUtils.getField(requestFactory, "readTimeout")).isEqualTo(Duration.ofSeconds(60).toMillis())
+        assertThat((ReflectionTestUtils.getField(requestFactory, "httpClient") as HttpClient).idleTimeout)
+            .isEqualTo(Duration.ofSeconds(60).toMillis())
+    }
 
     @Nested
     inner class HentDokumentoversiktForIdent {

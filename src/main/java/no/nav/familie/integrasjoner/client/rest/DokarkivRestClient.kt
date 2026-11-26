@@ -1,6 +1,8 @@
 package no.nav.familie.integrasjoner.client.rest
 
 import no.nav.familie.felles.tokenklient.entraid.EntraIDRestClientFactory
+import no.nav.familie.integrasjoner.config.lagJettyHttpClient
+import no.nav.familie.integrasjoner.config.medTimeout
 import no.nav.familie.integrasjoner.dokarkiv.client.KanIkkeFerdigstilleJournalpostException
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.FerdigstillJournalPost
 import no.nav.familie.integrasjoner.dokarkiv.client.domene.OpprettJournalpostRequest
@@ -13,17 +15,14 @@ import no.nav.familie.kontrakter.felles.dokarkiv.GjenåpneSakRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostRequest
 import no.nav.familie.kontrakter.felles.dokarkiv.OppdaterJournalpostResponse
 import no.nav.familie.log.NavHttpHeaders
-import org.eclipse.jetty.client.HttpClient
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.DisposableBean
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
-import org.springframework.http.client.JettyClientHttpRequestFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpStatusCodeException
-import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientResponseException
 import org.springframework.web.client.body
 import org.springframework.web.util.UriComponentsBuilder
@@ -209,20 +208,9 @@ class DokarkivRestClient(
     companion object {
         private val logger = LoggerFactory.getLogger(DokarkivRestClient::class.java)
 
-        // Total tid for hele kallet (inkl. opplasting av vedlegg) i Jetty, ikke en ren lese-timeout.
-        // Brukes også som idle-timeout, ellers avbryter Jetty etter 30s uten trafikk.
+        // Total tid for hele kallet (inkl. opplasting av vedlegg), se RestClientTimeout.kt.
         private val STANDARD_TIMEOUT = Duration.ofSeconds(60)
         private val JOURNALPOST_TIMEOUT = Duration.ofMinutes(3)
-
-        private fun lagJettyHttpClient(timeout: Duration) = HttpClient().apply { idleTimeout = timeout.toMillis() }
-
-        private fun RestClient.medTimeout(
-            httpClient: HttpClient,
-            timeout: Duration,
-        ): RestClient =
-            mutate()
-                .requestFactory(JettyClientHttpRequestFactory(httpClient).apply { setReadTimeout(timeout) })
-                .build()
 
         private const val PATH_JOURNALPOST = "rest/journalpostapi/v1/journalpost"
         private const val QUERY_FERDIGSTILL = "forsoekFerdigstill={boolean}"
