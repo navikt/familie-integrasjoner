@@ -41,8 +41,8 @@ class SafHentDokumentRestClientTest {
     }
 
     @Test
-    fun `skal hente dokumenter med 60 sekunders timeout`() {
-        // Act
+    fun `skal konfigurere klienten for dokumenthenting med 60 sekunders timeout`() {
+        // Arrange + Act: skjer i konstruktøren
         val requestFactory = requestFactories.single()
 
         // Assert

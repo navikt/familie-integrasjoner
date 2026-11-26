@@ -23,12 +23,12 @@ import java.time.Duration
 
 class SafSelvbetjeningClientTest {
     private val safSelvbetjeningGraphQLClient: GraphQLWebClient = mockk()
-    private val restClient: RestClient = mockk(relaxed = true)
+    private val tokenXRestClient: RestClient = mockk(relaxed = true)
     private val builder: RestClient.Builder = mockk(relaxed = true)
     private val requestFactories = mutableListOf<ClientHttpRequestFactory>()
 
     init {
-        every { restClient.mutate() } returns builder
+        every { tokenXRestClient.mutate() } returns builder
         every { builder.requestFactory(capture(requestFactories)) } returns builder
         every { builder.build() } returns mockk(relaxed = true)
     }
@@ -37,7 +37,7 @@ class SafSelvbetjeningClientTest {
         SafSelvbetjeningClient(
             safSelvbetjeningGraphQLClient = safSelvbetjeningGraphQLClient,
             safSelvbetjeningURI = URI.create("https://test.no"),
-            restClient = restClient,
+            restClient = tokenXRestClient,
         )
 
     @AfterEach
@@ -46,8 +46,8 @@ class SafSelvbetjeningClientTest {
     }
 
     @Test
-    fun `skal hente dokumenter med 60 sekunders timeout`() {
-        // Act
+    fun `skal konfigurere klienten for dokumenthenting med 60 sekunders timeout`() {
+        // Arrange + Act: skjer i konstruktøren
         val requestFactory = requestFactories.single()
 
         // Assert
